@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <title>Zmiana statusu — {{ ticket.title }}</title>
+    </head>
+    <body style="font-family:sans-serif;color:#0f172a">
+        <p>Zmieniono status zgłoszenia: <strong>{{ ticket.title }}</strong></p>
+        <p>Nowy status: <strong>{{ status_label }}</strong></p>
+        <p><a href="{{ url }}">Otwórz w {{ app_name }}</a></p>
+    </body>
+</html>

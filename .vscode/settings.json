@@ -1,0 +1,102 @@
+{
+  // Ustawienia edytora
+  "editor.insertSpaces": true, // wstawiaj spacje zamiast tabulatorów
+  "editor.tabSize": 2, // rozmiar tabulacji: 4 spacje
+  "editor.rulers": [300],
+  "editor.formatOnSave": false,
+  "files.trimTrailingWhitespace": true, // automatyczne usuwanie białych znaków na końcu linii
+  "files.insertFinalNewline": true, // automatyczne dodawanie pustej linii na końcu pliku
+  "files.eol": "\n",
+
+  // Interpreter — wybierz środowisko w VS Code (Ctrl+Shift+P → Python: Select Interpreter)
+  "python.defaultInterpreterPath": "C:\\Users\\arkad\\miniconda3\\envs\\pulsedeck\\python.exe",
+  "python-envs.pythonProjects": [
+    {
+      "path": ".",
+      "envManager": "ms-python.python:conda"
+    }
+  ],
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.terminal.activateEnvironment": true,
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+
+  // Konfiguracja Pylance
+  "python.analysis.typeCheckingMode": "standard",
+
+  // Konfiguracja dla plików Python
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+
+  // Konfiguracja dla plików CSS
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode", // używaj Prettier do formatowania CSS
+    "editor.formatOnSave": true
+  },
+
+  // Konfiguracja dla plików Markdown (.md, .mdc)
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Konfiguracja dla plików json
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Konfiguracja PRETTIER (szczegóły w .prettierrc.json)
+  "prettier.requireConfig": true,
+
+  // djLint jest w bazowym Miniconda, nie w env pulsedeck
+  "djlint.useVenv": false,
+  "djlint.executablePath": "C:\\Users\\arkad\\miniconda3\\Scripts\\djlint.exe",
+
+  // Konfiguracja dla plików HTML/Jinja — wszystkie .html to szablony Jinja
+  "[html]": {
+    "editor.defaultFormatter": "monosans.djlint",
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file"
+  },
+  "[jinja-html]": {
+    "editor.defaultFormatter": "monosans.djlint",
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file"
+  },
+
+  // Wyłącz wbudowany formatter HTML — niech tylko Prettier/djLint formatują
+  "html.format.enable": false,
+
+  // Ukrywanie niepotrzebnych katalogów
+  "files.exclude": {
+    "**/__pycache__": true, // ukryj cache Pythona
+    "**/.pytest_cache": true, // ukryj cache pytest
+    "**/.mypy_cache": true // ukryj cache mypy
+  },
+
+  "files.associations": {
+    ".env*": "properties",
+    "*.mdc": "markdown",
+    "**/templates/**/*.html": "jinja-html"
+  },
+  "emmet.includeLanguages": {
+    "jinja-html": "html"
+  },
+  "html.validate.styles": false,
+  "html.validate.scripts": false,
+  "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:conda",
+  "python.terminal.useEnvFile": true,
+  "python.analysis.diagnosticMode": "workspace"
+}

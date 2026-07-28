@@ -1,0 +1,1 @@
+"""PulseDeck — portal zgłoszeń klientów."""

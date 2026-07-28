@@ -1,0 +1,19 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — {{ app_name }}{% endblock %}
+{% block content %}
+    <h1 class="page-title">Przegląd</h1>
+    <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        <div class="stat">
+            <p class="label-tight">Projekty</p>
+            <p class="stat-value">{{ projects|length }}</p>
+        </div>
+        <div class="stat">
+            <p class="label-tight">Użytkownicy</p>
+            <p class="stat-value">{{ users|length }}</p>
+        </div>
+        <div class="stat">
+            <p class="label-tight">Zaproszenia</p>
+            <p class="stat-value">{{ invites|length }}</p>
+        </div>
+    </div>
+{% endblock %}

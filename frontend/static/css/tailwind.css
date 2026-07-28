@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@import "./_primitives.css";
+@import "./_components.css";
+
+@source "../../templates";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-mist: #f4f5f7;
+  --color-ink: #172b4d;
+  --color-steel: #44546f;
+  --color-line: #dfe1e6;
+  --color-pulse: #0c66e4;
+  --color-signal: #e56910;
+  --color-danger: #c9372c;
+  --color-primary: #0c66e4;
+  --color-secondary: #44546f;
+  --color-accent: #0c66e4;
+  --color-brand: #172b4d;
+  --color-base-100: #f4f5f7;
+  --color-soft-blue: #e9f2ff;
+  --color-soft-yellow: #fff7d6;
+  --color-soft-purple: #f3f0ff;
+  --color-soft-green: #dcfff1;
+  --color-soft-red: #ffeceb;
+  --color-soft-teal: #e6fcff;
+}

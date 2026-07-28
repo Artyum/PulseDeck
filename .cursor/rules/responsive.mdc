@@ -1,0 +1,27 @@
+---
+description: Breakpointy i responsywny layout
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Responsywny design
+
+## Breakpointy
+
+- compact ≤479px (telefony, 1 kolumna)
+- mobile ≤768px (pionowo, pełna szerokość).
+- tablet 769-1023px (2 kolumny)
+- desktop ≥1024px (layout docelowy, sidebar, siatki).
+
+## Zasady
+
+- Mobile-first: style bazowe mobile, rozszerzenia od `min-width`.
+- Własne media queries używaj zmiennych `--bp-*`, nie losowych px.
+- Tailwind: preferuj `sm:`, `md:`, `lg:`; dopasuj breakpointy w `@theme` do `--bp-*`.
+- Publiczne szablony: planuj compact→mobile→tablet→desktop. Testuj mobile i desktop.
+- Admin panel: tylko desktop (`min-width: var(--bp-desktop-min)`). Dopuszczalny poziomy scroll, bez pełnej responsywności.
+- Mobile (publiczna): cele dotykowe ≥44px, brak poziomego scrolla całej strony. Tabele: `.table-responsive`.
+
+## Unikaj
+
+- Sztywnych px bez `max-width: 100%`. Osobnych breakpointów w JS — layout w CSS.

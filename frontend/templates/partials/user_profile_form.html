@@ -1,0 +1,96 @@
+<form method="post"
+      action="{{ form_action }}"
+      class="panel panel-pad mt-6 space-y-3">
+    <h2 class="font-display font-bold tracking-tight">Dane konta</h2>
+    <div>
+        <label class="label" for="first_name">Imię</label>
+        <input id="first_name"
+               name="first_name"
+               required
+               value="{{ edit_user.first_name }}"
+               class="input mt-1.5">
+    </div>
+    <div>
+        <label class="label" for="last_name">Nazwisko</label>
+        <input id="last_name"
+               name="last_name"
+               required
+               value="{{ edit_user.last_name }}"
+               class="input mt-1.5">
+    </div>
+    <div>
+        <label class="label" for="email">E-mail</label>
+        <input id="email"
+               name="email"
+               type="email"
+               required
+               value="{{ edit_user.email }}"
+               class="input mt-1.5">
+        {% if not is_admin_edit %}
+            <p class="mt-1 text-sm text-steel">Zmiana e-maila wymaga potwierdzenia na nowy adres. Do potwierdzenia logowanie będzie zablokowane.</p>
+        {% endif %}
+        {% if edit_user.pending_email %}
+            <p class="mt-1 text-sm text-steel">Oczekuje na potwierdzenie: {{ edit_user.pending_email }}</p>
+        {% endif %}
+    </div>
+    <div>
+        <label class="label" for="phone">Telefon</label>
+        <input id="phone"
+               name="phone"
+               type="tel"
+               value="{{ edit_user.phone or '' }}"
+               placeholder="+48123456789"
+               class="input mt-1.5">
+        <p class="mt-1 text-sm text-steel">Opcjonalnie, format E.164 (np. +48123456789).</p>
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz dane</button>
+</form>
+{% if is_admin_edit %}
+    <form method="post"
+          action="/admin/users/{{ edit_user.id }}/password"
+          class="panel panel-pad mt-6 space-y-3">
+        <h2 class="font-display font-bold tracking-tight">Hasło</h2>
+        <input type="password"
+               name="new_password"
+               placeholder="Nowe hasło"
+               class="input"
+               autocomplete="new-password">
+        <input type="password"
+               name="confirm_password"
+               placeholder="Powtórz nowe hasło"
+               class="input"
+               autocomplete="new-password">
+        <div class="flex flex-wrap gap-2">
+            <button type="submit" name="action" value="set" class="btn btn-primary">Ustaw hasło</button>
+            <button type="submit"
+                    name="action"
+                    value="send_link"
+                    class="btn btn-secondary">Wyślij link do ustawienia</button>
+        </div>
+    </form>
+{% else %}
+    <form method="post"
+          action="/profile/password"
+          class="panel panel-pad mt-6 space-y-3">
+        <h2 class="font-display font-bold tracking-tight">Zmiana hasła</h2>
+        <input type="password"
+               name="current_password"
+               required
+               placeholder="Obecne hasło"
+               class="input"
+               autocomplete="current-password">
+        <input type="password"
+               name="new_password"
+               required
+               placeholder="Nowe hasło"
+               class="input"
+               autocomplete="new-password">
+        <input type="password"
+               name="confirm_password"
+               required
+               placeholder="Powtórz nowe hasło"
+               class="input"
+               autocomplete="new-password">
+        <button type="submit" class="btn btn-primary">Zapisz hasło</button>
+    </form>
+{% endif %}

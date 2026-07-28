@@ -1,0 +1,11 @@
+{% extends "base_app.html" %}
+{% block title %}Profil — {{ app_name }}{% endblock %}
+{% block content %}
+    <div class="mx-auto max-w-lg">
+        <h1 class="page-title">Profil</h1>
+        <p class="page-sub">{{ edit_user.display_name }} · {{ edit_user.email }} · {{ role_labels[edit_user.role] }}</p>
+        {% if error %}<p class="alert alert-error mt-4">{{ error }}</p>{% endif %}
+        {% if success %}<p class="alert alert-success mt-4">{{ success }}</p>{% endif %}
+        {% include "partials/user_profile_form.html" %}
+    </div>
+{% endblock %}

@@ -1,0 +1,7 @@
+*.min.js
+frontend/static/vendor/
+frontend/templates/
+app/templates/
+frontend/static/css/app.css
+package-lock.json
+report/

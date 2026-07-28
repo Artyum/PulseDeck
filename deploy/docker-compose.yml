@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pulsedeck
+      POSTGRES_PASSWORD: pulsedeck
+      POSTGRES_DB: pulsedeck
+    volumes:
+      - pulsedeck_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pulsedeck -d pulsedeck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5433:5432"
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    env_file:
+      - env/.env.dev
+    environment:
+      TZ: Europe/Warsaw
+      ALEMBIC_MAX_RETRIES: "20"
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8000"
+      UVICORN_PROXY_HEADERS: "true"
+    volumes:
+      - ../data/uploads:/app/data/uploads
+      - ../logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pulsedeck.rule=Host(`pulsedeck.lan`)"
+      - "traefik.http.routers.pulsedeck.entrypoints=web"
+      - "traefik.http.services.pulsedeck.loadbalancer.server.port=8000"
+
+volumes:
+  pulsedeck_pg:

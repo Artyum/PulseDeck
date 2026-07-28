@@ -1,0 +1,10 @@
+{
+  "threshold": 5,
+  "reporters": ["json", "console"],
+  "ignore": ["**/node_modules/**", "**/venv/**", "**/.venv/**", "**/__pycache__/**", "**/.pytest_cache/**", "**/.mypy_cache/**", "**/build/**", "**/dist/**", "**/*.min.js", "**/*.min.css", "**/frontend/static/vendor/**", "**/frontend/static/css/app.css"],
+  "absolute": true,
+  "format": ["python", "javascript", "html", "css"],
+  "minLines": 5,
+  "maxLines": 1000,
+  "minTokens": 50
+}

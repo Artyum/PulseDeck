@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block body %}
+    <header class="app-header">
+        <div class="app-shell flex items-center justify-between gap-4 py-3.5">
+            <div class="flex items-center gap-6 min-w-0">
+                <a href="/" class="brand-mark shrink-0">{{ app_name }}</a>
+                {% if projects is defined and projects %}
+                    <div class="hidden sm:block min-w-0">
+                        <label class="sr-only" for="project_switch">Projekt</label>
+                        <select id="project_switch"
+                                class="select !w-auto min-w-[10rem] max-w-[16rem]"
+                                onchange="window.location='/p/'+this.value">
+                            {% for p in projects %}
+                                <option value="{{ p.key }}"
+                                        {% if project is defined and project and p.id == project.id %}selected{% endif %}>{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            </div>
+            <nav class="flex items-center gap-1 sm:gap-3 text-sm">
+                {% if user.is_staff %}
+                    <a href="/inbox" class="nav-link px-2 py-1">Skrzynka</a>
+                {% endif %}
+                {% if user.is_admin %}
+                    <a href="/admin" class="nav-link px-2 py-1">Admin</a>
+                {% endif %}
+                <a href="/profile" class="nav-link px-2 py-1 hidden sm:inline">{{ user.display_name }}</a>
+                <form method="post" action="/auth/logout">
+                    <button type="submit" class="btn btn-secondary !py-1.5 !px-3">Wyloguj</button>
+                </form>
+            </nav>
+        </div>
+    </header>
+    <main class="app-main">
+        {% block content %}{% endblock %}
+    </main>
+{% endblock %}

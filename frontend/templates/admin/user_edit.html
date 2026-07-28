@@ -1,0 +1,14 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Edycja użytkownika — {{ app_name }}{% endblock %}
+{% block content %}
+    <div class="mx-auto max-w-lg">
+        <p class="mb-2">
+            <a href="/admin/users" class="text-sm text-steel hover:text-ink">← Użytkownicy</a>
+        </p>
+        <h1 class="page-title">Edycja użytkownika</h1>
+        <p class="page-sub">{{ edit_user.display_name }} · {{ edit_user.email }}</p>
+        {% if error %}<p class="alert alert-error mt-4">{{ error }}</p>{% endif %}
+        {% if success %}<p class="alert alert-success mt-4">{{ success }}</p>{% endif %}
+        {% include "partials/user_profile_form.html" %}
+    </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "useTabs": false,
+  "trailingComma": "es5",
+  "printWidth": 300,
+  "singleAttributePerLine": false,
+  "plugins": ["prettier-plugin-jinja-template", "prettier-plugin-tailwindcss"],
+  "overrides": [
+    {
+      "files": ["*.html", "*.jinja"],
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 300,
+        "singleAttributePerLine": false,
+        "parser": "jinja-template"
+      }
+    },
+    {
+      "files": ["*.css"],
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 200
+      }
+    },
+    {
+      "files": ["*.md"],
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 200
+      }
+    }
+  ]
+}

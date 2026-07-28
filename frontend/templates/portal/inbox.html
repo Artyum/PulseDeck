@@ -1,0 +1,23 @@
+{% extends "base_app.html" %}
+{% from "partials/ticket_macros.html" import ticket_row with context %}
+{% block title %}Skrzynka — {{ app_name }}{% endblock %}
+{% block content %}
+    <div class="mb-7">
+        <h1 class="page-title">Skrzynka obsługi</h1>
+        <p class="page-sub">Zgłoszenia ze wszystkich Twoich projektów.</p>
+    </div>
+    {% set views = [('needs_us', 'Do obsługi'), ('unassigned', 'Nieprzypisane'), ('mine_open', 'Moje otwarte'), ('waiting_on_client', 'Oczekuje na klienta')] %}
+    <div class="mb-5 flex flex-wrap gap-2">
+        {% for key, label in views %}
+            <a href="/inbox?view={{ key }}"
+               class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+    <div class="space-y-3">
+        {% for t in tickets %}
+            {{ ticket_row(t, show_project=true, show_tags=false, show_age=false) }}
+        {% else %}
+            <p class="empty">Brak zgłoszeń w tym widoku.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

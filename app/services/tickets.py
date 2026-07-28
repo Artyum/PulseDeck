@@ -1,0 +1,528 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+
+from fastapi import HTTPException, status
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, selectinload
+
+from app.config import get_settings
+from app.models.enums import TicketPriority, TicketStatus, TicketType
+from app.models.ticket import (
+    Attachment,
+    Comment,
+    Tag,
+    Ticket,
+    TicketParticipant,
+    TicketTag,
+)
+from app.models.user import Project, ProjectMember, User
+from app.services.projects import is_project_member
+
+_OPEN_STATUSES = (
+    TicketStatus.NEW,
+    TicketStatus.IN_PROGRESS,
+    TicketStatus.WAITING_ON_CLIENT,
+)
+_NEEDS_US_STATUSES = (TicketStatus.NEW, TicketStatus.IN_PROGRESS)
+
+_TICKET_LOAD = (
+    selectinload(Ticket.author),
+    selectinload(Ticket.assignee),
+    selectinload(Ticket.comments).selectinload(Comment.author),
+    selectinload(Ticket.comments).selectinload(Comment.attachments),
+    selectinload(Ticket.participants).selectinload(TicketParticipant.user),
+    selectinload(Ticket.attachments),
+    selectinload(Ticket.project)
+    .selectinload(Project.members)
+    .selectinload(ProjectMember.user),
+    selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
+)
+
+
+@dataclass(frozen=True)
+class TicketPermissions:
+    can_assign: bool
+    can_set_done: bool
+    can_reopen: bool
+    can_edit: bool
+    can_manage_tags: bool
+    can_comment: bool
+
+
+def _is_member(db: Session, user: User, ticket: Ticket, member: bool | None) -> bool:
+    if member is not None:
+        return member
+    return is_project_member(db, ticket.project_id, user.id)
+
+
+def can_comment(
+    db: Session, user: User, ticket: Ticket, *, member: bool | None = None
+) -> bool:
+    if ticket.status == TicketStatus.DONE:
+        return False
+    return _is_member(db, user, ticket, member)
+
+
+def can_assign(
+    user: User, ticket: Ticket, db: Session, *, member: bool | None = None
+) -> bool:
+    return user.is_staff and _is_member(db, user, ticket, member)
+
+
+def can_set_done(
+    user: User, ticket: Ticket, db: Session, *, member: bool | None = None
+) -> bool:
+    if not _is_member(db, user, ticket, member):
+        return False
+    return user.is_staff or ticket.author_id == user.id
+
+
+def can_reopen(
+    user: User, ticket: Ticket, db: Session, *, member: bool | None = None
+) -> bool:
+    if ticket.status != TicketStatus.DONE:
+        return False
+    if not _is_member(db, user, ticket, member):
+        return False
+    if user.is_staff:
+        return True
+    if ticket.closed_at is None:
+        return False
+    settings = get_settings()
+    closed = ticket.closed_at
+    if closed.tzinfo is None:
+        closed = closed.replace(tzinfo=timezone.utc)
+    deadline = closed + timedelta(days=settings.ticket_reopen_days)
+    return datetime.now(timezone.utc) <= deadline
+
+
+def can_edit_ticket(
+    user: User, ticket: Ticket, db: Session, *, member: bool | None = None
+) -> bool:
+    if not _is_member(db, user, ticket, member):
+        return False
+    if user.is_staff:
+        return True
+    return ticket.author_id == user.id and ticket.status == TicketStatus.NEW
+
+
+def can_manage_tags(
+    user: User, ticket: Ticket, db: Session, *, member: bool | None = None
+) -> bool:
+    return user.is_staff and _is_member(db, user, ticket, member)
+
+
+def get_ticket_permissions(
+    db: Session, user: User, ticket: Ticket
+) -> TicketPermissions:
+    member = is_project_member(db, ticket.project_id, user.id)
+    return TicketPermissions(
+        can_assign=can_assign(user, ticket, db, member=member),
+        can_set_done=can_set_done(user, ticket, db, member=member),
+        can_reopen=can_reopen(user, ticket, db, member=member),
+        can_edit=can_edit_ticket(user, ticket, db, member=member),
+        can_manage_tags=can_manage_tags(user, ticket, db, member=member),
+        can_comment=can_comment(db, user, ticket, member=member),
+    )
+
+
+def require_project_access(db: Session, user: User, project_id: int) -> None:
+    if not is_project_member(db, project_id, user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Brak dostępu do projektu."
+        )
+
+
+def _apply_view_filter(stmt, *, view: str | None, user: User, staff: bool):
+    if not view or view == "all":
+        return stmt
+    if staff:
+        if view == "unassigned":
+            return stmt.where(
+                Ticket.assignee_id.is_(None), Ticket.status.in_(_OPEN_STATUSES)
+            )
+        if view == "mine_open":
+            return stmt.where(
+                Ticket.assignee_id == user.id, Ticket.status.in_(_OPEN_STATUSES)
+            )
+        if view == "waiting_on_client":
+            return stmt.where(Ticket.status == TicketStatus.WAITING_ON_CLIENT)
+        if view == "needs_us":
+            return stmt.where(Ticket.status.in_(_NEEDS_US_STATUSES))
+        if view == "done":
+            return stmt.where(Ticket.status == TicketStatus.DONE)
+    else:
+        if view == "mine":
+            return stmt.where(Ticket.author_id == user.id)
+        if view == "open":
+            return stmt.where(Ticket.status.in_(_OPEN_STATUSES))
+        if view == "waiting_on_me":
+            return stmt.where(Ticket.status == TicketStatus.WAITING_ON_CLIENT)
+        if view == "done":
+            return stmt.where(Ticket.status == TicketStatus.DONE)
+    return stmt
+
+
+def _apply_sort(stmt, sort: str | None):
+    if sort == "created_at":
+        return stmt.order_by(Ticket.created_at.desc())
+    if sort == "priority":
+        priority_order = func.case(
+            (Ticket.priority == TicketPriority.HIGH, 0),
+            (Ticket.priority == TicketPriority.NORMAL, 1),
+            else_=2,
+        )
+        return stmt.order_by(priority_order, Ticket.updated_at.desc())
+    return stmt.order_by(Ticket.updated_at.desc())
+
+
+def list_tickets(
+    db: Session,
+    project_id: int,
+    *,
+    user: User,
+    view: str | None = None,
+    status_filter: str | None = None,
+    priority_filter: str | None = None,
+    tag: str | None = None,
+    q: str | None = None,
+    sort: str | None = None,
+) -> list[Ticket]:
+    stmt = select(Ticket).where(Ticket.project_id == project_id)
+    stmt = _apply_view_filter(stmt, view=view, user=user, staff=user.is_staff)
+    if status_filter:
+        try:
+            stmt = stmt.where(Ticket.status == TicketStatus(status_filter))
+        except ValueError:
+            pass
+    if priority_filter:
+        try:
+            stmt = stmt.where(Ticket.priority == TicketPriority(priority_filter))
+        except ValueError:
+            pass
+    if tag:
+        stmt = (
+            stmt.join(TicketTag, TicketTag.ticket_id == Ticket.id)
+            .join(Tag, Tag.id == TicketTag.tag_id)
+            .where(func.lower(Tag.name) == tag.strip().lower())
+        )
+    if q:
+        stmt = stmt.where(Ticket.title.ilike(f"%{q.strip()}%"))
+    stmt = stmt.options(
+        selectinload(Ticket.author),
+        selectinload(Ticket.assignee),
+        selectinload(Ticket.project),
+        selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
+    ).distinct()
+    stmt = _apply_sort(stmt, sort)
+    return list(db.scalars(stmt).all())
+
+
+def list_inbox_tickets(
+    db: Session,
+    user: User,
+    *,
+    view: str = "needs_us",
+) -> list[Ticket]:
+    if not user.is_staff:
+        raise HTTPException(status_code=403, detail="Wymagane uprawnienia obsługi.")
+    stmt = (
+        select(Ticket)
+        .join(ProjectMember, ProjectMember.project_id == Ticket.project_id)
+        .where(ProjectMember.user_id == user.id)
+    )
+    inbox_view = (
+        view
+        if view in ("unassigned", "mine_open", "waiting_on_client", "needs_us")
+        else "needs_us"
+    )
+    if inbox_view == "needs_us":
+        stmt = stmt.where(Ticket.status.in_(_NEEDS_US_STATUSES))
+    else:
+        stmt = _apply_view_filter(stmt, view=inbox_view, user=user, staff=True)
+    stmt = (
+        stmt.options(
+            selectinload(Ticket.author),
+            selectinload(Ticket.assignee),
+            selectinload(Ticket.project),
+            selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
+        )
+        .distinct()
+        .order_by(Ticket.updated_at.desc())
+    )
+    return list(db.scalars(stmt).all())
+
+
+def get_ticket(db: Session, ticket_id: int) -> Ticket | None:
+    return db.scalar(
+        select(Ticket).where(Ticket.id == ticket_id).options(*_TICKET_LOAD)
+    )
+
+
+def create_ticket(
+    db: Session,
+    *,
+    project_id: int,
+    author: User,
+    title: str,
+    description: str,
+    ticket_type: TicketType,
+    priority: TicketPriority = TicketPriority.NORMAL,
+) -> Ticket:
+    ticket = Ticket(
+        project_id=project_id,
+        author_id=author.id,
+        title=title.strip(),
+        description=description.strip(),
+        type=ticket_type,
+        priority=priority,
+        status=TicketStatus.NEW,
+    )
+    db.add(ticket)
+    db.commit()
+    db.refresh(ticket)
+    return get_ticket(db, ticket.id) or ticket
+
+
+def _ensure_participant(db: Session, ticket: Ticket, user_id: int) -> None:
+    if ticket.author_id == user_id:
+        return
+    existing = db.scalar(
+        select(TicketParticipant).where(
+            TicketParticipant.ticket_id == ticket.id,
+            TicketParticipant.user_id == user_id,
+        )
+    )
+    if existing:
+        return
+    db.add(TicketParticipant(ticket_id=ticket.id, user_id=user_id))
+
+
+def add_comment(
+    db: Session,
+    ticket: Ticket,
+    author: User,
+    content: str,
+    *,
+    is_internal: bool = False,
+) -> Comment:
+    if not can_comment(db, author, ticket):
+        raise HTTPException(status_code=403, detail="Brak uprawnień do komentowania.")
+    if is_internal and not author.is_staff:
+        raise HTTPException(
+            status_code=403, detail="Notatki wewnętrzne tylko dla obsługi."
+        )
+    comment = Comment(
+        ticket_id=ticket.id,
+        author_id=author.id,
+        content=content.strip(),
+        is_internal=bool(is_internal),
+    )
+    db.add(comment)
+    if not is_internal:
+        _ensure_participant(db, ticket, author.id)
+        if author.is_staff:
+            ticket.status = TicketStatus.WAITING_ON_CLIENT
+            if ticket.assignee_id is None:
+                ticket.assignee_id = author.id
+        else:
+            ticket.status = TicketStatus.IN_PROGRESS
+    db.commit()
+    db.refresh(comment)
+    return comment
+
+
+def assign_ticket(
+    db: Session, ticket: Ticket, actor: User, assignee_id: int | None
+) -> Ticket:
+    if not can_assign(actor, ticket, db):
+        raise HTTPException(status_code=403, detail="Brak uprawnień do przypisania.")
+    if assignee_id is not None:
+        assignee = db.get(User, assignee_id)
+        if not assignee or not assignee.is_staff:
+            raise HTTPException(
+                status_code=400, detail="Assignee musi być STAFF lub ADMIN."
+            )
+        if not is_project_member(db, ticket.project_id, assignee.id):
+            raise HTTPException(
+                status_code=400, detail="Assignee musi być członkiem projektu."
+            )
+        ticket.assignee_id = assignee.id
+        if ticket.status == TicketStatus.NEW:
+            ticket.status = TicketStatus.IN_PROGRESS
+    else:
+        ticket.assignee_id = None
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def self_assign(db: Session, ticket: Ticket, actor: User) -> Ticket:
+    return assign_ticket(db, ticket, actor, actor.id)
+
+
+def set_status(
+    db: Session, ticket: Ticket, actor: User, status_value: TicketStatus
+) -> Ticket:
+    if status_value == TicketStatus.DONE:
+        if not can_set_done(actor, ticket, db):
+            raise HTTPException(
+                status_code=403, detail="Brak uprawnień do zakończenia."
+            )
+        ticket.status = TicketStatus.DONE
+        ticket.closed_at = datetime.now(timezone.utc)
+    elif status_value in (
+        TicketStatus.IN_PROGRESS,
+        TicketStatus.WAITING_ON_CLIENT,
+    ):
+        if not can_assign(actor, ticket, db):
+            raise HTTPException(status_code=403, detail="Brak uprawnień.")
+        ticket.status = status_value
+        ticket.closed_at = None
+    elif status_value == TicketStatus.NEW:
+        if not actor.is_staff:
+            raise HTTPException(status_code=403, detail="Brak uprawnień.")
+        ticket.status = TicketStatus.NEW
+        ticket.closed_at = None
+    else:
+        raise HTTPException(status_code=400, detail="Nieprawidłowy status.")
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def reopen_ticket(db: Session, ticket: Ticket, actor: User) -> Ticket:
+    if not can_reopen(actor, ticket, db):
+        raise HTTPException(
+            status_code=403, detail="Nie można ponownie otworzyć tego zgłoszenia."
+        )
+    ticket.status = TicketStatus.IN_PROGRESS
+    ticket.closed_at = None
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def update_ticket(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    *,
+    title: str,
+    description: str,
+) -> Ticket:
+    if not can_edit_ticket(actor, ticket, db):
+        raise HTTPException(status_code=403, detail="Brak uprawnień do edycji.")
+    ticket.title = title.strip()
+    ticket.description = description.strip()
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def set_priority(
+    db: Session, ticket: Ticket, actor: User, priority: TicketPriority
+) -> Ticket:
+    if not can_edit_ticket(actor, ticket, db):
+        raise HTTPException(
+            status_code=403, detail="Brak uprawnień do zmiany priorytetu."
+        )
+    ticket.priority = priority
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def list_project_tags(db: Session, project_id: int) -> list[Tag]:
+    return list(
+        db.scalars(
+            select(Tag).where(Tag.project_id == project_id).order_by(Tag.name)
+        ).all()
+    )
+
+
+def _get_or_create_tag(db: Session, project_id: int, name: str) -> Tag:
+    cleaned = " ".join(name.strip().split())
+    if not cleaned:
+        raise HTTPException(status_code=400, detail="Nazwa tagu jest pusta.")
+    if len(cleaned) > 80:
+        raise HTTPException(status_code=400, detail="Tag jest zbyt długi.")
+    existing = db.scalar(
+        select(Tag).where(
+            Tag.project_id == project_id,
+            func.lower(Tag.name) == cleaned.lower(),
+        )
+    )
+    if existing:
+        return existing
+    tag = Tag(project_id=project_id, name=cleaned)
+    db.add(tag)
+    db.flush()
+    return tag
+
+
+def add_ticket_tag(db: Session, ticket: Ticket, actor: User, name: str) -> Ticket:
+    if not can_manage_tags(actor, ticket, db):
+        raise HTTPException(
+            status_code=403, detail="Tylko obsługa może zarządzać tagami."
+        )
+    tag = _get_or_create_tag(db, ticket.project_id, name)
+    existing = db.scalar(
+        select(TicketTag).where(
+            TicketTag.ticket_id == ticket.id, TicketTag.tag_id == tag.id
+        )
+    )
+    if not existing:
+        db.add(TicketTag(ticket_id=ticket.id, tag_id=tag.id))
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def remove_ticket_tag(db: Session, ticket: Ticket, actor: User, tag_id: int) -> Ticket:
+    if not can_manage_tags(actor, ticket, db):
+        raise HTTPException(
+            status_code=403, detail="Tylko obsługa może zarządzać tagami."
+        )
+    row = db.scalar(
+        select(TicketTag).where(
+            TicketTag.ticket_id == ticket.id, TicketTag.tag_id == tag_id
+        )
+    )
+    if row:
+        db.delete(row)
+        db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def add_participant(db: Session, ticket: Ticket, actor: User, user_id: int) -> None:
+    if not actor.is_staff and ticket.author_id != actor.id:
+        raise HTTPException(
+            status_code=403, detail="Brak uprawnień do dodawania uczestników."
+        )
+    if not is_project_member(db, ticket.project_id, user_id):
+        raise HTTPException(
+            status_code=400, detail="Użytkownik musi być członkiem projektu."
+        )
+    _ensure_participant(db, ticket, user_id)
+    db.commit()
+
+
+def add_attachment(
+    db: Session,
+    *,
+    file_name: str,
+    file_path: str,
+    ticket_id: int | None = None,
+    comment_id: int | None = None,
+) -> Attachment:
+    att = Attachment(
+        ticket_id=ticket_id,
+        comment_id=comment_id,
+        file_name=file_name,
+        file_path=file_path,
+    )
+    db.add(att)
+    db.commit()
+    db.refresh(att)
+    return att
+
+
+def default_feed_view(user: User) -> str:
+    return "needs_us" if user.is_staff else "mine"

@@ -1,0 +1,58 @@
+{% macro status_chip(status) -%}
+    <span class="chip {% if status.value == 'NEW' %}chip-new{% elif status.value == 'IN_PROGRESS' %}chip-progress{% elif status.value == 'WAITING_ON_CLIENT' %}chip-waiting{% else %}chip-done{% endif %}">{{ status_labels[status] }}</span>
+{%- endmacro %}
+{% macro priority_chip(priority) -%}
+    <span class="chip {% if priority.value == 'HIGH' %}chip-high{% endif %}">{{ priority_labels[priority] }}</span>
+{%- endmacro %}
+{% macro attachment_list(attachments, extra_class='') -%}
+    {% if attachments %}
+        <div class="flex flex-wrap gap-2 {{ extra_class }}">
+            {% for a in attachments %}
+                {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
+                {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+                    <button type="button"
+                            class="attach-thumb"
+                            data-lightbox-src="/uploads/{{ a.file_path }}"
+                            data-lightbox-alt="{{ a.file_name }}"
+                            title="{{ a.file_name }}">
+                        <img src="/uploads/{{ a.file_path }}"
+                             alt="{{ a.file_name }}"
+                             width="88"
+                             height="88"
+                             loading="lazy">
+                    </button>
+                {% else %}
+                    <a href="/uploads/{{ a.file_path }}"
+                       target="_blank"
+                       class="btn btn-secondary !py-1.5 !px-3 text-sm">{{ a.file_name }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{%- endmacro %}
+{% macro ticket_row(t, show_project=false, show_tags=true, show_age=true) -%}
+    <a href="{{ t|ticket_path }}"
+       class="ticket-row"
+       data-status="{{ t.status.value }}">
+        <div class="ticket-meta">
+            {% if show_project %}
+                <span class="font-semibold text-ink">{{ t.project.name if t.project else '' }}</span>
+            {% endif %}
+            <span class="ticket-num">{{ t|ticket_label }}</span>
+            <span class="chip">{{ type_labels[t.type] }}</span>
+            {{ status_chip(t.status) }}
+            {{ priority_chip(t.priority) }}
+            {% if show_tags %}
+                {% for tt in t.ticket_tags %}<span class="chip chip-outline">{{ tt.tag.name }}</span>{% endfor %}
+            {% endif %}
+            <span>{{ t.author.display_name if t.author else '' }}</span>
+            <span>·</span>
+            <span>{{ t.updated_at.strftime("%Y-%m-%d %H:%M") if t.updated_at else '' }}</span>
+            {% if show_age %}
+                <span>·</span>
+                <span>{{ t.created_at|age_since }}</span>
+            {% endif %}
+        </div>
+        <h2 class="mt-2 text-[1.15rem] font-semibold tracking-tight text-ink leading-snug">{{ t.title }}</h2>
+    </a>
+{%- endmacro %}

@@ -1,0 +1,24 @@
+{
+  "name": "pulsedeck",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "css:build": "tailwindcss -i frontend/static/css/tailwind.css -o frontend/static/css/app.css --minify",
+    "css:build:dev": "tailwindcss -i frontend/static/css/tailwind.css -o frontend/static/css/app.css",
+    "css:watch": "tailwindcss -i frontend/static/css/tailwind.css -o frontend/static/css/app.css --watch",
+    "format": "prettier --write \"**/*.{html,css,md,json,js}\"",
+    "format:check": "prettier --check \"**/*.{html,css,md,json,js}\"",
+    "lint:css": "node --disable-warning=ExperimentalWarning ./node_modules/stylelint/bin/stylelint.mjs \"frontend/static/css/**/*.css\"",
+    "lint:dup": "jscpd . --threshold 5"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "jscpd": "^5.0.14",
+    "prettier": "^3.7.0",
+    "prettier-plugin-jinja-template": "^2.2.0",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "stylelint": "^17.14.1",
+    "stylelint-config-recommended": "^18.0.0",
+    "tailwindcss": "^4.3.0"
+  }
+}

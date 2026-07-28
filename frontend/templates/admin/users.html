@@ -1,0 +1,51 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Użytkownicy — {{ app_name }}{% endblock %}
+{% block content %}
+    <h1 class="page-title">Użytkownicy</h1>
+    <ul class="mt-6 space-y-2">
+        {% for u in users %}
+            <li class="list-row flex-wrap">
+                <div>
+                    <p class="font-semibold text-ink">
+                        {{ u.display_name }}
+                        {% if not u.is_active %}
+                            <span class="ml-1 text-xs font-medium uppercase tracking-wide text-steel">(zablokowany)</span>
+                        {% endif %}
+                    </p>
+                    <p class="text-sm text-steel">
+                        {{ u.email }}
+                        {% if u.phone %}· {{ u.phone }}{% endif %}
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="/admin/users/{{ u.id }}" class="btn btn-secondary">Edytuj</a>
+                    {% if u.id != user.id %}
+                        <form method="post" action="/admin/users/{{ u.id }}/active">
+                            {% if u.is_active %}
+                                <input type="hidden" name="active" value="0">
+                                <button type="submit" class="btn btn-secondary">Zablokuj</button>
+                            {% else %}
+                                <input type="hidden" name="active" value="1">
+                                <button type="submit" class="btn btn-secondary">Odblokuj</button>
+                            {% endif %}
+                        </form>
+                    {% endif %}
+                    <form method="post"
+                          action="/admin/users/{{ u.id }}/role"
+                          class="flex items-center gap-2">
+                        <select name="role"
+                                class="select !w-auto"
+                                {% if u.id == user.id %}disabled{% endif %}>
+                            {% for r in user_roles %}
+                                <option value="{{ r.value }}" {% if u.role == r %}selected{% endif %}>{{ role_labels[r] }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if u.id != user.id %}
+                            <button type="submit" class="btn btn-secondary">Zapisz rolę</button>
+                        {% endif %}
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

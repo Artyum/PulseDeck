@@ -1,0 +1,55 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ project.name }} — {{ app_name }}{% endblock %}
+{% block content %}
+    <a href="/admin/projects" class="link-quiet">← Projekty</a>
+    <h1 class="page-title mt-2">{{ project.name }}</h1>
+    <p class="page-sub">Key: {{ project.key }}</p>
+    {% if project.description %}<p class="page-sub">{{ project.description }}</p>{% endif %}
+    {% if error %}<p class="alert alert-error mt-4">{{ error }}</p>{% endif %}
+    <form method="post"
+          action="{{ project|admin_project_path }}/edit"
+          class="panel panel-pad mt-6 flex flex-wrap gap-3"
+          data-original-key="{{ project.key }}"
+          onsubmit="var k=this.elements.project_key.value.trim().toUpperCase(); if(k!==this.dataset.originalKey){return confirm('Zmiana key sprawi, że stare linki /p/… i /t/{{ project.key }}-… przestaną działać. Kontynuować?');} return true;">
+        <input name="name"
+               required
+               placeholder="Nazwa projektu"
+               value="{{ form_name if form_name is defined else project.name }}"
+               class="input !w-auto min-w-[12rem]">
+        <input name="project_key"
+               required
+               pattern="[A-Za-z0-9]{3,10}"
+               maxlength="10"
+               placeholder="Key"
+               value="{{ form_key if form_key is defined else project.key }}"
+               title="3–10 znaków A–Z / 0–9"
+               class="input !w-auto min-w-[8rem] uppercase">
+        <input name="description"
+               placeholder="Opis (opcjonalnie)"
+               value="{{ form_description if form_description is defined else (project.description or '') }}"
+               class="input min-w-[240px] flex-1">
+        <button type="submit" class="btn btn-primary">Zapisz</button>
+    </form>
+    <h2 class="mt-8 font-display font-bold tracking-tight">Członkowie</h2>
+    <ul class="mt-3 space-y-2">
+        {% for m in members %}
+            <li class="list-row text-sm">
+                <span>{{ m.user.display_name }} <span class="text-steel">({{ m.user.email }} · {{ role_labels[m.user.role] }})</span></span>
+                <form method="post"
+                      action="{{ project|admin_project_path }}/members/{{ m.user_id }}/remove">
+                    <button type="submit" class="btn-danger text-sm">Usuń</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <form method="post"
+          action="{{ project|admin_project_path }}/members"
+          class="mt-4 flex flex-wrap gap-2">
+        <select name="user_id" class="select !w-auto min-w-[14rem]">
+            {% for u in all_users %}
+                <option value="{{ u.id }}">{{ u.display_name }} ({{ u.email }})</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Dodaj</button>
+    </form>
+{% endblock %}

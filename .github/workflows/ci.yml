@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+      - fix/**
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test-and-static:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        env:
+          DATABASE_URL: sqlite://
+          ENVIRONMENT: development
+          STORAGE_SECRET: test-storage-secret
+          SECURITY_CSRF_ENABLED: "false"
+          APP_BASE_URL: http://testserver
+          ALLOWED_HOSTS: testserver,localhost,127.0.0.1
+        run: python -m pytest tests/ -v --tb=short --cov=app --cov-report=term-missing:skip-covered
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Check code duplication
+        run: npm run lint:dup
+
+      - name: Build static assets
+        run: npm run css:build
+
+      - name: Build Docker image
+        run: docker build -f deploy/Dockerfile -t pulsedeck:ci .
+
+      - name: Smoke test health endpoint in container
+        run: |
+          docker network create pulsedeck-ci
+          docker run -d --name pulsedeck-ci-db --network pulsedeck-ci \
+            -e POSTGRES_DB=pulsedeck \
+            -e POSTGRES_USER=pulsedeck \
+            -e POSTGRES_PASSWORD=pulsedeck \
+            postgres:16-alpine
+          DB_READY=0
+          for i in $(seq 1 30); do
+            if docker exec pulsedeck-ci-db pg_isready -U pulsedeck -d pulsedeck > /dev/null 2>&1; then
+              DB_READY=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$DB_READY" -ne 1 ]; then
+            echo "Database did not become ready in time"
+            docker logs pulsedeck-ci-db
+            exit 1
+          fi
+          docker run -d --name pulsedeck-ci-smoke \
+            --network pulsedeck-ci \
+            -e DATABASE_URL=postgresql+psycopg://pulsedeck:pulsedeck@pulsedeck-ci-db:5432/pulsedeck \
+            -e STORAGE_SECRET=ci-only-secret \
+            -e ENVIRONMENT=staging \
+            -e APP_BASE_URL=https://example.com \
+            -e ALLOWED_HOSTS=example.com,localhost,127.0.0.1 \
+            -e UVICORN_WORKERS=1 \
+            -p 18000:8000 \
+            pulsedeck:ci
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:18000/api/health > /dev/null; then
+              echo "Healthcheck OK"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Healthcheck failed"
+          docker logs pulsedeck-ci-smoke
+          exit 1
+
+      - name: Smoke test CSS asset
+        run: curl -fsS http://127.0.0.1:18000/static/css/app.css > /dev/null
+
+      - name: Cleanup smoke container
+        if: always()
+        run: |
+          docker rm -f pulsedeck-ci-smoke || true
+          docker rm -f pulsedeck-ci-db || true
+          docker network rm pulsedeck-ci || true
+
+  publish-ghcr:
+    runs-on: ubuntu-latest
+    needs: test-and-static
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/pulsedeck
+          tags: |
+            type=sha,format=short
+            type=raw,value=main-latest
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

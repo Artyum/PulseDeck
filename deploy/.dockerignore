@@ -1,0 +1,12 @@
+# Ignore Docker build context noise
+.git
+.venv
+venv
+node_modules
+__pycache__
+*.pyc
+.pytest_cache
+logs/*
+data/uploads/*
+!data/uploads/.gitkeep
+frontend/static/css/app.css

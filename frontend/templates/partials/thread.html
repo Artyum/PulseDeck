@@ -1,0 +1,68 @@
+{% from "partials/ticket_macros.html" import attachment_list with context %}
+<div class="space-y-4">
+    <h2 class="label-tight">Wątek</h2>
+    {% set ns = namespace(prev=None) %}
+    {% for c in ticket.comments %}
+        {% if not c.is_internal or user.is_staff %}
+            <div class="comment {% if c.is_internal %}comment-internal{% endif %}">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-steel">
+                    <span class="font-semibold text-ink">
+                        {{ c.author.display_name if c.author else '' }}
+                        {% if c.is_internal %}<span class="badge-internal">wewnętrzna</span>{% endif %}
+                    </span>
+                    <span class="text-right">
+                        {{ c.created_at.strftime("%Y-%m-%d %H:%M") if c.created_at else '' }}
+                        {% if ns.prev %}
+                            <span class="block text-steel/70">+{{ ns.prev|gap_between(c.created_at) }} od poprzedniego</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <p class="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-ink/90">{{ c.content }}</p>
+                {{ attachment_list(c.attachments, 'mt-2') }}
+            </div>
+            {% set ns.prev = c.created_at %}
+        {% endif %}
+    {% else %}
+        <p class="text-sm text-steel">Brak komentarzy.</p>
+    {% endfor %}
+    {% if can_comment %}
+        <form hx-post="{{ ticket|ticket_path }}/comments"
+              hx-target="#thread"
+              hx-swap="innerHTML"
+              enctype="multipart/form-data"
+              class="panel panel-pad space-y-3">
+            <textarea name="content"
+                      required
+                      rows="3"
+                      placeholder="Napisz odpowiedź…"
+                      class="textarea"></textarea>
+            {% if user.is_staff %}
+                <label class="flex items-center gap-2 text-sm text-steel">
+                    <input type="checkbox"
+                           name="is_internal"
+                           value="1"
+                           class="rounded border-line">
+                    Notatka wewnętrzna (bez maila i zmiany statusu)
+                </label>
+            {% endif %}
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <input type="file"
+                       name="attachment"
+                       accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
+                       class="text-sm text-steel">
+                <button type="submit" class="btn btn-primary">Wyślij</button>
+            </div>
+        </form>
+    {% elif ticket.status.value == 'DONE' %}
+        <p class="alert alert-muted">
+            Zgłoszenie zakończone.
+            {% if can_reopen is defined and can_reopen %}
+                Możesz je otworzyć ponownie (przycisk powyżej).
+            {% elif not user.is_staff %}
+                Ponowne otwarcie możliwe w ciągu {{ ticket_reopen_days }} dni od zamknięcia.
+            {% endif %}
+        </p>
+    {% else %}
+        <p class="alert alert-muted">Brak uprawnień do komentowania.</p>
+    {% endif %}
+</div>

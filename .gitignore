@@ -1,0 +1,17 @@
+__pycache__/
+/! Docs/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+.pytest_cache/
+.ruff_cache/
+logs/
+report/
+data/uploads/*
+!data/uploads/.gitkeep
+frontend/static/css/app.css
+.env
+*.log
+.DS_Store
+deploy/env/.env.dev

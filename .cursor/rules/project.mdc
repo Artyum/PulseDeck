@@ -1,0 +1,55 @@
+---
+description: Zasady projektu PulseDeck
+alwaysApply: true
+---
+
+# Zasady
+
+## Ogólne
+
+- Oszczędzaj tokeny, bądź konkretny, bez lania wody.
+- Pytaj przed destrukcyjnymi operacjami (instalacja, usuwanie plików, zmiany konfiguracji). Bezpieczne polecenia (git status, odczyt) wykonuj bez pytania.
+- Aplikacja i CSS watcher są już uruchomione (`start_app.ps1` + okno Tailwind watch). Nie uruchamiaj ani nie przebudowuj ich automatycznie. Jeśli coś nie działa, poproś o ręczne uruchomienie/restart.
+- Dev: <http://pulsedeck.lan:8005/> (`deploy/env/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → IP LAN, nie 127.0.0.1).
+- Nigdy sam nie uruchamiaj testów — wskaż jak je uruchomić ręcznie.
+- Środowisko Windows — polecenia w PowerShell.
+- Upraszczaj kod i usuwaj zbędne pozostałości.
+
+## URL (publiczne / portal)
+
+- Bez UUID w linkach UI. Projekt: `/p/{key}`, ticket: `/t/{key}-{id}` (id = bigint PK ticketu).
+- Helpery: `app/utils/urls.py` (`project_path`, `ticket_path`, `ticket_label`, `admin_project_path`).
+- `key` projektu: ręczne `[A-Z0-9]{3,10}`, unique; nazwa niezależna, unique case-insensitive.
+- Zmiana key/nazwy bez redirectów — stare linki przestają działać.
+- W DB: wszystkie encje mają bigint PK (autoincrement). Key projektu tylko do routingów i etykiet.
+
+## Formularze / CSRF
+
+- POST z sesją wymaga `X-CSRF-Token` (meta + interceptor w `base.html` lub `hx-headers`).
+- Interceptor formularzy: `fetch` z `redirect: "follow"` (nie `manual` — powoduje pustą stronę).
+- Po sukcesie z redirectem: nawiguj na `r.url` gdy `r.redirected`.
+
+## Kod
+
+- Loguj błędy w kluczowych operacjach i try/except.
+- Bezpieczny kod odporny na znane ataki.
+- Bez komentarzy (chyba że użytkownik wymaga).
+- Nigdy nie edytuj `frontend/static/css/app.css` — generowany (`css:watch` / `css:build`).
+- Reużywaj istniejące style — spójność przed nowym CSS.
+- KISS / YAGNI / DRY; SOLID gdy ma sens, bez nadarchitektury.
+
+## CSS/UI
+
+- Tailwind + własne komponenty w `_components.css` (`.btn`, `.input`, `.modal`…). Unikaj zbędnego niestandardowego CSS i inline style.
+- Najpierw szukaj istniejącego komponentu / klasy w `_components.css` / `_primitives.css`, potem łącz klasy Tailwind.
+- Używaj kolorów z `@theme` (`bg-primary`, `text-secondary`, `bg-base-100`).
+
+## Stack
+
+Backend: FastAPI + SQLAlchemy + PostgreSQL + Alembic. CSS: Tailwind + własne komponenty. Start: `start_app.ps1`, npm: `update_npm.ps1`.
+
+## Sieć
+
+- Nie pobieraj pełnych stron HTML — użytkownik wkleja dane ręcznie.
+- Dozwolone: sprawdzenie statusu HTTP i nagłówków.
+- Przeglądarka tylko na wyraźną prośbę lub krótki test (<50 linii).

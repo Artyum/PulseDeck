@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="admin-shell">
+        <aside class="admin-aside">
+            <a href="/" class="brand-mark">{{ app_name }}</a>
+            <p class="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-steel">Panel admin</p>
+            <nav class="admin-nav mt-8 space-y-1">
+                <a href="/admin">Przegląd</a>
+                <a href="/admin/projects">Projekty</a>
+                <a href="/admin/users">Użytkownicy</a>
+                <a href="/admin/invites">Zaproszenia</a>
+                <a href="/" class="!text-steel/70">← Portal</a>
+            </nav>
+        </aside>
+        <main class="admin-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+{% endblock %}
