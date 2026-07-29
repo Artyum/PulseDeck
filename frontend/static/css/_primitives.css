@@ -6,10 +6,11 @@
 
   body {
     font-family: var(--font-sans);
-    font-size: 0.875rem;
-    line-height: 1.45;
+    font-size: 0.9375rem;
+    line-height: 1.5;
     color: var(--color-ink);
-    background-color: var(--color-mist);
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
   }
 
   ::selection {

@@ -1,14 +1,37 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Edycja użytkownika — {{ app_name }}{% endblock %}
 {% block content %}
-    <div class="mx-auto max-w-lg">
-        <p class="mb-2">
-            <a href="/admin/users" class="text-sm text-steel hover:text-ink">← Użytkownicy</a>
-        </p>
-        <h1 class="page-title">Edycja użytkownika</h1>
-        <p class="page-sub">{{ edit_user.display_name }} · {{ edit_user.email }}</p>
-        {% if error %}<p class="alert alert-error mt-4">{{ error }}</p>{% endif %}
-        {% if success %}<p class="alert alert-success mt-4">{{ success }}</p>{% endif %}
-        {% include "partials/user_profile_form.html" %}
+    <nav class="issue-crumb">
+        <a href="/admin/users" class="link-quiet">Użytkownicy</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ edit_user.display_name }}</span>
+    </nav>
+    <div class="admin-page-head">
+        <div>
+            <h1 class="issue-title">Edycja konta</h1>
+            <p class="admin-page-sub">
+                {{ edit_user.display_name }} · {{ edit_user.email }}
+                {% if not edit_user.is_active %}
+                    <span class="chip chip-blocked">Zablokowany</span>
+                {% elif edit_user.is_pending %}
+                    <span class="chip chip-pending">Oczekuje</span>
+                {% endif %}
+            </p>
+        </div>
     </div>
+    <section class="admin-section">
+        <div class="max-w-xl">
+            {% if error %}<p class="alert alert-error mb-4">{{ error }}</p>{% endif %}
+            {% if success %}<p class="alert alert-success mb-4">{{ success }}</p>{% endif %}
+            {% if edit_user.is_pending and edit_user.is_active %}
+                <form method="post"
+                      action="/admin/users/{{ edit_user.id }}/resend-activation"
+                      class="panel panel-pad mb-6">
+                    <p class="text-sm text-steel mb-3">Konto oczekuje na aktywację. Możesz ponownie wysłać link na e-mail.</p>
+                    <button type="submit" class="btn btn-secondary">Wyślij ponownie link aktywacyjny</button>
+                </form>
+            {% endif %}
+            {% include "partials/user_profile_form.html" %}
+        </div>
+    </section>
 {% endblock %}

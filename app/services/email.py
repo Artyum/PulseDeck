@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import smtplib
+from collections.abc import Iterable
 from email.message import EmailMessage
 
 from fastapi import BackgroundTasks
@@ -13,6 +14,7 @@ from app.config import get_settings, project_root
 from app.models.enums import UserRole
 from app.models.ticket import Ticket, TicketParticipant
 from app.models.user import ProjectMember, User
+from app.services import projects as project_service
 from app.utils.urls import ticket_path
 
 logger = logging.getLogger("pulsedeck.services.email")
@@ -69,16 +71,15 @@ def queue_email(
     background.add_task(_send_email_sync, to, subject, html)
 
 
-def notify_magic_link(background: BackgroundTasks, user: User, token: str) -> None:
-    settings = get_settings()
-    url = f"{settings.app_base_url}/auth/verify?token={token}"
-    queue_email(
-        background,
-        user.email,
-        "Link logowania — PulseDeck",
-        "magic_link.html",
-        {"user": user, "url": url, "ttl_minutes": settings.magic_link_ttl_minutes},
-    )
+def _broadcast(
+    background: BackgroundTasks,
+    recipients: Iterable[str],
+    subject: str,
+    template: str,
+    context: dict,
+) -> None:
+    for email in sorted(set(recipients)):
+        queue_email(background, email, subject, template, context)
 
 
 def notify_email_confirm(
@@ -91,32 +92,48 @@ def notify_email_confirm(
         to_email,
         "Potwierdź nowy e-mail — PulseDeck",
         "email_confirm.html",
-        {"user": user, "url": url, "ttl_minutes": settings.magic_link_ttl_minutes},
+        {
+            "user": user,
+            "url": url,
+            "ttl_minutes": settings.email_confirm_ttl_minutes,
+        },
     )
 
 
 def notify_password_set(background: BackgroundTasks, user: User, token: str) -> None:
     settings = get_settings()
-    url = f"{settings.app_base_url}/auth/set-password?token={token}"
+    url = f"{settings.app_base_url}/auth/activate?token={token}"
+    is_activation = user.activated_at is None
+    if is_activation:
+        subject = "Aktywuj konto — PulseDeck"
+        template = "account_activate.html"
+    else:
+        subject = "Reset hasła — PulseDeck"
+        template = "password_reset.html"
     queue_email(
         background,
         user.email,
-        "Ustaw hasło — PulseDeck",
-        "password_set.html",
-        {"user": user, "url": url, "ttl_minutes": settings.magic_link_ttl_minutes},
+        subject,
+        template,
+        {
+            "user": user,
+            "url": url,
+            "ttl_days": settings.auth_link_ttl_days,
+        },
     )
 
 
 def staff_emails_for_project(db: Session, project_id: int) -> list[str]:
-    rows = db.scalars(
+    member_staff = db.scalars(
         select(User)
         .join(ProjectMember, ProjectMember.user_id == User.id)
         .where(
             ProjectMember.project_id == project_id,
-            User.role.in_([UserRole.STAFF, UserRole.ADMIN]),
+            User.role == UserRole.STAFF,
         )
     ).all()
-    return [u.email for u in rows]
+    admins = project_service.list_admins(db)
+    return list(dict.fromkeys(u.email for u in (*admins, *member_staff)))
 
 
 def _ticket_url(ticket: Ticket) -> str:
@@ -130,16 +147,18 @@ def _ticket_url(ticket: Ticket) -> str:
 def notify_new_ticket(background: BackgroundTasks, db: Session, ticket: Ticket) -> None:
     url = _ticket_url(ticket)
     author_email = ticket.author.email if ticket.author else None
-    for email in staff_emails_for_project(db, ticket.project_id):
-        if email == author_email:
-            continue
-        queue_email(
-            background,
-            email,
-            f"Nowe zgłoszenie: {ticket.title}",
-            "new_ticket.html",
-            {"ticket": ticket, "url": url},
-        )
+    recipients = [
+        email
+        for email in staff_emails_for_project(db, ticket.project_id)
+        if email != author_email
+    ]
+    _broadcast(
+        background,
+        recipients,
+        f"Nowe zgłoszenie: {ticket.title}",
+        "new_ticket.html",
+        {"ticket": ticket, "url": url},
+    )
 
 
 def _load_ticket_for_notify(db: Session, ticket_id: int) -> Ticket | None:
@@ -190,14 +209,13 @@ def notify_new_comment(
             recipients.add(loaded.assignee.email)
         if author:
             recipients.discard(author.email)
-    for email in sorted(recipients):
-        queue_email(
-            background,
-            email,
-            f"Nowa odpowiedź: {loaded.title}",
-            "new_comment.html",
-            {"ticket": loaded, "url": url},
-        )
+    _broadcast(
+        background,
+        recipients,
+        f"Nowa odpowiedź: {loaded.title}",
+        "new_comment.html",
+        {"ticket": loaded, "url": url},
+    )
 
 
 def notify_status_change(
@@ -213,14 +231,13 @@ def notify_status_change(
     if actor:
         recipients.discard(actor.email)
     status_label = TICKET_STATUS_LABELS.get(loaded.status, loaded.status.value)
-    for email in sorted(recipients):
-        queue_email(
-            background,
-            email,
-            f"Zmiana statusu: {loaded.title}",
-            "status_change.html",
-            {"ticket": loaded, "url": url, "status_label": status_label},
-        )
+    _broadcast(
+        background,
+        recipients,
+        f"Zmiana statusu: {loaded.title}",
+        "status_change.html",
+        {"ticket": loaded, "url": url, "status_label": status_label},
+    )
 
 
 def notify_assignment(

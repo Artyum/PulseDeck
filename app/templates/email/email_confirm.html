@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="pl">
-    <head>
-        <title>Potwierdź e-mail — {{ app_name }}</title>
-    </head>
-    <body style="font-family:sans-serif;color:#0f172a">
-        <p>Cześć {{ user.first_name }},</p>
-        <p>Potwierdź nowy adres e-mail w {{ app_name }} (link ważny {{ ttl_minutes }} min):</p>
-        <p><a href="{{ url }}">{{ url }}</a></p>
-    </body>
-</html>
+{% extends "_base.html" %}
+{% block title %}Potwierdź e-mail — {{ app_name }}{% endblock %}
+{% block body %}
+    <p>Cześć {{ user.first_name }},</p>
+    <p>Potwierdź nowy adres e-mail w {{ app_name }} (link ważny {{ ttl_minutes }} min):</p>
+    <p><a href="{{ url }}">{{ url }}</a></p>
+{% endblock %}

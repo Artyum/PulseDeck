@@ -33,6 +33,8 @@ def test_admin_requires_admin(client, client_user, project_with_members):
 def test_comment_acl(
     client, db_session, admin_user, client_user, staff_user, project_with_members
 ):
+    from datetime import datetime, timezone
+
     from app.models.enums import UserRole
     from app.models.user import User
     from app.services import projects as project_service
@@ -43,6 +45,7 @@ def test_comment_acl(
         first_name="Inny",
         last_name="Klient",
         role=UserRole.USER,
+        activated_at=datetime.now(timezone.utc),
     )
     set_password(other2, "Client123!")
     db_session.add(other2)
@@ -100,25 +103,32 @@ def test_staff_reply_sets_waiting_on_client(
     assert ticket.status == prev
 
 
-def test_invite_register(client, db_session, admin_user, project_with_members):
-    from app.services import projects as project_service
+def test_user_activation(client, db_session, admin_user, project_with_members):
+    from app.models.enums import MagicTokenPurpose, UserRole
+    from app.services import auth as auth_service
 
-    invite = project_service.create_invite(
+    user = auth_service.create_pending_user(
         db_session,
-        created_by=admin_user,
+        first_name="Nowy",
+        last_name="User",
+        email="nowy@test.local",
+        role=UserRole.USER,
         project_ids=[project_with_members.id],
-        expires_days=7,
-        max_uses=5,
     )
+    token_row = auth_service.create_password_link(db_session, user)
+    assert token_row.purpose == MagicTokenPurpose.PASSWORD_SET.value
     r = client.post(
-        f"/invite/{invite.token}",
+        "/auth/activate",
         data={
-            "first_name": "Nowy",
-            "last_name": "User",
-            "email": "nowy@test.local",
-            "password": "NowyUser1!",
+            "token": token_row.token,
+            "new_password": "NowyUser1!",
+            "confirm_password": "NowyUser1!",
+            "phone": "",
         },
         follow_redirects=False,
     )
     assert r.status_code == 303
     assert r.headers["location"] == "/"
+    db_session.refresh(user)
+    assert user.activated_at is not None
+    assert user.password_hash is not None

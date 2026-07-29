@@ -111,7 +111,7 @@ def can_edit_ticket(
 def can_manage_tags(
     user: User, ticket: Ticket, db: Session, *, member: bool | None = None
 ) -> bool:
-    return user.is_staff and _is_member(db, user, ticket, member)
+    return can_assign(user, ticket, db, member=member)
 
 
 def get_ticket_permissions(
@@ -217,41 +217,6 @@ def list_tickets(
         selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
     ).distinct()
     stmt = _apply_sort(stmt, sort)
-    return list(db.scalars(stmt).all())
-
-
-def list_inbox_tickets(
-    db: Session,
-    user: User,
-    *,
-    view: str = "needs_us",
-) -> list[Ticket]:
-    if not user.is_staff:
-        raise HTTPException(status_code=403, detail="Wymagane uprawnienia obsługi.")
-    stmt = (
-        select(Ticket)
-        .join(ProjectMember, ProjectMember.project_id == Ticket.project_id)
-        .where(ProjectMember.user_id == user.id)
-    )
-    inbox_view = (
-        view
-        if view in ("unassigned", "mine_open", "waiting_on_client", "needs_us")
-        else "needs_us"
-    )
-    if inbox_view == "needs_us":
-        stmt = stmt.where(Ticket.status.in_(_NEEDS_US_STATUSES))
-    else:
-        stmt = _apply_view_filter(stmt, view=inbox_view, user=user, staff=True)
-    stmt = (
-        stmt.options(
-            selectinload(Ticket.author),
-            selectinload(Ticket.assignee),
-            selectinload(Ticket.project),
-            selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
-        )
-        .distinct()
-        .order_by(Ticket.updated_at.desc())
-    )
     return list(db.scalars(stmt).all())
 
 
@@ -365,30 +330,27 @@ def self_assign(db: Session, ticket: Ticket, actor: User) -> Ticket:
 def set_status(
     db: Session, ticket: Ticket, actor: User, status_value: TicketStatus
 ) -> Ticket:
-    if status_value == TicketStatus.DONE:
-        if not can_set_done(actor, ticket, db):
-            raise HTTPException(
-                status_code=403, detail="Brak uprawnień do zakończenia."
-            )
+    if not is_project_member(db, ticket.project_id, actor.id):
+        raise HTTPException(status_code=403, detail="Brak dostępu do projektu.")
+
+    if status_value == ticket.status:
+        return ticket
+
+    if actor.is_staff:
+        ticket.status = status_value
+        ticket.closed_at = (
+            datetime.now(timezone.utc) if status_value == TicketStatus.DONE else None
+        )
+        db.commit()
+        return get_ticket(db, ticket.id) or ticket
+
+    if status_value == TicketStatus.DONE and can_set_done(actor, ticket, db):
         ticket.status = TicketStatus.DONE
         ticket.closed_at = datetime.now(timezone.utc)
-    elif status_value in (
-        TicketStatus.IN_PROGRESS,
-        TicketStatus.WAITING_ON_CLIENT,
-    ):
-        if not can_assign(actor, ticket, db):
-            raise HTTPException(status_code=403, detail="Brak uprawnień.")
-        ticket.status = status_value
-        ticket.closed_at = None
-    elif status_value == TicketStatus.NEW:
-        if not actor.is_staff:
-            raise HTTPException(status_code=403, detail="Brak uprawnień.")
-        ticket.status = TicketStatus.NEW
-        ticket.closed_at = None
-    else:
-        raise HTTPException(status_code=400, detail="Nieprawidłowy status.")
-    db.commit()
-    return get_ticket(db, ticket.id) or ticket
+        db.commit()
+        return get_ticket(db, ticket.id) or ticket
+
+    raise HTTPException(status_code=403, detail="Brak uprawnień do zmiany statusu.")
 
 
 def reopen_ticket(db: Session, ticket: Ticket, actor: User) -> Ticket:
@@ -398,6 +360,11 @@ def reopen_ticket(db: Session, ticket: Ticket, actor: User) -> Ticket:
         )
     ticket.status = TicketStatus.IN_PROGRESS
     ticket.closed_at = None
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def _commit_reload(db: Session, ticket: Ticket) -> Ticket:
     db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -414,8 +381,7 @@ def update_ticket(
         raise HTTPException(status_code=403, detail="Brak uprawnień do edycji.")
     ticket.title = title.strip()
     ticket.description = description.strip()
-    db.commit()
-    return get_ticket(db, ticket.id) or ticket
+    return _commit_reload(db, ticket)
 
 
 def set_priority(
@@ -426,8 +392,18 @@ def set_priority(
             status_code=403, detail="Brak uprawnień do zmiany priorytetu."
         )
     ticket.priority = priority
-    db.commit()
-    return get_ticket(db, ticket.id) or ticket
+    return _commit_reload(db, ticket)
+
+
+def set_type(
+    db: Session, ticket: Ticket, actor: User, ticket_type: TicketType
+) -> Ticket:
+    if not can_edit_ticket(actor, ticket, db):
+        raise HTTPException(status_code=403, detail="Brak uprawnień do zmiany typu.")
+    if ticket_type == ticket.type:
+        return ticket
+    ticket.type = ticket_type
+    return _commit_reload(db, ticket)
 
 
 def list_project_tags(db: Session, project_id: int) -> list[Tag]:
@@ -491,7 +467,7 @@ def remove_ticket_tag(db: Session, ticket: Ticket, actor: User, tag_id: int) -> 
     return get_ticket(db, ticket.id) or ticket
 
 
-def add_participant(db: Session, ticket: Ticket, actor: User, user_id: int) -> None:
+def add_participant(db: Session, ticket: Ticket, actor: User, user_id: int) -> Ticket:
     if not actor.is_staff and ticket.author_id != actor.id:
         raise HTTPException(
             status_code=403, detail="Brak uprawnień do dodawania uczestników."
@@ -502,6 +478,7 @@ def add_participant(db: Session, ticket: Ticket, actor: User, user_id: int) -> N
         )
     _ensure_participant(db, ticket, user_id)
     db.commit()
+    return get_ticket(db, ticket.id) or ticket
 
 
 def add_attachment(
@@ -524,5 +501,18 @@ def add_attachment(
     return att
 
 
-def default_feed_view(user: User) -> str:
-    return "needs_us" if user.is_staff else "mine"
+def remove_ticket_attachments(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    attachment_ids: list[int],
+) -> Ticket:
+    if not can_edit_ticket(actor, ticket, db):
+        raise HTTPException(status_code=403, detail="Brak uprawnień do edycji.")
+    wanted = {int(x) for x in attachment_ids}
+    if not wanted:
+        return ticket
+    for att in list(ticket.attachments):
+        if att.id in wanted:
+            db.delete(att)
+    return _commit_reload(db, ticket)

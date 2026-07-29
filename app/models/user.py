@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    BigInteger,
     Boolean,
     DateTime,
     Enum,
@@ -17,7 +16,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
+from app.db.base import Base, BigInt
 from app.models.enums import UserRole
 
 if TYPE_CHECKING:
@@ -27,7 +26,7 @@ if TYPE_CHECKING:
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(
         String(320), unique=True, index=True, nullable=False
     )
@@ -45,6 +44,9 @@ class User(Base):
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, server_default="true"
+    )
+    activated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
     )
     auth_epoch: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default="0"
@@ -68,6 +70,10 @@ class User(Base):
         return f"{self.first_name} {self.last_name}".strip()
 
     @property
+    def is_pending(self) -> bool:
+        return self.activated_at is None
+
+    @property
     def is_admin(self) -> bool:
         return self.role == UserRole.ADMIN
 
@@ -79,7 +85,7 @@ class User(Base):
 class Project(Base):
     __tablename__ = "projects"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     key: Mapped[str] = mapped_column(
         String(10), unique=True, index=True, nullable=False
@@ -104,12 +110,12 @@ class ProjectMember(Base):
     )
 
     project_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("projects.id", ondelete="CASCADE"),
         primary_key=True,
     )
     user_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+        BigInt, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
 
     project: Mapped[Project] = relationship(back_populates="members")

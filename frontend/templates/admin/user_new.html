@@ -1,0 +1,59 @@
+{% extends "admin/base_admin.html" %}
+{% from "partials/ticket_macros.html" import project_checkboxes with context %}
+{% block title %}Nowy użytkownik — {{ app_name }}{% endblock %}
+{% block content %}
+    <div class="admin-page-head">
+        <div>
+            <h1 class="issue-title">Nowy użytkownik</h1>
+            <p class="admin-page-sub">Utwórz konto i wyślij link aktywacyjny na e-mail.</p>
+        </div>
+        <a href="/admin/users" class="btn btn-secondary">← Lista</a>
+    </div>
+    {% if error %}
+        <p class="alert alert-error mb-4">{{ error }}</p>
+    {% endif %}
+    <form method="post"
+          action="/admin/users/new"
+          class="panel panel-pad space-y-4 max-w-xl">
+        <div>
+            <label class="label" for="first_name">Imię</label>
+            <input id="first_name"
+                   name="first_name"
+                   required
+                   value="{{ form_first_name }}"
+                   class="input mt-1.5">
+        </div>
+        <div>
+            <label class="label" for="last_name">Nazwisko</label>
+            <input id="last_name"
+                   name="last_name"
+                   required
+                   value="{{ form_last_name }}"
+                   class="input mt-1.5">
+        </div>
+        <div>
+            <label class="label" for="email">E-mail</label>
+            <input id="email"
+                   name="email"
+                   type="email"
+                   required
+                   value="{{ form_email }}"
+                   class="input mt-1.5">
+        </div>
+        <div>
+            <label class="label" for="role">Rola</label>
+            <select id="role" name="role" class="select mt-1.5" data-role-select>
+                {% for r in user_roles %}
+                    <option value="{{ r.value }}"
+                            {% if form_role == r.value %}selected{% endif %}>{{ role_labels[r] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div data-projects-field>{{ project_checkboxes(projects, form_project_ids) }}</div>
+        <p class="text-sm text-steel" data-admin-projects-hint hidden>
+            Administratorzy mają automatyczny dostęp do wszystkich projektów.
+        </p>
+        <button type="submit" class="btn btn-primary">Utwórz i wyślij aktywację</button>
+    </form>
+    <script src="/static/js/admin-user-form.js" defer></script>
+{% endblock %}

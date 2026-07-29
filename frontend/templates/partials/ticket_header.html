@@ -1,112 +1,12 @@
-{% from "partials/ticket_macros.html" import status_chip, priority_chip with context %}
-<div class="panel panel-pad">
-    <div class="flex flex-wrap items-start justify-between gap-3">
-        <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap gap-2">
-                <span class="chip">{{ type_labels[ticket.type] }}</span>
-                {{ status_chip(ticket.status) }}
-                {{ priority_chip(ticket.priority) }}
-                {% for tt in ticket.ticket_tags %}
-                    <span class="chip chip-outline">{{ tt.tag.name }}</span>
-                {% endfor %}
-            </div>
-            <h1 class="page-title mt-3 text-[1.65rem]">
-                <span class="ticket-num text-lg font-medium">{{ ticket|ticket_label }}</span>
-                {{ ticket.title }}
-            </h1>
-            <p class="mt-1.5 text-sm text-steel">
-                {{ ticket.author.display_name if ticket.author else '' }}
-                {% if ticket.assignee %}· obsługuje: {{ ticket.assignee.display_name }}{% endif %}
-            </p>
-            <p class="mt-1 text-xs text-steel/80">
-                Utworzono {{ ticket.created_at.strftime("%Y-%m-%d %H:%M") if ticket.created_at else '' }}
-                · otwarte od {{ ticket.created_at|age_since }}
-                {% if ticket.closed_at %} · zamknięte {{ ticket.closed_at.strftime("%Y-%m-%d %H:%M") }}{% endif %}
-            </p>
-        </div>
-        <div class="flex flex-wrap gap-2">
-            {% if can_set_done and ticket.status.value != 'DONE' %}
-                <form method="post" action="{{ ticket|ticket_path }}/status">
-                    <input type="hidden" name="status" value="DONE">
-                    <button type="submit" class="btn btn-secondary">Zakończ</button>
-                </form>
-            {% endif %}
-            {% if can_reopen %}
-                <form method="post" action="{{ ticket|ticket_path }}/reopen">
-                    <button type="submit" class="btn btn-secondary">Otwórz ponownie</button>
-                </form>
-            {% endif %}
-            {% if can_assign and not ticket.assignee_id %}
-                <form hx-post="{{ ticket|ticket_path }}/self-assign"
-                      hx-target="#ticket-header"
-                      hx-swap="innerHTML">
-                    <button type="submit" class="btn btn-primary">Przypisz mnie</button>
-                </form>
-            {% endif %}
-        </div>
-    </div>
-    {% if can_assign %}
-        <form hx-post="{{ ticket|ticket_path }}/assign"
-              hx-target="#ticket-header"
-              hx-swap="innerHTML"
-              hx-trigger="change"
-              class="mt-4 flex flex-wrap items-center gap-2">
-            <label class="text-sm text-steel">Obsługujący</label>
-            <select name="assignee_id" class="select !w-auto">
-                <option value="">— nikt —</option>
-                {% for s in staff_members %}
-                    <option value="{{ s.id }}"
-                            {% if ticket.assignee_id == s.id %}selected{% endif %}>{{ s.display_name }}</option>
-                {% endfor %}
-            </select>
-        </form>
-    {% endif %}
-    {% if user.is_staff %}
-        <form hx-post="{{ ticket|ticket_path }}/priority"
-              hx-target="#ticket-header"
-              hx-swap="innerHTML"
-              hx-trigger="change"
-              class="mt-3 flex flex-wrap items-center gap-2">
-            <label class="text-sm text-steel">Priorytet</label>
-            <select name="priority" class="select !w-auto">
-                {% for p in ticket_priorities %}
-                    <option value="{{ p.value }}"
-                            {% if ticket.priority.value == p.value %}selected{% endif %}>{{ priority_labels[p] }}</option>
-                {% endfor %}
-            </select>
-        </form>
-    {% endif %}
-    {% if can_manage_tags %}
-        <div class="mt-4 space-y-2">
-            <p class="text-sm text-steel">Tagi</p>
-            <div class="flex flex-wrap gap-2">
-                {% for tt in ticket.ticket_tags %}
-                    <form hx-post="{{ ticket|ticket_path }}/tags/remove"
-                          hx-target="#ticket-header"
-                          hx-swap="innerHTML"
-                          class="chip chip-outline inline-flex items-center gap-1">
-                        <input type="hidden" name="tag_id" value="{{ tt.tag_id }}">
-                        <span>{{ tt.tag.name }}</span>
-                        <button type="submit" class="text-steel hover:text-ink" title="Usuń">×</button>
-                    </form>
-                {% endfor %}
-            </div>
-            <form hx-post="{{ ticket|ticket_path }}/tags"
-                  hx-target="#ticket-header"
-                  hx-swap="innerHTML"
-                  class="flex flex-wrap items-center gap-2">
-                <input list="project-tag-list"
-                       name="name"
-                       required
-                       placeholder="Dodaj tag…"
-                       class="input !w-auto min-w-[10rem]">
-                <datalist id="project-tag-list">
-                    {% for t in project_tags %}
-                        <option value="{{ t.name }}"></option>
-                    {% endfor %}
-                </datalist>
-                <button type="submit" class="btn btn-secondary">Dodaj</button>
-            </form>
-        </div>
-    {% endif %}
+<div class="issue-head">
+    <h1 class="issue-title">{{ ticket.title }}</h1>
 </div>
+{% if can_assign and not ticket.assignee_id %}
+    <div class="issue-actions">
+        <form hx-post="{{ ticket|ticket_path }}/self-assign"
+              hx-target="#ticket-view"
+              hx-swap="innerHTML">
+            <button type="submit" class="btn btn-primary">Przypisz mnie</button>
+        </form>
+    </div>
+{% endif %}

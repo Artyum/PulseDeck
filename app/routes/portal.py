@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from typing import Annotated
 
 from fastapi import (
@@ -15,12 +16,13 @@ from fastapi import (
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
+from app.config import get_settings
 from app.deps.auth import (
     CurrentUser,
     DbSession,
-    StaffUser,
+    get_last_project_key,
     get_optional_user,
-    set_user_session,
+    set_last_project_key,
 )
 from app.models.enums import TicketPriority, TicketStatus, TicketType
 from app.models.ticket import Ticket
@@ -40,13 +42,16 @@ from app.utils.urls import project_path, ticket_path
 
 router = APIRouter(tags=["portal"])
 
-_TICKET_REF_RE = re.compile(r"^([A-Z0-9]{3,10})-(\d+)$")
+_TICKET_REF_RE = re.compile(r"^([A-Z0-9]{1,5})-(\d+)$")
+_MAX_TICKET_ATTACHMENTS = 3
+
+
+def _upload_limit() -> str:
+    return get_settings().upload_rate_limit
 
 
 def _load_project(db: Session, key: str, user: User) -> Project:
-    project = project_service.get_project_by_key(db, key)
-    if not project:
-        raise HTTPException(status_code=404, detail="Nie znaleziono")
+    project = project_service.get_project_by_key_or_404(db, key)
     ticket_service.require_project_access(db, user, project.id)
     return project
 
@@ -67,13 +72,13 @@ def _load_ticket(db: Session, ticket_ref: str, user: User) -> tuple[Project, Tic
     return ticket.project, ticket
 
 
-def _staff_members_for(ticket: Ticket) -> list:
-    members = [m.user for m in (ticket.project.members if ticket.project else [])]
-    return [m for m in members if m and m.is_staff]
-
-
 def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:
     perms = ticket_service.get_ticket_permissions(db, user, ticket)
+    members = (
+        project_service.list_project_member_users(db, ticket.project)
+        if ticket.project
+        else []
+    )
     return {
         "user": user,
         "ticket": ticket,
@@ -84,7 +89,8 @@ def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:
         "can_edit": perms.can_edit,
         "can_manage_tags": perms.can_manage_tags,
         "can_comment": perms.can_comment,
-        "staff_members": _staff_members_for(ticket),
+        "staff_members": [m for m in members if m.is_staff],
+        "project_members": members,
         "project_tags": ticket_service.list_project_tags(db, ticket.project_id),
     }
 
@@ -94,9 +100,25 @@ def _ticket_mutation_response(
 ):
     if request.headers.get("HX-Request"):
         return render(
-            request, "partials/ticket_header.html", **_header_ctx(db, user, ticket)
+            request, "partials/ticket_view.html", **_header_ctx(db, user, ticket)
         )
     return RedirectResponse(ticket_path(ticket), status_code=303)
+
+
+def _mutate_ticket(
+    request: Request,
+    db: Session,
+    user: User,
+    ticket_ref: str,
+    mutator: Callable[[Ticket], Ticket],
+    *,
+    after: Callable[[Ticket], None] | None = None,
+):
+    _project, ticket = _load_ticket(db, ticket_ref, user)
+    ticket = mutator(ticket)
+    if after:
+        after(ticket)
+    return _ticket_mutation_response(request, db, user, ticket)
 
 
 async def _maybe_attach(
@@ -118,6 +140,26 @@ async def _maybe_attach(
     )
 
 
+async def _attach_many(
+    db: Session,
+    attachments: list[UploadFile] | None,
+    *,
+    ticket_id: int,
+    comment_id: int | None = None,
+    max_files: int = _MAX_TICKET_ATTACHMENTS,
+) -> None:
+    if not attachments:
+        return
+    count = 0
+    for attachment in attachments:
+        if count >= max_files:
+            break
+        if not attachment or not attachment.filename:
+            continue
+        await _maybe_attach(db, attachment, ticket_id=ticket_id, comment_id=comment_id)
+        count += 1
+
+
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request, db: DbSession):
     user = get_optional_user(request, db)
@@ -126,26 +168,9 @@ def home(request: Request, db: DbSession):
     projects = project_service.list_user_projects(db, user)
     if not projects:
         return render(request, "portal/empty.html", user=user)
-    return RedirectResponse(project_path(projects[0]), status_code=303)
-
-
-@router.get("/inbox", response_class=HTMLResponse)
-def staff_inbox(
-    request: Request,
-    user: StaffUser,
-    db: DbSession,
-    view: str = "needs_us",
-):
-    projects = project_service.list_user_projects(db, user)
-    tickets = ticket_service.list_inbox_tickets(db, user, view=view)
-    return render(
-        request,
-        "portal/inbox.html",
-        user=user,
-        projects=projects,
-        tickets=tickets,
-        current_view=view,
-    )
+    last_key = get_last_project_key(request)
+    target = next((p for p in projects if p.key == last_key), projects[0])
+    return RedirectResponse(project_path(target), status_code=303)
 
 
 @router.get("/p/{key}", response_class=HTMLResponse)
@@ -162,8 +187,9 @@ def project_feed(
     sort: str | None = None,
 ):
     project = _load_project(db, key, user)
+    set_last_project_key(request, project.key)
     projects = project_service.list_user_projects(db, user)
-    current_view = view or ticket_service.default_feed_view(user)
+    current_view = view or "all"
     tickets = ticket_service.list_tickets(
         db,
         project.id,
@@ -200,19 +226,18 @@ def ticket_detail(
     db: DbSession,
 ):
     _project, ticket = _load_ticket(db, ticket_ref, user)
+    set_last_project_key(request, _project.key)
     projects = project_service.list_user_projects(db, user)
-    members = [m.user for m in (ticket.project.members if ticket.project else [])]
     return render(
         request,
         "portal/ticket.html",
         projects=projects,
-        project_members=members,
         **_header_ctx(db, user, ticket),
     )
 
 
 @router.post("/p/{key}/tickets")
-@limiter.limit("20/minute")
+@limiter.limit(_upload_limit)
 async def create_ticket(
     request: Request,
     key: str,
@@ -223,7 +248,7 @@ async def create_ticket(
     description: Annotated[str, Form()],
     ticket_type: Annotated[str, Form()],
     priority: Annotated[str, Form()] = "NORMAL",
-    attachment: Annotated[UploadFile | None, File()] = None,
+    attachments: Annotated[list[UploadFile] | None, File()] = None,
 ):
     project = _load_project(db, key, user)
     try:
@@ -239,7 +264,7 @@ async def create_ticket(
         ticket_type=TicketType(ticket_type),
         priority=prio,
     )
-    await _maybe_attach(db, attachment, ticket_id=ticket.id)
+    await _attach_many(db, attachments, ticket_id=ticket.id)
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     notify_new_ticket(background_tasks, db, ticket)
     return RedirectResponse(ticket_path(ticket), status_code=303)
@@ -254,7 +279,7 @@ async def add_comment(
     db: DbSession,
     content: Annotated[str, Form()],
     is_internal: Annotated[str, Form()] = "",
-    attachment: Annotated[UploadFile | None, File()] = None,
+    attachments: Annotated[list[UploadFile] | None, File()] = None,
 ):
     _project, ticket = _load_ticket(db, ticket_ref, user)
     internal = bool(is_internal) and user.is_staff
@@ -262,20 +287,15 @@ async def add_comment(
     comment = ticket_service.add_comment(
         db, ticket, user, content, is_internal=internal
     )
-    await _maybe_attach(db, attachment, ticket_id=ticket.id, comment_id=comment.id)
+    await _attach_many(db, attachments, ticket_id=ticket.id, comment_id=comment.id)
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     notify_new_comment(background_tasks, db, ticket, user.id, is_internal=internal)
-    if not internal and prev_assignee is None and ticket.assignee_id == user.id:
-        notify_assignment(background_tasks, ticket, user)
-    perms = ticket_service.get_ticket_permissions(db, user, ticket)
-    return render(
-        request,
-        "partials/thread.html",
-        user=user,
-        ticket=ticket,
-        can_comment=perms.can_comment,
-        can_reopen=perms.can_reopen,
+    auto_assigned = (
+        not internal and prev_assignee is None and ticket.assignee_id == user.id
     )
+    if auto_assigned:
+        notify_assignment(background_tasks, ticket, user)
+    return _ticket_mutation_response(request, db, user, ticket)
 
 
 @router.post("/t/{ticket_ref}/status", response_class=HTMLResponse)
@@ -287,10 +307,23 @@ def change_status(
     db: DbSession,
     status: Annotated[str, Form()],
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
-    ticket = ticket_service.set_status(db, ticket, user, TicketStatus(status))
-    notify_status_change(background_tasks, db, ticket, user.id)
-    return _ticket_mutation_response(request, db, user, ticket)
+    try:
+        new_status = TicketStatus(status)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Nieprawidłowy status.") from None
+
+    prev_status: TicketStatus | None = None
+
+    def mutate(ticket: Ticket) -> Ticket:
+        nonlocal prev_status
+        prev_status = ticket.status
+        return ticket_service.set_status(db, ticket, user, new_status)
+
+    def after(ticket: Ticket) -> None:
+        if ticket.status != prev_status:
+            notify_status_change(background_tasks, db, ticket, user.id)
+
+    return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
 
 @router.post("/t/{ticket_ref}/reopen", response_class=HTMLResponse)
@@ -301,25 +334,40 @@ def reopen_ticket(
     user: CurrentUser,
     db: DbSession,
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
-    ticket = ticket_service.reopen_ticket(db, ticket, user)
-    notify_status_change(background_tasks, db, ticket, user.id)
-    return _ticket_mutation_response(request, db, user, ticket)
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.reopen_ticket(db, t, user),
+        after=lambda t: notify_status_change(background_tasks, db, t, user.id),
+    )
 
 
-@router.post("/t/{ticket_ref}/edit")
-def edit_ticket(
+@router.post("/t/{ticket_ref}/edit", response_class=HTMLResponse)
+@limiter.limit(_upload_limit)
+async def edit_ticket(
+    request: Request,
     ticket_ref: str,
     user: CurrentUser,
     db: DbSession,
     title: Annotated[str, Form()],
     description: Annotated[str, Form()],
+    attachments: Annotated[list[UploadFile] | None, File()] = None,
+    remove_attachment_ids: Annotated[list[int] | None, Form()] = None,
 ):
     _project, ticket = _load_ticket(db, ticket_ref, user)
     ticket = ticket_service.update_ticket(
         db, ticket, user, title=title, description=description
     )
-    return RedirectResponse(ticket_path(ticket), status_code=303)
+    if remove_attachment_ids:
+        ticket = ticket_service.remove_ticket_attachments(
+            db, ticket, user, remove_attachment_ids
+        )
+    remaining = max(0, _MAX_TICKET_ATTACHMENTS - len(ticket.attachments or []))
+    await _attach_many(db, attachments, ticket_id=ticket.id, max_files=remaining)
+    ticket = ticket_service.get_ticket(db, ticket.id) or ticket
+    return _ticket_mutation_response(request, db, user, ticket)
 
 
 @router.post("/t/{ticket_ref}/priority", response_class=HTMLResponse)
@@ -330,9 +378,34 @@ def change_priority(
     db: DbSession,
     priority: Annotated[str, Form()],
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
-    ticket = ticket_service.set_priority(db, ticket, user, TicketPriority(priority))
-    return _ticket_mutation_response(request, db, user, ticket)
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.set_priority(db, t, user, TicketPriority(priority)),
+    )
+
+
+@router.post("/t/{ticket_ref}/type", response_class=HTMLResponse)
+def change_type(
+    request: Request,
+    ticket_ref: str,
+    user: CurrentUser,
+    db: DbSession,
+    ticket_type: Annotated[str, Form()],
+):
+    try:
+        new_type = TicketType(ticket_type)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Nieprawidłowy typ.") from None
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.set_type(db, t, user, new_type),
+    )
 
 
 @router.post("/t/{ticket_ref}/tags", response_class=HTMLResponse)
@@ -343,9 +416,13 @@ def add_tag(
     db: DbSession,
     name: Annotated[str, Form()],
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
-    ticket = ticket_service.add_ticket_tag(db, ticket, user, name)
-    return _ticket_mutation_response(request, db, user, ticket)
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.add_ticket_tag(db, t, user, name),
+    )
 
 
 @router.post("/t/{ticket_ref}/tags/remove", response_class=HTMLResponse)
@@ -356,9 +433,13 @@ def remove_tag(
     db: DbSession,
     tag_id: Annotated[int, Form()],
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
-    ticket = ticket_service.remove_ticket_tag(db, ticket, user, tag_id)
-    return _ticket_mutation_response(request, db, user, ticket)
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.remove_ticket_tag(db, t, user, tag_id),
+    )
 
 
 @router.post("/t/{ticket_ref}/assign", response_class=HTMLResponse)
@@ -370,12 +451,20 @@ def assign(
     db: DbSession,
     assignee_id: Annotated[str, Form()] = "",
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
     aid = int(assignee_id) if assignee_id else None
-    ticket = ticket_service.assign_ticket(db, ticket, user, aid)
-    if ticket.assignee:
-        notify_assignment(background_tasks, ticket, ticket.assignee)
-    return _ticket_mutation_response(request, db, user, ticket)
+
+    def after(ticket: Ticket) -> None:
+        if ticket.assignee:
+            notify_assignment(background_tasks, ticket, ticket.assignee)
+
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.assign_ticket(db, t, user, aid),
+        after=after,
+    )
 
 
 @router.post("/t/{ticket_ref}/self-assign", response_class=HTMLResponse)
@@ -386,66 +475,30 @@ def self_assign(
     user: CurrentUser,
     db: DbSession,
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
-    ticket = ticket_service.self_assign(db, ticket, user)
-    notify_assignment(background_tasks, ticket, user)
-    return _ticket_mutation_response(request, db, user, ticket)
-
-
-@router.post("/t/{ticket_ref}/participants")
-def add_participant(
-    ticket_ref: str,
-    user: CurrentUser,
-    db: DbSession,
-    user_id: Annotated[int, Form()],
-):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
-    ticket_service.add_participant(db, ticket, user, user_id)
-    return RedirectResponse(ticket_path(ticket), status_code=303)
-
-
-@router.get("/invite/{token}", response_class=HTMLResponse)
-def invite_page(request: Request, token: str, db: DbSession):
-    invite = project_service.get_invite_by_token(db, token)
-    if not invite or not invite.is_valid:
-        return render(request, "auth/invite_invalid.html")
-    projects = [lp.project for lp in invite.projects if lp.project]
-    return render(
-        request, "auth/invite.html", invite=invite, projects=projects, error=None
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.self_assign(db, t, user),
+        after=lambda t: notify_assignment(background_tasks, t, user),
     )
 
 
-@router.post("/invite/{token}")
-@limiter.limit("5/minute")
-def invite_register(
+@router.post("/t/{ticket_ref}/participants", response_class=HTMLResponse)
+def add_participant(
     request: Request,
-    token: str,
+    ticket_ref: str,
+    user: CurrentUser,
     db: DbSession,
-    first_name: Annotated[str, Form()],
-    last_name: Annotated[str, Form()],
-    email: Annotated[str, Form()],
-    password: Annotated[str, Form()],
+    user_id: Annotated[int | None, Form()] = None,
 ):
-    invite = project_service.get_invite_by_token(db, token)
-    if not invite or not invite.is_valid:
-        return render(request, "auth/invite_invalid.html")
-    projects = [lp.project for lp in invite.projects if lp.project]
-    try:
-        user = project_service.register_via_invite(
-            db,
-            invite,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            password=password,
-        )
-    except ValueError as exc:
-        return render(
-            request,
-            "auth/invite.html",
-            invite=invite,
-            projects=projects,
-            error=str(exc),
-        )
-    set_user_session(request, user)
-    return RedirectResponse("/", status_code=303)
+    if user_id is None:
+        raise HTTPException(status_code=400, detail="Wybierz użytkownika.")
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda t: ticket_service.add_participant(db, t, user, user_id),
+    )

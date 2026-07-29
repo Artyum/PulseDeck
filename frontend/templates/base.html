@@ -10,87 +10,48 @@
               rel="stylesheet">
         <link rel="stylesheet" href="/static/css/app.css">
         <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+        <script src="/static/js/app.js" defer></script>
+        <script src="/static/js/attach-picker.js" defer></script>
         <meta name="csrf-token" content="{{ csrf_token }}">
-        <script>
-  (function () {
-    const token = document.querySelector('meta[name="csrf-token"]')?.content || "";
-    document.addEventListener("submit", function (ev) {
-      const form = ev.target;
-      if (!(form instanceof HTMLFormElement)) return;
-      if ((form.getAttribute("method") || "get").toLowerCase() !== "post") return;
-      if (form.hasAttribute("hx-post") || form.closest("[hx-boost]")) return;
-      if (!token) return;
-      ev.preventDefault();
-      const action = form.getAttribute("action") || window.location.href;
-      fetch(action, {
-        method: "POST",
-        body: new FormData(form),
-        headers: { "X-CSRF-Token": token },
-        credentials: "same-origin",
-        redirect: "follow",
-      }).then(function (r) {
-        // POST→303: fetch follows; navigate to final URL (manual redirects are opaque → blank page)
-        if (r.redirected) {
-          window.location.href = r.url;
-          return;
-        }
-        return r.text().then(function (html) {
-          document.open();
-          document.write(html);
-          document.close();
-        });
-      }).catch(function () {
-        window.location.reload();
-      });
-    });
-  })();
-        </script>
     </head>
-    <body class="min-h-screen antialiased"
+    <body class="min-h-screen antialiased{% if is_dev and dev_page_info %} has-dev-frame{% endif %}"
           hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
         {% block body %}{% endblock %}
+        <dialog id="app-confirm"
+                class="modal modal-confirm"
+                aria-labelledby="app-confirm-title">
+            <div class="modal-form">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="app-confirm-title">Potwierdzenie</h2>
+                    <button type="button"
+                            class="modal-close"
+                            data-confirm-cancel
+                            aria-label="Zamknij">×</button>
+                </div>
+                <div class="modal-body">
+                    <p id="app-confirm-message" class="confirm-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-confirm-cancel>Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="app-confirm-ok">Potwierdź</button>
+                </div>
+            </div>
+        </dialog>
         {% if is_dev and dev_page_info %}
-            <div class="fixed bottom-3 left-3 z-[60] flex items-center gap-2 rounded-md border border-line bg-white px-2.5 py-1.5 shadow-sm">
-                <span class="font-mono text-xs font-semibold tracking-wide text-ink">Dev</span>
+            <div class="dev-frame" role="status" aria-label="Tryb developerski">
+                <span class="dev-frame__badge">Dev</span>
+                <span class="dev-frame__meta"
+                      title="{{ dev_page_info.method }} {{ dev_page_info.route_path }}">
+                    <span class="dev-frame__method">{{ dev_page_info.method }}</span>
+                    <span class="dev-frame__path">{{ dev_page_info.route_path }}</span>
+                </span>
                 <button type="button"
                         id="dev-page-copy"
-                        class="btn btn-secondary !py-0.5 !px-2 !text-xs !font-medium">Kopiuj</button>
+                        class="dev-frame__copy"
+                        data-dev-page-info="{{ dev_page_info | tojson | forceescape }}"
+                        aria-label="Kopiuj metadane strony">Kopiuj</button>
             </div>
-            <script>
-  (function () {
-    const info = {{ dev_page_info | tojson }};
-    const btn = document.getElementById("dev-page-copy");
-    if (!btn) return;
-    function fallbackCopy(text) {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "");
-      ta.style.position = "fixed";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.select();
-      let ok = false;
-      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
-      document.body.removeChild(ta);
-      return ok;
-    }
-    btn.addEventListener("click", function () {
-      const text = JSON.stringify(info, null, 2);
-      const done = function (ok) {
-        const prev = btn.textContent;
-        btn.textContent = ok ? "OK" : "Błąd";
-        setTimeout(function () { btn.textContent = prev; }, 1200);
-      };
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(function () { done(true); }).catch(function () {
-          done(fallbackCopy(text));
-        });
-        return;
-      }
-      done(fallbackCopy(text));
-    });
-  })();
-            </script>
+            <script src="/static/js/dev-page-copy.js" defer></script>
         {% endif %}
     </body>
 </html>

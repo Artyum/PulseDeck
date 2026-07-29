@@ -1,24 +1,82 @@
 from __future__ import annotations
 
-import secrets
-from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass
 
+from fastapi import HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
-from app.config import get_settings
 from app.models.enums import UserRole
-from app.models.ticket import InviteLink, InviteLinkProject
+from app.models.ticket import Ticket
 from app.models.user import Project, ProjectMember, User
-from app.services.auth import get_user_by_email, set_password
 from app.utils.project_key import validate_project_key
+
+
+@dataclass(frozen=True, slots=True)
+class ProjectSummary:
+    project: Project
+    member_count: int
+    ticket_count: int
 
 
 def list_projects(db: Session) -> list[Project]:
     return list(db.scalars(select(Project).order_by(Project.name)).all())
 
 
+def list_admins(db: Session) -> list[User]:
+    return list(
+        db.scalars(
+            select(User)
+            .where(User.role == UserRole.ADMIN)
+            .order_by(User.last_name, User.first_name)
+        ).all()
+    )
+
+
+def list_users(db: Session) -> list[User]:
+    return list(
+        db.scalars(select(User).order_by(User.last_name, User.first_name)).all()
+    )
+
+
+def list_project_summaries(db: Session) -> list[ProjectSummary]:
+    projects = list_projects(db)
+    if not projects:
+        return []
+    ids = [p.id for p in projects]
+    member_counts: dict[int, int] = {
+        int(project_id): int(count)
+        for project_id, count in db.execute(
+            select(ProjectMember.project_id, func.count())
+            .join(User, User.id == ProjectMember.user_id)
+            .where(
+                ProjectMember.project_id.in_(ids),
+                User.role != UserRole.ADMIN,
+            )
+            .group_by(ProjectMember.project_id)
+        ).all()
+    }
+    ticket_counts: dict[int, int] = {
+        int(project_id): int(count)
+        for project_id, count in db.execute(
+            select(Ticket.project_id, func.count())
+            .where(Ticket.project_id.in_(ids))
+            .group_by(Ticket.project_id)
+        ).all()
+    }
+    return [
+        ProjectSummary(
+            project=p,
+            member_count=member_counts.get(p.id, 0),
+            ticket_count=ticket_counts.get(p.id, 0),
+        )
+        for p in projects
+    ]
+
+
 def list_user_projects(db: Session, user: User) -> list[Project]:
+    if user.is_admin:
+        return list_projects(db)
     return list(
         db.scalars(
             select(Project)
@@ -29,6 +87,21 @@ def list_user_projects(db: Session, user: User) -> list[Project]:
     )
 
 
+def list_project_member_users(
+    db: Session, project: Project, *, include_admins: bool = True
+) -> list[User]:
+    members = [m.user for m in project.members if m.user and not m.user.is_admin]
+    members.sort(key=lambda u: (u.last_name.lower(), u.first_name.lower()))
+    if not include_admins:
+        return members
+    return [*list_admins(db), *members]
+
+
+def list_addable_users(db: Session, project: Project) -> list[User]:
+    member_ids = {m.user_id for m in project.members}
+    return [u for u in list_users(db) if not u.is_admin and u.id not in member_ids]
+
+
 def get_project_by_key(db: Session, key: str) -> Project | None:
     normalized = (key or "").strip().upper()
     return db.scalar(
@@ -36,6 +109,13 @@ def get_project_by_key(db: Session, key: str) -> Project | None:
         .where(Project.key == normalized)
         .options(selectinload(Project.members).selectinload(ProjectMember.user))
     )
+
+
+def get_project_by_key_or_404(db: Session, key: str) -> Project:
+    project = get_project_by_key(db, key)
+    if not project:
+        raise HTTPException(status_code=404, detail="Nie znaleziono")
+    return project
 
 
 def _name_taken(db: Session, name: str, *, exclude_id: int | None = None) -> bool:
@@ -52,21 +132,36 @@ def _key_taken(db: Session, key: str, *, exclude_id: int | None = None) -> bool:
     return db.scalar(stmt) is not None
 
 
-def create_project(
-    db: Session, name: str, key: str, description: str | None = None
-) -> Project:
+def _normalize_project_fields(
+    db: Session,
+    name: str,
+    key: str,
+    description: str | None,
+    *,
+    exclude_id: int | None = None,
+) -> tuple[str, str, str | None]:
     clean_name = name.strip()
     if not clean_name:
         raise ValueError("Nazwa projektu jest wymagana.")
-    if _name_taken(db, clean_name):
+    if _name_taken(db, clean_name, exclude_id=exclude_id):
         raise ValueError("Projekt o tej nazwie już istnieje.")
     clean_key = validate_project_key(key)
-    if _key_taken(db, clean_key):
+    if _key_taken(db, clean_key, exclude_id=exclude_id):
         raise ValueError("Projekt o tym key już istnieje.")
+    clean_description = (description or "").strip() or None
+    return clean_name, clean_key, clean_description
+
+
+def create_project(
+    db: Session, name: str, key: str, description: str | None = None
+) -> Project:
+    clean_name, clean_key, clean_description = _normalize_project_fields(
+        db, name, key, description
+    )
     project = Project(
         name=clean_name,
         key=clean_key,
-        description=(description or "").strip() or None,
+        description=clean_description,
     )
     db.add(project)
     db.commit()
@@ -82,17 +177,12 @@ def update_project(
     key: str,
     description: str | None = None,
 ) -> Project:
-    clean_name = name.strip()
-    if not clean_name:
-        raise ValueError("Nazwa projektu jest wymagana.")
-    if _name_taken(db, clean_name, exclude_id=project.id):
-        raise ValueError("Projekt o tej nazwie już istnieje.")
-    clean_key = validate_project_key(key)
-    if _key_taken(db, clean_key, exclude_id=project.id):
-        raise ValueError("Projekt o tym key już istnieje.")
+    clean_name, clean_key, clean_description = _normalize_project_fields(
+        db, name, key, description, exclude_id=project.id
+    )
     project.name = clean_name
     project.key = clean_key
-    project.description = (description or "").strip() or None
+    project.description = clean_description
     db.commit()
     db.refresh(project)
     return project
@@ -103,129 +193,73 @@ def delete_project(db: Session, project: Project) -> None:
     db.commit()
 
 
-def is_project_member(db: Session, project_id: int, user_id: int) -> bool:
-    return (
-        db.scalar(
-            select(ProjectMember).where(
-                ProjectMember.project_id == project_id,
-                ProjectMember.user_id == user_id,
-            )
+def _membership_row(db: Session, project_id: int, user_id: int) -> ProjectMember | None:
+    return db.scalar(
+        select(ProjectMember).where(
+            ProjectMember.project_id == project_id,
+            ProjectMember.user_id == user_id,
         )
-        is not None
     )
 
 
+def is_project_member(db: Session, project_id: int, user_id: int) -> bool:
+    role = db.scalar(select(User.role).where(User.id == user_id))
+    if role == UserRole.ADMIN:
+        return True
+    return _membership_row(db, project_id, user_id) is not None
+
+
 def add_project_member(db: Session, project_id: int, user_id: int) -> None:
-    if is_project_member(db, project_id, user_id):
+    user = db.get(User, user_id)
+    if not user or user.is_admin:
+        return
+    if _membership_row(db, project_id, user_id) is not None:
         return
     db.add(ProjectMember(project_id=project_id, user_id=user_id))
     db.commit()
 
 
 def remove_project_member(db: Session, project_id: int, user_id: int) -> None:
-    row = db.scalar(
-        select(ProjectMember).where(
-            ProjectMember.project_id == project_id,
-            ProjectMember.user_id == user_id,
-        )
-    )
+    user = db.get(User, user_id)
+    if user and user.is_admin:
+        return
+    row = _membership_row(db, project_id, user_id)
     if row:
         db.delete(row)
         db.commit()
 
 
-def list_users(db: Session) -> list[User]:
-    return list(
-        db.scalars(select(User).order_by(User.last_name, User.first_name)).all()
-    )
-
-
-def create_invite(
-    db: Session,
-    *,
-    created_by: User,
-    project_ids: list[int],
-    expires_days: int | None = None,
-    max_uses: int | None = None,
-) -> InviteLink:
-    settings = get_settings()
-    days = (
-        expires_days
-        if expires_days is not None
-        else settings.invite_default_expiry_days
-    )
-    uses = max_uses if max_uses is not None else settings.invite_default_max_uses
-    invite = InviteLink(
-        token=secrets.token_urlsafe(24),
-        created_by_id=created_by.id,
-        expires_at=datetime.now(timezone.utc) + timedelta(days=days),
-        max_uses=max(1, uses),
-        used_count=0,
-        revoked=False,
-    )
-    db.add(invite)
+def clear_user_memberships(db: Session, user_id: int) -> None:
+    for row in db.scalars(
+        select(ProjectMember).where(ProjectMember.user_id == user_id)
+    ).all():
+        db.delete(row)
     db.flush()
-    for pid in project_ids:
-        db.add(InviteLinkProject(invite_id=invite.id, project_id=pid))
-    db.commit()
-    db.refresh(invite)
-    return invite
 
 
-def get_invite_by_token(db: Session, token: str) -> InviteLink | None:
-    return db.scalar(
-        select(InviteLink)
-        .where(InviteLink.token == token)
-        .options(
-            selectinload(InviteLink.projects).selectinload(InviteLinkProject.project)
-        )
+def resolve_project_ids(db: Session, project_ids: list[int]) -> list[int]:
+    unique = list(dict.fromkeys(int(x) for x in project_ids))
+    if not unique:
+        raise ValueError("Wybierz co najmniej jeden projekt.")
+    found = set(db.scalars(select(Project.id).where(Project.id.in_(unique))).all())
+    if found != set(unique):
+        raise ValueError("Nieprawidłowy projekt.")
+    return unique
+
+
+def set_user_projects(db: Session, user_id: int, project_ids: list[int]) -> None:
+    user = db.get(User, user_id)
+    if user and user.is_admin:
+        clear_user_memberships(db, user_id)
+        return
+    wanted = set(resolve_project_ids(db, project_ids))
+    current = list(
+        db.scalars(select(ProjectMember).where(ProjectMember.user_id == user_id)).all()
     )
-
-
-def revoke_invite(db: Session, invite: InviteLink) -> None:
-    invite.revoked = True
-    db.commit()
-
-
-def list_invites(db: Session) -> list[InviteLink]:
-    return list(
-        db.scalars(
-            select(InviteLink)
-            .options(
-                selectinload(InviteLink.projects).selectinload(
-                    InviteLinkProject.project
-                )
-            )
-            .order_by(InviteLink.created_at.desc())
-        ).all()
-    )
-
-
-def register_via_invite(
-    db: Session,
-    invite: InviteLink,
-    *,
-    first_name: str,
-    last_name: str,
-    email: str,
-    password: str,
-) -> User:
-    if not invite.is_valid:
-        raise ValueError("Link zaproszenia jest nieważny lub wygasł.")
-    if get_user_by_email(db, email):
-        raise ValueError("Konto z tym adresem e-mail już istnieje. Zaloguj się.")
-    user = User(
-        email=email.strip().lower(),
-        first_name=first_name.strip(),
-        last_name=last_name.strip(),
-        role=UserRole.USER,
-    )
-    set_password(user, password)
-    db.add(user)
+    current_ids = {m.project_id for m in current}
+    for row in current:
+        if row.project_id not in wanted:
+            db.delete(row)
+    for pid in wanted - current_ids:
+        db.add(ProjectMember(project_id=pid, user_id=user_id))
     db.flush()
-    for link_project in invite.projects:
-        db.add(ProjectMember(project_id=link_project.project_id, user_id=user.id))
-    invite.used_count += 1
-    db.commit()
-    db.refresh(user)
-    return user

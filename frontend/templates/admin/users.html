@@ -1,51 +1,66 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Użytkownicy — {{ app_name }}{% endblock %}
 {% block content %}
-    <h1 class="page-title">Użytkownicy</h1>
-    <ul class="mt-6 space-y-2">
-        {% for u in users %}
-            <li class="list-row flex-wrap">
-                <div>
-                    <p class="font-semibold text-ink">
-                        {{ u.display_name }}
-                        {% if not u.is_active %}
-                            <span class="ml-1 text-xs font-medium uppercase tracking-wide text-steel">(zablokowany)</span>
+    <div class="admin-page-head">
+        <div>
+            <h1 class="issue-title">Użytkownicy</h1>
+            <p class="admin-page-sub">Role, status konta i edycja profili.</p>
+        </div>
+        <a href="/admin/users/new" class="btn btn-primary">Nowy użytkownik</a>
+    </div>
+    <section class="admin-section">
+        <ul class="admin-list">
+            {% for u in users %}
+                <li class="admin-entity">
+                    <div class="admin-entity-main">
+                        <p class="admin-entity-title">
+                            <span class="admin-entity-name">{{ u.display_name }}</span>
+                            <span class="admin-entity-badges">
+                                <span class="chip {% if u.role.value == 'ADMIN' %}chip-role-admin{% elif u.role.value == 'STAFF' %}chip-role-staff{% else %}chip-role-user{% endif %}">{{ role_labels[u.role] }}</span>
+                                {% if not u.is_active %}
+                                    <span class="chip chip-blocked">Zablokowany</span>
+                                {% elif u.is_pending %}
+                                    <span class="chip chip-pending">Oczekuje</span>
+                                {% endif %}
+                            </span>
+                        </p>
+                        <p class="admin-entity-meta">
+                            {{ u.email }}
+                            {% if u.phone %}· {{ u.phone }}{% endif %}
+                        </p>
+                    </div>
+                    <div class="admin-entity-actions">
+                        <a href="/admin/users/{{ u.id }}" class="btn btn-secondary">Edytuj</a>
+                        {% if u.is_pending and u.is_active %}
+                            <form method="post" action="/admin/users/{{ u.id }}/resend-activation">
+                                <button type="submit" class="btn btn-secondary">Wyślij ponownie</button>
+                            </form>
                         {% endif %}
-                    </p>
-                    <p class="text-sm text-steel">
-                        {{ u.email }}
-                        {% if u.phone %}· {{ u.phone }}{% endif %}
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <a href="/admin/users/{{ u.id }}" class="btn btn-secondary">Edytuj</a>
-                    {% if u.id != user.id %}
-                        <form method="post" action="/admin/users/{{ u.id }}/active">
-                            {% if u.is_active %}
-                                <input type="hidden" name="active" value="0">
-                                <button type="submit" class="btn btn-secondary">Zablokuj</button>
-                            {% else %}
-                                <input type="hidden" name="active" value="1">
-                                <button type="submit" class="btn btn-secondary">Odblokuj</button>
-                            {% endif %}
-                        </form>
-                    {% endif %}
-                    <form method="post"
-                          action="/admin/users/{{ u.id }}/role"
-                          class="flex items-center gap-2">
-                        <select name="role"
-                                class="select !w-auto"
-                                {% if u.id == user.id %}disabled{% endif %}>
-                            {% for r in user_roles %}
-                                <option value="{{ r.value }}" {% if u.role == r %}selected{% endif %}>{{ role_labels[r] }}</option>
-                            {% endfor %}
-                        </select>
                         {% if u.id != user.id %}
-                            <button type="submit" class="btn btn-secondary">Zapisz rolę</button>
+                            <form method="post" action="/admin/users/{{ u.id }}/active">
+                                {% if u.is_active %}
+                                    <input type="hidden" name="active" value="0">
+                                    <button type="submit" class="btn btn-danger">Zablokuj</button>
+                                {% else %}
+                                    <input type="hidden" name="active" value="1">
+                                    <button type="submit" class="btn btn-primary">Odblokuj</button>
+                                {% endif %}
+                            </form>
                         {% endif %}
-                    </form>
-                </div>
-            </li>
-        {% endfor %}
-    </ul>
+                        <form method="post" action="/admin/users/{{ u.id }}/role">
+                            <select name="role"
+                                    class="select"
+                                    {% if u.id == user.id %}disabled{% else %}onchange="this.form.requestSubmit()"{% endif %}>
+                                {% for r in user_roles %}
+                                    <option value="{{ r.value }}" {% if u.role == r %}selected{% endif %}>{{ role_labels[r] }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                </li>
+            {% else %}
+                <li class="empty">Brak użytkowników.</li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock %}

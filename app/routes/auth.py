@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
+from app.config import get_settings
 from app.deps.auth import (
     CurrentUser,
     DbSession,
@@ -12,30 +13,41 @@ from app.deps.auth import (
     get_optional_user,
     set_user_session,
 )
-from app.models.enums import MagicTokenPurpose
 from app.models.user import User
 from app.rate_limit import limiter
 from app.routes.context import render
 from app.services import auth as auth_service
-from app.services.email import notify_email_confirm, notify_magic_link
+from app.services.email import notify_email_confirm
 from app.utils.password import verify_password
 
 router = APIRouter(tags=["auth"])
+
+
+def _login_limit() -> str:
+    return get_settings().auth_login_rate_limit
+
+
+def _forgot_limit() -> str:
+    return get_settings().auth_forgot_password_rate_limit
+
+
+def _activate_limit() -> str:
+    return get_settings().auth_activate_rate_limit
 
 
 def _render_login(
     request: Request,
     *,
     error: str | None = None,
-    magic_sent: bool = False,
     success: str | None = None,
+    forgot_sent: bool = False,
 ):
     return render(
         request,
         "auth/login.html",
         error=error,
-        magic_sent=magic_sent,
         success=success,
+        forgot_sent=forgot_sent,
     )
 
 
@@ -58,6 +70,22 @@ def _render_profile(
     )
 
 
+def _render_activate(
+    request: Request,
+    *,
+    token: str,
+    pending: bool,
+    error: str | None = None,
+):
+    return render(
+        request,
+        "auth/activate.html",
+        token=token,
+        pending=pending,
+        error=error,
+    )
+
+
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request, db: DbSession):
     user = get_optional_user(request, db)
@@ -67,7 +95,7 @@ def login_page(request: Request, db: DbSession):
 
 
 @router.post("/auth/login")
-@limiter.limit("10/minute")
+@limiter.limit(_login_limit)
 def login_submit(
     request: Request,
     db: DbSession,
@@ -84,35 +112,18 @@ def login_submit(
     return RedirectResponse("/", status_code=303)
 
 
-@router.post("/auth/magic")
-@limiter.limit("10/minute")
-def magic_submit(
+@router.post("/auth/forgot-password")
+@limiter.limit(_forgot_limit)
+def forgot_password(
     request: Request,
     background_tasks: BackgroundTasks,
     db: DbSession,
     email: Annotated[str, Form()],
 ):
     user = auth_service.get_user_by_email(db, email)
-    if user and not auth_service.login_blocked_reason(user):
-        token_row = auth_service.create_magic_token(
-            db, user, purpose=MagicTokenPurpose.LOGIN
-        )
-        notify_magic_link(background_tasks, user, token_row.token)
-    return _render_login(request, magic_sent=True)
-
-
-@router.get("/auth/verify")
-def verify_magic(request: Request, token: str, db: DbSession):
-    row = auth_service.peek_magic_token(db, token, purpose=MagicTokenPurpose.LOGIN)
-    if not row:
-        return _render_login(request, error="Link jest nieważny lub wygasł.")
-    user = db.get(User, row.user_id)
-    if not user or auth_service.login_blocked_reason(user):
-        return _render_login(request, error="Link jest nieważny lub wygasł.")
-    row.used = True
-    db.commit()
-    set_user_session(request, user)
-    return RedirectResponse("/", status_code=303)
+    if user and auth_service.can_receive_password_link(user):
+        auth_service.send_password_link(db, background_tasks, user)
+    return _render_login(request, forgot_sent=True)
 
 
 @router.post("/auth/logout")
@@ -164,13 +175,12 @@ def change_password(
     new_password: Annotated[str, Form()],
     confirm_password: Annotated[str, Form()],
 ):
-    if new_password != confirm_password:
-        return _render_profile(request, user, error="Hasła nie są zgodne.")
-    if not user.password_hash or not verify_password(
-        current_password, user.password_hash
-    ):
-        return _render_profile(request, user, error="Obecne hasło jest nieprawidłowe.")
     try:
+        auth_service.require_matching_passwords(new_password, confirm_password)
+        if not user.password_hash or not verify_password(
+            current_password, user.password_hash
+        ):
+            raise ValueError("Obecne hasło jest nieprawidłowe.")
         auth_service.set_password(user, new_password)
         db.commit()
     except ValueError as exc:
@@ -191,46 +201,44 @@ def confirm_email(request: Request, token: str, db: DbSession):
     )
 
 
-@router.get("/auth/set-password", response_class=HTMLResponse)
-def set_password_page(request: Request, token: str, db: DbSession):
-    row = auth_service.peek_magic_token(
-        db, token, purpose=MagicTokenPurpose.PASSWORD_SET
-    )
-    if not row:
+@router.get("/auth/activate", response_class=HTMLResponse)
+def activate_page(request: Request, token: str, db: DbSession):
+    resolved = auth_service.resolve_password_set_token(db, token)
+    if not resolved:
         return _render_login(
-            request, error="Link do ustawienia hasła jest nieważny lub wygasł."
+            request, error="Link aktywacyjny jest nieważny lub wygasł."
         )
-    return render(request, "auth/set_password.html", token=token, error=None)
+    _, user = resolved
+    return _render_activate(request, token=token, pending=user.is_pending)
 
 
-@router.post("/auth/set-password")
-@limiter.limit("10/minute")
-def set_password_submit(
+@router.get("/auth/set-password")
+def set_password_redirect(token: str):
+    return RedirectResponse(f"/auth/activate?token={token}", status_code=303)
+
+
+@router.post("/auth/activate")
+@limiter.limit(_activate_limit)
+def activate_submit(
     request: Request,
     db: DbSession,
     token: Annotated[str, Form()],
     new_password: Annotated[str, Form()],
     confirm_password: Annotated[str, Form()],
+    phone: Annotated[str, Form()] = "",
 ):
-    if new_password != confirm_password:
-        return render(
-            request,
-            "auth/set_password.html",
-            token=token,
-            error="Hasła nie są zgodne.",
-        )
+    resolved = auth_service.resolve_password_set_token(db, token)
+    pending = bool(resolved and resolved[1].is_pending)
     try:
-        user = auth_service.complete_password_set(db, token, new_password)
-    except ValueError as exc:
-        return render(
-            request,
-            "auth/set_password.html",
-            token=token,
-            error=str(exc),
+        auth_service.require_matching_passwords(new_password, confirm_password)
+        user = auth_service.complete_password_set(
+            db, token, new_password, phone=phone if pending else None
         )
+    except ValueError as exc:
+        return _render_activate(request, token=token, pending=pending, error=str(exc))
     if not user:
         return _render_login(
-            request, error="Link do ustawienia hasła jest nieważny lub wygasł."
+            request, error="Link aktywacyjny jest nieważny lub wygasł."
         )
     set_user_session(request, user)
     return RedirectResponse("/", status_code=303)

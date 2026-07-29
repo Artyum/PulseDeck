@@ -4,12 +4,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    BigInteger,
     Boolean,
     DateTime,
     Enum,
     ForeignKey,
-    Integer,
     String,
     Text,
     UniqueConstraint,
@@ -17,7 +15,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
+from app.db.base import Base, BigInt
 from app.models.enums import TicketPriority, TicketStatus, TicketType
 
 if TYPE_CHECKING:
@@ -27,21 +25,21 @@ if TYPE_CHECKING:
 class Ticket(Base):
     __tablename__ = "tickets"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     project_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("projects.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     author_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     assignee_id: Mapped[int | None] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
@@ -107,12 +105,12 @@ class TicketParticipant(Base):
     )
 
     ticket_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("tickets.id", ondelete="CASCADE"),
         primary_key=True,
     )
     user_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+        BigInt, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
 
     ticket: Mapped[Ticket] = relationship(back_populates="participants")
@@ -122,15 +120,15 @@ class TicketParticipant(Base):
 class Comment(Base):
     __tablename__ = "comments"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     ticket_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("tickets.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     author_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        BigInt, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     content: Mapped[str] = mapped_column(Text, nullable=False)
     is_internal: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -153,9 +151,9 @@ class Tag(Base):
         UniqueConstraint("project_id", "name", name="uq_tag_project_name"),
     )
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     project_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("projects.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -176,12 +174,12 @@ class TicketTag(Base):
     __table_args__ = (UniqueConstraint("ticket_id", "tag_id", name="uq_ticket_tag"),)
 
     ticket_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("tickets.id", ondelete="CASCADE"),
         primary_key=True,
     )
     tag_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True
+        BigInt, ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True
     )
 
     ticket: Mapped[Ticket] = relationship(back_populates="ticket_tags")
@@ -191,15 +189,15 @@ class TicketTag(Base):
 class Attachment(Base):
     __tablename__ = "attachments"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     ticket_id: Mapped[int | None] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("tickets.id", ondelete="CASCADE"),
         nullable=True,
         index=True,
     )
     comment_id: Mapped[int | None] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("comments.id", ondelete="CASCADE"),
         nullable=True,
         index=True,
@@ -221,9 +219,9 @@ class Attachment(Base):
 class MagicToken(Base):
     __tablename__ = "magic_tokens"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInt,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -232,7 +230,10 @@ class MagicToken(Base):
         String(128), unique=True, index=True, nullable=False
     )
     purpose: Mapped[str] = mapped_column(
-        String(32), nullable=False, default="login", server_default="login"
+        String(32),
+        nullable=False,
+        default="password_set",
+        server_default="password_set",
     )
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
@@ -243,63 +244,3 @@ class MagicToken(Base):
     )
 
     user: Mapped[User] = relationship()
-
-
-class InviteLink(Base):
-    __tablename__ = "invite_links"
-
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    token: Mapped[str] = mapped_column(
-        String(64), unique=True, index=True, nullable=False
-    )
-    created_by_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    expires_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
-    max_uses: Mapped[int] = mapped_column(Integer, nullable=False, default=50)
-    used_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    revoked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-
-    created_by: Mapped[User] = relationship()
-    projects: Mapped[list[InviteLinkProject]] = relationship(
-        back_populates="invite", cascade="all, delete-orphan"
-    )
-
-    @property
-    def is_valid(self) -> bool:
-        from datetime import timezone
-
-        if self.revoked:
-            return False
-        if self.used_count >= self.max_uses:
-            return False
-        now = datetime.now(timezone.utc)
-        expires = (
-            self.expires_at
-            if self.expires_at.tzinfo
-            else self.expires_at.replace(tzinfo=timezone.utc)
-        )
-        return expires > now
-
-
-class InviteLinkProject(Base):
-    __tablename__ = "invite_link_projects"
-
-    invite_id: Mapped[int] = mapped_column(
-        BigInteger,
-        ForeignKey("invite_links.id", ondelete="CASCADE"),
-        primary_key=True,
-    )
-    project_id: Mapped[int] = mapped_column(
-        BigInteger,
-        ForeignKey("projects.id", ondelete="CASCADE"),
-        primary_key=True,
-    )
-
-    invite: Mapped[InviteLink] = relationship(back_populates="projects")
-    project: Mapped[Project] = relationship()

@@ -1,19 +1,26 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Admin — {{ app_name }}{% endblock %}
 {% block content %}
-    <h1 class="page-title">Przegląd</h1>
-    <div class="mt-6 grid gap-4 sm:grid-cols-3">
-        <div class="stat">
-            <p class="label-tight">Projekty</p>
-            <p class="stat-value">{{ projects|length }}</p>
-        </div>
-        <div class="stat">
-            <p class="label-tight">Użytkownicy</p>
-            <p class="stat-value">{{ users|length }}</p>
-        </div>
-        <div class="stat">
-            <p class="label-tight">Zaproszenia</p>
-            <p class="stat-value">{{ invites|length }}</p>
+    <div class="admin-page-head">
+        <div>
+            <h1 class="issue-title">Przegląd</h1>
+            <p class="admin-page-sub">Szybki podgląd zasobów systemu.</p>
         </div>
     </div>
+    <section class="admin-section">
+        <div class="admin-stats">
+            <a href="/admin/projects" class="admin-stat">
+                <p class="label-tight">Projekty</p>
+                <p class="stat-value">{{ projects|length }}</p>
+            </a>
+            <a href="/admin/users" class="admin-stat">
+                <p class="label-tight">Użytkownicy</p>
+                <p class="stat-value">{{ users|length }}</p>
+            </a>
+            <a href="/admin/users/new" class="admin-stat">
+                <p class="label-tight">Nowy użytkownik</p>
+                <p class="stat-value">+</p>
+            </a>
+        </div>
+    </section>
 {% endblock %}

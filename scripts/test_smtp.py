@@ -79,14 +79,14 @@ def main() -> int:
         first_name="Test",
         last_name="Mailpit",
     )
-    url = f"{settings.app_base_url}/auth/verify?token=mailpit-test-token"
-    html = _env.get_template("magic_link.html").render(
+    url = f"{settings.app_base_url}/auth/activate?token=mailpit-test-token"
+    html = _env.get_template("account_activate.html").render(
         user=user,
         url=url,
-        ttl_minutes=settings.magic_link_ttl_minutes,
+        ttl_days=settings.auth_link_ttl_days,
         app_name="PulseDeck",
     )
-    subject = "PulseDeck — test Mailpit (magic link)"
+    subject = "PulseDeck — test Mailpit (aktywacja)"
 
     print(
         f"[SMTP] {settings.smtp_server}:{settings.smtp_port} ssl={settings.smtp_use_ssl}"

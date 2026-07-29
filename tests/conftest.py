@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime, timezone
 
 # Must set before importing app
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
@@ -75,6 +76,7 @@ def admin_user(db_session):
         first_name="Admin",
         last_name="Test",
         role=UserRole.ADMIN,
+        activated_at=datetime.now(timezone.utc),
     )
     set_password(user, "Admin123!")
     db_session.add(user)
@@ -90,6 +92,7 @@ def client_user(db_session):
         first_name="Klient",
         last_name="Test",
         role=UserRole.USER,
+        activated_at=datetime.now(timezone.utc),
     )
     set_password(user, "Client123!")
     db_session.add(user)
@@ -105,6 +108,7 @@ def staff_user(db_session):
         first_name="Staff",
         last_name="Test",
         role=UserRole.STAFF,
+        activated_at=datetime.now(timezone.utc),
     )
     set_password(user, "Staff123!")
     db_session.add(user)
@@ -114,9 +118,8 @@ def staff_user(db_session):
 
 
 @pytest.fixture()
-def project_with_members(db_session, admin_user, client_user, staff_user):
+def project_with_members(db_session, client_user, staff_user):
     project = project_service.create_project(db_session, "Demo", "DEMO", "Opis")
-    project_service.add_project_member(db_session, project.id, admin_user.id)
     project_service.add_project_member(db_session, project.id, client_user.id)
     project_service.add_project_member(db_session, project.id, staff_user.id)
     return project

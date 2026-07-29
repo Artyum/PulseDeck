@@ -16,15 +16,22 @@ logger = logging.getLogger("pulsedeck.middleware.csrf")
 
 _EXEMPT: tuple[tuple[str, str], ...] = (
     ("/auth/login", "POST"),
-    ("/auth/magic", "POST"),
-    ("/auth/set-password", "POST"),
+    ("/auth/forgot-password", "POST"),
+    ("/auth/activate", "POST"),
 )
 
 
 def _is_exempt(path: str, method: str) -> bool:
-    if (path, method) in _EXEMPT:
-        return True
-    return method == "POST" and path.startswith("/invite/")
+    return (path, method) in _EXEMPT
+
+
+def _csrf_reject(path: str, detail: str):
+    if path.startswith("/api/"):
+        return JSONResponse(status_code=403, content={"detail": detail})
+    return HTMLResponse(
+        status_code=403,
+        content=f"<p>{detail} Odśwież stronę i spróbuj ponownie.</p>",
+    )
 
 
 class CSRFProtectMiddleware(BaseHTTPMiddleware):
@@ -48,14 +55,7 @@ class CSRFProtectMiddleware(BaseHTTPMiddleware):
 
         if not session_token or not token:
             logger.warning("CSRF: brak tokenu (path=%s method=%s)", path, method)
-            if path.startswith("/api/"):
-                return JSONResponse(
-                    status_code=403, content={"detail": "Brak lub nieważny token CSRF."}
-                )
-            return HTMLResponse(
-                status_code=403,
-                content="<p>Brak lub nieważny token CSRF. Odśwież stronę i spróbuj ponownie.</p>",
-            )
+            return _csrf_reject(path, "Brak lub nieważny token CSRF.")
 
         try:
             ok = secrets.compare_digest(token, session_token)
@@ -64,13 +64,6 @@ class CSRFProtectMiddleware(BaseHTTPMiddleware):
 
         if not ok:
             logger.warning("CSRF: niezgodny token (path=%s method=%s)", path, method)
-            if path.startswith("/api/"):
-                return JSONResponse(
-                    status_code=403, content={"detail": "Nieważny token CSRF."}
-                )
-            return HTMLResponse(
-                status_code=403,
-                content="<p>Nieważny token CSRF. Odśwież stronę i spróbuj ponownie.</p>",
-            )
+            return _csrf_reject(path, "Nieważny token CSRF.")
 
         return await call_next(request)

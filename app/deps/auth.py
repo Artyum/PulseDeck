@@ -15,6 +15,7 @@ from app.models.user import User
 
 SESSION_USER_ID_KEY = "user_id"
 SESSION_AUTH_EPOCH_KEY = "auth_epoch"
+SESSION_LAST_PROJECT_KEY = "last_project_key"
 
 DbSession = Annotated[Session, Depends(get_db)]
 
@@ -27,6 +28,20 @@ def set_user_session(request: Request, user: User) -> None:
 
 def clear_user_session(request: Request) -> None:
     request.session.clear()
+
+
+def set_last_project_key(request: Request, key: str) -> None:
+    clean = (key or "").strip().upper()
+    if clean:
+        request.session[SESSION_LAST_PROJECT_KEY] = clean
+
+
+def get_last_project_key(request: Request) -> str | None:
+    raw = request.session.get(SESSION_LAST_PROJECT_KEY)
+    if not raw:
+        return None
+    clean = str(raw).strip().upper()
+    return clean or None
 
 
 def get_optional_user_id(request: Request) -> int | None:
@@ -48,6 +63,9 @@ def get_optional_user(request: Request, db: DbSession) -> User | None:
         clear_user_session(request)
         return None
     if not user.is_active:
+        clear_user_session(request)
+        return None
+    if user.activated_at is None:
         clear_user_session(request)
         return None
     session_epoch = request.session.get(SESSION_AUTH_EPOCH_KEY)
@@ -79,15 +97,5 @@ def require_admin(user: Annotated[User, Depends(require_user)]) -> User:
     return user
 
 
-def require_staff(user: Annotated[User, Depends(require_user)]) -> User:
-    if user.role not in (UserRole.STAFF, UserRole.ADMIN):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Wymagane uprawnienia obsługi.",
-        )
-    return user
-
-
 CurrentUser = Annotated[User, Depends(require_user)]
 AdminUser = Annotated[User, Depends(require_admin)]
-StaffUser = Annotated[User, Depends(require_staff)]

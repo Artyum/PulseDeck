@@ -1,8 +1,9 @@
+{% from "partials/icons.html" import icon %}
 {% macro status_chip(status) -%}
     <span class="chip {% if status.value == 'NEW' %}chip-new{% elif status.value == 'IN_PROGRESS' %}chip-progress{% elif status.value == 'WAITING_ON_CLIENT' %}chip-waiting{% else %}chip-done{% endif %}">{{ status_labels[status] }}</span>
 {%- endmacro %}
 {% macro priority_chip(priority) -%}
-    <span class="chip {% if priority.value == 'HIGH' %}chip-high{% endif %}">{{ priority_labels[priority] }}</span>
+    <span class="chip {% if priority.value == 'HIGH' %}chip-high{% elif priority.value == 'NORMAL' %}chip-normal{% else %}chip-low{% endif %}">{{ priority_labels[priority] }}</span>
 {%- endmacro %}
 {% macro attachment_list(attachments, extra_class='') -%}
     {% if attachments %}
@@ -17,42 +18,190 @@
                             title="{{ a.file_name }}">
                         <img src="/uploads/{{ a.file_path }}"
                              alt="{{ a.file_name }}"
-                             width="88"
-                             height="88"
+                             width="80"
+                             height="80"
                              loading="lazy">
                     </button>
                 {% else %}
                     <a href="/uploads/{{ a.file_path }}"
                        target="_blank"
-                       class="btn btn-secondary !py-1.5 !px-3 text-sm">{{ a.file_name }}</a>
+                       class="btn btn-secondary">{{ a.file_name }}</a>
                 {% endif %}
             {% endfor %}
         </div>
     {% endif %}
 {%- endmacro %}
-{% macro ticket_row(t, show_project=false, show_tags=true, show_age=true) -%}
+{% macro ticket_row(t, show_tags=true, show_age=true) -%}
     <a href="{{ t|ticket_path }}"
        class="ticket-row"
        data-status="{{ t.status.value }}">
-        <div class="ticket-meta">
-            {% if show_project %}
-                <span class="font-semibold text-ink">{{ t.project.name if t.project else '' }}</span>
-            {% endif %}
-            <span class="ticket-num">{{ t|ticket_label }}</span>
-            <span class="chip">{{ type_labels[t.type] }}</span>
-            {{ status_chip(t.status) }}
-            {{ priority_chip(t.priority) }}
-            {% if show_tags %}
-                {% for tt in t.ticket_tags %}<span class="chip chip-outline">{{ tt.tag.name }}</span>{% endfor %}
-            {% endif %}
-            <span>{{ t.author.display_name if t.author else '' }}</span>
-            <span>·</span>
-            <span>{{ t.updated_at.strftime("%Y-%m-%d %H:%M") if t.updated_at else '' }}</span>
-            {% if show_age %}
-                <span>·</span>
-                <span>{{ t.created_at|age_since }}</span>
+        <div class="ticket-row-main">
+            <span class="ticket-row-title">{{ t.title }}</span>
+            <div class="ticket-row-meta">
+                <span class="issue-key">{{ t|ticket_label }}</span>
+                <span class="chip chip-type">{{ type_labels[t.type] }}</span>
+                {% if t.author %}
+                    <span class="ticket-row-dot" aria-hidden="true"></span>
+                    <span>{{ t.author.display_name }}</span>
+                {% endif %}
+                {% if show_tags and t.ticket_tags %}
+                    {% for tt in t.ticket_tags %}
+                        <span class="chip chip-outline">{{ tt.tag.name }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="ticket-row-side">
+            <div class="ticket-row-badges">
+                {{ status_chip(t.status) }}
+                {{ priority_chip(t.priority) }}
+            </div>
+            <div class="ticket-row-when">
+                {% if t.updated_at %}
+                    <time datetime="{{ t.updated_at.isoformat() }}">{{ t.updated_at.strftime("%Y-%m-%d %H:%M") }}</time>
+                {% endif %}
+                {% if show_age and t.created_at %}
+                    <span title="Wiek zgłoszenia">{{ t.created_at|age_since }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+{%- endmacro %}
+{% macro issue_field_menu(aria_label, post_url, field_name, choices, current_value, labels=none, value_attr='value', empty_value=none, empty_label=none) -%}
+    <details class="issue-menu">
+        <summary class="issue-menu-trigger"
+                 aria-label="{{ aria_label }}"
+                 title="{{ aria_label }}">{{ caller() }}</summary>
+        <div class="issue-menu-panel" role="menu">
+            <form hx-post="{{ post_url }}"
+                  hx-target="#ticket-view"
+                  hx-swap="innerHTML"
+                  class="issue-menu-form">
+                {% if empty_label is not none %}
+                    <button type="submit"
+                            name="{{ field_name }}"
+                            value="{{ empty_value if empty_value is not none else '' }}"
+                            class="issue-menu-item{% if current_value == empty_value or ((empty_value is none or empty_value == '') and not current_value) %} is-active{% endif %}">{{ empty_label }}</button>
+                {% endif %}
+                {% for item in choices %}
+                    {% if value_attr == 'id' %}
+                        <button type="submit"
+                                name="{{ field_name }}"
+                                value="{{ item.id }}"
+                                class="issue-menu-item{% if current_value == item.id %} is-active{% endif %}"
+                                {% if current_value == item.id %}aria-current="true"{% endif %}>{{ item.display_name }}</button>
+                    {% else %}
+                        <button type="submit"
+                                name="{{ field_name }}"
+                                value="{{ item.value }}"
+                                class="issue-menu-item{% if current_value == item.value %} is-active{% endif %}"
+                                {% if current_value == item.value %}aria-current="true"{% endif %}>{{ labels[item] }}</button>
+                    {% endif %}
+                {% endfor %}
+            </form>
+        </div>
+    </details>
+{%- endmacro %}
+{% macro attach_picker(input_id, variant='zone', max_files=3, existing=none) -%}
+    <div data-attach-picker data-attach-max="{{ max_files }}">
+        {% if variant == 'zone' %}<span class="label">Załączniki</span>{% endif %}
+        <div class="file-pick{% if variant == 'zone' %} mt-1{% endif %}">
+            <input data-attach-input
+                   id="{{ input_id }}"
+                   type="file"
+                   name="attachments"
+                   accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
+                   multiple
+                   class="file-pick-input">
+            {% if variant == 'zone' %}
+                <label for="{{ input_id }}" class="file-pick-zone file-pick-btn">
+                    <span class="file-pick-zone-title">
+                        <span class="section-icon" aria-hidden="true">{{ icon("attach") }}</span>
+                        Dodaj pliki
+                    </span>
+                    <span class="file-pick-zone-hint">Do {{ max_files }}
+                        {% if max_files == 1 %}
+                            pliku
+                        {% else %}
+                            plików
+                        {% endif %}
+                    · JPG, PNG, WEBP, GIF, PDF — maks. 5 MB każdy</span>
+                </label>
+            {% else %}
+                <label for="{{ input_id }}"
+                       class="btn btn-secondary file-pick-btn file-pick-btn-icon"
+                       title="Załącz plik"
+                       aria-label="Załącz plik">{{ icon("attach") }}</label>
             {% endif %}
         </div>
-        <h2 class="mt-2 text-[1.15rem] font-semibold tracking-tight text-ink leading-snug">{{ t.title }}</h2>
-    </a>
+        {% if variant != 'zone' %}
+            <p class="modal-hint">
+                Do {{ max_files }}
+                {% if max_files == 1 %}
+                    pliku
+                {% else %}
+                    plików
+                {% endif %}
+                · maks. 5 MB
+            </p>
+        {% endif %}
+        <div data-attach-remove-box hidden></div>
+        <div data-attach-preview
+             class="attach-preview"
+             {% if not existing %}hidden{% endif %}>
+            {% if existing %}
+                {% for a in existing %}
+                    {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
+                    <div class="attach-preview-item" data-existing-id="{{ a.id }}">
+                        {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+                            <img src="/uploads/{{ a.file_path }}"
+                                 alt="{{ a.file_name }}"
+                                 width="80"
+                                 height="80">
+                        {% else %}
+                            <span class="attach-preview-file">{{ a.file_name }}</span>
+                        {% endif %}
+                        <button type="button"
+                                class="attach-preview-remove"
+                                data-remove-existing
+                                aria-label="Usuń {{ a.file_name }}">×</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{%- endmacro %}
+{% macro project_checkboxes(projects, form_project_ids) -%}
+    <fieldset>
+        <legend class="label">Projekty</legend>
+        <div class="mt-2 space-y-2">
+            {% for p in projects %}
+                <label class="flex items-center gap-2 text-sm">
+                    <input type="checkbox"
+                           name="project_ids"
+                           value="{{ p.id }}"
+                           {% if p.id in form_project_ids %}checked{% endif %}>
+                    {{ p.name }}
+                    <span class="text-steel">({{ p.key }})</span>
+                </label>
+            {% else %}
+                <p class="text-sm text-steel">Brak projektów.</p>
+            {% endfor %}
+        </div>
+        <p class="mt-1 text-sm text-steel">Wymagany co najmniej jeden projekt.</p>
+    </fieldset>
+{%- endmacro %}
+{% macro modal_header(dialog_id, title) -%}
+    <div class="modal-header">
+        <h2 class="modal-title">{{ title }}</h2>
+        <button type="button"
+                class="modal-close"
+                aria-label="Zamknij"
+                onclick="document.getElementById('{{ dialog_id }}').close()">×</button>
+    </div>
+{%- endmacro %}
+{% macro modal_cancel(dialog_id, label='Anuluj') -%}
+    <button type="button"
+            onclick="document.getElementById('{{ dialog_id }}').close()"
+            class="btn btn-secondary">{{ label }}</button>
 {%- endmacro %}

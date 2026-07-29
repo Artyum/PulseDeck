@@ -57,6 +57,5 @@ USER_ROLE_LABELS: dict[UserRole, str] = {
 
 
 class MagicTokenPurpose(str, enum.Enum):
-    LOGIN = "login"
     EMAIL_CONFIRM = "email_confirm"
     PASSWORD_SET = "password_set"

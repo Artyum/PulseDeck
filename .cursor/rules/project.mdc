@@ -19,7 +19,7 @@ alwaysApply: true
 
 - Bez UUID w linkach UI. Projekt: `/p/{key}`, ticket: `/t/{key}-{id}` (id = bigint PK ticketu).
 - Helpery: `app/utils/urls.py` (`project_path`, `ticket_path`, `ticket_label`, `admin_project_path`).
-- `key` projektu: ręczne `[A-Z0-9]{3,10}`, unique; nazwa niezależna, unique case-insensitive.
+- `key` projektu: ręczne `[A-Z0-9]{1,5}`, unique; nazwa niezależna, unique case-insensitive.
 - Zmiana key/nazwy bez redirectów — stare linki przestają działać.
 - W DB: wszystkie encje mają bigint PK (autoincrement). Key projektu tylko do routingów i etykiet.
 

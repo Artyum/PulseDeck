@@ -1,126 +1,145 @@
 {% extends "base_app.html" %}
-{% from "partials/ticket_macros.html" import ticket_row with context %}
+{% from "partials/icons.html" import icon %}
+{% from "partials/ticket_macros.html" import ticket_row, attach_picker, modal_header, modal_cancel with context %}
 {% block title %}{{ project.name }} — {{ app_name }}{% endblock %}
 {% block content %}
-    <div class="mb-7 flex flex-wrap items-end justify-between gap-4">
-        <div>
-            <h1 class="page-title">{{ project.name }}</h1>
-            {% if project.description %}<p class="page-sub">{{ project.description }}</p>{% endif %}
-        </div>
-        <button type="button"
-                onclick="document.getElementById('new-ticket').showModal()"
-                class="btn btn-primary">Nowe zgłoszenie</button>
-    </div>
     {% set staff_views = [('all', 'Wszystkie'), ('needs_us', 'Do obsługi'), ('unassigned', 'Nieprzypisane'), ('mine_open', 'Moje otwarte'), ('waiting_on_client', 'Oczekuje na klienta'), ('done', 'Zakończone')] %}
     {% set client_views = [('all', 'Wszystkie'), ('mine', 'Moje'), ('open', 'Otwarte'), ('waiting_on_me', 'Oczekuje na mnie'), ('done', 'Zakończone')] %}
     {% set views = staff_views if user.is_staff else client_views %}
-    <div class="mb-5 flex flex-wrap gap-2">
-        {% for key, label in views %}
-            <a href="{{ project|project_path }}?view={{ key }}{% if filter_sort and filter_sort != 'updated_at' %}&sort={{ filter_sort }}{% endif %}"
-               class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}">{{ label }}</a>
-        {% endfor %}
-    </div>
-    <form method="get"
-          action="{{ project|project_path }}"
-          class="panel panel-pad mb-6 flex flex-wrap items-end gap-3">
-        <input type="hidden" name="view" value="{{ current_view }}">
-        <div>
-            <label class="label-tight">Szukaj</label>
-            <input name="q"
-                   value="{{ filter_q }}"
-                   placeholder="Tytuł…"
-                   class="input mt-1.5 !w-auto min-w-[10rem]">
+    <div class="issue-page">
+        <div class="issue-page-body">
+            <div class="issue-head">
+                <h1 class="issue-title">{{ project.name }}</h1>
+                {% if project.description %}
+                    <p class="issue-description mt-2">{{ project.description }}</p>
+                {% endif %}
+            </div>
+            <section class="issue-section issue-section-flush">
+                <div class="issue-section-bar">
+                    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>Zgłoszenia</h2>
+                    <button type="button"
+                            onclick="document.getElementById('new-ticket').showModal()"
+                            class="btn btn-primary">Utwórz zgłoszenie</button>
+                </div>
+                <div class="issue-list">
+                    {% for t in tickets %}
+                        {{ ticket_row(t) }}
+                    {% else %}
+                        <p class="empty">Brak zgłoszeń w tym widoku.</p>
+                    {% endfor %}
+                </div>
+            </section>
         </div>
-        <div>
-            <label class="label-tight">Status</label>
-            <select name="status" class="select mt-1.5 !w-auto">
-                <option value="">—</option>
-                {% for s in ticket_statuses %}
-                    <option value="{{ s.value }}"
-                            {% if filter_status == s.value %}selected{% endif %}>{{ status_labels[s] }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label class="label-tight">Priorytet</label>
-            <select name="priority" class="select mt-1.5 !w-auto">
-                <option value="">—</option>
-                {% for p in ticket_priorities %}
-                    <option value="{{ p.value }}"
-                            {% if filter_priority == p.value %}selected{% endif %}>{{ priority_labels[p] }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label class="label-tight">Tag</label>
-            <input list="feed-tag-list"
-                   name="tag"
-                   value="{{ filter_tag }}"
-                   class="input mt-1.5 !w-auto min-w-[8rem]">
-            <datalist id="feed-tag-list">
-                {% for t in project_tags %}<option value="{{ t.name }}"></option>{% endfor %}
-            </datalist>
-        </div>
-        <div>
-            <label class="label-tight">Sortuj</label>
-            <select name="sort" class="select mt-1.5 !w-auto">
-                <option value="updated_at"
-                        {% if filter_sort == 'updated_at' %}selected{% endif %}>Ostatnia aktywność</option>
-                <option value="created_at"
-                        {% if filter_sort == 'created_at' %}selected{% endif %}>Data utworzenia</option>
-                <option value="priority"
-                        {% if filter_sort == 'priority' %}selected{% endif %}>Priorytet</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-secondary">Filtruj</button>
-    </form>
-    <div class="space-y-3">
-        {% for t in tickets %}
-            {{ ticket_row(t) }}
-        {% else %}
-            <p class="empty">Brak zgłoszeń w tym widoku.</p>
-        {% endfor %}
+        <aside class="issue-sidebar">
+            <section class="issue-side-block">
+                <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>Widok</h2>
+                <div class="feed-views">
+                    {% for key, label in views %}
+                        <a href="{{ project|project_path }}?view={{ key }}{% if filter_sort and filter_sort != 'updated_at' %}&sort={{ filter_sort }}{% endif %}"
+                           class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
+                    {% endfor %}
+                </div>
+            </section>
+            <section class="issue-side-block">
+                <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>Filtry</h2>
+                <form method="get"
+                      action="{{ project|project_path }}"
+                      class="issue-side-fields">
+                    <input type="hidden" name="view" value="{{ current_view }}">
+                    <div class="issue-field">
+                        <label class="label-tight" for="feed-q">Szukaj</label>
+                        <input id="feed-q"
+                               name="q"
+                               value="{{ filter_q }}"
+                               placeholder="Tytuł…"
+                               class="input input-compact">
+                    </div>
+                    <div class="issue-field">
+                        <label class="label-tight" for="feed-status">Status</label>
+                        <select id="feed-status" name="status" class="select select-compact">
+                            <option value="">—</option>
+                            {% for s in ticket_statuses %}
+                                <option value="{{ s.value }}"
+                                        {% if filter_status == s.value %}selected{% endif %}>{{ status_labels[s] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="issue-field">
+                        <label class="label-tight" for="feed-priority">Priorytet</label>
+                        <select id="feed-priority" name="priority" class="select select-compact">
+                            <option value="">—</option>
+                            {% for p in ticket_priorities %}
+                                <option value="{{ p.value }}"
+                                        {% if filter_priority == p.value %}selected{% endif %}>{{ priority_labels[p] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="issue-field">
+                        <label class="label-tight" for="feed-tag">Tag</label>
+                        <input id="feed-tag"
+                               list="feed-tag-list"
+                               name="tag"
+                               value="{{ filter_tag }}"
+                               class="input input-compact">
+                    </div>
+                    <datalist id="feed-tag-list">
+                        {% for t in project_tags %}<option value="{{ t.name }}"></option>{% endfor %}
+                    </datalist>
+                    <div class="issue-field">
+                        <label class="label-tight" for="feed-sort">Sortuj</label>
+                        <select id="feed-sort" name="sort" class="select select-compact">
+                            <option value="updated_at"
+                                    {% if filter_sort == 'updated_at' %}selected{% endif %}>Ostatnia aktywność</option>
+                            <option value="created_at"
+                                    {% if filter_sort == 'created_at' %}selected{% endif %}>Data utworzenia</option>
+                            <option value="priority"
+                                    {% if filter_sort == 'priority' %}selected{% endif %}>Priorytet</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-secondary feed-filter-submit">Filtruj</button>
+                </form>
+            </section>
+        </aside>
     </div>
     <dialog id="new-ticket" class="modal">
         <form method="post"
               action="{{ project|project_path }}/tickets"
               enctype="multipart/form-data"
-              class="space-y-4 p-6">
-            <h2 class="font-display text-lg font-bold tracking-tight">Nowe zgłoszenie</h2>
-            <div>
-                <label class="label">Tytuł</label>
-                <input name="title" required class="input mt-1.5">
+              class="modal-form">
+            {{ modal_header('new-ticket', 'Utwórz zgłoszenie') }}
+            <div class="modal-body">
+                <div>
+                    <label class="label" for="new-ticket-title">Tytuł</label>
+                    <input id="new-ticket-title" name="title" required class="input mt-1">
+                </div>
+                <div class="modal-grid">
+                    <div>
+                        <label class="label" for="new-ticket-type">Typ</label>
+                        <select id="new-ticket-type" name="ticket_type" class="select mt-1">
+                            {% for tt in ticket_types %}<option value="{{ tt.value }}">{{ type_labels[tt] }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label" for="new-ticket-priority">Priorytet</label>
+                        <select id="new-ticket-priority" name="priority" class="select mt-1">
+                            {% for p in ticket_priorities %}
+                                <option value="{{ p.value }}" {% if p.value == 'NORMAL' %}selected{% endif %}>{{ priority_labels[p] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="label" for="new-ticket-description">Opis</label>
+                    <textarea id="new-ticket-description"
+                              name="description"
+                              required
+                              rows="8"
+                              class="textarea mt-1"></textarea>
+                </div>
+                {{ attach_picker('new-ticket-attachments', 'zone') }}
             </div>
-            <div>
-                <label class="label">Typ</label>
-                <select name="ticket_type" class="select mt-1.5">
-                    {% for tt in ticket_types %}<option value="{{ tt.value }}">{{ type_labels[tt] }}</option>{% endfor %}
-                </select>
-            </div>
-            <div>
-                <label class="label">Priorytet</label>
-                <select name="priority" class="select mt-1.5">
-                    {% for p in ticket_priorities %}
-                        <option value="{{ p.value }}" {% if p.value == 'NORMAL' %}selected{% endif %}>{{ priority_labels[p] }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div>
-                <label class="label">Opis</label>
-                <textarea name="description" required rows="5" class="textarea mt-1.5"></textarea>
-            </div>
-            <div>
-                <label class="label">Załącznik</label>
-                <input type="file"
-                       name="attachment"
-                       accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
-                       class="mt-1.5 block w-full text-sm text-steel">
-                <p class="mt-1 text-xs text-steel">JPG, PNG, WEBP, GIF, PDF — maks. 5 MB</p>
-            </div>
-            <div class="flex justify-end gap-2">
-                <button type="button"
-                        onclick="document.getElementById('new-ticket').close()"
-                        class="btn btn-secondary">Anuluj</button>
+            <div class="modal-footer">
+                {{ modal_cancel("new-ticket") }}
                 <button type="submit" class="btn btn-primary">Utwórz</button>
             </div>
         </form>

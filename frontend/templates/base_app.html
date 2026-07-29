@@ -1,34 +1,51 @@
 {% extends "base.html" %}
 {% block body %}
     <header class="app-header">
-        <div class="app-shell flex items-center justify-between gap-4 py-3.5">
-            <div class="flex items-center gap-6 min-w-0">
-                <a href="/" class="brand-mark shrink-0">{{ app_name }}</a>
+        <div class="app-shell flex items-center justify-between gap-4 py-3">
+            <div class="flex items-center gap-5 min-w-0">
+                <a href="{% if project is defined and project %}{{ project|project_path }}{% else %}/{% endif %}"
+                   class="brand-mark shrink-0">{{ app_name }}</a>
                 {% if projects is defined and projects %}
-                    <div class="hidden sm:block min-w-0">
-                        <label class="sr-only" for="project_switch">Projekt</label>
-                        <select id="project_switch"
-                                class="select !w-auto min-w-[10rem] max-w-[16rem]"
-                                onchange="window.location='/p/'+this.value">
-                            {% for p in projects %}
-                                <option value="{{ p.key }}"
-                                        {% if project is defined and project and p.id == project.id %}selected{% endif %}>{{ p.name }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="nav-project hidden sm:flex">
+                        {% if project is defined and project %}
+                            <a href="{{ project|project_path }}"
+                               class="nav-project-name"
+                               title="{{ project.name }}">{{ project.name }}</a>
+                        {% endif %}
+                        {% if projects|length > 1 or not (project is defined and project) %}
+                            <details class="issue-menu">
+                                <summary class="nav-project-change"
+                                         aria-label="Zmień projekt"
+                                         title="Zmień projekt">Zmień</summary>
+                                <div class="issue-menu-panel" role="menu">
+                                    {% for p in projects %}
+                                        <a href="{{ p|project_path }}"
+                                           class="issue-menu-item{% if project is defined and project and p.id == project.id %} is-active{% endif %}"
+                                           {% if project is defined and project and p.id == project.id %}aria-current="page"{% endif %}>{{ p.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            </details>
+                        {% endif %}
                     </div>
                 {% endif %}
             </div>
-            <nav class="flex items-center gap-1 sm:gap-3 text-sm">
-                {% if user.is_staff %}
-                    <a href="/inbox" class="nav-link px-2 py-1">Skrzynka</a>
-                {% endif %}
-                {% if user.is_admin %}
-                    <a href="/admin" class="nav-link px-2 py-1">Admin</a>
-                {% endif %}
-                <a href="/profile" class="nav-link px-2 py-1 hidden sm:inline">{{ user.display_name }}</a>
-                <form method="post" action="/auth/logout">
-                    <button type="submit" class="btn btn-secondary !py-1.5 !px-3">Wyloguj</button>
-                </form>
+            <nav class="flex items-center" aria-label="Konto">
+                <details class="issue-menu">
+                    <summary class="nav-user"
+                             aria-label="Menu użytkownika"
+                             title="{{ user.display_name }}">
+                        <span class="nav-user-name">{{ user.display_name }}</span>
+                        <span class="nav-user-caret" aria-hidden="true"></span>
+                    </summary>
+                    <div class="issue-menu-panel issue-menu-panel-end" role="menu">
+                        {% if user.is_admin %}<a href="/admin" class="issue-menu-item" role="menuitem">Administracja</a>{% endif %}
+                        <a href="/profile" class="issue-menu-item" role="menuitem">Profil</a>
+                        <hr class="issue-menu-sep">
+                        <form method="post" action="/auth/logout" class="issue-menu-form">
+                            <button type="submit" class="issue-menu-item" role="menuitem">Wyloguj</button>
+                        </form>
+                    </div>
+                </details>
             </nav>
         </div>
     </header>

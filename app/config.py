@@ -37,7 +37,9 @@ class Settings(BaseSettings):
     security_csp_enabled: bool = True
     security_hsts_enabled: bool = False
     auth_login_rate_limit: str = "10/minute"
-    invite_rate_limit: str = "5/minute"
+    auth_forgot_password_rate_limit: str = "5/minute"
+    auth_activate_rate_limit: str = "10/minute"
+    auth_admin_user_create_rate_limit: str = "20/minute"
     upload_rate_limit: str = "20/minute"
     trusted_hosts: str = Field(
         default="localhost,127.0.0.1,pulsedeck.lan", validation_alias="ALLOWED_HOSTS"
@@ -57,9 +59,10 @@ class Settings(BaseSettings):
     smtp_pass: str = ""
     email_from: str = ""
 
-    magic_link_ttl_minutes: int = 15
-    invite_default_expiry_days: int = 14
-    invite_default_max_uses: int = 50
+    auth_link_ttl_days: int = Field(default=7, validation_alias="AUTH_LINK_TTL_DAYS")
+    email_confirm_ttl_minutes: int = Field(
+        default=60, validation_alias="EMAIL_CONFIRM_TTL_MINUTES"
+    )
     ticket_reopen_days: int = Field(default=7, validation_alias="TICKET_REOPEN_DAYS")
 
     @field_validator("database_url", mode="before")

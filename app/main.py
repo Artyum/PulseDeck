@@ -5,18 +5,17 @@ from contextlib import asynccontextmanager
 from typing import cast
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.types import ExceptionHandler
 
 from app.config import get_settings, project_root, resolve_upload_dir
 from app.db.session import SessionLocal
+from app.error_handlers import register_exception_handlers
 from app.middleware.csrf import CSRFProtectMiddleware
 from app.middleware.security_headers import apply_security_headers
 from app.middleware.session_sliding import SessionSlidingMiddleware
@@ -55,24 +54,7 @@ def build_fastapi_app() -> FastAPI:
     app.add_exception_handler(
         RateLimitExceeded, cast(ExceptionHandler, _rate_limit_exceeded_handler)
     )
-
-    @app.exception_handler(StarletteHTTPException)
-    async def http_exc_handler(request: Request, exc: StarletteHTTPException):
-        if exc.status_code in (401, 403) and not request.url.path.startswith("/api/"):
-            if exc.status_code == 401:
-                return RedirectResponse("/login", status_code=303)
-            return (
-                JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
-                if request.headers.get("HX-Request")
-                else RedirectResponse("/", status_code=303)
-            )
-        if exc.status_code == 404 and not request.url.path.startswith("/api/"):
-            if request.headers.get("HX-Request"):
-                return HTMLResponse("Nie znaleziono", status_code=404)
-            return RedirectResponse("/", status_code=303)
-        if request.url.path.startswith("/api/"):
-            return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
-        return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
+    register_exception_handlers(app)
 
     @app.middleware("http")
     async def security_headers_middleware(request: Request, call_next):
@@ -80,7 +62,6 @@ def build_fastapi_app() -> FastAPI:
         return apply_security_headers(request, response)
 
     hosts = settings.trusted_hosts_list()
-    # Allow testclient / health without host issues
     if settings.environment == "development":
         hosts = list({*hosts, "testserver", "localhost", "127.0.0.1", "pulsedeck.lan"})
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts)

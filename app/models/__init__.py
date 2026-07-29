@@ -4,8 +4,6 @@ from app.models.enums import TicketPriority, TicketStatus, TicketType, UserRole
 from app.models.ticket import (
     Attachment,
     Comment,
-    InviteLink,
-    InviteLinkProject,
     MagicToken,
     Tag,
     Ticket,
@@ -17,8 +15,6 @@ from app.models.user import Project, ProjectMember, User
 __all__ = [
     "Attachment",
     "Comment",
-    "InviteLink",
-    "InviteLinkProject",
     "MagicToken",
     "Project",
     "ProjectMember",

@@ -1,3 +1,4 @@
+{% from "partials/ticket_macros.html" import project_checkboxes with context %}
 <form method="post"
       action="{{ form_action }}"
       class="panel panel-pad mt-6 space-y-3">
@@ -43,6 +44,13 @@
                class="input mt-1.5">
         <p class="mt-1 text-sm text-steel">Opcjonalnie, format E.164 (np. +48123456789).</p>
     </div>
+    {% if is_admin_edit %}
+        {% if edit_user.is_admin %}
+            <p class="text-sm text-steel">Administratorzy mają automatyczny dostęp do wszystkich projektów.</p>
+        {% else %}
+            {{ project_checkboxes(projects, form_project_ids) }}
+        {% endif %}
+    {% endif %}
     <button type="submit" class="btn btn-primary">Zapisz dane</button>
 </form>
 {% if is_admin_edit %}
@@ -65,7 +73,13 @@
             <button type="submit"
                     name="action"
                     value="send_link"
-                    class="btn btn-secondary">Wyślij link do ustawienia</button>
+                    class="btn btn-secondary">
+                {% if edit_user.is_pending %}
+                    Wyślij link aktywacyjny
+                {% else %}
+                    Wyślij link do resetu hasła
+                {% endif %}
+            </button>
         </div>
     </form>
 {% else %}

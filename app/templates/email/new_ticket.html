@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="pl">
-    <head>
-        <title>Nowe zgłoszenie — {{ ticket.title }}</title>
-    </head>
-    <body style="font-family:sans-serif;color:#0f172a">
-        <p>Nowe zgłoszenie: <strong>{{ ticket.title }}</strong></p>
-        <p><a href="{{ url }}">Otwórz w {{ app_name }}</a></p>
-    </body>
-</html>
+{% extends "_base.html" %}
+{% block title %}Nowe zgłoszenie — {{ ticket.title }}{% endblock %}
+{% block body %}
+    <p>Nowe zgłoszenie: <strong>{{ ticket.title }}</strong></p>
+    <p><a href="{{ url }}">Otwórz w {{ app_name }}</a></p>
+{% endblock %}

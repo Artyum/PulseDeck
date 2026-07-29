@@ -17,8 +17,8 @@
                 {% if request.query_params.get('email_confirm') %}
                     <p class="alert alert-success mb-4">Wysłaliśmy link potwierdzający na nowy e-mail. Do potwierdzenia logowanie jest niedostępne.</p>
                 {% endif %}
-                {% if magic_sent %}
-                    <p class="alert alert-success mb-4">Jeśli konto istnieje, wysłaliśmy link logowania na e-mail.</p>
+                {% if forgot_sent %}
+                    <p class="alert alert-success mb-4">Jeśli konto istnieje i nie jest zablokowane, wysłaliśmy link na e-mail.</p>
                 {% endif %}
                 <form method="post" action="/auth/login" class="space-y-4">
                     <div>
@@ -36,15 +36,15 @@
                     <button type="submit" class="btn btn-primary w-full !py-3 !text-[1rem]">Zaloguj się</button>
                 </form>
                 <div class="divider">lub</div>
-                <form method="post" action="/auth/magic" class="space-y-3">
-                    <label class="label" for="magic_email">Magic link</label>
-                    <input id="magic_email"
+                <form method="post" action="/auth/forgot-password" class="space-y-3">
+                    <label class="label" for="forgot_email">Nie pamiętam hasła</label>
+                    <input id="forgot_email"
                            name="email"
                            type="email"
                            required
                            placeholder="adres@firma.pl"
                            class="input">
-                    <button type="submit" class="btn btn-secondary w-full !py-3 !text-[1rem]">Wyślij link logowania</button>
+                    <button type="submit" class="btn btn-secondary w-full !py-3 !text-[1rem]">Wyślij link resetujący</button>
                 </form>
             </div>
         </div>

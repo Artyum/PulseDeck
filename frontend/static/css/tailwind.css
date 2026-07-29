@@ -9,22 +9,31 @@
   --font-display: "Plus Jakarta Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --color-mist: #f4f5f7;
-  --color-ink: #172b4d;
-  --color-steel: #44546f;
-  --color-line: #dfe1e6;
-  --color-pulse: #0c66e4;
-  --color-signal: #e56910;
+  --color-mist: #e7f0fb;
+  --color-ink: #152238;
+  --color-steel: #4a5d78;
+  --color-line: #c5d4e8;
+  --color-pulse: #1a6fdc;
+  --color-signal: #c9610a;
   --color-danger: #c9372c;
-  --color-primary: #0c66e4;
-  --color-secondary: #44546f;
-  --color-accent: #0c66e4;
-  --color-brand: #172b4d;
-  --color-base-100: #f4f5f7;
-  --color-soft-blue: #e9f2ff;
-  --color-soft-yellow: #fff7d6;
-  --color-soft-purple: #f3f0ff;
-  --color-soft-green: #dcfff1;
-  --color-soft-red: #ffeceb;
-  --color-soft-teal: #e6fcff;
+  --color-primary: #1a6fdc;
+  --color-secondary: #4a5d78;
+  --color-accent: #1a6fdc;
+  --color-brand: #152238;
+  --color-base-100: #e7f0fb;
+  --color-soft-blue: #dce9fb;
+  --color-soft-yellow: #f7ecd0;
+  --color-soft-purple: #e6e0f7;
+  --color-soft-green: #d8f0e4;
+  --color-soft-red: #f6ddd9;
+  --color-soft-teal: #d7eef2;
+  --color-soft-orange: #f5e4d4;
+  --color-frame: #a8bdd8;
+  --color-frame-strong: #879ebc;
+
+  --bp-compact-max: 479px;
+  --bp-mobile-max: 768px;
+  --bp-tablet-min: 769px;
+  --bp-tablet-max: 1023px;
+  --bp-desktop-min: 1024px;
 }

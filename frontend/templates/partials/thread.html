@@ -1,55 +1,54 @@
-{% from "partials/ticket_macros.html" import attachment_list with context %}
-<div class="space-y-4">
-    <h2 class="label-tight">Wątek</h2>
-    {% set ns = namespace(prev=None) %}
-    {% for c in ticket.comments %}
-        {% if not c.is_internal or user.is_staff %}
-            <div class="comment {% if c.is_internal %}comment-internal{% endif %}">
-                <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-steel">
-                    <span class="font-semibold text-ink">
-                        {{ c.author.display_name if c.author else '' }}
-                        {% if c.is_internal %}<span class="badge-internal">wewnętrzna</span>{% endif %}
-                    </span>
-                    <span class="text-right">
-                        {{ c.created_at.strftime("%Y-%m-%d %H:%M") if c.created_at else '' }}
-                        {% if ns.prev %}
-                            <span class="block text-steel/70">+{{ ns.prev|gap_between(c.created_at) }} od poprzedniego</span>
-                        {% endif %}
-                    </span>
-                </div>
-                <p class="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-ink/90">{{ c.content }}</p>
-                {{ attachment_list(c.attachments, 'mt-2') }}
-            </div>
-            {% set ns.prev = c.created_at %}
-        {% endif %}
+{% from "partials/ticket_macros.html" import attachment_list, attach_picker with context %}
+{% from "partials/icons.html" import icon %}
+<div class="issue-thread">
+    {% if user.is_staff %}
+        {% set comments = ticket.comments %}
     {% else %}
-        <p class="text-sm text-steel">Brak komentarzy.</p>
-    {% endfor %}
+        {% set comments = ticket.comments|rejectattr('is_internal')|list %}
+    {% endif %}
+    {% if comments %}
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>Aktywność</h2>
+        {% set ns = namespace(prev=None) %}
+        {% for c in comments %}
+            <article class="comment {% if c.author and c.author.is_staff %}comment-staff{% endif %}{% if c.is_internal %} comment-internal{% endif %}">
+                <header class="comment-meta">
+                    <span class="comment-head">
+                        <span class="comment-author">{{ c.author.display_name if c.author else '' }}</span>
+                        {% if c.is_internal %}<span class="chip chip-internal">Wewnętrzny</span>{% endif %}
+                    </span>
+                    <span class="comment-when">
+                        {{ c.created_at.strftime("%Y-%m-%d %H:%M") if c.created_at else '' }}
+                        {% if ns.prev %}<span class="comment-gap">+{{ ns.prev|gap_between(c.created_at) }}</span>{% endif %}
+                    </span>
+                </header>
+                <p class="comment-body">{{ c.content }}</p>
+                {{ attachment_list(c.attachments, 'mt-3') }}
+            </article>
+            {% set ns.prev = c.created_at %}
+        {% endfor %}
+    {% endif %}
     {% if can_comment %}
         <form hx-post="{{ ticket|ticket_path }}/comments"
-              hx-target="#thread"
+              hx-target="#ticket-view"
               hx-swap="innerHTML"
               enctype="multipart/form-data"
-              class="panel panel-pad space-y-3">
+              class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
             <textarea name="content"
                       required
                       rows="3"
                       placeholder="Napisz odpowiedź…"
                       class="textarea"></textarea>
             {% if user.is_staff %}
-                <label class="flex items-center gap-2 text-sm text-steel">
+                <label class="issue-composer-opt">
                     <input type="checkbox"
                            name="is_internal"
                            value="1"
                            class="rounded border-line">
-                    Notatka wewnętrzna (bez maila i zmiany statusu)
+                    Notatka wewnętrzna
                 </label>
             {% endif %}
-            <div class="flex flex-wrap items-center justify-between gap-2">
-                <input type="file"
-                       name="attachment"
-                       accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
-                       class="text-sm text-steel">
+            <div class="issue-composer-bar">
+                {{ attach_picker('comment-attachments', 'icon') }}
                 <button type="submit" class="btn btn-primary">Wyślij</button>
             </div>
         </form>
