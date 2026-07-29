@@ -36,6 +36,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode", // używaj Prettier do formatowania CSS
     "editor.formatOnSave": true
   },
+  "css.lint.unknownAtRules": "ignore",
 
   // Konfiguracja dla plików Markdown (.md, .mdc)
   "[markdown]": {

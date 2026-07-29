@@ -18,7 +18,17 @@ from app.models.enums import (
 )
 from app.utils.csrf import ensure_csrf_token
 from app.utils.dev_page_info import build_dev_page_info
-from app.utils.themes import DEFAULT_THEME, THEME_CHOICES, THEME_STORAGE_KEY
+from app.utils.themes import (
+    DEFAULT_DENSITY,
+    DEFAULT_FONT_SIZE,
+    DEFAULT_THEME,
+    DENSITY_CHOICES,
+    DENSITY_STORAGE_KEY,
+    FONT_SIZE_CHOICES,
+    FONT_SIZE_STORAGE_KEY,
+    THEME_CHOICES,
+    THEME_STORAGE_KEY,
+)
 from app.utils.timefmt import age_since, gap_between
 from app.utils.urls import admin_project_path, project_path, ticket_label, ticket_path
 
@@ -44,6 +54,12 @@ def common_context(request: Request, **extra) -> dict:
         "ui_theme": DEFAULT_THEME,
         "theme_choices": THEME_CHOICES,
         "theme_storage_key": THEME_STORAGE_KEY,
+        "ui_density": DEFAULT_DENSITY,
+        "density_choices": DENSITY_CHOICES,
+        "density_storage_key": DENSITY_STORAGE_KEY,
+        "ui_font_size": DEFAULT_FONT_SIZE,
+        "font_size_choices": FONT_SIZE_CHOICES,
+        "font_size_storage_key": FONT_SIZE_STORAGE_KEY,
         "ticket_types": TicketType,
         "ticket_statuses": TicketStatus,
         "ticket_priorities": TicketPriority,

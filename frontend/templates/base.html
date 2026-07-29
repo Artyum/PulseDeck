@@ -1,18 +1,37 @@
 <!DOCTYPE html>
-<html lang="pl" data-theme="{{ ui_theme }}">
+<html lang="pl"
+      data-theme="{{ ui_theme }}"
+      data-density="{{ ui_density }}"
+      data-font-size="{{ ui_font_size }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script>
         (function () {
-          var key = {{ theme_storage_key|tojson }};
-          var allowed = {{ theme_choices|map(attribute='id')|list|tojson }};
-          try {
-            var theme = localStorage.getItem(key);
-            if (theme && allowed.indexOf(theme) !== -1) {
-              document.documentElement.setAttribute("data-theme", theme);
-            }
-          } catch (e) {}
+          var root = document.documentElement;
+          function applyPref(key, allowed, attr) {
+            try {
+              var value = localStorage.getItem(key);
+              if (value && allowed.indexOf(value) !== -1) {
+                root.setAttribute(attr, value);
+              }
+            } catch (e) {}
+          }
+          applyPref(
+            {{ theme_storage_key|tojson }},
+            {{ theme_choices|map(attribute='id')|list|tojson }},
+            "data-theme"
+          );
+          applyPref(
+            {{ density_storage_key|tojson }},
+            {{ density_choices|map(attribute='id')|list|tojson }},
+            "data-density"
+          );
+          applyPref(
+            {{ font_size_storage_key|tojson }},
+            {{ font_size_choices|map(attribute='id')|list|tojson }},
+            "data-font-size"
+          );
         })();
         </script>
         <title>{% block title %}{{ app_name }}{% endblock title %}</title>

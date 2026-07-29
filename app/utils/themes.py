@@ -5,6 +5,12 @@ from dataclasses import dataclass
 THEME_STORAGE_KEY = "pulsedeck_theme"
 DEFAULT_THEME = "morning-mist"
 
+DENSITY_STORAGE_KEY = "pulsedeck_density"
+DEFAULT_DENSITY = "balanced"
+
+FONT_SIZE_STORAGE_KEY = "pulsedeck_font_size"
+DEFAULT_FONT_SIZE = "natural"
+
 
 @dataclass(frozen=True, slots=True)
 class ThemeChoice:
@@ -12,6 +18,13 @@ class ThemeChoice:
     label: str
     description: str
     swatches: tuple[str, str, str]
+
+
+@dataclass(frozen=True, slots=True)
+class AppearanceChoice:
+    id: str
+    label: str
+    description: str
 
 
 THEME_CHOICES: tuple[ThemeChoice, ...] = (
@@ -71,4 +84,42 @@ THEME_CHOICES: tuple[ThemeChoice, ...] = (
     ),
 )
 
+DENSITY_CHOICES: tuple[AppearanceChoice, ...] = (
+    AppearanceChoice(
+        id="tight",
+        label="Zwarty",
+        description="Mniejsze odstępy, więcej treści na ekranie.",
+    ),
+    AppearanceChoice(
+        id="balanced",
+        label="Zrównoważony",
+        description="Domyślne odstępy PulseDeck.",
+    ),
+    AppearanceChoice(
+        id="airy",
+        label="Przestronny",
+        description="Więcej powietrza między elementami.",
+    ),
+)
+
+FONT_SIZE_CHOICES: tuple[AppearanceChoice, ...] = (
+    AppearanceChoice(
+        id="compact",
+        label="Drobna",
+        description="Więcej tekstu na ekranie.",
+    ),
+    AppearanceChoice(
+        id="natural",
+        label="Naturalna",
+        description="Domyślny rozmiar PulseDeck.",
+    ),
+    AppearanceChoice(
+        id="large",
+        label="Powiększona",
+        description="Wygodniejsze czytanie.",
+    ),
+)
+
 THEME_IDS: frozenset[str] = frozenset(t.id for t in THEME_CHOICES)
+DENSITY_IDS: frozenset[str] = frozenset(c.id for c in DENSITY_CHOICES)
+FONT_SIZE_IDS: frozenset[str] = frozenset(c.id for c in FONT_SIZE_CHOICES)

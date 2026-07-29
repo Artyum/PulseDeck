@@ -1,8 +1,26 @@
 @layer base {
   html {
-    font-size: 16px;
+    --space-scale: 1;
+    --font-size-root: 16px;
+    font-size: var(--font-size-root);
     scroll-behavior: smooth;
     color-scheme: light;
+  }
+
+  html[data-density="tight"] {
+    --space-scale: 0.82;
+  }
+
+  html[data-density="airy"] {
+    --space-scale: 1.18;
+  }
+
+  html[data-font-size="compact"] {
+    --font-size-root: 14.5px;
+  }
+
+  html[data-font-size="large"] {
+    --font-size-root: 17.5px;
   }
 
   body {

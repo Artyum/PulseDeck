@@ -121,11 +121,14 @@
         <div class="theme-picker"
              role="radiogroup"
              aria-label="Motyw kolorystyczny"
-             data-theme-storage-key="{{ theme_storage_key }}">
+             data-ui-pref="theme"
+             data-ui-attr="data-theme"
+             data-ui-storage-key="{{ theme_storage_key }}"
+             data-ui-fallback="{{ ui_theme }}">
             {% for theme in theme_choices %}
                 <button type="button"
                         class="theme-option"
-                        data-theme-id="{{ theme.id }}"
+                        data-ui-value="{{ theme.id }}"
                         aria-pressed="false">
                     <span class="theme-option-swatches" aria-hidden="true">
                         {% for swatch in theme.swatches %}
@@ -137,6 +140,46 @@
                         <span class="theme-option-desc">{{ theme.description }}</span>
                     </span>
                     <span class="theme-option-check">Aktywny</span>
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel panel-pad admin-form-stack" id="layout-settings">
+        <h2 class="issue-section-title">Odstępy</h2>
+        <p class="admin-field-hint">Gęstość układu między elementami. Zapisuje się w tej przeglądarce.</p>
+        <div class="pref-segment"
+             role="radiogroup"
+             aria-label="Odstępy"
+             data-ui-pref="density"
+             data-ui-attr="data-density"
+             data-ui-storage-key="{{ density_storage_key }}"
+             data-ui-fallback="{{ ui_density }}">
+            {% for choice in density_choices %}
+                <button type="button"
+                        class="pref-segment-option"
+                        data-ui-value="{{ choice.id }}"
+                        aria-pressed="false">
+                    <span class="pref-segment-label">{{ choice.label }}</span>
+                    <span class="pref-segment-desc">{{ choice.description }}</span>
+                </button>
+            {% endfor %}
+        </div>
+        <h2 class="issue-section-title">Wielkość czcionki</h2>
+        <p class="admin-field-hint">Rozmiar tekstu w całej aplikacji.</p>
+        <div class="pref-segment"
+             role="radiogroup"
+             aria-label="Wielkość czcionki"
+             data-ui-pref="font-size"
+             data-ui-attr="data-font-size"
+             data-ui-storage-key="{{ font_size_storage_key }}"
+             data-ui-fallback="{{ ui_font_size }}">
+            {% for choice in font_size_choices %}
+                <button type="button"
+                        class="pref-segment-option"
+                        data-ui-value="{{ choice.id }}"
+                        aria-pressed="false">
+                    <span class="pref-segment-label">{{ choice.label }}</span>
+                    <span class="pref-segment-desc">{{ choice.description }}</span>
                 </button>
             {% endfor %}
         </div>

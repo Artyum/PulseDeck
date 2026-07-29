@@ -35,13 +35,13 @@
   .app-shell {
     margin-inline: auto;
     max-width: 76rem;
-    padding-inline: 1.5rem;
+    padding-inline: calc(1.5rem * var(--space-scale));
   }
 
   .app-main {
     margin-inline: auto;
     max-width: 76rem;
-    padding: 1.75rem 1.5rem 3.5rem;
+    padding: calc(1.75rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
   }
 
   .page-title {
@@ -65,8 +65,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding-block: 0.7rem;
+    gap: calc(1rem * var(--space-scale));
+    padding-block: calc(0.7rem * var(--space-scale));
   }
 
   .app-header-left {
@@ -245,9 +245,9 @@
     align-self: start;
     display: flex;
     flex-direction: column;
-    gap: 1.15rem;
+    gap: calc(1.15rem * var(--space-scale));
     height: 100vh;
-    padding: 1.35rem 0.85rem 1.1rem;
+    padding: calc(1.35rem * var(--space-scale)) calc(0.85rem * var(--space-scale)) calc(1.1rem * var(--space-scale));
     border-right: 1px solid var(--color-line);
     background: var(--color-aside);
   }
@@ -378,12 +378,12 @@
 
   .admin-main {
     min-width: 0;
-    padding: 1.75rem 2rem 3rem;
+    padding: calc(1.75rem * var(--space-scale)) calc(2rem * var(--space-scale)) calc(3rem * var(--space-scale));
     background: var(--color-surface);
   }
 
   .admin-main > .issue-crumb {
-    margin-bottom: 0.85rem;
+    margin-bottom: calc(0.85rem * var(--space-scale));
   }
 
   .admin-page-head {
@@ -391,8 +391,8 @@
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 0.85rem 1.25rem;
-    margin-bottom: 1.35rem;
+    gap: calc(0.85rem * var(--space-scale)) calc(1.25rem * var(--space-scale));
+    margin-bottom: calc(1.35rem * var(--space-scale));
   }
 
   .admin-page-head .issue-title {
@@ -408,16 +408,16 @@
   }
 
   .admin-section {
-    padding: 1.5rem 0;
+    padding: calc(1.5rem * var(--space-scale)) 0;
     border-top: 1px solid var(--color-line);
   }
 
   .admin-section:first-of-type {
-    padding-top: 1.35rem;
+    padding-top: calc(1.35rem * var(--space-scale));
   }
 
   .admin-section > .issue-section-title {
-    margin: 0 0 1rem;
+    margin: 0 0 calc(1rem * var(--space-scale));
   }
 
   .admin-section-note {
@@ -428,23 +428,27 @@
   }
 
   .admin-section-block + .admin-section-block {
-    margin-top: 1.25rem;
+    margin-top: calc(1.25rem * var(--space-scale));
   }
 
   .admin-narrow {
     max-width: 36rem;
   }
 
+  .admin-prefs {
+    max-width: 44rem;
+  }
+
   .admin-panels {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: calc(1.25rem * var(--space-scale));
   }
 
   .admin-form-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.95rem;
+    gap: calc(0.95rem * var(--space-scale));
   }
 
   .admin-form-stack > .issue-section-title,
@@ -793,11 +797,7 @@
   }
 
   .btn-primary {
-    background: linear-gradient(
-      180deg,
-      var(--color-pulse-bright) 0%,
-      var(--color-pulse) 100%
-    );
+    background: linear-gradient(180deg, var(--color-pulse-bright) 0%, var(--color-pulse) 100%);
     color: var(--color-on-pulse);
     border-color: var(--color-pulse-deep);
     box-shadow:
@@ -806,11 +806,7 @@
   }
 
   .btn-primary:hover {
-    background: linear-gradient(
-      180deg,
-      var(--color-pulse) 0%,
-      var(--color-pulse-deep) 100%
-    );
+    background: linear-gradient(180deg, var(--color-pulse) 0%, var(--color-pulse-deep) 100%);
     border-color: var(--color-pulse-deep);
     box-shadow:
       inset 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 10%, transparent),
@@ -957,7 +953,7 @@
   }
 
   .panel-pad {
-    padding: 1.2rem 1.3rem;
+    padding: calc(1.2rem * var(--space-scale)) calc(1.3rem * var(--space-scale));
   }
 
   .stat-value {
@@ -989,8 +985,8 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.85rem 1.25rem;
-    padding: 0.95rem 1.15rem 0.95rem 1rem;
+    gap: calc(0.85rem * var(--space-scale)) calc(1.25rem * var(--space-scale));
+    padding: calc(0.95rem * var(--space-scale)) calc(1.15rem * var(--space-scale)) calc(0.95rem * var(--space-scale)) calc(1rem * var(--space-scale));
     text-decoration: none;
     color: inherit;
     background: var(--color-surface);
@@ -1234,13 +1230,13 @@
     grid-template-columns: minmax(0, 1fr) 22rem;
     align-items: stretch;
     min-height: calc(100vh - 3.75rem);
-    margin: -1.75rem -1.5rem -3.5rem;
+    margin: calc(-1.75rem * var(--space-scale)) calc(-1.5rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
     background: var(--color-aside);
   }
 
   .issue-page-body {
     min-width: 0;
-    padding: 1.5rem 2rem 3.5rem 1.5rem;
+    padding: calc(1.5rem * var(--space-scale)) calc(2rem * var(--space-scale)) calc(3.5rem * var(--space-scale)) calc(1.5rem * var(--space-scale));
     background: var(--color-surface);
     border-right: 1px solid var(--color-line);
   }
@@ -1254,7 +1250,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    padding: 1.75rem 1.5rem 3.5rem;
+    padding: calc(1.75rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
   }
 
   .issue-page-body > .issue-crumb {
@@ -2347,7 +2343,7 @@
   @media (max-width: 768px) {
     .app-shell,
     .app-main {
-      padding-inline: 1rem;
+      padding-inline: calc(1rem * var(--space-scale));
     }
 
     .nav-project-trigger {
@@ -2617,5 +2613,57 @@
 
   .theme-option:not(.is-active) .theme-option-check {
     display: none;
+  }
+
+  .pref-segment {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .pref-segment-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid var(--color-frame);
+    border-radius: 0.7rem;
+    background: var(--color-surface);
+    cursor: pointer;
+    text-align: left;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .pref-segment-option:hover {
+    border-color: color-mix(in oklab, var(--color-pulse) 40%, var(--color-frame));
+    background: color-mix(in oklab, var(--color-surface) 88%, var(--color-soft-blue));
+  }
+
+  .pref-segment-option.is-active {
+    border-color: color-mix(in oklab, var(--color-pulse) 55%, var(--color-frame));
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-pulse) 35%, transparent);
+    background: color-mix(in oklab, var(--color-surface) 82%, var(--color-soft-blue));
+  }
+
+  .pref-segment-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .pref-segment-desc {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--color-steel);
+  }
+
+  @media (max-width: 640px) {
+    .pref-segment {
+      grid-template-columns: 1fr;
+    }
   }
 }

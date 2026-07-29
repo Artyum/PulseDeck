@@ -236,7 +236,7 @@
     });
   });
 
-  function currentTheme(key, fallback) {
+  function currentPref(key, fallback) {
     try {
       return localStorage.getItem(key) || fallback;
     } catch (e) {
@@ -244,35 +244,34 @@
     }
   }
 
-  function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-  }
-
-  function syncThemePicker(root) {
+  function syncPrefPicker(root) {
     if (!root) return;
-    var key = root.getAttribute("data-theme-storage-key") || "pulsedeck_theme";
-    var active = currentTheme(key, "morning-mist");
-    root.querySelectorAll("[data-theme-id]").forEach(function (btn) {
-      var on = btn.getAttribute("data-theme-id") === active;
+    var key = root.getAttribute("data-ui-storage-key");
+    var fallback = root.getAttribute("data-ui-fallback") || "";
+    if (!key) return;
+    var active = currentPref(key, fallback);
+    root.querySelectorAll("[data-ui-value]").forEach(function (btn) {
+      var on = btn.getAttribute("data-ui-value") === active;
       btn.classList.toggle("is-active", on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
     });
   }
 
   document.addEventListener("click", function (ev) {
-    var btn = ev.target.closest("[data-theme-id]");
+    var btn = ev.target.closest("[data-ui-value]");
     if (!btn) return;
-    var root = btn.closest("[data-theme-storage-key]");
+    var root = btn.closest("[data-ui-storage-key]");
     if (!root) return;
-    var key = root.getAttribute("data-theme-storage-key") || "pulsedeck_theme";
-    var theme = btn.getAttribute("data-theme-id");
-    if (!theme) return;
+    var key = root.getAttribute("data-ui-storage-key");
+    var attr = root.getAttribute("data-ui-attr");
+    var value = btn.getAttribute("data-ui-value");
+    if (!key || !attr || !value) return;
     try {
-      localStorage.setItem(key, theme);
+      localStorage.setItem(key, value);
     } catch (e) {}
-    applyTheme(theme);
-    syncThemePicker(root);
+    document.documentElement.setAttribute(attr, value);
+    syncPrefPicker(root);
   });
 
-  syncThemePicker(document.querySelector("[data-theme-storage-key]"));
+  document.querySelectorAll("[data-ui-storage-key]").forEach(syncPrefPicker);
 })();
