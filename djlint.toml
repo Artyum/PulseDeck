@@ -1,1 +1,2 @@
-ignore = "H021,H030,H031,J018"
+profile = "jinja"
+ignore = "H021,H030,H031"

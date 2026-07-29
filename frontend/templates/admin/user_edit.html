@@ -3,7 +3,7 @@
 {% block title %}Edycja użytkownika — {{ app_name }}{% endblock %}
 {% block content %}
     <nav class="issue-crumb">
-        <a href="/admin/users" class="link-quiet">Użytkownicy</a>
+        <a href="{{ url_for('admin_users') }}" class="link-quiet">Użytkownicy</a>
         <span aria-hidden="true">/</span>
         <span>{{ edit_user.display_name }}</span>
     </nav>
@@ -26,7 +26,7 @@
         <section class="admin-section">
             <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>Aktywacja</h2>
             <form method="post"
-                  action="/admin/users/{{ edit_user.id }}/resend-activation"
+                  action="{{ url_for('admin_user_resend_activation', user_id=edit_user.id) }}"
                   class="admin-narrow panel panel-pad admin-form-stack">
                 <p class="admin-field-hint">Konto oczekuje na aktywację. Możesz ponownie wysłać link na e-mail.</p>
                 <button type="submit" class="btn btn-secondary">Wyślij ponownie link aktywacyjny</button>

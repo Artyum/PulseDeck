@@ -35,7 +35,7 @@
                 <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>Widok</h2>
                 <div class="feed-views">
                     {% for key, label in views %}
-                        <a href="{{ project|project_path }}?view={{ key }}{% if filter_sort and filter_sort != 'updated_at' %}&sort={{ filter_sort }}{% endif %}"
+                        <a href="{{ url_for('project_feed', key=project.key) }}?view={{ key }}{% if filter_sort and filter_sort != 'updated_at' %}&sort={{ filter_sort }}{% endif %}"
                            class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
                     {% endfor %}
                 </div>
@@ -43,7 +43,7 @@
             <section class="issue-side-block">
                 <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>Filtry</h2>
                 <form method="get"
-                      action="{{ project|project_path }}"
+                      action="{{ url_for('project_feed', key=project.key) }}"
                       class="issue-side-fields">
                     <input type="hidden" name="view" value="{{ current_view }}">
                     <div class="issue-field">
@@ -103,7 +103,7 @@
     </div>
     <dialog id="new-ticket" class="modal">
         <form method="post"
-              action="{{ project|project_path }}/tickets"
+              action="{{ url_for('create_ticket', key=project.key) }}"
               enctype="multipart/form-data"
               class="modal-form">
             {{ modal_header('new-ticket', 'Utwórz zgłoszenie') }}

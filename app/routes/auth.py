@@ -64,7 +64,6 @@ def _render_profile(
         user=user,
         edit_user=user,
         is_admin_edit=False,
-        form_action="/profile",
         error=error,
         success=success,
     )

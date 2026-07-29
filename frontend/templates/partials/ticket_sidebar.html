@@ -1,5 +1,6 @@
 {% from "partials/ticket_macros.html" import priority_chip, status_chip, issue_field_menu with context %}
 {% from "partials/icons.html" import icon %}
+{% set tref = ticket|ticket_label %}
 <section class="issue-side-block">
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>Szczegóły</h2>
     <div class="issue-side-fields">
@@ -16,7 +17,7 @@
         <div class="issue-field">
             <span class="label-tight">Typ</span>
             {% if user.is_staff or can_edit %}
-                {% call issue_field_menu('Zmień typ', ticket|ticket_path ~ '/type', 'ticket_type', ticket_types, ticket.type.value, labels=type_labels) %}
+                {% call issue_field_menu('Zmień typ', url_for('change_type', ticket_ref=tref), 'ticket_type', ticket_types, ticket.type.value, labels=type_labels) %}
                     <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
                 {% endcall %}
             {% else %}
@@ -28,7 +29,7 @@
         <div class="issue-field">
             <span class="label-tight">Status</span>
             {% if user.is_staff %}
-                {% call issue_field_menu('Zmień status', ticket|ticket_path ~ '/status', 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}
+                {% call issue_field_menu('Zmień status', url_for('change_status', ticket_ref=tref), 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}
                     {{ status_chip(ticket.status) }}
                 {% endcall %}
             {% elif can_set_done and ticket.status.value != 'DONE' %}
@@ -37,7 +38,7 @@
                              aria-label="Zmień status"
                              title="Zmień status">{{ status_chip(ticket.status) }}</summary>
                     <div class="issue-menu-panel" role="menu">
-                        <form hx-post="{{ ticket|ticket_path }}/status"
+                        <form hx-post="{{ url_for('change_status', ticket_ref=tref) }}"
                               hx-target="#ticket-view"
                               hx-swap="innerHTML"
                               class="issue-menu-form">
@@ -52,7 +53,7 @@
                              title="Zmień status">{{ status_chip(ticket.status) }}</summary>
                     <div class="issue-menu-panel" role="menu">
                         <form method="post"
-                              action="{{ ticket|ticket_path }}/reopen"
+                              action="{{ url_for('reopen_ticket', ticket_ref=tref) }}"
                               class="issue-menu-form">
                             <button type="submit" class="issue-menu-item">Otwórz ponownie</button>
                         </form>
@@ -65,7 +66,7 @@
         <div class="issue-field">
             <span class="label-tight">Priorytet</span>
             {% if user.is_staff %}
-                {% call issue_field_menu('Zmień priorytet', ticket|ticket_path ~ '/priority', 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
+                {% call issue_field_menu('Zmień priorytet', url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
                     {{ priority_chip(ticket.priority) }}
                 {% endcall %}
             {% else %}
@@ -84,7 +85,7 @@
         <div class="issue-field">
             <span class="label-tight">Obsługujący</span>
             {% if can_assign %}
-                {% call issue_field_menu('Zmień obsługującego', ticket|ticket_path ~ '/assign', 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label='— nikt —') %}
+                {% call issue_field_menu('Zmień obsługującego', url_for('assign', ticket_ref=tref), 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label='— nikt —') %}
                     <span class="issue-menu-value">{{ ticket.assignee.display_name if ticket.assignee else '—' }}</span>
                 {% endcall %}
             {% else %}
@@ -112,7 +113,7 @@
                                 <span class="issue-add-btn">{{ icon("add") }}</span>
                             </summary>
                             <div class="issue-menu-panel issue-menu-panel-end" role="menu">
-                                <form hx-post="{{ ticket|ticket_path }}/participants"
+                                <form hx-post="{{ url_for('add_participant', ticket_ref=tref) }}"
                                       hx-target="#ticket-view"
                                       hx-swap="innerHTML"
                                       class="issue-menu-form">
@@ -145,7 +146,7 @@
             <div class="issue-tags">
                 {% for tt in ticket.ticket_tags %}
                     {% if can_manage_tags %}
-                        <form hx-post="{{ ticket|ticket_path }}/tags/remove"
+                        <form hx-post="{{ url_for('remove_tag', ticket_ref=tref) }}"
                               hx-target="#ticket-view"
                               hx-swap="innerHTML"
                               class="chip chip-outline inline-flex items-center gap-1">
@@ -160,7 +161,7 @@
                 {% if not ticket.ticket_tags and not can_manage_tags %}<span class="text-steel">—</span>{% endif %}
             </div>
             {% if can_manage_tags %}
-                <form hx-post="{{ ticket|ticket_path }}/tags"
+                <form hx-post="{{ url_for('add_tag', ticket_ref=tref) }}"
                       hx-target="#ticket-view"
                       hx-swap="innerHTML"
                       class="issue-tag-add">

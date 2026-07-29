@@ -2,7 +2,7 @@
 {% from "partials/icons.html" import icon %}
 <div class="issue-page-body">
     <nav class="issue-crumb">
-        <a href="{{ project|project_path }}" class="link-quiet">{{ project.name }}</a>
+        <a href="{{ url_for('project_feed', key=project.key) }}" class="link-quiet">{{ project.name }}</a>
         <span aria-hidden="true">/</span>
         <span class="issue-key">{{ ticket|ticket_label }}</span>
     </nav>

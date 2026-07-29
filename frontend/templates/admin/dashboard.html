@@ -9,15 +9,15 @@
     </div>
     <section class="admin-section">
         <div class="admin-stats">
-            <a href="/admin/projects" class="admin-stat">
+            <a href="{{ url_for('admin_projects') }}" class="admin-stat">
                 <p class="label-tight">Projekty</p>
                 <p class="stat-value">{{ projects|length }}</p>
             </a>
-            <a href="/admin/users" class="admin-stat">
+            <a href="{{ url_for('admin_users') }}" class="admin-stat">
                 <p class="label-tight">Użytkownicy</p>
                 <p class="stat-value">{{ users|length }}</p>
             </a>
-            <a href="/admin/users/new" class="admin-stat">
+            <a href="{{ url_for('admin_user_new_page') }}" class="admin-stat">
                 <p class="label-tight">Nowy użytkownik</p>
                 <p class="stat-value">+</p>
             </a>

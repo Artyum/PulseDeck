@@ -187,7 +187,6 @@ def _render_user_edit(
         user=user,
         edit_user=edit_user,
         is_admin_edit=True,
-        form_action=f"/admin/users/{edit_user.id}",
         projects=project_service.list_projects(db),
         form_project_ids=form_project_ids,
         error=error,

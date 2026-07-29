@@ -3,7 +3,7 @@
 </div>
 {% if can_assign and not ticket.assignee_id %}
     <div class="issue-actions">
-        <form hx-post="{{ ticket|ticket_path }}/self-assign"
+        <form hx-post="{{ url_for('self_assign', ticket_ref=ticket|ticket_label) }}"
               hx-target="#ticket-view"
               hx-swap="innerHTML">
             <button type="submit" class="btn btn-primary">Przypisz mnie</button>

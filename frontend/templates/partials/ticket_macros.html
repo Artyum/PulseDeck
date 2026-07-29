@@ -13,17 +13,17 @@
                 {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
                     <button type="button"
                             class="attach-thumb"
-                            data-lightbox-src="/uploads/{{ a.file_path }}"
+                            data-lightbox-src="{{ url_for('uploads', path=a.file_path) }}"
                             data-lightbox-alt="{{ a.file_name }}"
                             title="{{ a.file_name }}">
-                        <img src="/uploads/{{ a.file_path }}"
+                        <img src="{{ url_for('uploads', path=a.file_path) }}"
                              alt="{{ a.file_name }}"
                              width="80"
                              height="80"
                              loading="lazy">
                     </button>
                 {% else %}
-                    <a href="/uploads/{{ a.file_path }}"
+                    <a href="{{ url_for('uploads', path=a.file_path) }}"
                        target="_blank"
                        class="btn btn-secondary">{{ a.file_name }}</a>
                 {% endif %}
@@ -32,7 +32,7 @@
     {% endif %}
 {%- endmacro %}
 {% macro ticket_row(t, show_tags=true, show_age=true) -%}
-    <a href="{{ t|ticket_path }}"
+    <a href="{{ url_for('ticket_detail', ticket_ref=t|ticket_label) }}"
        class="ticket-row"
        data-status="{{ t.status.value }}">
         <div class="ticket-row-main">
@@ -154,7 +154,7 @@
                     {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
                     <div class="attach-preview-item" data-existing-id="{{ a.id }}">
                         {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
-                            <img src="/uploads/{{ a.file_path }}"
+                            <img src="{{ url_for('uploads', path=a.file_path) }}"
                                  alt="{{ a.file_name }}"
                                  width="80"
                                  height="80">

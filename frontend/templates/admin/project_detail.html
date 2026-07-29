@@ -3,7 +3,7 @@
 {% block title %}{{ project.name }} — {{ app_name }}{% endblock %}
 {% block content %}
     <nav class="issue-crumb">
-        <a href="/admin/projects" class="link-quiet">Projekty</a>
+        <a href="{{ url_for('admin_projects') }}" class="link-quiet">Projekty</a>
         <span aria-hidden="true">/</span>
         <span class="admin-key">{{ project.key }}</span>
     </nav>
@@ -12,13 +12,13 @@
             <h1 class="issue-title">{{ project.name }}</h1>
             {% if project.description %}<p class="admin-page-sub">{{ project.description }}</p>{% endif %}
         </div>
-        <a href="{{ project|project_path }}" class="btn btn-secondary">Otwórz w portalu</a>
+        <a href="{{ url_for('project_feed', key=project.key) }}" class="btn btn-secondary">Otwórz w portalu</a>
     </div>
     {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>Ustawienia</h2>
         <form method="post"
-              action="{{ project|admin_project_path }}/edit"
+              action="{{ url_for('edit_project', key=project.key) }}"
               class="admin-form-row"
               data-confirm-when-key-changes="{{ project.key }}"
               data-confirm-title="Zmiana klucza projektu"
@@ -69,7 +69,7 @@
                         </div>
                         <div class="admin-entity-actions">
                             <form method="post"
-                                  action="{{ project|admin_project_path }}/members/{{ u.id }}/remove"
+                                  action="{{ url_for('remove_member', key=project.key, member_id=u.id) }}"
                                   data-confirm-title="Usunąć członka?"
                                   data-confirm="Usunąć {{ u.display_name }} z projektu „{{ project.name }}”?"
                                   data-confirm-action="Usuń"
@@ -86,7 +86,7 @@
         {% if all_users %}
             <div class="admin-section-block">
                 <form method="post"
-                      action="{{ project|admin_project_path }}/members"
+                      action="{{ url_for('add_member', key=project.key) }}"
                       class="admin-form-row admin-form-row-2">
                     <div class="admin-form-field">
                         <label class="label-tight" for="add-member">Dodaj użytkownika</label>

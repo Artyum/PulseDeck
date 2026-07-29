@@ -1,6 +1,6 @@
 {% from "partials/ticket_macros.html" import project_checkboxes with context %}
 <form method="post"
-      action="{{ form_action }}"
+      action="{% if is_admin_edit %}{{ url_for('admin_user_update', user_id=edit_user.id) }}{% else %}{{ url_for('update_profile') }}{% endif %}"
       class="panel panel-pad admin-form-stack">
     <h2 class="issue-section-title">Dane konta</h2>
     <div class="admin-field">
@@ -55,7 +55,7 @@
 </form>
 {% if is_admin_edit %}
     <form method="post"
-          action="/admin/users/{{ edit_user.id }}/password"
+          action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
           class="panel panel-pad admin-form-stack">
         <h2 class="issue-section-title">Hasło</h2>
         <input type="password"
@@ -84,7 +84,7 @@
     </form>
 {% else %}
     <form method="post"
-          action="/profile/password"
+          action="{{ url_for('change_password') }}"
           class="panel panel-pad admin-form-stack">
         <h2 class="issue-section-title">Zmiana hasła</h2>
         <input type="password"

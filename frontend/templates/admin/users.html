@@ -7,14 +7,14 @@
             <h1 class="issue-title">Użytkownicy</h1>
             <p class="admin-page-sub">Role, status konta i edycja profili.</p>
         </div>
-        <a href="/admin/users/new" class="btn btn-primary">Nowy użytkownik</a>
+        <a href="{{ url_for('admin_user_new_page') }}" class="btn btn-primary">Nowy użytkownik</a>
     </div>
     <section class="admin-section">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>Lista użytkowników</h2>
         <ul class="admin-list">
             {% for u in users %}
                 <li class="admin-entity admin-entity-clickable">
-                    <a href="/admin/users/{{ u.id }}"
+                    <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
                        class="admin-entity-hit"
                        aria-label="Edytuj {{ u.display_name }}"></a>
                     <div class="admin-entity-main">
@@ -36,14 +36,14 @@
                         </p>
                     </div>
                     <div class="admin-entity-actions">
-                        <a href="/admin/users/{{ u.id }}" class="btn btn-secondary">Edytuj</a>
+                        <a href="{{ url_for('admin_user_edit', user_id=u.id) }}" class="btn btn-secondary">Edytuj</a>
                         {% if u.is_pending and u.is_active %}
-                            <form method="post" action="/admin/users/{{ u.id }}/resend-activation">
+                            <form method="post" action="{{ url_for('admin_user_resend_activation', user_id=u.id) }}">
                                 <button type="submit" class="btn btn-secondary">Wyślij ponownie</button>
                             </form>
                         {% endif %}
                         {% if u.id != user.id %}
-                            <form method="post" action="/admin/users/{{ u.id }}/active">
+                            <form method="post" action="{{ url_for('admin_user_active', user_id=u.id) }}">
                                 {% if u.is_active %}
                                     <input type="hidden" name="active" value="0">
                                     <button type="submit" class="btn btn-danger">Zablokuj</button>
@@ -53,7 +53,7 @@
                                 {% endif %}
                             </form>
                         {% endif %}
-                        <form method="post" action="/admin/users/{{ u.id }}/role">
+                        <form method="post" action="{{ url_for('set_role', user_id=u.id) }}">
                             <select name="role"
                                     class="select"
                                     {% if u.id == user.id %}disabled{% else %}onchange="this.form.requestSubmit()"{% endif %}>

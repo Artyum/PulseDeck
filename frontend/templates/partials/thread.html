@@ -28,7 +28,7 @@
         {% endfor %}
     {% endif %}
     {% if can_comment %}
-        <form hx-post="{{ ticket|ticket_path }}/comments"
+        <form hx-post="{{ url_for('add_comment', ticket_ref=ticket|ticket_label) }}"
               hx-target="#ticket-view"
               hx-swap="innerHTML"
               enctype="multipart/form-data"

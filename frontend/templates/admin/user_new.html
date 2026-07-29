@@ -4,7 +4,7 @@
 {% block title %}Nowy użytkownik — {{ app_name }}{% endblock %}
 {% block content %}
     <nav class="issue-crumb">
-        <a href="/admin/users" class="link-quiet">Użytkownicy</a>
+        <a href="{{ url_for('admin_users') }}" class="link-quiet">Użytkownicy</a>
         <span aria-hidden="true">/</span>
         <span>Nowy</span>
     </nav>
@@ -17,7 +17,9 @@
     {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>Dane konta</h2>
-        <form method="post" action="/admin/users/new" class="admin-narrow admin-form-stack panel panel-pad">
+        <form method="post"
+              action="{{ url_for('admin_user_create') }}"
+              class="admin-narrow admin-form-stack panel panel-pad">
             <div class="admin-field">
                 <label class="label" for="first_name">Imię</label>
                 <input id="first_name"
@@ -59,5 +61,5 @@
             <button type="submit" class="btn btn-primary">Utwórz i wyślij aktywację</button>
         </form>
     </section>
-    <script src="/static/js/admin-user-form.js" defer></script>
+    <script src="{{ url_for('static', path='js/admin-user-form.js') }}" defer></script>
 {% endblock %}
