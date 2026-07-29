@@ -8,7 +8,7 @@
             <p class="admin-page-sub">Twórz projekty i zarządzaj ich kluczami.</p>
         </div>
     </div>
-    {% if error %}<p class="alert alert-error mb-4">{{ error }}</p>{% endif %}
+    {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>Nowy projekt</h2>
         <form method="post" action="/admin/projects" class="admin-form-row">

@@ -8,18 +8,6 @@
                 <a href="/admin" class="brand-mark">{{ app_name }}</a>
                 <p class="admin-aside-label">Administracja</p>
             </div>
-            <div class="admin-aside-user">
-                <div class="admin-aside-user-meta">
-                    <strong>{{ user.display_name }}</strong>
-                    <span>{{ user.email }}</span>
-                </div>
-                <form method="post" action="/auth/logout">
-                    <button type="submit"
-                            class="btn btn-ghost admin-logout-btn"
-                            aria-label="Wyloguj"
-                            title="Wyloguj">{{ icon("logout") }}</button>
-                </form>
-            </div>
             <nav class="admin-nav" aria-label="Admin">
                 <a href="/admin"
                    class="admin-nav-item{% if path == '/admin' %} is-active{% endif %}">
@@ -38,6 +26,18 @@
                 </a>
             </nav>
             <div class="admin-aside-foot">
+                <div class="admin-aside-user">
+                    <div class="admin-aside-user-meta">
+                        <strong>{{ user.display_name }}</strong>
+                        <span>{{ user.email }}</span>
+                    </div>
+                    <form method="post" action="/auth/logout">
+                        <button type="submit"
+                                class="btn btn-ghost admin-logout-btn"
+                                aria-label="Wyloguj"
+                                title="Wyloguj">{{ icon("logout") }}</button>
+                    </form>
+                </div>
                 <a href="/" class="admin-aside-link">← Wróć do portalu</a>
             </div>
         </aside>

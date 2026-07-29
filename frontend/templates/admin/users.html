@@ -1,4 +1,5 @@
 {% extends "admin/base_admin.html" %}
+{% from "partials/icons.html" import icon %}
 {% block title %}Użytkownicy — {{ app_name }}{% endblock %}
 {% block content %}
     <div class="admin-page-head">
@@ -9,20 +10,25 @@
         <a href="/admin/users/new" class="btn btn-primary">Nowy użytkownik</a>
     </div>
     <section class="admin-section">
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>Lista użytkowników</h2>
         <ul class="admin-list">
             {% for u in users %}
-                <li class="admin-entity">
+                <li class="admin-entity admin-entity-clickable">
+                    <a href="/admin/users/{{ u.id }}"
+                       class="admin-entity-hit"
+                       aria-label="Edytuj {{ u.display_name }}"></a>
                     <div class="admin-entity-main">
                         <p class="admin-entity-title">
                             <span class="admin-entity-name">{{ u.display_name }}</span>
-                            <span class="admin-entity-badges">
-                                <span class="chip {% if u.role.value == 'ADMIN' %}chip-role-admin{% elif u.role.value == 'STAFF' %}chip-role-staff{% else %}chip-role-user{% endif %}">{{ role_labels[u.role] }}</span>
-                                {% if not u.is_active %}
-                                    <span class="chip chip-blocked">Zablokowany</span>
-                                {% elif u.is_pending %}
-                                    <span class="chip chip-pending">Oczekuje</span>
-                                {% endif %}
-                            </span>
+                            {% if not u.is_active or u.is_pending %}
+                                <span class="admin-entity-badges">
+                                    {% if not u.is_active %}
+                                        <span class="chip chip-blocked">Zablokowany</span>
+                                    {% elif u.is_pending %}
+                                        <span class="chip chip-pending">Oczekuje</span>
+                                    {% endif %}
+                                </span>
+                            {% endif %}
                         </p>
                         <p class="admin-entity-meta">
                             {{ u.email }}

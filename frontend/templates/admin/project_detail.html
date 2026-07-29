@@ -14,7 +14,7 @@
         </div>
         <a href="{{ project|project_path }}" class="btn btn-secondary">Otwórz w portalu</a>
     </div>
-    {% if error %}<p class="alert alert-error mb-4">{{ error }}</p>{% endif %}
+    {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>Ustawienia</h2>
         <form method="post"
@@ -58,46 +58,50 @@
     </section>
     <section class="admin-section">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("members") }}</span>Członkowie</h2>
-        <p class="admin-page-sub mb-4">Administratorzy mają automatyczny dostęp do wszystkich projektów.</p>
-        <ul class="admin-list">
-            {% for u in members %}
-                <li class="admin-entity">
-                    <div class="admin-entity-main">
-                        <p class="admin-entity-title">{{ u.display_name }}</p>
-                        <p class="admin-entity-meta">{{ u.email }} · {{ role_labels[u.role] }}</p>
-                    </div>
-                    <div class="admin-entity-actions">
-                        <form method="post"
-                              action="{{ project|admin_project_path }}/members/{{ u.id }}/remove"
-                              data-confirm-title="Usunąć członka?"
-                              data-confirm="Usunąć {{ u.display_name }} z projektu „{{ project.name }}”?"
-                              data-confirm-action="Usuń"
-                              data-confirm-danger>
-                            <button type="submit" class="btn btn-danger">Usuń</button>
-                        </form>
-                    </div>
-                </li>
-            {% else %}
-                <li class="empty">Brak członków w projekcie.</li>
-            {% endfor %}
-        </ul>
+        <p class="admin-section-note">Administratorzy mają automatyczny dostęp do wszystkich projektów.</p>
+        <div class="admin-section-block">
+            <ul class="admin-list">
+                {% for u in members %}
+                    <li class="admin-entity">
+                        <div class="admin-entity-main">
+                            <p class="admin-entity-title">{{ u.display_name }}</p>
+                            <p class="admin-entity-meta">{{ u.email }} · {{ role_labels[u.role] }}</p>
+                        </div>
+                        <div class="admin-entity-actions">
+                            <form method="post"
+                                  action="{{ project|admin_project_path }}/members/{{ u.id }}/remove"
+                                  data-confirm-title="Usunąć członka?"
+                                  data-confirm="Usunąć {{ u.display_name }} z projektu „{{ project.name }}”?"
+                                  data-confirm-action="Usuń"
+                                  data-confirm-danger>
+                                <button type="submit" class="btn btn-danger">Usuń</button>
+                            </form>
+                        </div>
+                    </li>
+                {% else %}
+                    <li class="empty">Brak członków w projekcie.</li>
+                {% endfor %}
+            </ul>
+        </div>
         {% if all_users %}
-            <form method="post"
-                  action="{{ project|admin_project_path }}/members"
-                  class="admin-form-row admin-form-row-2 mt-4">
-                <div class="admin-form-field">
-                    <label class="label-tight" for="add-member">Dodaj użytkownika</label>
-                    <select id="add-member" name="user_id" class="select">
-                        {% for u in all_users %}
-                            <option value="{{ u.id }}">{{ u.display_name }} ({{ u.email }})</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="admin-form-field">
-                    <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-                    <button type="submit" class="btn btn-primary">Dodaj</button>
-                </div>
-            </form>
+            <div class="admin-section-block">
+                <form method="post"
+                      action="{{ project|admin_project_path }}/members"
+                      class="admin-form-row admin-form-row-2">
+                    <div class="admin-form-field">
+                        <label class="label-tight" for="add-member">Dodaj użytkownika</label>
+                        <select id="add-member" name="user_id" class="select">
+                            {% for u in all_users %}
+                                <option value="{{ u.id }}">{{ u.display_name }} ({{ u.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="admin-form-field">
+                        <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
+                        <button type="submit" class="btn btn-primary">Dodaj</button>
+                    </div>
+                </form>
+            </div>
         {% endif %}
     </section>
 {% endblock %}

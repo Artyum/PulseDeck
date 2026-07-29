@@ -14,7 +14,7 @@
         <script src="/static/js/attach-picker.js" defer></script>
         <meta name="csrf-token" content="{{ csrf_token }}">
     </head>
-    <body class="min-h-screen antialiased{% if is_dev and dev_page_info %} has-dev-frame{% endif %}"
+    <body class="min-h-screen antialiased"
           hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
         {% block body %}{% endblock %}
         <dialog id="app-confirm"
