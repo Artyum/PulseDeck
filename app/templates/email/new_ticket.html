@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
-{% block title %}Nowe zgłoszenie — {{ ticket.title }}{% endblock %}
+{% block title %}Nowe zgłoszenie — {{ ticket.title }}{% endblock title %}
 {% block body %}
     <p>Nowe zgłoszenie: <strong>{{ ticket.title }}</strong></p>
     <p><a href="{{ url }}">Otwórz w {{ app_name }}</a></p>
-{% endblock %}
+{% endblock body %}

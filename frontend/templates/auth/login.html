@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Logowanie — {{ app_name }}{% endblock %}
+{% block title %}Logowanie — {{ app_name }}{% endblock title %}
 {% block body %}
     <div class="auth-scene">
         <div class="w-full max-w-md">
@@ -20,7 +20,9 @@
                 {% if forgot_sent %}
                     <p class="alert alert-success mb-4">Jeśli konto istnieje i nie jest zablokowane, wysłaliśmy link na e-mail.</p>
                 {% endif %}
-                <form method="post" action="{{ url_for('login_submit') }}" class="space-y-4">
+                <form method="post"
+                      action="{{ url_for('login_submit') }}"
+                      class="space-y-4">
                     <div>
                         <label class="label" for="email">E-mail</label>
                         <input id="email" name="email" type="email" required class="input mt-1.5">
@@ -36,7 +38,9 @@
                     <button type="submit" class="btn btn-primary w-full !py-3 !text-[1rem]">Zaloguj się</button>
                 </form>
                 <div class="divider">lub</div>
-                <form method="post" action="{{ url_for('forgot_password') }}" class="space-y-3">
+                <form method="post"
+                      action="{{ url_for('forgot_password') }}"
+                      class="space-y-3">
                     <label class="label" for="forgot_email">Nie pamiętam hasła</label>
                     <input id="forgot_email"
                            name="email"
@@ -49,4 +53,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock body %}

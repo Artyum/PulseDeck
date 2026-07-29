@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{% block title %}{{ app_name }}{% endblock %}</title>
+        <title>{% block title %}{{ app_name }}{% endblock title %}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap"
@@ -16,7 +16,8 @@
     </head>
     <body class="min-h-screen antialiased"
           hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
-        {% block body %}{% endblock %}
+        {% block body %}
+        {% endblock body %}
         <dialog id="app-confirm"
                 class="modal modal-confirm"
                 aria-labelledby="app-confirm-title">

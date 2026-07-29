@@ -3,7 +3,7 @@
     <header class="app-header">
         <div class="app-shell flex items-center justify-between gap-4 py-3">
             <div class="flex items-center gap-5 min-w-0">
-                <a href="{% if project is defined and project %}{{ url_for('project_feed', key=project.key) }}{% else %}{{ url_for('home') }}{% endif %}"
+                <a href="{%- if project is defined and project -%}{{ url_for('project_feed', key=project.key) }}{%- else -%}{{ url_for('home') }}{%- endif -%}"
                    class="brand-mark shrink-0">{{ app_name }}</a>
                 {% if projects is defined and projects %}
                     <div class="nav-project hidden sm:flex">
@@ -38,10 +38,16 @@
                         <span class="nav-user-caret" aria-hidden="true"></span>
                     </summary>
                     <div class="issue-menu-panel issue-menu-panel-end" role="menu">
-                        {% if user.is_admin %}<a href="{{ url_for('admin_home') }}" class="issue-menu-item" role="menuitem">Administracja</a>{% endif %}
-                        <a href="{{ url_for('profile_page') }}" class="issue-menu-item" role="menuitem">Profil</a>
+                        {% if user.is_admin %}<a href="{{ url_for('admin_home') }}"
+   class="issue-menu-item"
+   role="menuitem">Administracja</a>{% endif %}
+                        <a href="{{ url_for('profile_page') }}"
+                           class="issue-menu-item"
+                           role="menuitem">Profil</a>
                         <hr class="issue-menu-sep">
-                        <form method="post" action="{{ url_for('logout') }}" class="issue-menu-form">
+                        <form method="post"
+                              action="{{ url_for('logout') }}"
+                              class="issue-menu-form">
                             <button type="submit" class="issue-menu-item" role="menuitem">Wyloguj</button>
                         </form>
                     </div>
@@ -50,6 +56,7 @@
         </div>
     </header>
     <main class="app-main">
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock content %}
     </main>
-{% endblock %}
+{% endblock body %}

@@ -1,5 +1,5 @@
 {% extends "base_app.html" %}
-{% block title %}Profil — {{ app_name }}{% endblock %}
+{% block title %}Profil — {{ app_name }}{% endblock title %}
 {% block content %}
     <div class="mx-auto max-w-lg">
         <h1 class="page-title">Profil</h1>
@@ -8,4 +8,4 @@
         {% if success %}<p class="alert alert-success mt-4">{{ success }}</p>{% endif %}
         <div class="admin-panels mt-6">{% include "partials/user_profile_form.html" %}</div>
     </div>
-{% endblock %}
+{% endblock content %}

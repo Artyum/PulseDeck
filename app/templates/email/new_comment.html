@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
-{% block title %}Nowa odpowiedź — {{ ticket.title }}{% endblock %}
+{% block title %}Nowa odpowiedź — {{ ticket.title }}{% endblock title %}
 {% block body %}
     <p>Nowa odpowiedź w zgłoszeniu: <strong>{{ ticket.title }}</strong></p>
     <p><a href="{{ url }}">Otwórz wątek</a></p>
-{% endblock %}
+{% endblock body %}

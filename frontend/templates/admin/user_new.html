@@ -1,7 +1,7 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/ticket_macros.html" import project_checkboxes with context %}
 {% from "partials/icons.html" import icon %}
-{% block title %}Nowy użytkownik — {{ app_name }}{% endblock %}
+{% block title %}Nowy użytkownik — {{ app_name }}{% endblock title %}
 {% block content %}
     <nav class="issue-crumb">
         <a href="{{ url_for('admin_users') }}" class="link-quiet">Użytkownicy</a>
@@ -62,4 +62,4 @@
         </form>
     </section>
     <script src="{{ url_for('static', path='js/admin-user-form.js') }}" defer></script>
-{% endblock %}
+{% endblock content %}

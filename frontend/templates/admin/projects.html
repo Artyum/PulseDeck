@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% block title %}Projekty — {{ app_name }}{% endblock %}
+{% block title %}Projekty — {{ app_name }}{% endblock title %}
 {% block content %}
     <div class="admin-page-head">
         <div>
@@ -11,7 +11,9 @@
     {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>Nowy projekt</h2>
-        <form method="post" action="{{ url_for('create_project') }}" class="admin-form-row">
+        <form method="post"
+              action="{{ url_for('create_project') }}"
+              class="admin-form-row">
             <div class="admin-form-field">
                 <label class="label-tight" for="project-name">Nazwa</label>
                 <input id="project-name"
@@ -69,7 +71,8 @@
                         </p>
                     </div>
                     <div class="admin-entity-actions">
-                        <a href="{{ url_for('project_detail', key=p.key) }}" class="btn btn-secondary">Edytuj</a>
+                        <a href="{{ url_for('project_detail', key=p.key) }}"
+                           class="btn btn-secondary">Edytuj</a>
                         <form method="post"
                               action="{{ url_for('delete_project', key=p.key) }}"
                               data-confirm-title="Usunąć projekt?"
@@ -85,4 +88,4 @@
             {% endfor %}
         </ul>
     </section>
-{% endblock %}
+{% endblock content %}

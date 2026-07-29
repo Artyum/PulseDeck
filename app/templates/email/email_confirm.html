@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
-{% block title %}Potwierdź e-mail — {{ app_name }}{% endblock %}
+{% block title %}Potwierdź e-mail — {{ app_name }}{% endblock title %}
 {% block body %}
     <p>Cześć {{ user.first_name }},</p>
     <p>Potwierdź nowy adres e-mail w {{ app_name }} (link ważny {{ ttl_minutes }} min):</p>
     <p><a href="{{ url }}">{{ url }}</a></p>
-{% endblock %}
+{% endblock body %}

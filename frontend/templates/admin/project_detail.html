@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% block title %}{{ project.name }} — {{ app_name }}{% endblock %}
+{% block title %}{{ project.name }} — {{ app_name }}{% endblock title %}
 {% block content %}
     <nav class="issue-crumb">
         <a href="{{ url_for('admin_projects') }}" class="link-quiet">Projekty</a>
@@ -12,7 +12,8 @@
             <h1 class="issue-title">{{ project.name }}</h1>
             {% if project.description %}<p class="admin-page-sub">{{ project.description }}</p>{% endif %}
         </div>
-        <a href="{{ url_for('project_feed', key=project.key) }}" class="btn btn-secondary">Otwórz w portalu</a>
+        <a href="{{ url_for('project_feed', key=project.key) }}"
+           class="btn btn-secondary">Otwórz w portalu</a>
     </div>
     {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
@@ -104,4 +105,4 @@
             </div>
         {% endif %}
     </section>
-{% endblock %}
+{% endblock content %}

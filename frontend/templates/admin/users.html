@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% block title %}Użytkownicy — {{ app_name }}{% endblock %}
+{% block title %}Użytkownicy — {{ app_name }}{% endblock title %}
 {% block content %}
     <div class="admin-page-head">
         <div>
@@ -36,14 +36,17 @@
                         </p>
                     </div>
                     <div class="admin-entity-actions">
-                        <a href="{{ url_for('admin_user_edit', user_id=u.id) }}" class="btn btn-secondary">Edytuj</a>
+                        <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
+                           class="btn btn-secondary">Edytuj</a>
                         {% if u.is_pending and u.is_active %}
-                            <form method="post" action="{{ url_for('admin_user_resend_activation', user_id=u.id) }}">
+                            <form method="post"
+                                  action="{{ url_for('admin_user_resend_activation', user_id=u.id) }}">
                                 <button type="submit" class="btn btn-secondary">Wyślij ponownie</button>
                             </form>
                         {% endif %}
                         {% if u.id != user.id %}
-                            <form method="post" action="{{ url_for('admin_user_active', user_id=u.id) }}">
+                            <form method="post"
+                                  action="{{ url_for('admin_user_active', user_id=u.id) }}">
                                 {% if u.is_active %}
                                     <input type="hidden" name="active" value="0">
                                     <button type="submit" class="btn btn-danger">Zablokuj</button>
@@ -69,4 +72,4 @@
             {% endfor %}
         </ul>
     </section>
-{% endblock %}
+{% endblock content %}

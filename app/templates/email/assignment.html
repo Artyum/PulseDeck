@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
-{% block title %}Przypisanie — {{ ticket.title }}{% endblock %}
+{% block title %}Przypisanie — {{ ticket.title }}{% endblock title %}
 {% block body %}
     <p>Cześć {{ assignee.first_name }},</p>
     <p>Przypisano Ci zgłoszenie: <strong>{{ ticket.title }}</strong></p>
     <p><a href="{{ url }}">Otwórz w {{ app_name }}</a></p>
-{% endblock %}
+{% endblock body %}

@@ -1,6 +1,6 @@
 {% from "partials/ticket_macros.html" import project_checkboxes with context %}
 <form method="post"
-      action="{% if is_admin_edit %}{{ url_for('admin_user_update', user_id=edit_user.id) }}{% else %}{{ url_for('update_profile') }}{% endif %}"
+      action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
       class="panel panel-pad admin-form-stack">
     <h2 class="issue-section-title">Dane konta</h2>
     <div class="admin-field">

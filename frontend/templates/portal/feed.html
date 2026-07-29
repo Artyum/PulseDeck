@@ -1,7 +1,7 @@
 {% extends "base_app.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import ticket_row, attach_picker, modal_header, modal_cancel with context %}
-{% block title %}{{ project.name }} — {{ app_name }}{% endblock %}
+{% block title %}{{ project.name }} — {{ app_name }}{% endblock title %}
 {% block content %}
     {% set staff_views = [('all', 'Wszystkie'), ('needs_us', 'Do obsługi'), ('unassigned', 'Nieprzypisane'), ('mine_open', 'Moje otwarte'), ('waiting_on_client', 'Oczekuje na klienta'), ('done', 'Zakończone')] %}
     {% set client_views = [('all', 'Wszystkie'), ('mine', 'Moje'), ('open', 'Otwarte'), ('waiting_on_me', 'Oczekuje na mnie'), ('done', 'Zakończone')] %}
@@ -35,7 +35,7 @@
                 <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>Widok</h2>
                 <div class="feed-views">
                     {% for key, label in views %}
-                        <a href="{{ url_for('project_feed', key=project.key) }}?view={{ key }}{% if filter_sort and filter_sort != 'updated_at' %}&sort={{ filter_sort }}{% endif %}"
+                        <a href="{{ url_for('project_feed', key=project.key) }}?view={{ key }}{%- if filter_sort and filter_sort != 'updated_at' -%}&sort={{ filter_sort }}{%- endif -%}"
                            class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
                     {% endfor %}
                 </div>
@@ -144,4 +144,4 @@
             </div>
         </form>
     </dialog>
-{% endblock %}
+{% endblock content %}

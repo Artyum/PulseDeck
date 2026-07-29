@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% block title %}Edycja użytkownika — {{ app_name }}{% endblock %}
+{% block title %}Edycja użytkownika — {{ app_name }}{% endblock title %}
 {% block content %}
     <nav class="issue-crumb">
         <a href="{{ url_for('admin_users') }}" class="link-quiet">Użytkownicy</a>
@@ -36,4 +36,4 @@
     <section class="admin-section">
         <div class="admin-narrow admin-panels">{% include "partials/user_profile_form.html" %}</div>
     </section>
-{% endblock %}
+{% endblock content %}

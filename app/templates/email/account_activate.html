@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
-{% block title %}Aktywuj konto — {{ app_name }}{% endblock %}
+{% block title %}Aktywuj konto — {{ app_name }}{% endblock title %}
 {% block body %}
     <p>Cześć {{ user.first_name }},</p>
     <p>Twoje konto w {{ app_name }} czeka na aktywację. Ustaw hasło (link ważny {{ ttl_days }} dni):</p>
     <p><a href="{{ url }}">{{ url }}</a></p>
-{% endblock %}
+{% endblock body %}

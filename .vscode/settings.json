@@ -21,9 +21,6 @@
   "terminal.integrated.scrollback": 10000,
   "terminal.integrated.defaultProfile.windows": "PowerShell",
 
-  // Konfiguracja Pylance
-  "python.analysis.typeCheckingMode": "standard",
-
   // Konfiguracja dla plików Python
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
