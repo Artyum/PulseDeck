@@ -16,8 +16,13 @@
                 </a>
                 <a href="{{ url_for('profile_password_page') }}"
                    class="admin-nav-item{% if section == 'password' %} is-active{% endif %}">
-                    <span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>
+                    <span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>
                     Zmiana hasła
+                </a>
+                <a href="{{ url_for('profile_settings_page') }}"
+                   class="admin-nav-item{% if section == 'settings' %} is-active{% endif %}">
+                    <span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>
+                    Ustawienia
                 </a>
             </nav>
             <div class="admin-aside-foot">

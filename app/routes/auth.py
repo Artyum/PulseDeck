@@ -59,7 +59,7 @@ def _render_profile(
     error: str | None = None,
     success: str | None = None,
 ):
-    if section not in ("dane", "password"):
+    if section not in ("dane", "password", "settings"):
         section = "dane"
     return render(
         request,
@@ -143,6 +143,11 @@ def profile_page(request: Request, user: CurrentUser):
 @router.get("/profile/password", response_class=HTMLResponse)
 def profile_password_page(request: Request, user: CurrentUser):
     return _render_profile(request, user, section="password")
+
+
+@router.get("/profile/settings", response_class=HTMLResponse)
+def profile_settings_page(request: Request, user: CurrentUser):
+    return _render_profile(request, user, section="settings")
 
 
 @router.post("/profile")

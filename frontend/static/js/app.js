@@ -235,4 +235,44 @@
       menu.open = false;
     });
   });
+
+  function currentTheme(key, fallback) {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+
+  function syncThemePicker(root) {
+    if (!root) return;
+    var key = root.getAttribute("data-theme-storage-key") || "pulsedeck_theme";
+    var active = currentTheme(key, "morning-mist");
+    root.querySelectorAll("[data-theme-id]").forEach(function (btn) {
+      var on = btn.getAttribute("data-theme-id") === active;
+      btn.classList.toggle("is-active", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  document.addEventListener("click", function (ev) {
+    var btn = ev.target.closest("[data-theme-id]");
+    if (!btn) return;
+    var root = btn.closest("[data-theme-storage-key]");
+    if (!root) return;
+    var key = root.getAttribute("data-theme-storage-key") || "pulsedeck_theme";
+    var theme = btn.getAttribute("data-theme-id");
+    if (!theme) return;
+    try {
+      localStorage.setItem(key, theme);
+    } catch (e) {}
+    applyTheme(theme);
+    syncThemePicker(root);
+  });
+
+  syncThemePicker(document.querySelector("[data-theme-storage-key]"));
 })();

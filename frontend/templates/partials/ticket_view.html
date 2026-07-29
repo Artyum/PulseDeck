@@ -5,7 +5,9 @@
         <a href="{{ url_for('project_feed', key=project.key) }}"
            class="link-quiet">{{ project.name }}</a>
         <span aria-hidden="true">/</span>
-        <span class="issue-key">{{ ticket|ticket_label }}</span>
+        <a href="{{ url_for('ticket_detail', ticket_ref=ticket|ticket_label) }}"
+           class="issue-key"
+           aria-current="page">{{ ticket|ticket_label }}</a>
     </nav>
     {% include "partials/ticket_header.html" %}
     <section class="issue-section">

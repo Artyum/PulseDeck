@@ -1,8 +1,20 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" data-theme="{{ ui_theme }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+        (function () {
+          var key = {{ theme_storage_key|tojson }};
+          var allowed = {{ theme_choices|map(attribute='id')|list|tojson }};
+          try {
+            var theme = localStorage.getItem(key);
+            if (theme && allowed.indexOf(theme) !== -1) {
+              document.documentElement.setAttribute("data-theme", theme);
+            }
+          } catch (e) {}
+        })();
+        </script>
         <title>{% block title %}{{ app_name }}{% endblock title %}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

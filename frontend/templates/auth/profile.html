@@ -2,6 +2,8 @@
 {% block title %}
     {% if profile_section == 'password' %}
         Zmiana hasła — {{ app_name }}
+    {% elif profile_section == 'settings' %}
+        Ustawienia — {{ app_name }}
     {% else %}
         Profil — {{ app_name }}
     {% endif %}
@@ -12,6 +14,9 @@
             {% if profile_section == 'password' %}
                 <h1 class="issue-title">Zmiana hasła</h1>
                 <p class="admin-page-sub">Ustaw nowe hasło do konta.</p>
+            {% elif profile_section == 'settings' %}
+                <h1 class="issue-title">Ustawienia</h1>
+                <p class="admin-page-sub">Dostosuj wygląd aplikacji.</p>
             {% else %}
                 <h1 class="issue-title">Dane konta</h1>
                 <p class="admin-page-sub">{{ edit_user.display_name }} · {{ edit_user.email }} · {{ role_labels[edit_user.role] }}</p>

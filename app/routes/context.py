@@ -18,6 +18,7 @@ from app.models.enums import (
 )
 from app.utils.csrf import ensure_csrf_token
 from app.utils.dev_page_info import build_dev_page_info
+from app.utils.themes import DEFAULT_THEME, THEME_CHOICES, THEME_STORAGE_KEY
 from app.utils.timefmt import age_since, gap_between
 from app.utils.urls import admin_project_path, project_path, ticket_label, ticket_path
 
@@ -40,6 +41,9 @@ def common_context(request: Request, **extra) -> dict:
         "csrf_token": ensure_csrf_token(request),
         "app_base_url": settings.app_base_url,
         "is_dev": settings.environment == "development",
+        "ui_theme": DEFAULT_THEME,
+        "theme_choices": THEME_CHOICES,
+        "theme_storage_key": THEME_STORAGE_KEY,
         "ticket_types": TicketType,
         "ticket_statuses": TicketStatus,
         "ticket_priorities": TicketPriority,

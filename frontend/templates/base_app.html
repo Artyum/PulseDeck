@@ -1,35 +1,43 @@
 {% extends "base.html" %}
 {% block body %}
     <header class="app-header">
-        <div class="app-shell flex items-center justify-between gap-4 py-3">
-            <div class="flex items-center gap-5 min-w-0">
+        <div class="app-shell app-header-bar">
+            <div class="app-header-left">
                 <a href="{%- if project is defined and project -%}{{ url_for('project_feed', key=project.key) }}{%- else -%}{{ url_for('home') }}{%- endif -%}"
                    class="brand-mark shrink-0">{{ app_name }}</a>
-                {% if projects is defined and projects %}
-                    <div class="nav-project hidden sm:flex">
-                        {% if project is defined and project %}
-                            <a href="{{ url_for('project_feed', key=project.key) }}"
-                               class="nav-project-name"
-                               title="{{ project.name }}">{{ project.name }}</a>
-                        {% endif %}
-                        {% if projects|length > 1 or not (project is defined and project) %}
-                            <details class="issue-menu">
-                                <summary class="nav-project-change"
-                                         aria-label="Zmień projekt"
-                                         title="Zmień projekt">Zmień</summary>
-                                <div class="issue-menu-panel" role="menu">
-                                    {% for p in projects %}
-                                        <a href="{{ url_for('project_feed', key=p.key) }}"
-                                           class="issue-menu-item{% if project is defined and project and p.id == project.id %} is-active{% endif %}"
-                                           {% if project is defined and project and p.id == project.id %}aria-current="page"{% endif %}>{{ p.name }}</a>
-                                    {% endfor %}
-                                </div>
-                            </details>
-                        {% endif %}
-                    </div>
+                {% if project is defined and project and projects is defined and projects|length == 1 %}
+                    <span class="nav-project-current" title="{{ project.name }}">{{ project.name }}</span>
                 {% endif %}
             </div>
-            <nav class="flex items-center" aria-label="Konto">
+            <nav class="app-header-right" aria-label="Nawigacja">
+                {% if projects is defined and projects and (projects|length > 1 or not (project is defined and project)) %}
+                    <details class="issue-menu nav-project-menu">
+                        <summary class="nav-project-trigger"
+                                 aria-label="Wybierz projekt"
+                                 title="Wybierz projekt">
+                            <span class="nav-project-trigger-name">
+                                {% if project is defined and project %}
+                                    {{ project.name }}
+                                {% else %}
+                                    Wybierz projekt
+                                {% endif %}
+                            </span>
+                            <span class="nav-user-caret" aria-hidden="true"></span>
+                        </summary>
+                        <div class="issue-menu-panel issue-menu-panel-end nav-project-panel"
+                             role="menu">
+                            {% for p in projects %}
+                                <a href="{{ url_for('project_feed', key=p.key) }}"
+                                   class="issue-menu-item{% if project is defined and project and p.id == project.id %} is-active{% endif %}"
+                                   role="menuitem"
+                                   {% if project is defined and project and p.id == project.id %}aria-current="page"{% endif %}>
+                                    <span class="nav-project-option-name">{{ p.name }}</span>
+                                    <span class="nav-project-option-key">{{ p.key }}</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </details>
+                {% endif %}
                 <details class="issue-menu">
                     <summary class="nav-user"
                              aria-label="Menu użytkownika"

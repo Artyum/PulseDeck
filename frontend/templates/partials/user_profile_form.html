@@ -1,6 +1,7 @@
 {% from "partials/ticket_macros.html" import project_checkboxes with context %}
 {% set show_data = is_admin_edit or profile_section|default('dane') == 'dane' %}
 {% set show_password = is_admin_edit or profile_section|default('dane') == 'password' %}
+{% set show_settings = not is_admin_edit and profile_section|default('dane') == 'settings' %}
 {% if show_data %}
     <form method="post"
           action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
@@ -112,4 +113,32 @@
             <button type="submit" class="btn btn-primary">Zapisz hasło</button>
         </form>
     {% endif %}
+{% endif %}
+{% if show_settings %}
+    <div class="panel panel-pad admin-form-stack" id="theme-settings">
+        <h2 class="issue-section-title">Motyw kolorystyczny</h2>
+        <p class="admin-field-hint">Zapisuje się w tej przeglądarce.</p>
+        <div class="theme-picker"
+             role="radiogroup"
+             aria-label="Motyw kolorystyczny"
+             data-theme-storage-key="{{ theme_storage_key }}">
+            {% for theme in theme_choices %}
+                <button type="button"
+                        class="theme-option"
+                        data-theme-id="{{ theme.id }}"
+                        aria-pressed="false">
+                    <span class="theme-option-swatches" aria-hidden="true">
+                        {% for swatch in theme.swatches %}
+                            <span class="theme-option-swatch" style="background: {{ swatch }}"></span>
+                        {% endfor %}
+                    </span>
+                    <span class="theme-option-meta">
+                        <span class="theme-option-label">{{ theme.label }}</span>
+                        <span class="theme-option-desc">{{ theme.description }}</span>
+                    </span>
+                    <span class="theme-option-check">Aktywny</span>
+                </button>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}

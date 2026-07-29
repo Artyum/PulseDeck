@@ -3,7 +3,7 @@
 {% from "partials/ticket_macros.html" import ticket_row, attach_picker, modal_header, modal_cancel with context %}
 {% block title %}{{ project.name }} — {{ app_name }}{% endblock title %}
 {% block content %}
-    {% set staff_views = [('all', 'Wszystkie'), ('needs_us', 'Do obsługi'), ('unassigned', 'Nieprzypisane'), ('mine_open', 'Moje otwarte'), ('waiting_on_client', 'Oczekuje na klienta'), ('done', 'Zakończone')] %}
+    {% set staff_views = [('all', 'Wszystkie'), ('mine_open', 'Moje otwarte'), ('needs_us', 'Do obsługi'), ('unassigned', 'Nieprzypisane'), ('waiting_on_client', 'Oczekuje na klienta'), ('done', 'Zakończone')] %}
     {% set client_views = [('all', 'Wszystkie'), ('mine', 'Moje'), ('open', 'Otwarte'), ('waiting_on_me', 'Oczekuje na mnie'), ('done', 'Zakończone')] %}
     {% set views = staff_views if user.is_staff else client_views %}
     <div class="issue-page">
