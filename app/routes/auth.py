@@ -55,15 +55,19 @@ def _render_profile(
     request: Request,
     user: User,
     *,
+    section: str = "dane",
     error: str | None = None,
     success: str | None = None,
 ):
+    if section not in ("dane", "password"):
+        section = "dane"
     return render(
         request,
         "auth/profile.html",
         user=user,
         edit_user=user,
         is_admin_edit=False,
+        profile_section=section,
         error=error,
         success=success,
     )
@@ -133,7 +137,12 @@ def logout(request: Request):
 
 @router.get("/profile", response_class=HTMLResponse)
 def profile_page(request: Request, user: CurrentUser):
-    return _render_profile(request, user)
+    return _render_profile(request, user, section="dane")
+
+
+@router.get("/profile/password", response_class=HTMLResponse)
+def profile_password_page(request: Request, user: CurrentUser):
+    return _render_profile(request, user, section="password")
 
 
 @router.post("/profile")
@@ -161,8 +170,10 @@ def update_profile(
         db.refresh(user)
     except ValueError as exc:
         db.rollback()
-        return _render_profile(request, user, error=str(exc))
-    return _render_profile(request, user, success="Profil został zaktualizowany.")
+        return _render_profile(request, user, section="dane", error=str(exc))
+    return _render_profile(
+        request, user, section="dane", success="Profil został zaktualizowany."
+    )
 
 
 @router.post("/profile/password")
@@ -183,8 +194,10 @@ def change_password(
         auth_service.set_password(user, new_password)
         db.commit()
     except ValueError as exc:
-        return _render_profile(request, user, error=str(exc))
-    return _render_profile(request, user, success="Hasło zostało zmienione.")
+        return _render_profile(request, user, section="password", error=str(exc))
+    return _render_profile(
+        request, user, section="password", success="Hasło zostało zmienione."
+    )
 
 
 @router.get("/auth/confirm-email")
