@@ -10,9 +10,6 @@
     img.alt = btn.getAttribute("data-lightbox-alt") || "";
     dlg.showModal();
   });
-  dlg.addEventListener("click", function (ev) {
-    if (ev.target === dlg) dlg.close();
-  });
   dlg.addEventListener("close", function () {
     img.removeAttribute("src");
     img.alt = "";

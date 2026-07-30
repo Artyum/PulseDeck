@@ -2062,6 +2062,35 @@
     flex-direction: column;
   }
 
+  @keyframes modal-backdrop-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes modal-backdrop-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .modal::backdrop,
+  .lightbox::backdrop {
+    opacity: 0;
+    animation: modal-backdrop-in 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .modal.is-closing::backdrop,
+  .lightbox.is-closing::backdrop {
+    animation: modal-backdrop-out 220ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
   .modal::backdrop {
     background: rgb(6 13 22 / 0.55);
     backdrop-filter: blur(3px);
@@ -2731,6 +2760,14 @@
   @media (prefers-reduced-motion: reduce) {
     .btn {
       transform: none;
+    }
+
+    .modal::backdrop,
+    .modal.is-closing::backdrop,
+    .lightbox::backdrop,
+    .lightbox.is-closing::backdrop {
+      animation: none;
+      opacity: 1;
     }
   }
 

@@ -183,9 +183,7 @@ def update_profile(
             _token_row, raw = auth_service.request_email_change(
                 db, user, new_email, lang=lang
             )
-            notify_email_confirm(
-                background_tasks, user, raw, new_email, lang=lang
-            )
+            notify_email_confirm(background_tasks, user, raw, new_email, lang=lang)
             clear_user_session(request)
             return RedirectResponse("/login?email_confirm=1", status_code=303)
         db.commit()

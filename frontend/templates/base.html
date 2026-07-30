@@ -60,13 +60,17 @@
                     <button type="button"
                             class="modal-close"
                             data-confirm-cancel
-                            aria-label="{{ t('ui.common.close') }}">×</button>
+                            aria-label="{{ t('ui.common.close') }}"
+                            onclick="this.closest('dialog').close()">×</button>
                 </div>
                 <div class="modal-body">
                     <p id="app-confirm-message" class="confirm-message"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-confirm-cancel>{{ t("ui.common.cancel") }}</button>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-confirm-cancel
+                            onclick="this.closest('dialog').close()">{{ t("ui.common.cancel") }}</button>
                     <button type="button" class="btn btn-primary" id="app-confirm-ok">{{ t("ui.common.confirm") }}</button>
                 </div>
             </div>

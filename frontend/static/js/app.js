@@ -103,32 +103,18 @@
         if (settled) return;
         settled = true;
         okBtn.removeEventListener("click", onOk);
-        dlg.querySelectorAll("[data-confirm-cancel]").forEach(function (btn) {
-          btn.removeEventListener("click", onCancel);
-        });
         dlg.removeEventListener("close", onClose);
-        dlg.removeEventListener("click", onBackdrop);
         if (dlg.open) dlg.close();
         resolve(result);
       }
       function onOk() {
         finish(true);
       }
-      function onCancel() {
-        finish(false);
-      }
       function onClose() {
         finish(false);
       }
-      function onBackdrop(ev) {
-        if (ev.target === dlg) finish(false);
-      }
       okBtn.addEventListener("click", onOk);
-      dlg.querySelectorAll("[data-confirm-cancel]").forEach(function (btn) {
-        btn.addEventListener("click", onCancel);
-      });
       dlg.addEventListener("close", onClose);
-      dlg.addEventListener("click", onBackdrop);
       dlg.showModal();
       if (opts.danger) {
         const cancels = dlg.querySelectorAll("[data-confirm-cancel]");
@@ -226,39 +212,90 @@
     window.showToast(i18n("errors.network", "Could not connect to the server."), "error");
   });
 
-  function popIn(el, dy) {
-    if (!el || !el.animate) return;
-    var y = dy == null ? "-0.2rem" : dy;
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function isAnimatedDialog(el) {
+    return el instanceof HTMLDialogElement && (el.classList.contains("modal") || el.classList.contains("lightbox"));
+  }
+
+  var dialogFrames = [
+    { opacity: 0, transform: "translateY(0.55rem) scale(0.97)" },
+    { opacity: 1, transform: "translateY(0) scale(1)" },
+  ];
+
+  function animateDialog(el, reverse, onDone) {
+    if (!el.animate || prefersReducedMotion()) {
+      if (onDone) onDone();
+      return;
+    }
     el.getAnimations().forEach(function (a) {
       a.cancel();
     });
-    el.style.opacity = "0";
-    el.style.transform = "translateY(" + y + ")";
-    requestAnimationFrame(function () {
-      var anim = el.animate(
-        [
-          { opacity: 0, transform: "translateY(" + y + ")" },
-          { opacity: 1, transform: "translateY(0)" },
-        ],
-        { duration: 160, easing: "cubic-bezier(0.2, 0.85, 0.25, 1)", fill: "forwards" }
-      );
-      var clear = function () {
+    var frames = reverse ? [dialogFrames[1], dialogFrames[0]] : dialogFrames;
+    var start = function () {
+      var anim = el.animate(frames, {
+        duration: reverse ? 220 : 320,
+        easing: reverse ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.16, 1, 0.3, 1)",
+        fill: "forwards",
+      });
+      var finish = function () {
         el.style.opacity = "";
         el.style.transform = "";
         try {
           anim.cancel();
         } catch (e) {}
+        if (onDone) onDone();
       };
-      anim.finished.then(clear).catch(clear);
-    });
+      anim.finished.then(finish).catch(finish);
+    };
+    if (!reverse) {
+      el.style.opacity = "0";
+      el.style.transform = dialogFrames[0].transform;
+      requestAnimationFrame(start);
+      return;
+    }
+    start();
   }
 
   var nativeShowModal = HTMLDialogElement.prototype.showModal;
+  var nativeClose = HTMLDialogElement.prototype.close;
+
   HTMLDialogElement.prototype.showModal = function () {
+    this.classList.remove("is-closing");
     nativeShowModal.call(this);
-    if (this.classList.contains("modal")) popIn(this, "0.35rem");
-    else if (this.classList.contains("lightbox")) popIn(this, "0");
+    if (isAnimatedDialog(this)) animateDialog(this, false);
   };
+
+  HTMLDialogElement.prototype.close = function (returnValue) {
+    if (!isAnimatedDialog(this) || !this.open) {
+      nativeClose.call(this, returnValue);
+      return;
+    }
+    if (this.classList.contains("is-closing")) return;
+    var el = this;
+    el.classList.add("is-closing");
+    animateDialog(el, true, function () {
+      el.classList.remove("is-closing");
+      nativeClose.call(el, returnValue);
+    });
+  };
+
+  document.addEventListener(
+    "cancel",
+    function (ev) {
+      var dlg = ev.target;
+      if (!isAnimatedDialog(dlg) || !dlg.open || prefersReducedMotion()) return;
+      ev.preventDefault();
+      dlg.close();
+    },
+    true
+  );
+
+  document.addEventListener("click", function (ev) {
+    if (isAnimatedDialog(ev.target) && ev.target.open) ev.target.close();
+  });
 
   function resolveFormSelect(el) {
     return el.closest("[data-form-select]");
