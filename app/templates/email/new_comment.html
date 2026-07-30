@@ -1,6 +1,10 @@
 {% extends "_base.html" %}
-{% block title %}Nowa odpowiedź — {{ ticket.title }}{% endblock title %}
+{% block title %}{{ t('email.new_comment.subject', title=ticket.title) }}{% endblock title %}
 {% block body %}
-    <p>Nowa odpowiedź w zgłoszeniu: <strong>{{ ticket.title }}</strong></p>
-    <p><a href="{{ url }}">Otwórz wątek</a></p>
+    <p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#0f172a;">{{ t('email.new_comment.title', title=ticket.title) }}</p>
+    <p style="margin:0 0 20px;">{{ t('email.new_comment.body', title=ticket.title) }}</p>
+    <p style="margin:0 0 16px;">
+        <a href="{{ url }}" style="display:inline-block;background:#2f72e8;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:600;">{{ t('email.new_comment.cta') }}</a>
+    </p>
+    <p style="margin:0;font-size:12px;color:#64748b;word-break:break-all;">{{ url }}</p>
 {% endblock body %}

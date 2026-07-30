@@ -33,7 +33,9 @@
       const prev = btn.textContent;
       btn.classList.remove("is-ok", "is-err");
       btn.classList.add(ok ? "is-ok" : "is-err");
-      btn.textContent = ok ? "OK" : "Błąd";
+      var i18n = window.__i18n || {};
+      btn.textContent = ok ? i18n.copy_ok || "OK" : i18n.copy_err || "Error";
+
       setTimeout(function () {
         btn.textContent = prev;
         btn.classList.remove("is-ok", "is-err");

@@ -1,5 +1,3 @@
-"""Ochrona CSRF dla żądań modyfikujących stan."""
-
 from __future__ import annotations
 
 import logging
@@ -11,6 +9,7 @@ from starlette.requests import Request
 
 from app.config import get_settings
 from app.utils.csrf import CSRF_HEADER, CSRF_SESSION_KEY, ensure_csrf_token
+from app.utils.i18n import resolve_lang, t
 
 logger = logging.getLogger("pulsedeck.middleware.csrf")
 
@@ -25,12 +24,15 @@ def _is_exempt(path: str, method: str) -> bool:
     return (path, method) in _EXEMPT
 
 
-def _csrf_reject(path: str, detail: str):
-    if path.startswith("/api/"):
+def _csrf_reject(request: Request, detail_key: str):
+    lang = resolve_lang(request)
+    detail = t(lang, detail_key)
+    if request.url.path.startswith("/api/"):
         return JSONResponse(status_code=403, content={"detail": detail})
+    hint = t(lang, "messages.csrf.refresh_hint")
     return HTMLResponse(
         status_code=403,
-        content=f"<p>{detail} Odśwież stronę i spróbuj ponownie.</p>",
+        content=f"<p>{detail} {hint}</p>",
     )
 
 
@@ -55,7 +57,7 @@ class CSRFProtectMiddleware(BaseHTTPMiddleware):
 
         if not session_token or not token:
             logger.warning("CSRF: brak tokenu (path=%s method=%s)", path, method)
-            return _csrf_reject(path, "Brak lub nieważny token CSRF.")
+            return _csrf_reject(request, "messages.csrf.missing")
 
         try:
             ok = secrets.compare_digest(token, session_token)
@@ -64,6 +66,6 @@ class CSRFProtectMiddleware(BaseHTTPMiddleware):
 
         if not ok:
             logger.warning("CSRF: niezgodny token (path=%s method=%s)", path, method)
-            return _csrf_reject(path, "Nieważny token CSRF.")
+            return _csrf_reject(request, "messages.csrf.invalid")
 
         return await call_next(request)

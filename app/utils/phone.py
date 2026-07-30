@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import re
 
+from app.utils.i18n import DEFAULT_LANG, t
+
 _E164_RE = re.compile(r"^\+[1-9]\d{7,14}$")
 
 
-def normalize_phone(raw: str | None) -> str | None:
+def normalize_phone(raw: str | None, *, lang: str | None = None) -> str | None:
     if raw is None:
         return None
     cleaned = raw.strip()
@@ -13,7 +15,5 @@ def normalize_phone(raw: str | None) -> str | None:
         return None
     compact = re.sub(r"[\s\-()]", "", cleaned)
     if not _E164_RE.match(compact):
-        raise ValueError(
-            "Telefon musi być w formacie międzynarodowym E.164 (np. +48123456789)."
-        )
+        raise ValueError(t(lang or DEFAULT_LANG, "messages.phone.e164"))
     return compact

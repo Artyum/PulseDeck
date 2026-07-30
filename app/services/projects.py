@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.models.enums import UserRole
 from app.models.ticket import Ticket
 from app.models.user import Project, ProjectMember, User
+from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.project_key import validate_project_key
 
 
@@ -35,7 +36,11 @@ def list_admins(db: Session) -> list[User]:
 
 def list_users(db: Session) -> list[User]:
     return list(
-        db.scalars(select(User).order_by(User.last_name, User.first_name)).all()
+        db.scalars(
+            select(User)
+            .options(selectinload(User.memberships))
+            .order_by(User.last_name, User.first_name)
+        ).all()
     )
 
 
@@ -111,10 +116,14 @@ def get_project_by_key(db: Session, key: str) -> Project | None:
     )
 
 
-def get_project_by_key_or_404(db: Session, key: str) -> Project:
+def get_project_by_key_or_404(
+    db: Session, key: str, *, lang: str | None = None
+) -> Project:
     project = get_project_by_key(db, key)
     if not project:
-        raise HTTPException(status_code=404, detail="Nie znaleziono")
+        raise HTTPException(
+            status_code=404, detail=t(lang or DEFAULT_LANG, "messages.http.not_found")
+        )
     return project
 
 
@@ -139,24 +148,30 @@ def _normalize_project_fields(
     description: str | None,
     *,
     exclude_id: int | None = None,
+    lang: str,
 ) -> tuple[str, str, str | None]:
     clean_name = name.strip()
     if not clean_name:
-        raise ValueError("Nazwa projektu jest wymagana.")
+        raise ValueError(t(lang, "messages.projects.name_required"))
     if _name_taken(db, clean_name, exclude_id=exclude_id):
-        raise ValueError("Projekt o tej nazwie już istnieje.")
-    clean_key = validate_project_key(key)
+        raise ValueError(t(lang, "messages.projects.name_exists"))
+    clean_key = validate_project_key(key, lang=lang)
     if _key_taken(db, clean_key, exclude_id=exclude_id):
-        raise ValueError("Projekt o tym key już istnieje.")
+        raise ValueError(t(lang, "messages.projects.key_exists"))
     clean_description = (description or "").strip() or None
     return clean_name, clean_key, clean_description
 
 
 def create_project(
-    db: Session, name: str, key: str, description: str | None = None
+    db: Session,
+    name: str,
+    key: str,
+    description: str | None = None,
+    *,
+    lang: str | None = None,
 ) -> Project:
     clean_name, clean_key, clean_description = _normalize_project_fields(
-        db, name, key, description
+        db, name, key, description, lang=lang or DEFAULT_LANG
     )
     project = Project(
         name=clean_name,
@@ -176,9 +191,10 @@ def update_project(
     name: str,
     key: str,
     description: str | None = None,
+    lang: str | None = None,
 ) -> Project:
     clean_name, clean_key, clean_description = _normalize_project_fields(
-        db, name, key, description, exclude_id=project.id
+        db, name, key, description, exclude_id=project.id, lang=lang or DEFAULT_LANG
     )
     project.name = clean_name
     project.key = clean_key
@@ -237,22 +253,27 @@ def clear_user_memberships(db: Session, user_id: int) -> None:
     db.flush()
 
 
-def resolve_project_ids(db: Session, project_ids: list[int]) -> list[int]:
+def resolve_project_ids(
+    db: Session, project_ids: list[int], *, lang: str | None = None
+) -> list[int]:
+    lang = lang or DEFAULT_LANG
     unique = list(dict.fromkeys(int(x) for x in project_ids))
     if not unique:
-        raise ValueError("Wybierz co najmniej jeden projekt.")
+        raise ValueError(t(lang, "messages.projects.at_least_one"))
     found = set(db.scalars(select(Project.id).where(Project.id.in_(unique))).all())
     if found != set(unique):
-        raise ValueError("Nieprawidłowy projekt.")
+        raise ValueError(t(lang, "messages.projects.invalid"))
     return unique
 
 
-def set_user_projects(db: Session, user_id: int, project_ids: list[int]) -> None:
+def set_user_projects(
+    db: Session, user_id: int, project_ids: list[int], *, lang: str | None = None
+) -> None:
     user = db.get(User, user_id)
     if user and user.is_admin:
         clear_user_memberships(db, user_id)
         return
-    wanted = set(resolve_project_ids(db, project_ids))
+    wanted = set(resolve_project_ids(db, project_ids, lang=lang))
     current = list(
         db.scalars(select(ProjectMember).where(ProjectMember.user_id == user_id)).all()
     )

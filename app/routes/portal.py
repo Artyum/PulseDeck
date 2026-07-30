@@ -38,6 +38,7 @@ from app.services.email import (
     notify_status_change,
 )
 from app.services.uploads import save_upload
+from app.utils.i18n import resolve_lang, t
 from app.utils.urls import project_path, ticket_path
 
 router = APIRouter(tags=["portal"])
@@ -50,25 +51,31 @@ def _upload_limit() -> str:
     return get_settings().upload_rate_limit
 
 
-def _load_project(db: Session, key: str, user: User) -> Project:
-    project = project_service.get_project_by_key_or_404(db, key)
-    ticket_service.require_project_access(db, user, project.id)
+def _load_project(db: Session, key: str, user: User, *, lang: str) -> Project:
+    project = project_service.get_project_by_key_or_404(db, key, lang=lang)
+    ticket_service.require_project_access(db, user, project.id, lang=lang)
     return project
 
 
-def _parse_ticket_ref(ticket_ref: str) -> tuple[str, int]:
+def _parse_ticket_ref(ticket_ref: str, *, lang: str) -> tuple[str, int]:
     match = _TICKET_REF_RE.fullmatch((ticket_ref or "").strip().upper())
     if not match:
-        raise HTTPException(status_code=404, detail="Nie znaleziono")
+        raise HTTPException(
+            status_code=404, detail=t(lang, "messages.http.not_found")
+        )
     return match.group(1), int(match.group(2))
 
 
-def _load_ticket(db: Session, ticket_ref: str, user: User) -> tuple[Project, Ticket]:
-    key, ticket_id = _parse_ticket_ref(ticket_ref)
+def _load_ticket(
+    db: Session, ticket_ref: str, user: User, *, lang: str
+) -> tuple[Project, Ticket]:
+    key, ticket_id = _parse_ticket_ref(ticket_ref, lang=lang)
     ticket = ticket_service.get_ticket(db, ticket_id)
     if not ticket or not ticket.project or ticket.project.key != key:
-        raise HTTPException(status_code=404, detail="Nie znaleziono")
-    ticket_service.require_project_access(db, user, ticket.project_id)
+        raise HTTPException(
+            status_code=404, detail=t(lang, "messages.http.not_found")
+        )
+    ticket_service.require_project_access(db, user, ticket.project_id, lang=lang)
     return ticket.project, ticket
 
 
@@ -114,7 +121,8 @@ def _mutate_ticket(
     *,
     after: Callable[[Ticket], None] | None = None,
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
     ticket = mutator(ticket)
     if after:
         after(ticket)
@@ -127,10 +135,13 @@ async def _maybe_attach(
     *,
     ticket_id: int,
     comment_id: int | None = None,
+    lang: str,
 ) -> None:
     if not attachment or not attachment.filename:
         return
-    original, rel = await save_upload(attachment, subdir=f"tickets/{ticket_id}")
+    original, rel = await save_upload(
+        attachment, subdir=f"tickets/{ticket_id}", lang=lang
+    )
     ticket_service.add_attachment(
         db,
         file_name=original,
@@ -147,6 +158,7 @@ async def _attach_many(
     ticket_id: int,
     comment_id: int | None = None,
     max_files: int = _MAX_TICKET_ATTACHMENTS,
+    lang: str,
 ) -> None:
     if not attachments:
         return
@@ -156,7 +168,9 @@ async def _attach_many(
             break
         if not attachment or not attachment.filename:
             continue
-        await _maybe_attach(db, attachment, ticket_id=ticket_id, comment_id=comment_id)
+        await _maybe_attach(
+            db, attachment, ticket_id=ticket_id, comment_id=comment_id, lang=lang
+        )
         count += 1
 
 
@@ -186,7 +200,8 @@ def project_feed(
     q: str | None = None,
     sort: str | None = None,
 ):
-    project = _load_project(db, key, user)
+    lang = resolve_lang(request)
+    project = _load_project(db, key, user, lang=lang)
     set_last_project_key(request, project.key)
     projects = project_service.list_user_projects(db, user)
     current_view = view or "all"
@@ -225,7 +240,8 @@ def ticket_detail(
     user: CurrentUser,
     db: DbSession,
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
     set_last_project_key(request, _project.key)
     projects = project_service.list_user_projects(db, user)
     return render(
@@ -250,7 +266,8 @@ async def create_ticket(
     priority: Annotated[str, Form()] = "NORMAL",
     attachments: Annotated[list[UploadFile] | None, File()] = None,
 ):
-    project = _load_project(db, key, user)
+    lang = resolve_lang(request)
+    project = _load_project(db, key, user, lang=lang)
     try:
         prio = TicketPriority(priority)
     except ValueError:
@@ -264,7 +281,7 @@ async def create_ticket(
         ticket_type=TicketType(ticket_type),
         priority=prio,
     )
-    await _attach_many(db, attachments, ticket_id=ticket.id)
+    await _attach_many(db, attachments, ticket_id=ticket.id, lang=lang)
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     notify_new_ticket(background_tasks, db, ticket)
     return RedirectResponse(ticket_path(ticket), status_code=303)
@@ -281,13 +298,16 @@ async def add_comment(
     is_internal: Annotated[str, Form()] = "",
     attachments: Annotated[list[UploadFile] | None, File()] = None,
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
     internal = bool(is_internal) and user.is_staff
     prev_assignee = ticket.assignee_id
     comment = ticket_service.add_comment(
-        db, ticket, user, content, is_internal=internal
+        db, ticket, user, content, is_internal=internal, lang=lang
     )
-    await _attach_many(db, attachments, ticket_id=ticket.id, comment_id=comment.id)
+    await _attach_many(
+        db, attachments, ticket_id=ticket.id, comment_id=comment.id, lang=lang
+    )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     notify_new_comment(background_tasks, db, ticket, user.id, is_internal=internal)
     auto_assigned = (
@@ -307,17 +327,20 @@ def change_status(
     db: DbSession,
     status: Annotated[str, Form()],
 ):
+    lang = resolve_lang(request)
     try:
         new_status = TicketStatus(status)
     except ValueError:
-        raise HTTPException(status_code=400, detail="Nieprawidłowy status.") from None
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.invalid_status")
+        ) from None
 
     prev_status: TicketStatus | None = None
 
     def mutate(ticket: Ticket) -> Ticket:
         nonlocal prev_status
         prev_status = ticket.status
-        return ticket_service.set_status(db, ticket, user, new_status)
+        return ticket_service.set_status(db, ticket, user, new_status, lang=lang)
 
     def after(ticket: Ticket) -> None:
         if ticket.status != prev_status:
@@ -334,13 +357,16 @@ def reopen_ticket(
     user: CurrentUser,
     db: DbSession,
 ):
+    lang = resolve_lang(request)
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.reopen_ticket(db, t, user),
-        after=lambda t: notify_status_change(background_tasks, db, t, user.id),
+        lambda ticket: ticket_service.reopen_ticket(db, ticket, user, lang=lang),
+        after=lambda ticket: notify_status_change(
+            background_tasks, db, ticket, user.id
+        ),
     )
 
 
@@ -356,16 +382,19 @@ async def edit_ticket(
     attachments: Annotated[list[UploadFile] | None, File()] = None,
     remove_attachment_ids: Annotated[list[int] | None, Form()] = None,
 ):
-    _project, ticket = _load_ticket(db, ticket_ref, user)
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
     ticket = ticket_service.update_ticket(
-        db, ticket, user, title=title, description=description
+        db, ticket, user, title=title, description=description, lang=lang
     )
     if remove_attachment_ids:
         ticket = ticket_service.remove_ticket_attachments(
-            db, ticket, user, remove_attachment_ids
+            db, ticket, user, remove_attachment_ids, lang=lang
         )
     remaining = max(0, _MAX_TICKET_ATTACHMENTS - len(ticket.attachments or []))
-    await _attach_many(db, attachments, ticket_id=ticket.id, max_files=remaining)
+    await _attach_many(
+        db, attachments, ticket_id=ticket.id, max_files=remaining, lang=lang
+    )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     return _ticket_mutation_response(request, db, user, ticket)
 
@@ -378,12 +407,15 @@ def change_priority(
     db: DbSession,
     priority: Annotated[str, Form()],
 ):
+    lang = resolve_lang(request)
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.set_priority(db, t, user, TicketPriority(priority)),
+        lambda ticket: ticket_service.set_priority(
+            db, ticket, user, TicketPriority(priority), lang=lang
+        ),
     )
 
 
@@ -395,16 +427,19 @@ def change_type(
     db: DbSession,
     ticket_type: Annotated[str, Form()],
 ):
+    lang = resolve_lang(request)
     try:
         new_type = TicketType(ticket_type)
     except ValueError:
-        raise HTTPException(status_code=400, detail="Nieprawidłowy typ.") from None
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.invalid_type")
+        ) from None
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.set_type(db, t, user, new_type),
+        lambda ticket: ticket_service.set_type(db, ticket, user, new_type, lang=lang),
     )
 
 
@@ -416,12 +451,15 @@ def add_tag(
     db: DbSession,
     name: Annotated[str, Form()],
 ):
+    lang = resolve_lang(request)
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.add_ticket_tag(db, t, user, name),
+        lambda ticket: ticket_service.add_ticket_tag(
+            db, ticket, user, name, lang=lang
+        ),
     )
 
 
@@ -433,12 +471,15 @@ def remove_tag(
     db: DbSession,
     tag_id: Annotated[int, Form()],
 ):
+    lang = resolve_lang(request)
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.remove_ticket_tag(db, t, user, tag_id),
+        lambda ticket: ticket_service.remove_ticket_tag(
+            db, ticket, user, tag_id, lang=lang
+        ),
     )
 
 
@@ -451,6 +492,7 @@ def assign(
     db: DbSession,
     assignee_id: Annotated[str, Form()] = "",
 ):
+    lang = resolve_lang(request)
     aid = int(assignee_id) if assignee_id else None
 
     def after(ticket: Ticket) -> None:
@@ -462,7 +504,9 @@ def assign(
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.assign_ticket(db, t, user, aid),
+        lambda ticket: ticket_service.assign_ticket(
+            db, ticket, user, aid, lang=lang
+        ),
         after=after,
     )
 
@@ -475,13 +519,14 @@ def self_assign(
     user: CurrentUser,
     db: DbSession,
 ):
+    lang = resolve_lang(request)
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.self_assign(db, t, user),
-        after=lambda t: notify_assignment(background_tasks, t, user),
+        lambda ticket: ticket_service.self_assign(db, ticket, user, lang=lang),
+        after=lambda ticket: notify_assignment(background_tasks, ticket, user),
     )
 
 
@@ -493,12 +538,17 @@ def add_participant(
     db: DbSession,
     user_id: Annotated[int | None, Form()] = None,
 ):
+    lang = resolve_lang(request)
     if user_id is None:
-        raise HTTPException(status_code=400, detail="Wybierz użytkownika.")
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.select_user")
+        )
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda t: ticket_service.add_participant(db, t, user, user_id),
+        lambda ticket: ticket_service.add_participant(
+            db, ticket, user, user_id, lang=lang
+        ),
     )

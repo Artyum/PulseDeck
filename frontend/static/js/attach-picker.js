@@ -72,7 +72,8 @@
         const remove = document.createElement("button");
         remove.type = "button";
         remove.className = "attach-preview-remove";
-        remove.setAttribute("aria-label", "Usuń " + file.name);
+        var removeLabel = (window.__i18n && window.__i18n["attach.remove"]) || "Remove {name}";
+        remove.setAttribute("aria-label", removeLabel.replace("{name}", file.name));
         remove.textContent = "×";
         remove.addEventListener("click", function () {
           files.splice(idx, 1);

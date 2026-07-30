@@ -1,24 +1,24 @@
 {% extends "auth/base_profile.html" %}
 {% block title %}
     {% if profile_section == 'password' %}
-        Zmiana hasła — {{ app_name }}
+        {{ t('ui.profile.title_doc.password', app=app_name) }}
     {% elif profile_section == 'settings' %}
-        Ustawienia — {{ app_name }}
+        {{ t('ui.profile.title_doc.settings', app=app_name) }}
     {% else %}
-        Profil — {{ app_name }}
+        {{ t('ui.profile.title_doc.data', app=app_name) }}
     {% endif %}
 {% endblock title %}
 {% block content %}
     <div class="admin-page-head">
         <div>
             {% if profile_section == 'password' %}
-                <h1 class="issue-title">Zmiana hasła</h1>
-                <p class="admin-page-sub">Ustaw nowe hasło do konta.</p>
+                <h1 class="issue-title">{{ t('ui.profile.title.password') }}</h1>
+                <p class="admin-page-sub">{{ t('ui.profile.sub.password') }}</p>
             {% elif profile_section == 'settings' %}
-                <h1 class="issue-title">Ustawienia</h1>
-                <p class="admin-page-sub">Dostosuj wygląd aplikacji.</p>
+                <h1 class="issue-title">{{ t('ui.profile.title.settings') }}</h1>
+                <p class="admin-page-sub">{{ t('ui.profile.sub.settings') }}</p>
             {% else %}
-                <h1 class="issue-title">Dane konta</h1>
+                <h1 class="issue-title">{{ t('ui.profile.title.data') }}</h1>
                 <p class="admin-page-sub">{{ edit_user.display_name }} · {{ edit_user.email }} · {{ role_labels[edit_user.role] }}</p>
             {% endif %}
         </div>

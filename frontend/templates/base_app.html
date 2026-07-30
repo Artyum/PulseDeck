@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
 {% block body %}
     <header class="app-header">
         <div class="app-shell app-header-bar">
@@ -9,22 +10,22 @@
                     <span class="nav-project-current" title="{{ project.name }}">{{ project.name }}</span>
                 {% endif %}
             </div>
-            <nav class="app-header-right" aria-label="Nawigacja">
+            <nav class="app-header-right" aria-label="{{ t('ui.nav.aria') }}">
                 {% if projects is defined and projects and (projects|length > 1 or not (project is defined and project)) %}
                     <details class="issue-menu nav-project-menu">
                         <summary class="nav-project-trigger"
-                                 aria-label="Wybierz projekt"
-                                 title="Wybierz projekt">
+                                 aria-label="{{ t('ui.nav.select_project') }}"
+                                 title="{{ t('ui.nav.select_project') }}">
                             <span class="nav-project-trigger-name">
                                 {% if project is defined and project %}
                                     {{ project.name }}
                                 {% else %}
-                                    Wybierz projekt
+                                    {{ t('ui.nav.select_project') }}
                                 {% endif %}
                             </span>
-                            <span class="nav-user-caret" aria-hidden="true"></span>
+                            {{ icon("chevron", "nav-user-caret") }}
                         </summary>
-                        <div class="issue-menu-panel issue-menu-panel-end nav-project-panel"
+                        <div class="issue-menu-panel nav-project-panel"
                              role="menu">
                             {% for p in projects %}
                                 <a href="{{ url_for('project_feed', key=p.key) }}"
@@ -40,23 +41,27 @@
                 {% endif %}
                 <details class="issue-menu">
                     <summary class="nav-user"
-                             aria-label="Menu użytkownika"
+                             aria-label="{{ t('ui.nav.user_menu') }}"
                              title="{{ user.display_name }}">
                         <span class="nav-user-name">{{ user.display_name }}</span>
-                        <span class="nav-user-caret" aria-hidden="true"></span>
+                        {{ icon("chevron", "nav-user-caret") }}
                     </summary>
-                    <div class="issue-menu-panel issue-menu-panel-end" role="menu">
-                        {% if user.is_admin %}<a href="{{ url_for('admin_home') }}"
-   class="issue-menu-item"
-   role="menuitem">Administracja</a>{% endif %}
+                    <div class="issue-menu-panel" role="menu">
+                        {% if user.is_admin %}
+                            <a href="{{ url_for('admin_home') }}"
+                               class="issue-menu-item"
+                               role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t('ui.nav.admin') }}</a>
+                        {% endif %}
                         <a href="{{ url_for('profile_page') }}"
                            class="issue-menu-item"
-                           role="menuitem">Profil</a>
+                           role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t('ui.nav.profile') }}</a>
                         <hr class="issue-menu-sep">
                         <form method="post"
                               action="{{ url_for('logout') }}"
                               class="issue-menu-form">
-                            <button type="submit" class="issue-menu-item" role="menuitem">Wyloguj</button>
+                            <button type="submit" class="issue-menu-item" role="menuitem">
+                                <span class="section-icon" aria-hidden="true">{{ icon("logout") }}</span>{{ t('ui.nav.logout') }}
+                            </button>
                         </form>
                     </div>
                 </details>

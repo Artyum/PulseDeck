@@ -1,13 +1,21 @@
 (function () {
-  const FIELD_LABELS = {
-    user_id: "użytkownika",
-    content: "treści wiadomości",
-    title: "tytułu",
-    description: "opisu",
-    email: "adresu e-mail",
-    password: "hasła",
-    tag: "tagu",
-  };
+  function i18n(key, fallback) {
+    var dict = window.__i18n || {};
+    var value = dict[key];
+    return value != null && value !== "" ? value : fallback || key;
+  }
+
+  function i18nFormat(key, fallback, vars) {
+    var text = i18n(key, fallback);
+    if (!vars) return text;
+    return text.replace(/\{(\w+)\}/g, function (_, name) {
+      return vars[name] != null ? String(vars[name]) : "{" + name + "}";
+    });
+  }
+
+  function fieldLabel(field) {
+    return i18n("validation.field." + field, i18n("validation.field.required", "a required field"));
+  }
 
   function ensureToastStack() {
     let stack = document.getElementById("toast-stack");
@@ -53,12 +61,13 @@
       }
     }
     if (err.type === "missing") {
-      if (field === "user_id") return "Wybierz użytkownika.";
-      const label = FIELD_LABELS[field] || "wymaganego pola";
-      return "Brakuje " + label + ".";
+      if (field === "user_id") return i18n("validation.missing_user", "Select a user.");
+      return i18nFormat("validation.missing_field", "Missing {label}.", {
+        label: fieldLabel(field),
+      });
     }
     if (err.msg) return String(err.msg);
-    return "Nieprawidłowe dane formularza.";
+    return i18n("errors.validation", "Invalid form data.");
   }
 
   window.parseApiError = function (status, body) {
@@ -67,24 +76,29 @@
       const msg = messageFromDetail(data.detail);
       if (msg) return msg;
     } catch (e) {}
-    if (status === 403) return "Brak uprawnień.";
-    if (status === 404) return "Nie znaleziono.";
-    if (status === 422) return "Nieprawidłowe dane formularza.";
-    if (status === 429) return "Zbyt wiele prób. Spróbuj za chwilę.";
-    if (status >= 500) return "Błąd serwera. Spróbuj ponownie.";
-    return "Wystąpił błąd. Spróbuj ponownie.";
+    if (status === 403) return i18n("errors.forbidden", "No permission.");
+    if (status === 404) return i18n("errors.not_found", "Not found.");
+    if (status === 422) return i18n("errors.validation", "Invalid form data.");
+    if (status === 429) return i18n("errors.rate_limit", "Too many attempts. Try again shortly.");
+    if (status >= 500) return i18n("errors.server", "Server error. Please try again.");
+    return i18n("errors.generic", "Something went wrong. Please try again.");
   };
 
   window.showConfirm = function (opts) {
     opts = opts || {};
     const dlg = document.getElementById("app-confirm");
-    if (!dlg) return Promise.resolve(window.confirm(opts.message || "Kontynuować?"));
+    if (!dlg) {
+      return Promise.resolve(
+        window.confirm(opts.message || i18n("confirm.continue", "Continue?"))
+      );
+    }
     const titleEl = document.getElementById("app-confirm-title");
     const msgEl = document.getElementById("app-confirm-message");
     const okBtn = document.getElementById("app-confirm-ok");
-    titleEl.textContent = opts.title || "Potwierdzenie";
-    msgEl.textContent = opts.message || "Czy na pewno chcesz kontynuować?";
-    okBtn.textContent = opts.confirmLabel || "Potwierdź";
+    titleEl.textContent = opts.title || i18n("confirm.title", "Confirmation");
+    msgEl.textContent =
+      opts.message || i18n("confirm.message_default", "Are you sure you want to continue?");
+    okBtn.textContent = opts.confirmLabel || i18n("confirm.confirm_label", "Confirm");
     okBtn.className = opts.danger ? "btn btn-danger" : "btn btn-primary";
     return new Promise(function (resolve) {
       let settled = false;
@@ -144,9 +158,10 @@
     const message = form.getAttribute("data-confirm");
     if (!message) return Promise.resolve(true);
     return window.showConfirm({
-      title: form.getAttribute("data-confirm-title") || "Potwierdzenie",
+      title: form.getAttribute("data-confirm-title") || i18n("confirm.title", "Confirmation"),
       message: message,
-      confirmLabel: form.getAttribute("data-confirm-action") || "Potwierdź",
+      confirmLabel:
+        form.getAttribute("data-confirm-action") || i18n("confirm.confirm_label", "Confirm"),
       danger: form.hasAttribute("data-confirm-danger"),
     });
   }
@@ -197,7 +212,7 @@
         });
       })
       .catch(function () {
-        window.showToast("Nie udało się wysłać formularza.", "error");
+        window.showToast(i18n("errors.submit_failed", "Failed to submit the form."), "error");
       });
   });
 
@@ -212,31 +227,142 @@
   });
 
   document.addEventListener("htmx:sendError", function () {
-    window.showToast("Nie udało się połączyć z serwerem.", "error");
+    window.showToast(i18n("errors.network", "Could not connect to the server."), "error");
   });
+
+  function popIn(el, dy) {
+    if (!el || !el.animate) return;
+    var y = dy == null ? "-0.2rem" : dy;
+    el.getAnimations().forEach(function (a) {
+      a.cancel();
+    });
+    el.style.opacity = "0";
+    el.style.transform = "translateY(" + y + ")";
+    requestAnimationFrame(function () {
+      var anim = el.animate(
+        [
+          { opacity: 0, transform: "translateY(" + y + ")" },
+          { opacity: 1, transform: "translateY(0)" },
+        ],
+        { duration: 160, easing: "cubic-bezier(0.2, 0.85, 0.25, 1)", fill: "forwards" }
+      );
+      var clear = function () {
+        el.style.opacity = "";
+        el.style.transform = "";
+        try {
+          anim.cancel();
+        } catch (e) {}
+      };
+      anim.finished.then(clear).catch(clear);
+    });
+  }
+
+  var nativeShowModal = HTMLDialogElement.prototype.showModal;
+  HTMLDialogElement.prototype.showModal = function () {
+    nativeShowModal.call(this);
+    if (this.classList.contains("modal")) popIn(this, "0.35rem");
+    else if (this.classList.contains("lightbox")) popIn(this, "0");
+  };
+
+  function clearMenuPanel(panel) {
+    if (!panel) return;
+    panel._ownerMenu = null;
+  }
+
+  function placeMenuPanel(menu, panel) {
+    panel._ownerMenu = menu;
+  }
+
+  function closeAllMenus(except) {
+    document.querySelectorAll("details.issue-menu[open]").forEach(function (menu) {
+      if (menu !== except) menu.open = false;
+    });
+  }
+
+  function resolveFormSelect(el) {
+    var root = el.closest("[data-form-select]");
+    if (root) return root;
+    var panel = el.closest(".issue-menu-panel");
+    return (panel && panel._ownerMenu) || null;
+  }
 
   document.addEventListener(
     "toggle",
     function (ev) {
-      const menu = ev.target;
-      if (!(menu instanceof HTMLDetailsElement) || !menu.classList.contains("issue-menu") || !menu.open) {
+      var menu = ev.target;
+      if (!(menu instanceof HTMLDetailsElement) || !menu.classList.contains("issue-menu")) {
         return;
       }
-      document.querySelectorAll("details.issue-menu[open]").forEach(function (other) {
-        if (other !== menu) other.open = false;
+      if (menu.hasAttribute("data-disabled")) {
+        menu.open = false;
+        return;
+      }
+      if (!menu.open) {
+        menu.querySelectorAll(":scope > .issue-menu-panel").forEach(clearMenuPanel);
+        return;
+      }
+      closeAllMenus(menu);
+      menu.querySelectorAll(":scope > .issue-menu-panel").forEach(function (panel) {
+        placeMenuPanel(menu, panel);
       });
     },
     true
   );
 
   document.addEventListener("click", function (ev) {
-    if (ev.target.closest("details.issue-menu")) return;
-    document.querySelectorAll("details.issue-menu[open]").forEach(function (menu) {
-      menu.open = false;
-    });
+    if (ev.target.closest("details.issue-menu, .issue-menu-panel")) return;
+    closeAllMenus();
   });
 
-  function currentPref(key, fallback) {
+  document.addEventListener("click", function (ev) {
+    var btn = ev.target.closest("[data-form-select-option]");
+    if (!btn) return;
+    var root = resolveFormSelect(btn);
+    if (!root || root.hasAttribute("data-disabled")) return;
+    ev.preventDefault();
+    var input = root.querySelector("[data-form-select-input]");
+    var face = root.querySelector("[data-form-select-face]");
+    var value = btn.getAttribute("data-value") || "";
+    var label = btn.getAttribute("data-label") || (btn.textContent || "").trim();
+    if (input) {
+      input.value = value;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (face) face.textContent = label;
+    root.querySelectorAll("[data-form-select-option]").forEach(function (el) {
+      var on = el.getAttribute("data-value") === value;
+      el.classList.toggle("is-active", on);
+      if (on) el.setAttribute("aria-current", "true");
+      else el.removeAttribute("aria-current");
+    });
+    root.open = false;
+    if (root.hasAttribute("data-submit-on-pick")) {
+      var form = root.closest("form");
+      if (form) form.requestSubmit();
+    }
+  });
+
+  function readCookie(name) {
+    var parts = ("; " + document.cookie).split("; " + name + "=");
+    if (parts.length < 2) return null;
+    return decodeURIComponent(parts.pop().split(";").shift() || "") || null;
+  }
+
+  function writeCookie(name, value) {
+    var maxAge = 60 * 60 * 24 * 365 * 5;
+    document.cookie =
+      encodeURIComponent(name) +
+      "=" +
+      encodeURIComponent(value) +
+      "; Path=/; Max-Age=" +
+      maxAge +
+      "; SameSite=Lax";
+  }
+
+  function currentPref(root, key, fallback) {
+    if (root && root.getAttribute("data-ui-cookie") === "1") {
+      return readCookie(key) || fallback;
+    }
     try {
       return localStorage.getItem(key) || fallback;
     } catch (e) {
@@ -249,7 +375,7 @@
     var key = root.getAttribute("data-ui-storage-key");
     var fallback = root.getAttribute("data-ui-fallback") || "";
     if (!key) return;
-    var active = currentPref(key, fallback);
+    var active = currentPref(root, key, fallback);
     root.querySelectorAll("[data-ui-value]").forEach(function (btn) {
       var on = btn.getAttribute("data-ui-value") === active;
       btn.classList.toggle("is-active", on);
@@ -261,7 +387,7 @@
     var btn = ev.target.closest("[data-ui-value]");
     if (!btn) return;
     var root = btn.closest("[data-ui-storage-key]");
-    if (!root) return;
+    if (!root || root.matches("select")) return;
     var key = root.getAttribute("data-ui-storage-key");
     var attr = root.getAttribute("data-ui-attr");
     var value = btn.getAttribute("data-ui-value");
@@ -273,5 +399,20 @@
     syncPrefPicker(root);
   });
 
-  document.querySelectorAll("[data-ui-storage-key]").forEach(syncPrefPicker);
+  document.addEventListener("change", function (ev) {
+    var el = ev.target;
+    if (!(el instanceof HTMLElement)) return;
+    if (el.getAttribute("data-ui-cookie") !== "1") return;
+    if (!(el instanceof HTMLSelectElement) && !el.hasAttribute("data-form-select-input")) return;
+    var key = el.getAttribute("data-ui-storage-key");
+    var value = el.value;
+    if (!key || !value) return;
+    writeCookie(key, value);
+    window.location.reload();
+  });
+
+  document.querySelectorAll("[data-ui-storage-key]").forEach(function (root) {
+    if (root.matches("select") || root.hasAttribute("data-form-select-input")) return;
+    syncPrefPicker(root);
+  });
 })();

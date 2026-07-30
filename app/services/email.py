@@ -4,6 +4,7 @@ import logging
 import smtplib
 from collections.abc import Iterable
 from email.message import EmailMessage
+from functools import partial
 
 from fastapi import BackgroundTasks
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -15,9 +16,12 @@ from app.models.enums import UserRole
 from app.models.ticket import Ticket, TicketParticipant
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
+from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.urls import ticket_path
 
 logger = logging.getLogger("pulsedeck.services.email")
+
+APP_NAME = "PulseDeck"
 
 _env = Environment(
     loader=FileSystemLoader(str(project_root() / "app" / "templates" / "email")),
@@ -65,9 +69,20 @@ def _smtp_auth(smtp: smtplib.SMTP, user: str, password: str) -> None:
 
 
 def queue_email(
-    background: BackgroundTasks, to: str, subject: str, template: str, context: dict
+    background: BackgroundTasks,
+    to: str,
+    subject: str,
+    template: str,
+    context: dict,
+    *,
+    lang: str = DEFAULT_LANG,
 ) -> None:
-    html = _env.get_template(template).render(**context, app_name="PulseDeck")
+    html = _env.get_template(template).render(
+        **context,
+        app_name=APP_NAME,
+        ui_lang=lang,
+        t=partial(t, lang),
+    )
     background.add_task(_send_email_sync, to, subject, html)
 
 
@@ -77,38 +92,54 @@ def _broadcast(
     subject: str,
     template: str,
     context: dict,
+    *,
+    lang: str = DEFAULT_LANG,
 ) -> None:
     for email in sorted(set(recipients)):
-        queue_email(background, email, subject, template, context)
+        queue_email(background, email, subject, template, context, lang=lang)
 
 
 def notify_email_confirm(
-    background: BackgroundTasks, user: User, token: str, to_email: str
+    background: BackgroundTasks,
+    user: User,
+    token: str,
+    to_email: str,
+    *,
+    lang: str | None = None,
 ) -> None:
+    lang = lang or DEFAULT_LANG
     settings = get_settings()
     url = f"{settings.app_base_url}/auth/confirm-email?token={token}"
     queue_email(
         background,
         to_email,
-        "Potwierdź nowy e-mail — PulseDeck",
+        t(lang, "email.confirm.subject", app=APP_NAME),
         "email_confirm.html",
         {
             "user": user,
             "url": url,
             "ttl_minutes": settings.email_confirm_ttl_minutes,
         },
+        lang=lang,
     )
 
 
-def notify_password_set(background: BackgroundTasks, user: User, token: str) -> None:
+def notify_password_set(
+    background: BackgroundTasks,
+    user: User,
+    token: str,
+    *,
+    lang: str | None = None,
+) -> None:
+    lang = lang or DEFAULT_LANG
     settings = get_settings()
     url = f"{settings.app_base_url}/auth/activate?token={token}"
     is_activation = user.activated_at is None
     if is_activation:
-        subject = "Aktywuj konto — PulseDeck"
+        subject = t(lang, "email.activate.subject", app=APP_NAME)
         template = "account_activate.html"
     else:
-        subject = "Reset hasła — PulseDeck"
+        subject = t(lang, "email.reset.subject", app=APP_NAME)
         template = "password_reset.html"
     queue_email(
         background,
@@ -120,6 +151,7 @@ def notify_password_set(background: BackgroundTasks, user: User, token: str) -> 
             "url": url,
             "ttl_days": settings.auth_link_ttl_days,
         },
+        lang=lang,
     )
 
 
@@ -152,12 +184,14 @@ def notify_new_ticket(background: BackgroundTasks, db: Session, ticket: Ticket) 
         for email in staff_emails_for_project(db, ticket.project_id)
         if email != author_email
     ]
+    lang = DEFAULT_LANG
     _broadcast(
         background,
         recipients,
-        f"Nowe zgłoszenie: {ticket.title}",
+        t(lang, "email.new_ticket.subject", title=ticket.title),
         "new_ticket.html",
         {"ticket": ticket, "url": url},
+        lang=lang,
     )
 
 
@@ -209,20 +243,20 @@ def notify_new_comment(
             recipients.add(loaded.assignee.email)
         if author:
             recipients.discard(author.email)
+    lang = DEFAULT_LANG
     _broadcast(
         background,
         recipients,
-        f"Nowa odpowiedź: {loaded.title}",
+        t(lang, "email.new_comment.subject", title=loaded.title),
         "new_comment.html",
         {"ticket": loaded, "url": url},
+        lang=lang,
     )
 
 
 def notify_status_change(
     background: BackgroundTasks, db: Session, ticket: Ticket, actor_id: int
 ) -> None:
-    from app.models.enums import TICKET_STATUS_LABELS
-
     loaded = _load_ticket_for_notify(db, ticket.id) or ticket
     url = _ticket_url(loaded)
     recipients = _client_circle_emails(loaded, actor_id)
@@ -230,13 +264,15 @@ def notify_status_change(
     actor = db.get(User, actor_id)
     if actor:
         recipients.discard(actor.email)
-    status_label = TICKET_STATUS_LABELS.get(loaded.status, loaded.status.value)
+    lang = DEFAULT_LANG
+    status_label = t(lang, f"enums.ticket_status.{loaded.status.value}")
     _broadcast(
         background,
         recipients,
-        f"Zmiana statusu: {loaded.title}",
+        t(lang, "email.status_change.subject", title=loaded.title),
         "status_change.html",
         {"ticket": loaded, "url": url, "status_label": status_label},
+        lang=lang,
     )
 
 
@@ -244,10 +280,12 @@ def notify_assignment(
     background: BackgroundTasks, ticket: Ticket, assignee: User
 ) -> None:
     url = _ticket_url(ticket)
+    lang = DEFAULT_LANG
     queue_email(
         background,
         assignee.email,
-        f"Przypisano zgłoszenie: {ticket.title}",
+        t(lang, "email.assignment.subject", title=ticket.title),
         "assignment.html",
         {"ticket": ticket, "url": url, "assignee": assignee},
+        lang=lang,
     )

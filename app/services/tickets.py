@@ -19,6 +19,7 @@ from app.models.ticket import (
 )
 from app.models.user import Project, ProjectMember, User
 from app.services.projects import is_project_member
+from app.utils.i18n import DEFAULT_LANG, t
 
 _OPEN_STATUSES = (
     TicketStatus.NEW,
@@ -128,10 +129,13 @@ def get_ticket_permissions(
     )
 
 
-def require_project_access(db: Session, user: User, project_id: int) -> None:
+def require_project_access(
+    db: Session, user: User, project_id: int, *, lang: str | None = None
+) -> None:
     if not is_project_member(db, project_id, user.id):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Brak dostępu do projektu."
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.no_project_access"),
         )
 
 
@@ -272,12 +276,16 @@ def add_comment(
     content: str,
     *,
     is_internal: bool = False,
+    lang: str | None = None,
 ) -> Comment:
+    lang = lang or DEFAULT_LANG
     if not can_comment(db, author, ticket):
-        raise HTTPException(status_code=403, detail="Brak uprawnień do komentowania.")
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_comment")
+        )
     if is_internal and not author.is_staff:
         raise HTTPException(
-            status_code=403, detail="Notatki wewnętrzne tylko dla obsługi."
+            status_code=403, detail=t(lang, "messages.tickets.internal_staff_only")
         )
     comment = Comment(
         ticket_id=ticket.id,
@@ -300,19 +308,29 @@ def add_comment(
 
 
 def assign_ticket(
-    db: Session, ticket: Ticket, actor: User, assignee_id: int | None
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    assignee_id: int | None,
+    *,
+    lang: str | None = None,
 ) -> Ticket:
+    lang = lang or DEFAULT_LANG
     if not can_assign(actor, ticket, db):
-        raise HTTPException(status_code=403, detail="Brak uprawnień do przypisania.")
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_assign")
+        )
     if assignee_id is not None:
         assignee = db.get(User, assignee_id)
         if not assignee or not assignee.is_staff:
             raise HTTPException(
-                status_code=400, detail="Assignee musi być STAFF lub ADMIN."
+                status_code=400,
+                detail=t(lang, "messages.tickets.assignee_must_be_staff"),
             )
         if not is_project_member(db, ticket.project_id, assignee.id):
             raise HTTPException(
-                status_code=400, detail="Assignee musi być członkiem projektu."
+                status_code=400,
+                detail=t(lang, "messages.tickets.assignee_must_be_member"),
             )
         ticket.assignee_id = assignee.id
         if ticket.status == TicketStatus.NEW:
@@ -323,15 +341,25 @@ def assign_ticket(
     return get_ticket(db, ticket.id) or ticket
 
 
-def self_assign(db: Session, ticket: Ticket, actor: User) -> Ticket:
-    return assign_ticket(db, ticket, actor, actor.id)
+def self_assign(
+    db: Session, ticket: Ticket, actor: User, *, lang: str | None = None
+) -> Ticket:
+    return assign_ticket(db, ticket, actor, actor.id, lang=lang)
 
 
 def set_status(
-    db: Session, ticket: Ticket, actor: User, status_value: TicketStatus
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    status_value: TicketStatus,
+    *,
+    lang: str | None = None,
 ) -> Ticket:
+    lang = lang or DEFAULT_LANG
     if not is_project_member(db, ticket.project_id, actor.id):
-        raise HTTPException(status_code=403, detail="Brak dostępu do projektu.")
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_project_access")
+        )
 
     if status_value == ticket.status:
         return ticket
@@ -350,13 +378,18 @@ def set_status(
         db.commit()
         return get_ticket(db, ticket.id) or ticket
 
-    raise HTTPException(status_code=403, detail="Brak uprawnień do zmiany statusu.")
+    raise HTTPException(
+        status_code=403, detail=t(lang, "messages.tickets.no_status")
+    )
 
 
-def reopen_ticket(db: Session, ticket: Ticket, actor: User) -> Ticket:
+def reopen_ticket(
+    db: Session, ticket: Ticket, actor: User, *, lang: str | None = None
+) -> Ticket:
     if not can_reopen(actor, ticket, db):
         raise HTTPException(
-            status_code=403, detail="Nie można ponownie otworzyć tego zgłoszenia."
+            status_code=403,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.cannot_reopen"),
         )
     ticket.status = TicketStatus.IN_PROGRESS
     ticket.closed_at = None
@@ -376,30 +409,48 @@ def update_ticket(
     *,
     title: str,
     description: str,
+    lang: str | None = None,
 ) -> Ticket:
     if not can_edit_ticket(actor, ticket, db):
-        raise HTTPException(status_code=403, detail="Brak uprawnień do edycji.")
+        raise HTTPException(
+            status_code=403,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.no_edit"),
+        )
     ticket.title = title.strip()
     ticket.description = description.strip()
     return _commit_reload(db, ticket)
 
 
 def set_priority(
-    db: Session, ticket: Ticket, actor: User, priority: TicketPriority
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    priority: TicketPriority,
+    *,
+    lang: str | None = None,
 ) -> Ticket:
     if not can_edit_ticket(actor, ticket, db):
         raise HTTPException(
-            status_code=403, detail="Brak uprawnień do zmiany priorytetu."
+            status_code=403,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.no_priority"),
         )
     ticket.priority = priority
     return _commit_reload(db, ticket)
 
 
 def set_type(
-    db: Session, ticket: Ticket, actor: User, ticket_type: TicketType
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    ticket_type: TicketType,
+    *,
+    lang: str | None = None,
 ) -> Ticket:
     if not can_edit_ticket(actor, ticket, db):
-        raise HTTPException(status_code=403, detail="Brak uprawnień do zmiany typu.")
+        raise HTTPException(
+            status_code=403,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.no_type"),
+        )
     if ticket_type == ticket.type:
         return ticket
     ticket.type = ticket_type
@@ -414,12 +465,19 @@ def list_project_tags(db: Session, project_id: int) -> list[Tag]:
     )
 
 
-def _get_or_create_tag(db: Session, project_id: int, name: str) -> Tag:
+def _get_or_create_tag(
+    db: Session, project_id: int, name: str, *, lang: str | None = None
+) -> Tag:
+    lang = lang or DEFAULT_LANG
     cleaned = " ".join(name.strip().split())
     if not cleaned:
-        raise HTTPException(status_code=400, detail="Nazwa tagu jest pusta.")
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.tag_empty")
+        )
     if len(cleaned) > 80:
-        raise HTTPException(status_code=400, detail="Tag jest zbyt długi.")
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.tag_too_long")
+        )
     existing = db.scalar(
         select(Tag).where(
             Tag.project_id == project_id,
@@ -434,12 +492,20 @@ def _get_or_create_tag(db: Session, project_id: int, name: str) -> Tag:
     return tag
 
 
-def add_ticket_tag(db: Session, ticket: Ticket, actor: User, name: str) -> Ticket:
+def add_ticket_tag(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    name: str,
+    *,
+    lang: str | None = None,
+) -> Ticket:
+    lang = lang or DEFAULT_LANG
     if not can_manage_tags(actor, ticket, db):
         raise HTTPException(
-            status_code=403, detail="Tylko obsługa może zarządzać tagami."
+            status_code=403, detail=t(lang, "messages.tickets.tags_staff_only")
         )
-    tag = _get_or_create_tag(db, ticket.project_id, name)
+    tag = _get_or_create_tag(db, ticket.project_id, name, lang=lang)
     existing = db.scalar(
         select(TicketTag).where(
             TicketTag.ticket_id == ticket.id, TicketTag.tag_id == tag.id
@@ -451,10 +517,18 @@ def add_ticket_tag(db: Session, ticket: Ticket, actor: User, name: str) -> Ticke
     return get_ticket(db, ticket.id) or ticket
 
 
-def remove_ticket_tag(db: Session, ticket: Ticket, actor: User, tag_id: int) -> Ticket:
+def remove_ticket_tag(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    tag_id: int,
+    *,
+    lang: str | None = None,
+) -> Ticket:
     if not can_manage_tags(actor, ticket, db):
         raise HTTPException(
-            status_code=403, detail="Tylko obsługa może zarządzać tagami."
+            status_code=403,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.tags_staff_only"),
         )
     row = db.scalar(
         select(TicketTag).where(
@@ -467,14 +541,22 @@ def remove_ticket_tag(db: Session, ticket: Ticket, actor: User, tag_id: int) -> 
     return get_ticket(db, ticket.id) or ticket
 
 
-def add_participant(db: Session, ticket: Ticket, actor: User, user_id: int) -> Ticket:
+def add_participant(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    user_id: int,
+    *,
+    lang: str | None = None,
+) -> Ticket:
+    lang = lang or DEFAULT_LANG
     if not actor.is_staff and ticket.author_id != actor.id:
         raise HTTPException(
-            status_code=403, detail="Brak uprawnień do dodawania uczestników."
+            status_code=403, detail=t(lang, "messages.tickets.no_add_participant")
         )
     if not is_project_member(db, ticket.project_id, user_id):
         raise HTTPException(
-            status_code=400, detail="Użytkownik musi być członkiem projektu."
+            status_code=400, detail=t(lang, "messages.tickets.user_must_be_member")
         )
     _ensure_participant(db, ticket, user_id)
     db.commit()
@@ -506,9 +588,14 @@ def remove_ticket_attachments(
     ticket: Ticket,
     actor: User,
     attachment_ids: list[int],
+    *,
+    lang: str | None = None,
 ) -> Ticket:
     if not can_edit_ticket(actor, ticket, db):
-        raise HTTPException(status_code=403, detail="Brak uprawnień do edycji.")
+        raise HTTPException(
+            status_code=403,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.no_edit"),
+        )
     wanted = {int(x) for x in attachment_ids}
     if not wanted:
         return ticket

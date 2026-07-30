@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 import logging
+from types import SimpleNamespace
 
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
 from app.config import get_settings, project_root
 from app.models.enums import (
-    TICKET_PRIORITY_LABELS,
-    TICKET_STATUS_LABELS,
-    TICKET_TYPE_LABELS,
-    USER_ROLE_LABELS,
     TicketPriority,
     TicketStatus,
     TicketType,
@@ -18,6 +15,14 @@ from app.models.enums import (
 )
 from app.utils.csrf import ensure_csrf_token
 from app.utils.dev_page_info import build_dev_page_info
+from app.utils.i18n import (
+    DEFAULT_LANG,
+    LANG_STORAGE_KEY,
+    list_languages,
+    resolve_lang,
+    t,
+    translations_prefix,
+)
 from app.utils.themes import (
     DEFAULT_DENSITY,
     DEFAULT_FONT_SIZE,
@@ -43,33 +48,75 @@ _templates.env.filters["ticket_label"] = ticket_label
 _templates.env.filters["admin_project_path"] = admin_project_path
 
 
+def _enum_label_map(lang: str, group: str, enum_cls: type) -> dict:
+    flat = translations_prefix(lang, f"enums.{group}")
+    return {member: flat.get(member.value, member.value) for member in enum_cls}
+
+
+def _theme_choices(lang: str):
+    out = []
+    for theme in THEME_CHOICES:
+        out.append(
+            SimpleNamespace(
+                id=theme.id,
+                swatches=theme.swatches,
+                label=t(lang, f"themes.{theme.id}.label"),
+                description=t(lang, f"themes.{theme.id}.description"),
+            )
+        )
+    return out
+
+
+def _appearance_choices(lang: str, group: str, choices):
+    out = []
+    for choice in choices:
+        out.append(
+            SimpleNamespace(
+                id=choice.id,
+                label=t(lang, f"themes.{group}.{choice.id}.label"),
+                description=t(lang, f"themes.{group}.{choice.id}.description"),
+            )
+        )
+    return out
+
+
 def common_context(request: Request, **extra) -> dict:
     settings = get_settings()
+    lang = resolve_lang(request)
     ctx = {
         "request": request,
         "app_name": "PulseDeck",
         "csrf_token": ensure_csrf_token(request),
         "app_base_url": settings.app_base_url,
         "is_dev": settings.environment == "development",
+        "ui_lang": lang,
+        "lang_choices": list_languages(),
+        "lang_storage_key": LANG_STORAGE_KEY,
         "ui_theme": DEFAULT_THEME,
-        "theme_choices": THEME_CHOICES,
+        "theme_choices": _theme_choices(lang),
         "theme_storage_key": THEME_STORAGE_KEY,
         "ui_density": DEFAULT_DENSITY,
-        "density_choices": DENSITY_CHOICES,
+        "density_choices": _appearance_choices(lang, "density", DENSITY_CHOICES),
         "density_storage_key": DENSITY_STORAGE_KEY,
         "ui_font_size": DEFAULT_FONT_SIZE,
-        "font_size_choices": FONT_SIZE_CHOICES,
+        "font_size_choices": _appearance_choices(lang, "font_size", FONT_SIZE_CHOICES),
         "font_size_storage_key": FONT_SIZE_STORAGE_KEY,
         "ticket_types": TicketType,
         "ticket_statuses": TicketStatus,
         "ticket_priorities": TicketPriority,
         "user_roles": UserRole,
-        "type_labels": TICKET_TYPE_LABELS,
-        "status_labels": TICKET_STATUS_LABELS,
-        "priority_labels": TICKET_PRIORITY_LABELS,
-        "role_labels": USER_ROLE_LABELS,
+        "type_labels": _enum_label_map(lang, "ticket_type", TicketType),
+        "status_labels": _enum_label_map(lang, "ticket_status", TicketStatus),
+        "priority_labels": _enum_label_map(lang, "ticket_priority", TicketPriority),
+        "role_labels": _enum_label_map(lang, "user_role", UserRole),
         "ticket_reopen_days": settings.ticket_reopen_days,
+        "js_i18n": translations_prefix(lang, "js"),
     }
+
+    def _t(message_key: str, **kwargs) -> str:
+        return t(lang, message_key, **kwargs)
+
+    ctx["t"] = _t
     ctx.update(extra)
     return ctx
 
@@ -85,3 +132,11 @@ def render(request: Request, name: str, **extra):
             logger.exception("Dev page info failed for template %s", name)
             ctx["dev_page_info"] = None
     return _templates.TemplateResponse(request, name, ctx)
+
+
+def request_lang(request: Request) -> str:
+    return resolve_lang(request)
+
+
+def default_lang() -> str:
+    return DEFAULT_LANG if DEFAULT_LANG in {c.id for c in list_languages()} else resolve_lang()

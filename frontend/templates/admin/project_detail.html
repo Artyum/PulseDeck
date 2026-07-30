@@ -1,9 +1,10 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
+{% from "partials/ticket_macros.html" import form_select_menu with context %}
 {% block title %}{{ project.name }} — {{ app_name }}{% endblock title %}
 {% block content %}
     <nav class="issue-crumb">
-        <a href="{{ url_for('admin_projects') }}" class="link-quiet">Projekty</a>
+        <a href="{{ url_for('admin_projects') }}" class="link-quiet">{{ t('ui.admin.projects.title') }}</a>
         <span aria-hidden="true">/</span>
         <span class="admin-key">{{ project.key }}</span>
     </nav>
@@ -13,20 +14,20 @@
             {% if project.description %}<p class="admin-page-sub">{{ project.description }}</p>{% endif %}
         </div>
         <a href="{{ url_for('project_feed', key=project.key) }}"
-           class="btn btn-secondary">Otwórz w portalu</a>
+           class="btn btn-secondary">{{ t('ui.admin.project.open_portal') }}</a>
     </div>
     {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>Ustawienia</h2>
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t('ui.admin.project.settings') }}</h2>
         <form method="post"
               action="{{ url_for('edit_project', key=project.key) }}"
               class="admin-form-row"
               data-confirm-when-key-changes="{{ project.key }}"
-              data-confirm-title="Zmiana klucza projektu"
-              data-confirm="Zmiana klucza sprawi, że stare linki /p/… i /t/{{ project.key }}-… przestaną działać. Kontynuować?"
-              data-confirm-action="Zmień klucz">
+              data-confirm-title="{{ t('ui.confirm.change_key.title') }}"
+              data-confirm="{{ t('ui.confirm.change_key.message') }}"
+              data-confirm-action="{{ t('ui.confirm.change_key.action') }}">
             <div class="admin-form-field">
-                <label class="label-tight" for="edit-name">Nazwa</label>
+                <label class="label-tight" for="edit-name">{{ t('ui.admin.projects.name') }}</label>
                 <input id="edit-name"
                        name="name"
                        required
@@ -34,18 +35,18 @@
                        class="input min-w-[12rem]">
             </div>
             <div class="admin-form-field">
-                <label class="label-tight" for="edit-key">Klucz</label>
+                <label class="label-tight" for="edit-key">{{ t('ui.admin.projects.key') }}</label>
                 <input id="edit-key"
                        name="project_key"
                        required
                        pattern="[A-Za-z0-9]{1,5}"
                        maxlength="5"
                        value="{{ form_key if form_key is defined else project.key }}"
-                       title="1–5 znaków A–Z / 0–9"
+                       title="{{ t('ui.admin.projects.key_title') }}"
                        class="input min-w-[8rem] uppercase">
             </div>
             <div class="admin-form-field">
-                <label class="label-tight" for="edit-desc">Opis</label>
+                <label class="label-tight" for="edit-desc">{{ t('ui.admin.projects.description') }}</label>
                 <input id="edit-desc"
                        name="description"
                        value="{{ form_description if form_description is defined else (project.description or '') }}"
@@ -53,13 +54,13 @@
             </div>
             <div class="admin-form-field">
                 <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-                <button type="submit" class="btn btn-primary">Zapisz</button>
+                <button type="submit" class="btn btn-primary">{{ t('ui.common.save') }}</button>
             </div>
         </form>
     </section>
     <section class="admin-section">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("members") }}</span>Członkowie</h2>
-        <p class="admin-section-note">Administratorzy mają automatyczny dostęp do wszystkich projektów.</p>
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("members") }}</span>{{ t('ui.admin.project.members') }}</h2>
+        <p class="admin-section-note">{{ t('ui.profile.admin_all_projects_hint') }}</p>
         <div class="admin-section-block">
             <ul class="admin-list">
                 {% for u in members %}
@@ -71,16 +72,16 @@
                         <div class="admin-entity-actions">
                             <form method="post"
                                   action="{{ url_for('remove_member', key=project.key, member_id=u.id) }}"
-                                  data-confirm-title="Usunąć członka?"
-                                  data-confirm="Usunąć {{ u.display_name }} z projektu „{{ project.name }}”?"
-                                  data-confirm-action="Usuń"
+                                  data-confirm-title="{{ t('ui.confirm.remove_member.title') }}"
+                                  data-confirm="{{ t('ui.confirm.remove_member.message', name=u.display_name, project=project.name) }}"
+                                  data-confirm-action="{{ t('ui.confirm.remove_member.action') }}"
                                   data-confirm-danger>
-                                <button type="submit" class="btn btn-danger">Usuń</button>
+                                <button type="submit" class="btn btn-danger">{{ t('ui.common.delete') }}</button>
                             </form>
                         </div>
                     </li>
                 {% else %}
-                    <li class="empty">Brak członków w projekcie.</li>
+                    <li class="empty">{{ t('ui.admin.project.members_empty') }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -90,16 +91,12 @@
                       action="{{ url_for('add_member', key=project.key) }}"
                       class="admin-form-row admin-form-row-2">
                     <div class="admin-form-field">
-                        <label class="label-tight" for="add-member">Dodaj użytkownika</label>
-                        <select id="add-member" name="user_id" class="select">
-                            {% for u in all_users %}
-                                <option value="{{ u.id }}">{{ u.display_name }} ({{ u.email }})</option>
-                            {% endfor %}
-                        </select>
+                        <label class="label-tight" for="add-member">{{ t('ui.admin.project.add_user') }}</label>
+                        {{ form_select_menu('user_id', t('ui.admin.project.add_user'), all_users, all_users[0].id, value_attr='id', id='add-member') }}
                     </div>
                     <div class="admin-form-field">
                         <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-                        <button type="submit" class="btn btn-primary">Dodaj</button>
+                        <button type="submit" class="btn btn-primary">{{ t('ui.common.add') }}</button>
                     </div>
                 </form>
             </div>

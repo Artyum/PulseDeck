@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl"
+<html lang="{{ ui_lang }}"
       data-theme="{{ ui_theme }}"
       data-density="{{ ui_density }}"
       data-font-size="{{ ui_font_size }}">
@@ -40,6 +40,7 @@
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap"
               rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+        <script>window.__i18n = {{ js_i18n|tojson }};</script>
         <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
         <script src="{{ url_for('static', path='js/app.js') }}" defer></script>
         <script src="{{ url_for('static', path='js/attach-picker.js') }}" defer></script>
@@ -54,23 +55,23 @@
                 aria-labelledby="app-confirm-title">
             <div class="modal-form">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="app-confirm-title">Potwierdzenie</h2>
+                    <h2 class="modal-title" id="app-confirm-title">{{ t('ui.confirm.title') }}</h2>
                     <button type="button"
                             class="modal-close"
                             data-confirm-cancel
-                            aria-label="Zamknij">×</button>
+                            aria-label="{{ t('ui.common.close') }}">×</button>
                 </div>
                 <div class="modal-body">
                     <p id="app-confirm-message" class="confirm-message"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-confirm-cancel>Anuluj</button>
-                    <button type="button" class="btn btn-primary" id="app-confirm-ok">Potwierdź</button>
+                    <button type="button" class="btn btn-secondary" data-confirm-cancel>{{ t('ui.common.cancel') }}</button>
+                    <button type="button" class="btn btn-primary" id="app-confirm-ok">{{ t('ui.common.confirm') }}</button>
                 </div>
             </div>
         </dialog>
         {% if is_dev and dev_page_info %}
-            <div class="dev-frame" role="status" aria-label="Tryb developerski">
+            <div class="dev-frame" role="status" aria-label="{{ t('ui.dev.aria') }}">
                 <span class="dev-frame__badge">Dev</span>
                 <span class="dev-frame__meta"
                       title="{{ dev_page_info.method }} {{ dev_page_info.route_path }}">
@@ -81,7 +82,7 @@
                         id="dev-page-copy"
                         class="dev-frame__copy"
                         data-dev-page-info="{{ dev_page_info | tojson | forceescape }}"
-                        aria-label="Kopiuj metadane strony">Kopiuj</button>
+                        aria-label="{{ t('ui.dev.copy_aria') }}">{{ t('ui.dev.copy') }}</button>
             </div>
             <script src="{{ url_for('static', path='js/dev-page-copy.js') }}" defer></script>
         {% endif %}

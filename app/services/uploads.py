@@ -9,6 +9,7 @@ from fastapi import HTTPException, UploadFile
 from PIL import Image
 
 from app.config import resolve_upload_dir
+from app.utils.i18n import DEFAULT_LANG, t
 
 ALLOWED_IMAGE = frozenset({".jpg", ".jpeg", ".png", ".webp", ".gif"})
 ALLOWED_PDF = frozenset({".pdf"})
@@ -34,15 +35,22 @@ def _ext(filename: str) -> str:
     return PurePosixPath(filename).suffix.lower()
 
 
-async def save_upload(file: UploadFile, *, subdir: str = "tickets") -> tuple[str, str]:
-    """Zapisuje plik; obrazy konwertuje do JPG. Zwraca (original_name, relative_url_path)."""
+async def save_upload(
+    file: UploadFile,
+    *,
+    subdir: str = "tickets",
+    lang: str | None = None,
+) -> tuple[str, str]:
+    lang = lang or DEFAULT_LANG
     original = sanitize_original_filename(file.filename)
     ext = _ext(original)
     data = await file.read()
     if not data:
-        raise HTTPException(status_code=400, detail="Pusty plik.")
+        raise HTTPException(status_code=400, detail=t(lang, "messages.uploads.empty"))
     if len(data) > MAX_BYTES:
-        raise HTTPException(status_code=400, detail="Plik jest za duży (maks. 5 MB).")
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.uploads.too_large")
+        )
 
     upload_root = resolve_upload_dir()
     target_dir = upload_root / subdir
@@ -55,13 +63,17 @@ async def save_upload(file: UploadFile, *, subdir: str = "tickets") -> tuple[str
             img = Image.open(io.BytesIO(data))
             img.load()
         except Exception as exc:
-            raise HTTPException(status_code=400, detail="Nieprawidłowy obraz.") from exc
+            raise HTTPException(
+                status_code=400, detail=t(lang, "messages.uploads.invalid_image")
+            ) from exc
         width, height = img.size
         if (
             width * height > MAX_IMAGE_PIXELS
             or max(width, height) > MAX_IMAGE_DIMENSION
         ):
-            raise HTTPException(status_code=400, detail="Obraz jest zbyt duży.")
+            raise HTTPException(
+                status_code=400, detail=t(lang, "messages.uploads.image_too_large")
+            )
         if img.mode in ("RGBA", "LA", "P"):
             background = Image.new("RGB", img.size, (255, 255, 255))
             if img.mode == "P":
@@ -80,7 +92,9 @@ async def save_upload(file: UploadFile, *, subdir: str = "tickets") -> tuple[str
 
     if ext in ALLOWED_PDF:
         if not data.startswith(b"%PDF"):
-            raise HTTPException(status_code=400, detail="Nieprawidłowy plik PDF.")
+            raise HTTPException(
+                status_code=400, detail=t(lang, "messages.uploads.invalid_pdf")
+            )
         stored_name = f"{file_id}_{digest}.pdf"
         out_path = target_dir / stored_name
         out_path.write_bytes(data)
@@ -88,5 +102,5 @@ async def save_upload(file: UploadFile, *, subdir: str = "tickets") -> tuple[str
 
     raise HTTPException(
         status_code=400,
-        detail="Dozwolone formaty: JPG, PNG, WEBP, GIF, PDF.",
+        detail=t(lang, "messages.uploads.formats"),
     )

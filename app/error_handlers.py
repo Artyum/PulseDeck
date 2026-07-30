@@ -5,18 +5,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-_FIELD_LABELS = {
-    "user_id": "użytkownika",
-    "content": "treści wiadomości",
-    "title": "tytułu",
-    "description": "opisu",
-    "email": "adresu e-mail",
-    "password": "hasła",
-    "tag": "tagu",
-}
+from app.utils.i18n import resolve_lang, t
+
+_FIELD_KEYS = frozenset(
+    {"user_id", "content", "title", "description", "email", "password", "tag"}
+)
 
 
-def friendly_validation_message(exc: RequestValidationError) -> str:
+def friendly_validation_message(exc: RequestValidationError, lang: str) -> str:
     for err in exc.errors():
         loc = err.get("loc") or ()
         field = next(
@@ -26,28 +22,38 @@ def friendly_validation_message(exc: RequestValidationError) -> str:
         typ = err.get("type", "")
         if typ == "missing":
             if field == "user_id":
-                return "Wybierz użytkownika."
-            label = _FIELD_LABELS.get(field or "", "wymaganego pola")
-            return f"Brakuje {label}."
+                return t(lang, "messages.validation.missing_user")
+            label_key = (
+                f"messages.validation.field.{field}"
+                if field in _FIELD_KEYS
+                else "messages.validation.field.required"
+            )
+            return t(
+                lang,
+                "messages.validation.missing_field",
+                label=t(lang, label_key),
+            )
         if typ in {"int_parsing", "int_type"}:
             if field == "user_id":
-                return "Wybierz użytkownika."
-            return "Nieprawidłowa wartość liczbowa."
+                return t(lang, "messages.validation.missing_user")
+            return t(lang, "messages.validation.invalid_int")
         msg = err.get("msg")
         if msg:
             return str(msg)
-    return "Nieprawidłowe dane formularza."
+    return t(lang, "messages.validation.invalid_form")
 
 
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def validation_exc_handler(request: Request, exc: RequestValidationError):
+        lang = resolve_lang(request)
         return JSONResponse(
-            {"detail": friendly_validation_message(exc)}, status_code=422
+            {"detail": friendly_validation_message(exc, lang)}, status_code=422
         )
 
     @app.exception_handler(StarletteHTTPException)
     async def http_exc_handler(request: Request, exc: StarletteHTTPException):
+        lang = resolve_lang(request)
         if exc.status_code in (401, 403) and not request.url.path.startswith("/api/"):
             if exc.status_code == 401:
                 return RedirectResponse("/login", status_code=303)
@@ -58,7 +64,9 @@ def register_exception_handlers(app: FastAPI) -> None:
             )
         if exc.status_code == 404 and not request.url.path.startswith("/api/"):
             if request.headers.get("HX-Request"):
-                return HTMLResponse("Nie znaleziono", status_code=404)
+                return HTMLResponse(
+                    t(lang, "messages.http.not_found"), status_code=404
+                )
             return RedirectResponse("/", status_code=303)
         if request.url.path.startswith("/api/"):
             return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)

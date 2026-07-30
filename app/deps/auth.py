@@ -12,6 +12,7 @@ from app.db.session import get_db
 from app.middleware.session_sliding import SESSION_ACTIVITY_KEY
 from app.models.enums import UserRole
 from app.models.user import User
+from app.utils.i18n import resolve_lang, t
 
 SESSION_USER_ID_KEY = "user_id"
 SESSION_AUTH_EPOCH_KEY = "auth_epoch"
@@ -83,16 +84,19 @@ def require_user(request: Request, db: DbSession) -> User:
     user = get_optional_user(request, db)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Wymagane logowanie."
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=t(resolve_lang(request), "messages.http.login_required"),
         )
     return user
 
 
-def require_admin(user: Annotated[User, Depends(require_user)]) -> User:
+def require_admin(
+    request: Request, user: Annotated[User, Depends(require_user)]
+) -> User:
     if user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Wymagane uprawnienia administratora.",
+            detail=t(resolve_lang(request), "messages.http.admin_required"),
         )
     return user
 

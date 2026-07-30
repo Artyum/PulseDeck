@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}
     {% if pending %}
-        Aktywacja konta
+        {{ t('ui.auth.activate.title_pending') }}
     {% else %}
-        Ustaw hasło
+        {{ t('ui.auth.activate.title_reset') }}
     {% endif %}
     — {{ app_name }}
 {% endblock title %}
@@ -14,9 +14,9 @@
                 <h1 class="auth-brand">{{ app_name }}</h1>
                 <p class="mt-3 text-[1.1rem] text-steel">
                     {% if pending %}
-                        Ustaw hasło, aby aktywować konto
+                        {{ t('ui.auth.activate.subtitle_pending') }}
                     {% else %}
-                        Ustaw nowe hasło
+                        {{ t('ui.auth.activate.subtitle_reset') }}
                     {% endif %}
                 </p>
             </div>
@@ -29,7 +29,7 @@
                       class="space-y-4">
                     <input type="hidden" name="token" value="{{ token }}">
                     <div>
-                        <label class="label" for="new_password">Hasło</label>
+                        <label class="label" for="new_password">{{ t('ui.auth.activate.password') }}</label>
                         <input id="new_password"
                                name="new_password"
                                type="password"
@@ -38,7 +38,7 @@
                                autocomplete="new-password">
                     </div>
                     <div>
-                        <label class="label" for="confirm_password">Powtórz hasło</label>
+                        <label class="label" for="confirm_password">{{ t('ui.auth.activate.password_confirm') }}</label>
                         <input id="confirm_password"
                                name="confirm_password"
                                type="password"
@@ -48,19 +48,19 @@
                     </div>
                     {% if pending %}
                         <div>
-                            <label class="label" for="phone">Telefon (opcjonalnie)</label>
+                            <label class="label" for="phone">{{ t('ui.auth.activate.phone') }}</label>
                             <input id="phone"
                                    name="phone"
                                    type="tel"
-                                   placeholder="+48123456789"
+                                   placeholder="{{ t('ui.auth.activate.phone_placeholder') }}"
                                    class="input mt-1.5">
                         </div>
                     {% endif %}
                     <button type="submit" class="btn btn-primary w-full !py-3 !text-[1rem]">
                         {% if pending %}
-                            Aktywuj konto
+                            {{ t('ui.auth.activate.submit_pending') }}
                         {% else %}
-                            Zapisz hasło
+                            {{ t('ui.auth.activate.submit_reset') }}
                         {% endif %}
                     </button>
                 </form>

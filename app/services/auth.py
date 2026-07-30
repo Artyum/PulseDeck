@@ -10,6 +10,7 @@ from app.models.enums import MagicTokenPurpose, UserRole
 from app.models.ticket import MagicToken
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
+from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.password import (
     hash_password,
     validate_password_strength,
@@ -47,13 +48,14 @@ def authenticate_password(db: Session, email: str, password: str) -> User | None
     return user
 
 
-def login_blocked_reason(user: User) -> str | None:
+def login_blocked_reason(user: User, *, lang: str | None = None) -> str | None:
+    lang = lang or DEFAULT_LANG
     if not user.is_active:
-        return "Konto jest zablokowane."
+        return t(lang, "flash.auth.account_blocked")
     if user.activated_at is None:
-        return "Konto nie zostało aktywowane. Sprawdź e-mail lub użyj opcji „Nie pamiętam hasła”."
+        return t(lang, "flash.auth.account_not_activated")
     if user.pending_email:
-        return "Potwierdź nowy adres e-mail, zanim się zalogujesz."
+        return t(lang, "flash.auth.confirm_pending_email")
     return None
 
 
@@ -66,25 +68,30 @@ def mark_activated(user: User) -> None:
         user.activated_at = datetime.now(timezone.utc)
 
 
-def set_password(user: User, password: str) -> None:
-    validate_password_strength(password)
-    user.password_hash = hash_password(password)
+def set_password(user: User, password: str, *, lang: str | None = None) -> None:
+    lang = lang or DEFAULT_LANG
+    validate_password_strength(password, lang=lang)
+    user.password_hash = hash_password(password, lang=lang)
 
 
 def bump_auth_epoch(user: User) -> None:
     user.auth_epoch = int(user.auth_epoch or 0) + 1
 
 
-def require_matching_passwords(password: str, confirm: str) -> None:
+def require_matching_passwords(
+    password: str, confirm: str, *, lang: str | None = None
+) -> None:
     if password != confirm:
-        raise ValueError("Hasła nie są zgodne.")
+        raise ValueError(
+            t(lang or DEFAULT_LANG, "messages.auth.passwords_mismatch")
+        )
 
 
-def _require_names(first_name: str, last_name: str) -> tuple[str, str]:
+def _require_names(first_name: str, last_name: str, *, lang: str) -> tuple[str, str]:
     fn = first_name.strip()
     ln = last_name.strip()
     if not fn or not ln:
-        raise ValueError("Imię i nazwisko są wymagane.")
+        raise ValueError(t(lang, "messages.auth.name_required"))
     return fn, ln
 
 
@@ -148,7 +155,9 @@ def create_magic_token(
     return row
 
 
-def set_user_role(db: Session, user: User, role: UserRole) -> User:
+def set_user_role(
+    db: Session, user: User, role: UserRole, *, lang: str | None = None
+) -> User:
     if user.role == UserRole.ADMIN and role != UserRole.ADMIN:
         admins = int(
             db.scalar(
@@ -159,7 +168,9 @@ def set_user_role(db: Session, user: User, role: UserRole) -> User:
             or 0
         )
         if admins <= 1:
-            raise ValueError("Nie można usunąć roli ostatniego administratora.")
+            raise ValueError(
+                t(lang or DEFAULT_LANG, "messages.auth.cannot_demote_last_admin")
+            )
     user.role = role
     if role == UserRole.ADMIN:
         project_service.clear_user_memberships(db, user.id)
@@ -168,9 +179,16 @@ def set_user_role(db: Session, user: User, role: UserRole) -> User:
     return user
 
 
-def set_active(db: Session, target: User, *, actor: User, active: bool) -> User:
+def set_active(
+    db: Session,
+    target: User,
+    *,
+    actor: User,
+    active: bool,
+    lang: str | None = None,
+) -> User:
     if target.id == actor.id:
-        raise ValueError("Nie możesz zablokować własnego konta.")
+        raise ValueError(t(lang or DEFAULT_LANG, "messages.auth.cannot_block_self"))
     target.is_active = active
     if not active:
         bump_auth_epoch(target)
@@ -187,23 +205,28 @@ def update_profile_fields(
     first_name: str,
     last_name: str,
     phone: str | None,
+    lang: str | None = None,
 ) -> User:
-    fn, ln = _require_names(first_name, last_name)
+    lang = lang or DEFAULT_LANG
+    fn, ln = _require_names(first_name, last_name, lang=lang)
     user.first_name = fn
     user.last_name = ln
-    user.phone = normalize_phone(phone)
+    user.phone = normalize_phone(phone, lang=lang)
     db.flush()
     return user
 
 
-def request_email_change(db: Session, user: User, new_email: str) -> MagicToken:
+def request_email_change(
+    db: Session, user: User, new_email: str, *, lang: str | None = None
+) -> MagicToken:
+    lang = lang or DEFAULT_LANG
     normalized = normalize_email(new_email)
     if not normalized:
-        raise ValueError("E-mail jest wymagany.")
+        raise ValueError(t(lang, "messages.auth.email_required"))
     if normalized == user.email:
-        raise ValueError("Nowy e-mail jest taki sam jak obecny.")
+        raise ValueError(t(lang, "messages.auth.email_unchanged"))
     if email_taken(db, normalized, exclude_user_id=user.id):
-        raise ValueError("Ten e-mail jest już zajęty.")
+        raise ValueError(t(lang, "messages.auth.email_taken"))
     invalidate_magic_tokens(db, user.id)
     user.pending_email = normalized
     db.flush()
@@ -231,14 +254,17 @@ def confirm_email_change(db: Session, token: str) -> User | None:
     return user
 
 
-def admin_set_email(db: Session, user: User, new_email: str) -> User:
+def admin_set_email(
+    db: Session, user: User, new_email: str, *, lang: str | None = None
+) -> User:
+    lang = lang or DEFAULT_LANG
     normalized = normalize_email(new_email)
     if not normalized:
-        raise ValueError("E-mail jest wymagany.")
+        raise ValueError(t(lang, "messages.auth.email_required"))
     if normalized != user.email and email_taken(
         db, normalized, exclude_user_id=user.id
     ):
-        raise ValueError("Ten e-mail jest już zajęty.")
+        raise ValueError(t(lang, "messages.auth.email_taken"))
     if normalized != user.email:
         invalidate_magic_tokens(db, user.id)
         bump_auth_epoch(user)
@@ -248,8 +274,10 @@ def admin_set_email(db: Session, user: User, new_email: str) -> User:
     return user
 
 
-def admin_set_password(db: Session, user: User, password: str) -> User:
-    set_password(user, password)
+def admin_set_password(
+    db: Session, user: User, password: str, *, lang: str | None = None
+) -> User:
+    set_password(user, password, lang=lang)
     mark_activated(user)
     bump_auth_epoch(user)
     invalidate_magic_tokens(db, user.id)
@@ -270,18 +298,22 @@ def resolve_password_set_token(
     return row, user
 
 
-def create_password_link(db: Session, user: User) -> MagicToken:
+def create_password_link(
+    db: Session, user: User, *, lang: str | None = None
+) -> MagicToken:
     if not can_receive_password_link(user):
-        raise ValueError("Konto jest zablokowane.")
+        raise ValueError(t(lang or DEFAULT_LANG, "flash.auth.account_blocked"))
     invalidate_magic_tokens(db, user.id)
     return create_magic_token(db, user, purpose=MagicTokenPurpose.PASSWORD_SET)
 
 
-def send_password_link(db: Session, background, user: User) -> MagicToken:
+def send_password_link(
+    db: Session, background, user: User, *, lang: str | None = None
+) -> MagicToken:
     from app.services.email import notify_password_set
 
-    token_row = create_password_link(db, user)
-    notify_password_set(background, user, token_row.token)
+    token_row = create_password_link(db, user, lang=lang)
+    notify_password_set(background, user, token_row.token, lang=lang)
     return token_row
 
 
@@ -291,14 +323,16 @@ def complete_password_set(
     password: str,
     *,
     phone: str | None = None,
+    lang: str | None = None,
 ) -> User | None:
+    lang = lang or DEFAULT_LANG
     resolved = resolve_password_set_token(db, token)
     if not resolved:
         return None
     row, user = resolved
-    set_password(user, password)
+    set_password(user, password, lang=lang)
     if user.activated_at is None and phone is not None:
-        user.phone = normalize_phone(phone)
+        user.phone = normalize_phone(phone, lang=lang)
     mark_activated(user)
     bump_auth_epoch(user)
     row.used = True
@@ -316,17 +350,17 @@ def create_pending_user(
     email: str,
     role: UserRole,
     project_ids: list[int],
+    lang: str | None = None,
 ) -> User:
-    fn, ln = _require_names(first_name, last_name)
+    lang = lang or DEFAULT_LANG
+    fn, ln = _require_names(first_name, last_name, lang=lang)
     normalized = normalize_email(email)
     if not normalized:
-        raise ValueError("E-mail jest wymagany.")
+        raise ValueError(t(lang, "messages.auth.email_required"))
     if email_taken(db, normalized):
-        raise ValueError(
-            "Użytkownik z tym adresem e-mail już istnieje — otwórz kartę użytkownika i wyślij ponownie link aktywacyjny."
-        )
+        raise ValueError(t(lang, "messages.auth.user_exists_resend"))
     if role != UserRole.ADMIN:
-        resolved_ids = project_service.resolve_project_ids(db, project_ids)
+        resolved_ids = project_service.resolve_project_ids(db, project_ids, lang=lang)
     else:
         resolved_ids = []
     user = User(
