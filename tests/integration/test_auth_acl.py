@@ -115,12 +115,12 @@ def test_user_activation(client, db_session, admin_user, project_with_members):
         role=UserRole.USER,
         project_ids=[project_with_members.id],
     )
-    token_row = auth_service.create_password_link(db_session, user)
+    token_row, raw_token = auth_service.create_password_link(db_session, user)
     assert token_row.purpose == MagicTokenPurpose.PASSWORD_SET.value
     r = client.post(
         "/auth/activate",
         data={
-            "token": token_row.token,
+            "token": raw_token,
             "new_password": "NowyUser1!",
             "confirm_password": "NowyUser1!",
             "phone": "",

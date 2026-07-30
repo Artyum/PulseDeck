@@ -80,8 +80,6 @@ def build_fastapi_app() -> FastAPI:
     static_dir = project_root() / "frontend" / "static"
     static_dir.mkdir(parents=True, exist_ok=True)
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
-    upload_dir = resolve_upload_dir()
-    app.mount("/uploads", StaticFiles(directory=str(upload_dir)), name="uploads")
 
     app.include_router(health.router)
     app.include_router(auth.router)

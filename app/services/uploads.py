@@ -2,14 +2,24 @@ from __future__ import annotations
 
 import hashlib
 import io
+import logging
+import mimetypes
 import uuid
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 
 from fastapi import HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from PIL import Image
+from sqlalchemy import select
+from sqlalchemy.orm import Session, joinedload
 
 from app.config import resolve_upload_dir
+from app.models.ticket import Attachment, Comment
+from app.models.user import User
+from app.services import tickets as ticket_service
 from app.utils.i18n import DEFAULT_LANG, t
+
+logger = logging.getLogger("pulsedeck.uploads")
 
 ALLOWED_IMAGE = frozenset({".jpg", ".jpeg", ".png", ".webp", ".gif"})
 ALLOWED_PDF = frozenset({".pdf"})
@@ -103,4 +113,76 @@ async def save_upload(
     raise HTTPException(
         status_code=400,
         detail=t(lang, "messages.uploads.formats"),
+    )
+
+
+def resolve_safe_upload_path(rel_path: str) -> Path | None:
+    if not rel_path or ".." in PurePosixPath(rel_path).parts:
+        return None
+    root = resolve_upload_dir().resolve()
+    try:
+        full = (root / rel_path).resolve()
+    except (OSError, RuntimeError):
+        return None
+    try:
+        full.relative_to(root)
+    except ValueError:
+        return None
+    if not full.is_file():
+        return None
+    return full
+
+
+def get_attachment_for_download(
+    db: Session,
+    attachment_id: int,
+    user: User,
+    *,
+    lang: str | None = None,
+) -> Attachment:
+    lang = lang or DEFAULT_LANG
+    att = db.scalar(
+        select(Attachment)
+        .where(Attachment.id == attachment_id)
+        .options(
+            joinedload(Attachment.ticket),
+            joinedload(Attachment.comment).joinedload(Comment.ticket),
+        )
+    )
+    if not att:
+        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
+
+    ticket = att.ticket
+    comment: Comment | None = att.comment
+    if comment is not None:
+        if comment.is_internal and not user.is_staff:
+            raise HTTPException(
+                status_code=404, detail=t(lang, "messages.http.not_found")
+            )
+        ticket = comment.ticket
+    if ticket is None:
+        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
+
+    ticket_service.require_project_access(db, user, ticket.project_id, lang=lang)
+    return att
+
+
+def file_response_for_attachment(
+    att: Attachment, *, lang: str | None = None
+) -> FileResponse:
+    lang = lang or DEFAULT_LANG
+    path = resolve_safe_upload_path(att.file_path)
+    if path is None:
+        logger.warning("Attachment file missing or unsafe path id=%s", att.id)
+        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
+    ext = path.suffix.lower()
+    media_type, _ = mimetypes.guess_type(str(path))
+    if not media_type:
+        media_type = "application/octet-stream"
+    disposition = "inline" if ext in ALLOWED_IMAGE else "attachment"
+    return FileResponse(
+        path=path,
+        media_type=media_type,
+        filename=att.file_name,
+        content_disposition_type=disposition,
     )

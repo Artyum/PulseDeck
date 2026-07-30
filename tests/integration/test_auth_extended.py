@@ -55,11 +55,11 @@ class TestActivationErrors:
         from app.services import auth as auth_service
 
         user = _create_pending_user(db_session)
-        token_row = auth_service.create_password_link(db_session, user)
+        _token_row, raw_token = auth_service.create_password_link(db_session, user)
         r = client.post(
             "/auth/activate",
             data={
-                "token": token_row.token,
+                "token": raw_token,
                 "new_password": "NowyUser1!",
                 "confirm_password": "Mismatch1!",
                 "phone": "",
@@ -72,11 +72,11 @@ class TestActivationErrors:
         from app.services import auth as auth_service
 
         user = _create_pending_user(db_session)
-        token_row = auth_service.create_password_link(db_session, user)
+        _token_row, raw_token = auth_service.create_password_link(db_session, user)
         r = client.post(
             "/auth/activate",
             data={
-                "token": token_row.token,
+                "token": raw_token,
                 "new_password": "short",
                 "confirm_password": "short",
                 "phone": "",
@@ -91,8 +91,8 @@ class TestActivationErrors:
         from app.services import auth as auth_service
 
         user = _create_pending_user(db_session)
-        token_row = auth_service.create_password_link(db_session, user)
-        r = client.get(f"/auth/activate?token={token_row.token}")
+        _token_row, raw_token = auth_service.create_password_link(db_session, user)
+        r = client.get(f"/auth/activate?token={raw_token}")
         assert r.status_code == 200
 
     def test_activate_page_with_invalid_token(self, client):

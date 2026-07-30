@@ -71,6 +71,10 @@ ui:
       phone_placeholder: "+48123456789"
       submit_pending: "Activate account"
       submit_reset: "Save password"
+    confirm_email:
+      title: "Confirm email"
+      subtitle: "Confirm your email address change"
+      submit: "Confirm email"
   profile:
     aside_label: "Account"
     nav_aria: "Profile"

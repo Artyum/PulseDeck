@@ -37,7 +37,11 @@ from app.services.email import (
     notify_new_ticket,
     notify_status_change,
 )
-from app.services.uploads import save_upload
+from app.services.uploads import (
+    file_response_for_attachment,
+    get_attachment_for_download,
+    save_upload,
+)
 from app.utils.i18n import resolve_lang, t
 from app.utils.urls import project_path, ticket_path
 
@@ -170,6 +174,18 @@ async def _attach_many(
         count += 1
 
 
+@router.get("/files/{attachment_id}")
+def download_attachment(
+    request: Request,
+    attachment_id: int,
+    user: CurrentUser,
+    db: DbSession,
+):
+    lang = resolve_lang(request)
+    att = get_attachment_for_download(db, attachment_id, user, lang=lang)
+    return file_response_for_attachment(att, lang=lang)
+
+
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request, db: DbSession):
     user = get_optional_user(request, db)
@@ -284,6 +300,7 @@ async def create_ticket(
 
 
 @router.post("/t/{ticket_ref}/comments", response_class=HTMLResponse)
+@limiter.limit(_upload_limit)
 async def add_comment(
     request: Request,
     ticket_ref: str,

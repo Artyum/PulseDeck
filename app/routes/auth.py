@@ -13,11 +13,13 @@ from app.deps.auth import (
     get_optional_user,
     set_user_session,
 )
+from app.models.enums import MagicTokenPurpose
 from app.models.user import User
 from app.rate_limit import limiter
 from app.routes.context import render
 from app.services import auth as auth_service
 from app.services.email import notify_email_confirm
+from app.utils.csrf import ensure_csrf_token
 from app.utils.i18n import resolve_lang, t
 from app.utils.password import verify_password
 
@@ -113,7 +115,9 @@ def login_submit(
     blocked = auth_service.login_blocked_reason(user, lang=lang)
     if blocked:
         return _render_login(request, error=blocked)
+    clear_user_session(request)
     set_user_session(request, user)
+    ensure_csrf_token(request)
     return RedirectResponse("/", status_code=303)
 
 
@@ -176,11 +180,11 @@ def update_profile(
         )
         new_email = auth_service.normalize_email(email)
         if new_email != user.email:
-            token_row = auth_service.request_email_change(
+            _token_row, raw = auth_service.request_email_change(
                 db, user, new_email, lang=lang
             )
             notify_email_confirm(
-                background_tasks, user, token_row.token, new_email, lang=lang
+                background_tasks, user, raw, new_email, lang=lang
             )
             clear_user_session(request)
             return RedirectResponse("/login?email_confirm=1", status_code=303)
@@ -213,7 +217,10 @@ def change_password(
         ):
             raise ValueError(t(lang, "flash.auth.current_password_invalid"))
         auth_service.set_password(user, new_password, lang=lang)
+        auth_service.bump_auth_epoch(user)
         db.commit()
+        db.refresh(user)
+        set_user_session(request, user)
     except ValueError as exc:
         return _render_profile(request, user, section="password", error=str(exc))
     return _render_profile(
@@ -224,8 +231,37 @@ def change_password(
     )
 
 
-@router.get("/auth/confirm-email")
-def confirm_email(request: Request, token: str, db: DbSession):
+def _render_confirm_email(
+    request: Request,
+    *,
+    token: str,
+    error: str | None = None,
+):
+    return render(
+        request,
+        "auth/confirm_email.html",
+        token=token,
+        error=error,
+    )
+
+
+@router.get("/auth/confirm-email", response_class=HTMLResponse)
+def confirm_email_page(request: Request, token: str, db: DbSession):
+    lang = resolve_lang(request)
+    row = auth_service.peek_magic_token(
+        db, token, purpose=MagicTokenPurpose.EMAIL_CONFIRM
+    )
+    if not row:
+        return _render_login(request, error=t(lang, "flash.auth.confirm_link_invalid"))
+    return _render_confirm_email(request, token=token)
+
+
+@router.post("/auth/confirm-email")
+def confirm_email_submit(
+    request: Request,
+    db: DbSession,
+    token: Annotated[str, Form()],
+):
     lang = resolve_lang(request)
     user = auth_service.confirm_email_change(db, token)
     if not user:

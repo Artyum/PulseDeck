@@ -36,7 +36,13 @@ from app.utils.themes import (
     THEME_STORAGE_KEY,
 )
 from app.utils.timefmt import age_since, gap_between
-from app.utils.urls import admin_project_path, project_path, ticket_label, ticket_path
+from app.utils.urls import (
+    admin_project_path,
+    attachment_path,
+    project_path,
+    ticket_label,
+    ticket_path,
+)
 
 logger = logging.getLogger("pulsedeck.app")
 
@@ -47,6 +53,7 @@ _templates.env.filters["project_path"] = project_path
 _templates.env.filters["ticket_path"] = ticket_path
 _templates.env.filters["ticket_label"] = ticket_label
 _templates.env.filters["admin_project_path"] = admin_project_path
+_templates.env.filters["attachment_path"] = attachment_path
 
 
 def _enum_label_map(lang: str, group: str, enum_cls: type[Enum]) -> dict:

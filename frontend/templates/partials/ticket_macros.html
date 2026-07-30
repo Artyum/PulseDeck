@@ -13,17 +13,17 @@
                 {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
                     <button type="button"
                             class="attach-thumb"
-                            data-lightbox-src="{{ url_for('uploads', path=a.file_path) }}"
+                            data-lightbox-src="{{ a|attachment_path }}"
                             data-lightbox-alt="{{ a.file_name }}"
                             title="{{ a.file_name }}">
-                        <img src="{{ url_for('uploads', path=a.file_path) }}"
+                        <img src="{{ a|attachment_path }}"
                              alt="{{ a.file_name }}"
                              width="80"
                              height="80"
                              loading="lazy">
                     </button>
                 {% else %}
-                    <a href="{{ url_for('uploads', path=a.file_path) }}"
+                    <a href="{{ a|attachment_path }}"
                        target="_blank"
                        class="btn btn-secondary">{{ a.file_name }}</a>
                 {% endif %}
@@ -224,7 +224,7 @@
                     {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
                     <div class="attach-preview-item" data-existing-id="{{ a.id }}">
                         {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
-                            <img src="{{ url_for('uploads', path=a.file_path) }}"
+                            <img src="{{ a|attachment_path }}"
                                  alt="{{ a.file_name }}"
                                  width="80"
                                  height="80">

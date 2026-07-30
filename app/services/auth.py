@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import secrets
 from datetime import datetime, timedelta, timezone
@@ -19,6 +20,10 @@ from app.utils.password import (
 from app.utils.phone import normalize_phone
 
 logger = logging.getLogger("pulsedeck.services.auth")
+
+
+def hash_magic_token(raw: str) -> str:
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def normalize_email(email: str) -> str:
@@ -117,7 +122,8 @@ def peek_magic_token(
     *,
     purpose: MagicTokenPurpose,
 ) -> MagicToken | None:
-    row = db.scalar(select(MagicToken).where(MagicToken.token == token))
+    hashed = hash_magic_token(token)
+    row = db.scalar(select(MagicToken).where(MagicToken.token == hashed))
     if not row or row.used or row.purpose != purpose.value:
         return None
     if _token_expires_at(row) <= datetime.now(timezone.utc):
@@ -130,7 +136,7 @@ def create_magic_token(
     user: User,
     *,
     purpose: MagicTokenPurpose,
-) -> MagicToken:
+) -> tuple[MagicToken, str]:
     settings = get_settings()
     if purpose == MagicTokenPurpose.PASSWORD_SET:
         expires_at = datetime.now(timezone.utc) + timedelta(
@@ -140,9 +146,10 @@ def create_magic_token(
         expires_at = datetime.now(timezone.utc) + timedelta(
             minutes=settings.email_confirm_ttl_minutes
         )
+    raw = secrets.token_urlsafe(32)
     row = MagicToken(
         user_id=user.id,
-        token=secrets.token_urlsafe(32),
+        token=hash_magic_token(raw),
         purpose=purpose.value,
         expires_at=expires_at,
         used=False,
@@ -150,7 +157,7 @@ def create_magic_token(
     db.add(row)
     db.commit()
     db.refresh(row)
-    return row
+    return row, raw
 
 
 def set_user_role(
@@ -216,7 +223,7 @@ def update_profile_fields(
 
 def request_email_change(
     db: Session, user: User, new_email: str, *, lang: str | None = None
-) -> MagicToken:
+) -> tuple[MagicToken, str]:
     lang = lang or DEFAULT_LANG
     normalized = normalize_email(new_email)
     if not normalized:
@@ -298,7 +305,7 @@ def resolve_password_set_token(
 
 def create_password_link(
     db: Session, user: User, *, lang: str | None = None
-) -> MagicToken:
+) -> tuple[MagicToken, str]:
     if not can_receive_password_link(user):
         raise ValueError(t(lang or DEFAULT_LANG, "flash.auth.account_blocked"))
     invalidate_magic_tokens(db, user.id)
@@ -310,8 +317,8 @@ def send_password_link(
 ) -> MagicToken:
     from app.services.email import notify_password_set
 
-    token_row = create_password_link(db, user, lang=lang)
-    notify_password_set(background, user, token_row.token, lang=lang)
+    token_row, raw = create_password_link(db, user, lang=lang)
+    notify_password_set(background, user, raw, lang=lang)
     return token_row
 
 
