@@ -78,6 +78,10 @@
                         {{ filter_field_menu('status', t('ui.portal.feed.status') , ticket_statuses, filter_status, status_labels, empty_label=t('ui.common.empty_dash')) }}
                     </div>
                     <div class="issue-field">
+                        <span class="label-tight">{{ t("ui.portal.feed.type") }}</span>
+                        {{ filter_field_menu('type', t('ui.portal.feed.type') , ticket_types, filter_type, type_labels, empty_label=t('ui.common.empty_dash')) }}
+                    </div>
+                    <div class="issue-field">
                         <span class="label-tight">{{ t("ui.portal.feed.priority") }}</span>
                         {{ filter_field_menu('priority', t('ui.portal.feed.priority') , ticket_priorities, filter_priority, priority_labels, empty_label=t('ui.common.empty_dash')) }}
                     </div>

@@ -134,6 +134,7 @@ ui:
       search: "Search"
       search_placeholder: "Title…"
       status: "Status"
+      type: "Type"
       priority: "Priority"
       tag: "Tag"
       sort: "Sort"
