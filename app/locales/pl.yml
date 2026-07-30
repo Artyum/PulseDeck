@@ -113,7 +113,8 @@ ui:
     settings:
       language: "Język"
       theme_title: "Motyw kolorystyczny"
-      theme_hint: "Zapisuje się w tej przeglądarce."
+      theme_hint: "Zapisuje się w tej przeglądarce. Suwak włącza gradient tła."
+      gradient_toggle: "Gradient tła"
       density_title: "Odstępy"
       density_hint: "Gęstość układu między elementami. Zapisuje się w tej przeglądarce."
       font_title: "Wielkość czcionki"
@@ -305,31 +306,31 @@ enums:
 themes:
   morning-mist:
     label: "Poranna mgła"
-    description: "Krystaliczny błękit — domyślny wygląd PulseDeck."
+    description: "Perłowy błękit z miękką poświatą — domyślny wygląd."
   sandy-dawn:
     label: "Piaskowy brzask"
-    description: "Ciepły piasek z miodowym bursztynem."
+    description: "Ciepły piasek i miodowy bursztyn w łagodnym blasku."
   green-meadow:
     label: "Zielona polana"
-    description: "Czysta zieleń szałwii, spokojny rytm pracy."
+    description: "Szałwia i mech w spokojnej, kameralnej poświacie."
   graphite-day:
     label: "Grafitowy dzień"
-    description: "Neutralny grafit z kobaltowym akcentem."
+    description: "Chłodny grafit z delikatną kobaltową mgiełką."
   deep-ocean:
     label: "Głęboki ocean"
-    description: "Głębia szafiru z jasnym błękitem akcentu."
+    description: "Głębia szafiru z głębinową, miękką poświatą."
   midnight-berry:
     label: "Nocna borówka"
-    description: "Dojrzała jagoda z miękkim fioletem."
+    description: "Dojrzała jagoda w ciepłym, fioletowym półmroku."
   northern-spruce:
     label: "Północny świerk"
-    description: "Ciemny mech z krystaliczną miętą."
+    description: "Ciemny las z krystaliczną, miętową poświatą."
   charcoal-dusk:
     label: "Węglowy zmierzch"
-    description: "Czysty charcoal z lodowym cyanem."
+    description: "Charcoal z lodowym cyjanem w cichym zmierzchu."
   amber-night:
     label: "Bursztynowa noc"
-    description: "Espresso ze szampańskim złotem."
+    description: "Espresso z ciepłym, szampańskim żarem."
   density:
     tight:
       label: "Zwarty"

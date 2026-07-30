@@ -127,12 +127,15 @@
              data-ui-pref="theme"
              data-ui-attr="data-theme"
              data-ui-storage-key="{{ theme_storage_key }}"
-             data-ui-fallback="{{ ui_theme }}">
+             data-ui-fallback="{{ ui_theme }}"
+             data-ui-gradient-key="{{ theme_gradient_storage_key }}">
             {% for theme in theme_choices %}
-                <button type="button"
-                        class="theme-option"
-                        data-ui-value="{{ theme.id }}"
-                        aria-pressed="false">
+                <div class="theme-option"
+                     role="radio"
+                     tabindex="0"
+                     data-ui-value="{{ theme.id }}"
+                     aria-checked="false"
+                     aria-label="{{ theme.label }}">
                     <span class="theme-option-swatches" aria-hidden="true">
                         {% for swatch in theme.swatches %}
                             <span class="theme-option-swatch" style="background: {{ swatch }}"></span>
@@ -142,8 +145,20 @@
                         <span class="theme-option-label">{{ theme.label }}</span>
                         <span class="theme-option-desc">{{ theme.description }}</span>
                     </span>
-                    <span class="theme-option-check">{{ t("ui.common.active") }}</span>
-                </button>
+                    <span class="theme-option-aside">
+                        <span class="theme-option-check">{{ t("ui.common.active") }}</span>
+                        <label class="theme-gradient-switch"
+                               title="{{ t('ui.profile.settings.gradient_toggle') }}">
+                            <input type="checkbox"
+                                   data-theme-gradient-for="{{ theme.id }}"
+                                   aria-label="{{ t('ui.profile.settings.gradient_toggle') }}"
+                                   checked>
+                            <span class="theme-gradient-track" aria-hidden="true">
+                                <span class="theme-gradient-thumb"></span>
+                            </span>
+                        </label>
+                    </span>
+                </div>
             {% endfor %}
         </div>
     </div>

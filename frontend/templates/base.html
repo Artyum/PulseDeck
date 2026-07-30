@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ ui_lang }}"
       data-theme="{{ ui_theme }}"
+      data-theme-gradient="{{ ui_theme_gradient }}"
       data-density="{{ ui_density }}"
       data-font-size="{{ ui_font_size }}">
     <head>
@@ -22,6 +23,16 @@
             {{ theme_choices|map(attribute='id')|list|tojson }},
             "data-theme"
           );
+          try {
+            var gradKey = {{ theme_gradient_storage_key|tojson }};
+            var theme = root.getAttribute("data-theme") || {{ ui_theme|tojson }};
+            var map = JSON.parse(localStorage.getItem(gradKey) || "{}");
+            var grad = map[theme];
+            root.setAttribute(
+              "data-theme-gradient",
+              grad === false || grad === "off" ? "off" : "on"
+            );
+          } catch (e) {}
           applyPref(
             {{ density_storage_key|tojson }},
             {{ density_choices|map(attribute='id')|list|tojson }},

@@ -113,7 +113,8 @@ ui:
     settings:
       language: "Language"
       theme_title: "Color theme"
-      theme_hint: "Saved in this browser."
+      theme_hint: "Saved in this browser. Use the switch to toggle the background gradient."
+      gradient_toggle: "Background gradient"
       density_title: "Spacing"
       density_hint: "Layout density between elements. Saved in this browser."
       font_title: "Font size"
@@ -305,31 +306,31 @@ enums:
 themes:
   morning-mist:
     label: "Morning Mist"
-    description: "Crystalline blue — the default PulseDeck look."
+    description: "Pearly blue with a soft glow — the default look."
   sandy-dawn:
     label: "Sandy Dawn"
-    description: "Warm sand with honeyed amber."
+    description: "Warm sand and honeyed amber in a gentle wash."
   green-meadow:
     label: "Green Meadow"
-    description: "Clean sage green, a calm work rhythm."
+    description: "Sage and moss in a quiet, intimate glow."
   graphite-day:
     label: "Graphite Day"
-    description: "Neutral graphite with a cobalt accent."
+    description: "Cool graphite with a soft cobalt haze."
   deep-ocean:
     label: "Deep Ocean"
-    description: "Sapphire depth with a bright blue accent."
+    description: "Sapphire depth with a soft abyssal glow."
   midnight-berry:
     label: "Midnight Berry"
-    description: "Ripe berry with soft purple."
+    description: "Ripe berry in a warm purple half-light."
   northern-spruce:
     label: "Northern Spruce"
-    description: "Dark moss with crystalline mint."
+    description: "Dark forest with a crystalline mint glow."
   charcoal-dusk:
     label: "Charcoal Dusk"
-    description: "Clean charcoal with icy cyan."
+    description: "Charcoal with icy cyan in a quiet dusk."
   amber-night:
     label: "Amber Night"
-    description: "Espresso with champagne gold."
+    description: "Espresso with a warm champagne ember."
   density:
     tight:
       label: "Tight"

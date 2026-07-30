@@ -29,6 +29,11 @@
     line-height: 1.5;
     color: var(--color-ink);
     background-color: var(--color-page);
+    background-image: var(--page-gradient);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -40,6 +45,12 @@
   :focus-visible {
     outline: 2px solid var(--color-pulse);
     outline-offset: 2px;
+  }
+
+  @media (max-width: 48rem) {
+    body {
+      background-attachment: scroll;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

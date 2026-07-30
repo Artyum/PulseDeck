@@ -28,11 +28,13 @@ from app.utils.themes import (
     DEFAULT_DENSITY,
     DEFAULT_FONT_SIZE,
     DEFAULT_THEME,
+    DEFAULT_THEME_GRADIENT,
     DENSITY_CHOICES,
     DENSITY_STORAGE_KEY,
     FONT_SIZE_CHOICES,
     FONT_SIZE_STORAGE_KEY,
     THEME_CHOICES,
+    THEME_GRADIENT_STORAGE_KEY,
     THEME_STORAGE_KEY,
 )
 from app.utils.timefmt import age_since, gap_between
@@ -103,6 +105,8 @@ def common_context(request: Request, **extra) -> dict:
         "ui_theme": DEFAULT_THEME,
         "theme_choices": _theme_choices(lang),
         "theme_storage_key": THEME_STORAGE_KEY,
+        "ui_theme_gradient": DEFAULT_THEME_GRADIENT,
+        "theme_gradient_storage_key": THEME_GRADIENT_STORAGE_KEY,
         "ui_density": DEFAULT_DENSITY,
         "density_choices": _appearance_choices(lang, "density", DENSITY_CHOICES),
         "density_storage_key": DENSITY_STORAGE_KEY,

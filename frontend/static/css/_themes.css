@@ -1,11 +1,11 @@
 :root,
 html[data-theme="morning-mist"] {
-  --color-mist: #e8f0fa;
-  --color-page: #f7f9fc;
-  --color-aside: #f0f5fb;
+  --color-mist: #e6eef8;
+  --color-page: #f5f8fc;
+  --color-aside: #eef3fa;
   --color-ink: #1a2b3d;
   --color-steel: #5a6f86;
-  --color-line: #d2deed;
+  --color-line: #d0dceb;
   --color-pulse: #2f72e8;
   --color-signal: #c56e18;
   --color-danger: #c83d36;
@@ -13,20 +13,20 @@ html[data-theme="morning-mist"] {
   --color-secondary: #5a6f86;
   --color-accent: #2f72e8;
   --color-brand: #1a2b3d;
-  --color-base-100: #e8f0fa;
-  --color-soft-blue: #dde8f8;
-  --color-soft-yellow: #f5edd6;
-  --color-soft-purple: #e6e1f5;
-  --color-soft-green: #d7efe4;
-  --color-soft-red: #f4dfdb;
-  --color-soft-teal: #d6eef2;
-  --color-soft-orange: #f3e5d7;
-  --color-frame: #b0c2d8;
-  --color-frame-strong: #8ba2be;
+  --color-base-100: #e6eef8;
+  --color-soft-blue: #d8e6f7;
+  --color-soft-yellow: #f4edd8;
+  --color-soft-purple: #e4e0f4;
+  --color-soft-green: #d5ede2;
+  --color-soft-red: #f3ddd9;
+  --color-soft-teal: #d4ecf1;
+  --color-soft-orange: #f2e4d6;
+  --color-frame: #aec0d6;
+  --color-frame-strong: #89a0bc;
   --color-surface: #ffffff;
-  --color-surface-2: #f5f8fc;
-  --color-surface-3: #ebf1f9;
-  --color-pulse-bright: #4584ef;
+  --color-surface-2: #f3f7fc;
+  --color-surface-3: #e8f0f8;
+  --color-pulse-bright: #4a88f2;
   --color-pulse-deep: #1d5bc8;
   --color-on-pulse: #ffffff;
   --color-chip-neutral: #eef2f7;
@@ -45,16 +45,19 @@ html[data-theme="morning-mist"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #765c16;
   --color-chip-yellow-border: #d8c686;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(168 205 240 / 0.34), transparent 62%), linear-gradient(180deg, #eef5fc 0%, #f4f8fc 42%, #f5f8fc 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(150 190 230 / 0.22), transparent 62%), linear-gradient(180deg, #e4edf7 0%, #eef3fa 100%);
+  --comment-bg: color-mix(in oklab, var(--color-surface-2) 25%, var(--color-surface));
   color-scheme: light;
 }
 
 html[data-theme="sandy-dawn"] {
-  --color-mist: #f1e8dc;
-  --color-page: #faf6f0;
-  --color-aside: #f2ebe1;
+  --color-mist: #f0e6d8;
+  --color-page: #faf5ee;
+  --color-aside: #f3ebe0;
   --color-ink: #352e26;
   --color-steel: #75685a;
-  --color-line: #e0d4c4;
+  --color-line: #ded0be;
   --color-pulse: #c9923a;
   --color-signal: #b87222;
   --color-danger: #c2473c;
@@ -62,19 +65,19 @@ html[data-theme="sandy-dawn"] {
   --color-secondary: #75685a;
   --color-accent: #c9923a;
   --color-brand: #352e26;
-  --color-base-100: #f1e8dc;
-  --color-soft-blue: #ebe6de;
-  --color-soft-yellow: #f4e7c6;
-  --color-soft-purple: #ebe4e2;
-  --color-soft-green: #e3ebdf;
-  --color-soft-red: #f2e1db;
-  --color-soft-teal: #e3eae5;
-  --color-soft-orange: #f2e4d0;
-  --color-frame: #c9b8a2;
-  --color-frame-strong: #ad9982;
+  --color-base-100: #f0e6d8;
+  --color-soft-blue: #ebe5dc;
+  --color-soft-yellow: #f3e5c2;
+  --color-soft-purple: #ebe3e0;
+  --color-soft-green: #e2eadc;
+  --color-soft-red: #f1dfd8;
+  --color-soft-teal: #e2e9e3;
+  --color-soft-orange: #f1e2cc;
+  --color-frame: #c7b59e;
+  --color-frame-strong: #ab9780;
   --color-surface: #fffdfb;
-  --color-surface-2: #f7f1e9;
-  --color-surface-3: #efe6da;
+  --color-surface-2: #f8f1e8;
+  --color-surface-3: #efe5d8;
   --color-pulse-bright: #d6a34c;
   --color-pulse-deep: #a87828;
   --color-on-pulse: #fffaf2;
@@ -94,16 +97,18 @@ html[data-theme="sandy-dawn"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #765c18;
   --color-chip-yellow-border: #d8c686;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(238 205 155 / 0.32), transparent 62%), linear-gradient(180deg, #f7efe4 0%, #f9f3eb 42%, #faf5ee 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(228 190 140 / 0.2), transparent 62%), linear-gradient(180deg, #ebe0d0 0%, #f3ebe0 100%);
   color-scheme: light;
 }
 
 html[data-theme="green-meadow"] {
-  --color-mist: #e4eee7;
-  --color-page: #f5f8f5;
-  --color-aside: #eaf0eb;
+  --color-mist: #e2ede5;
+  --color-page: #f4f8f4;
+  --color-aside: #e8f0ea;
   --color-ink: #1f3228;
   --color-steel: #587266;
-  --color-line: #cbd9d0;
+  --color-line: #c8d7ce;
   --color-pulse: #3d9470;
   --color-signal: #bc7620;
   --color-danger: #c2473c;
@@ -111,19 +116,19 @@ html[data-theme="green-meadow"] {
   --color-secondary: #587266;
   --color-accent: #3d9470;
   --color-brand: #1f3228;
-  --color-base-100: #e4eee7;
-  --color-soft-blue: #dce8e4;
-  --color-soft-yellow: #f1ead4;
-  --color-soft-purple: #e3e4ec;
-  --color-soft-green: #d5ebde;
-  --color-soft-red: #f1e0dc;
-  --color-soft-teal: #d4eae6;
-  --color-soft-orange: #efe5d6;
-  --color-frame: #a4bdae;
-  --color-frame-strong: #82a192;
+  --color-base-100: #e2ede5;
+  --color-soft-blue: #dae7e3;
+  --color-soft-yellow: #f0e9d2;
+  --color-soft-purple: #e1e3eb;
+  --color-soft-green: #d2eadc;
+  --color-soft-red: #f0deda;
+  --color-soft-teal: #d2e9e5;
+  --color-soft-orange: #eee4d4;
+  --color-frame: #a1bbaa;
+  --color-frame-strong: #7f9f8f;
   --color-surface: #ffffff;
-  --color-surface-2: #f1f6f2;
-  --color-surface-3: #e6efe9;
+  --color-surface-2: #f0f6f1;
+  --color-surface-3: #e4eee8;
   --color-pulse-bright: #4ea880;
   --color-pulse-deep: #2f785a;
   --color-on-pulse: #f3fff8;
@@ -143,16 +148,18 @@ html[data-theme="green-meadow"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #6c5a18;
   --color-chip-yellow-border: #d2c486;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(160 210 180 / 0.3), transparent 62%), linear-gradient(180deg, #ebf4ee 0%, #f1f7f2 42%, #f4f8f4 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(145 195 165 / 0.2), transparent 62%), linear-gradient(180deg, #ddeae3 0%, #e8f0ea 100%);
   color-scheme: light;
 }
 
 html[data-theme="graphite-day"] {
-  --color-mist: #e9ebf0;
-  --color-page: #f6f7f9;
-  --color-aside: #eef0f4;
+  --color-mist: #e7eaef;
+  --color-page: #f5f6f8;
+  --color-aside: #eceef3;
   --color-ink: #1e222a;
   --color-steel: #5e6674;
-  --color-line: #d2d6de;
+  --color-line: #d0d4dc;
   --color-pulse: #3d6fd9;
   --color-signal: #bc7020;
   --color-danger: #c2473c;
@@ -160,19 +167,19 @@ html[data-theme="graphite-day"] {
   --color-secondary: #5e6674;
   --color-accent: #3d6fd9;
   --color-brand: #1e222a;
-  --color-base-100: #e9ebf0;
-  --color-soft-blue: #e0e7f4;
-  --color-soft-yellow: #f1ebd6;
-  --color-soft-purple: #e5e3f0;
-  --color-soft-green: #dcebe4;
-  --color-soft-red: #f1e1de;
-  --color-soft-teal: #dce7ec;
-  --color-soft-orange: #efe5da;
-  --color-frame: #b2b8c4;
-  --color-frame-strong: #9098a6;
+  --color-base-100: #e7eaef;
+  --color-soft-blue: #dde5f3;
+  --color-soft-yellow: #f0ead4;
+  --color-soft-purple: #e3e1ee;
+  --color-soft-green: #dae9e2;
+  --color-soft-red: #f0dfdc;
+  --color-soft-teal: #dae5ea;
+  --color-soft-orange: #eee3d8;
+  --color-frame: #b0b6c2;
+  --color-frame-strong: #8e96a4;
   --color-surface: #ffffff;
-  --color-surface-2: #f1f2f5;
-  --color-surface-3: #e8eaf0;
+  --color-surface-2: #f0f1f4;
+  --color-surface-3: #e6e8ee;
   --color-pulse-bright: #5082e4;
   --color-pulse-deep: #2d5bb8;
   --color-on-pulse: #f4f7ff;
@@ -192,16 +199,18 @@ html[data-theme="graphite-day"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #6c5a18;
   --color-chip-yellow-border: #d2c486;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(168 188 225 / 0.28), transparent 62%), linear-gradient(180deg, #eef1f6 0%, #f3f4f7 42%, #f5f6f8 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(155 172 210 / 0.18), transparent 62%), linear-gradient(180deg, #e2e5ec 0%, #eceef3 100%);
   color-scheme: light;
 }
 
 html[data-theme="deep-ocean"] {
-  --color-mist: #0e1a2b;
-  --color-page: #0e1a2b;
-  --color-aside: #122033;
+  --color-mist: #0c1726;
+  --color-page: #0c1726;
+  --color-aside: #101c2e;
   --color-ink: #d8e4f2;
   --color-steel: #8aa0b8;
-  --color-line: #273a54;
+  --color-line: #243650;
   --color-pulse: #5aa8ff;
   --color-signal: #e09e56;
   --color-danger: #e87870;
@@ -209,19 +218,19 @@ html[data-theme="deep-ocean"] {
   --color-secondary: #8aa0b8;
   --color-accent: #5aa8ff;
   --color-brand: #d8e4f2;
-  --color-base-100: #0e1a2b;
-  --color-soft-blue: #1e3856;
-  --color-soft-yellow: #3c3424;
-  --color-soft-purple: #2a3250;
-  --color-soft-green: #1e3a34;
-  --color-soft-red: #3c2a2a;
-  --color-soft-teal: #1e3a42;
-  --color-soft-orange: #3c3226;
-  --color-frame: #3a5472;
-  --color-frame-strong: #587690;
-  --color-surface: #172840;
-  --color-surface-2: #132236;
-  --color-surface-3: #1e324c;
+  --color-base-100: #0c1726;
+  --color-soft-blue: #1a3452;
+  --color-soft-yellow: #3a3222;
+  --color-soft-purple: #262e4c;
+  --color-soft-green: #1a3630;
+  --color-soft-red: #3a2828;
+  --color-soft-teal: #1a363e;
+  --color-soft-orange: #3a3024;
+  --color-frame: #36506c;
+  --color-frame-strong: #54728c;
+  --color-surface: #15263c;
+  --color-surface-2: #111f32;
+  --color-surface-3: #1c3048;
   --color-pulse-bright: #74b8ff;
   --color-pulse-deep: #3f88e4;
   --color-on-pulse: #f2f8ff;
@@ -241,16 +250,18 @@ html[data-theme="deep-ocean"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d48c;
   --color-chip-yellow-border: #96884c;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(48 118 195 / 0.28), transparent 62%), linear-gradient(180deg, #12243a 0%, #0e1a2c 42%, #0c1726 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(55 125 200 / 0.2), transparent 62%), linear-gradient(180deg, #152840 0%, #101c2e 100%);
   color-scheme: dark;
 }
 
 html[data-theme="midnight-berry"] {
-  --color-mist: #141018;
-  --color-page: #141018;
-  --color-aside: #19141f;
+  --color-mist: #120e16;
+  --color-page: #120e16;
+  --color-aside: #17131c;
   --color-ink: #ebe3f2;
   --color-steel: #a89ab8;
-  --color-line: #322a3e;
+  --color-line: #2e263a;
   --color-pulse: #b07ddc;
   --color-signal: #d69658;
   --color-danger: #d87278;
@@ -258,19 +269,19 @@ html[data-theme="midnight-berry"] {
   --color-secondary: #a89ab8;
   --color-accent: #b07ddc;
   --color-brand: #ebe3f2;
-  --color-base-100: #141018;
-  --color-soft-blue: #2a243a;
-  --color-soft-yellow: #3e3426;
-  --color-soft-purple: #342a4a;
-  --color-soft-green: #26362e;
-  --color-soft-red: #3c2a32;
-  --color-soft-teal: #263238;
-  --color-soft-orange: #3c3026;
-  --color-frame: #4a405a;
-  --color-frame-strong: #685c7a;
-  --color-surface: #201a29;
-  --color-surface-2: #1a1522;
-  --color-surface-3: #2a2238;
+  --color-base-100: #120e16;
+  --color-soft-blue: #282238;
+  --color-soft-yellow: #3c3224;
+  --color-soft-purple: #322846;
+  --color-soft-green: #24342c;
+  --color-soft-red: #3a2830;
+  --color-soft-teal: #243036;
+  --color-soft-orange: #3a2e24;
+  --color-frame: #463c56;
+  --color-frame-strong: #645870;
+  --color-surface: #1e1826;
+  --color-surface-2: #18131f;
+  --color-surface-3: #282036;
   --color-pulse-bright: #c092e6;
   --color-pulse-deep: #9260c4;
   --color-on-pulse: #faf5ff;
@@ -290,16 +301,18 @@ html[data-theme="midnight-berry"] {
   --color-chip-red-border: #9e6870;
   --color-chip-yellow-fg: #e8ce8e;
   --color-chip-yellow-border: #92804c;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(130 85 175 / 0.28), transparent 62%), linear-gradient(180deg, #1a1422 0%, #141018 42%, #120e16 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(140 90 180 / 0.2), transparent 62%), linear-gradient(180deg, #1d1726 0%, #17131c 100%);
   color-scheme: dark;
 }
 
 html[data-theme="northern-spruce"] {
-  --color-mist: #101814;
-  --color-page: #101814;
-  --color-aside: #141d18;
+  --color-mist: #0e1612;
+  --color-page: #0e1612;
+  --color-aside: #121b16;
   --color-ink: #d8e8de;
   --color-steel: #8eaa98;
-  --color-line: #283830;
+  --color-line: #24342c;
   --color-pulse: #52c295;
   --color-signal: #d49e4e;
   --color-danger: #e07870;
@@ -307,19 +320,19 @@ html[data-theme="northern-spruce"] {
   --color-secondary: #8eaa98;
   --color-accent: #52c295;
   --color-brand: #d8e8de;
-  --color-base-100: #101814;
-  --color-soft-blue: #22342e;
-  --color-soft-yellow: #383426;
-  --color-soft-purple: #2a3438;
-  --color-soft-green: #223a32;
-  --color-soft-red: #382c2a;
-  --color-soft-teal: #223836;
-  --color-soft-orange: #383226;
-  --color-frame: #3a5246;
-  --color-frame-strong: #567264;
-  --color-surface: #1a2520;
-  --color-surface-2: #151f1a;
-  --color-surface-3: #22302a;
+  --color-base-100: #0e1612;
+  --color-soft-blue: #1e322c;
+  --color-soft-yellow: #363224;
+  --color-soft-purple: #263236;
+  --color-soft-green: #1e3830;
+  --color-soft-red: #362a28;
+  --color-soft-teal: #1e3432;
+  --color-soft-orange: #363024;
+  --color-frame: #364e42;
+  --color-frame-strong: #526e60;
+  --color-surface: #18231e;
+  --color-surface-2: #131d18;
+  --color-surface-3: #202e28;
   --color-pulse-bright: #68d0a6;
   --color-pulse-deep: #3ea07a;
   --color-on-pulse: #f0fff6;
@@ -339,16 +352,18 @@ html[data-theme="northern-spruce"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d48c;
   --color-chip-yellow-border: #96884c;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(55 140 110 / 0.26), transparent 62%), linear-gradient(180deg, #15241c 0%, #101a14 42%, #0e1612 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(60 145 115 / 0.18), transparent 62%), linear-gradient(180deg, #18261e 0%, #121b16 100%);
   color-scheme: dark;
 }
 
 html[data-theme="charcoal-dusk"] {
-  --color-mist: #101214;
-  --color-page: #101214;
-  --color-aside: #15181b;
+  --color-mist: #0e1012;
+  --color-page: #0e1012;
+  --color-aside: #13161a;
   --color-ink: #dce1e8;
   --color-steel: #929aa6;
-  --color-line: #2a2e34;
+  --color-line: #262a30;
   --color-pulse: #4ec4de;
   --color-signal: #d49e4e;
   --color-danger: #e07870;
@@ -356,19 +371,19 @@ html[data-theme="charcoal-dusk"] {
   --color-secondary: #929aa6;
   --color-accent: #4ec4de;
   --color-brand: #dce1e8;
-  --color-base-100: #101214;
-  --color-soft-blue: #223038;
-  --color-soft-yellow: #383426;
-  --color-soft-purple: #2a2e3a;
-  --color-soft-green: #223430;
-  --color-soft-red: #382c2c;
-  --color-soft-teal: #22363a;
-  --color-soft-orange: #383226;
-  --color-frame: #3c444c;
-  --color-frame-strong: #5a646e;
-  --color-surface: #1a1e23;
-  --color-surface-2: #15181c;
-  --color-surface-3: #242a30;
+  --color-base-100: #0e1012;
+  --color-soft-blue: #1e2e36;
+  --color-soft-yellow: #363224;
+  --color-soft-purple: #262a38;
+  --color-soft-green: #1e322e;
+  --color-soft-red: #362a2a;
+  --color-soft-teal: #1e3438;
+  --color-soft-orange: #363024;
+  --color-frame: #384148;
+  --color-frame-strong: #56606a;
+  --color-surface: #181c20;
+  --color-surface-2: #13161a;
+  --color-surface-3: #22282e;
   --color-pulse-bright: #66d2e8;
   --color-pulse-deep: #3aa4bc;
   --color-on-pulse: #effbff;
@@ -388,16 +403,18 @@ html[data-theme="charcoal-dusk"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d48c;
   --color-chip-yellow-border: #96884c;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(55 140 160 / 0.24), transparent 62%), linear-gradient(180deg, #151a1e 0%, #101316 42%, #0e1012 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(60 145 165 / 0.16), transparent 62%), linear-gradient(180deg, #181c20 0%, #13161a 100%);
   color-scheme: dark;
 }
 
 html[data-theme="amber-night"] {
-  --color-mist: #15120e;
-  --color-page: #15120e;
-  --color-aside: #1a1612;
+  --color-mist: #13100c;
+  --color-page: #13100c;
+  --color-aside: #181410;
   --color-ink: #ebe2d6;
   --color-steel: #b0a090;
-  --color-line: #322c24;
+  --color-line: #2e2820;
   --color-pulse: #dbab55;
   --color-signal: #e09048;
   --color-danger: #e0786c;
@@ -405,19 +422,19 @@ html[data-theme="amber-night"] {
   --color-secondary: #b0a090;
   --color-accent: #dbab55;
   --color-brand: #ebe2d6;
-  --color-base-100: #15120e;
-  --color-soft-blue: #2c2824;
-  --color-soft-yellow: #3c3424;
-  --color-soft-purple: #302c2a;
-  --color-soft-green: #283028;
-  --color-soft-red: #382a26;
-  --color-soft-teal: #282e2c;
-  --color-soft-orange: #383024;
-  --color-frame: #4c4438;
-  --color-frame-strong: #6c6254;
-  --color-surface: #211c17;
-  --color-surface-2: #1b1713;
-  --color-surface-3: #2c261f;
+  --color-base-100: #13100c;
+  --color-soft-blue: #2a2622;
+  --color-soft-yellow: #3a3222;
+  --color-soft-purple: #2e2a28;
+  --color-soft-green: #262e26;
+  --color-soft-red: #362824;
+  --color-soft-teal: #262c2a;
+  --color-soft-orange: #362e22;
+  --color-frame: #484034;
+  --color-frame-strong: #685e50;
+  --color-surface: #1f1a15;
+  --color-surface-2: #191510;
+  --color-surface-3: #2a241d;
   --color-pulse-bright: #e6bc68;
   --color-pulse-deep: #bc8e3e;
   --color-on-pulse: #1a140c;
@@ -437,5 +454,15 @@ html[data-theme="amber-night"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d080;
   --color-chip-yellow-border: #9a8448;
+  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(180 130 55 / 0.24), transparent 62%), linear-gradient(180deg, #1a1510 0%, #14110c 42%, #13100c 100%);
+  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(185 135 55 / 0.16), transparent 62%), linear-gradient(180deg, #1d1812 0%, #181410 100%);
   color-scheme: dark;
+}
+
+html[data-theme="deep-ocean"],
+html[data-theme="midnight-berry"],
+html[data-theme="northern-spruce"],
+html[data-theme="charcoal-dusk"],
+html[data-theme="amber-night"] {
+  --comment-bg: var(--color-surface-3);
 }

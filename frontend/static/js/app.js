@@ -305,9 +305,7 @@
     var input = root.querySelector("[data-form-select-input]");
     var face = root.querySelector("[data-form-select-face]");
     var opt = root.querySelector('[data-form-select-option][data-value="' + value + '"]');
-    var label = opt
-      ? opt.getAttribute("data-label") || (opt.textContent || "").trim()
-      : "";
+    var label = opt ? opt.getAttribute("data-label") || (opt.textContent || "").trim() : "";
     if (input) {
       input.value = value;
       input.dispatchEvent(new Event("change", { bubbles: true }));
@@ -377,20 +375,54 @@
     }
   }
 
+  function readGradientMap(key) {
+    if (!key) return {};
+    try {
+      var parsed = JSON.parse(localStorage.getItem(key) || "{}");
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function writeGradientMap(key, map) {
+    if (!key) return;
+    try {
+      localStorage.setItem(key, JSON.stringify(map));
+    } catch (e) {}
+  }
+
+  function isGradientOn(map, themeId) {
+    return map[themeId] !== false && map[themeId] !== "off";
+  }
+
+  function applyThemeGradient(themeId, gradientKey) {
+    document.documentElement.setAttribute("data-theme-gradient", isGradientOn(readGradientMap(gradientKey), themeId) ? "on" : "off");
+  }
+
   function syncPrefPicker(root) {
     if (!root) return;
     var key = root.getAttribute("data-ui-storage-key");
     var fallback = root.getAttribute("data-ui-fallback") || "";
     if (!key) return;
     var active = currentPref(root, key, fallback);
+    var gradientKey = root.getAttribute("data-ui-gradient-key");
+    var gradientMap = readGradientMap(gradientKey);
     root.querySelectorAll("[data-ui-value]").forEach(function (btn) {
       var on = btn.getAttribute("data-ui-value") === active;
       btn.classList.toggle("is-active", on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.setAttribute("aria-checked", on ? "true" : "false");
     });
+    if (!gradientKey) return;
+    root.querySelectorAll("[data-theme-gradient-for]").forEach(function (input) {
+      input.checked = isGradientOn(gradientMap, input.getAttribute("data-theme-gradient-for"));
+    });
+    applyThemeGradient(active, gradientKey);
   }
 
   document.addEventListener("click", function (ev) {
+    if (ev.target.closest(".theme-gradient-switch")) return;
     var btn = ev.target.closest("[data-ui-value]");
     if (!btn) return;
     var root = btn.closest("[data-ui-storage-key]");
@@ -403,12 +435,43 @@
       localStorage.setItem(key, value);
     } catch (e) {}
     document.documentElement.setAttribute(attr, value);
+    var gradientKey = root.getAttribute("data-ui-gradient-key");
+    if (gradientKey) applyThemeGradient(value, gradientKey);
     syncPrefPicker(root);
+  });
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Enter" && ev.key !== " ") return;
+    var btn = ev.target.closest(".theme-option[data-ui-value]");
+    if (!btn || ev.target.closest(".theme-gradient-switch")) return;
+    ev.preventDefault();
+    btn.click();
   });
 
   document.addEventListener("change", function (ev) {
     var el = ev.target;
     if (!(el instanceof HTMLElement)) return;
+    if (el.hasAttribute("data-theme-gradient-for")) {
+      var themeId = el.getAttribute("data-theme-gradient-for");
+      var root = el.closest("[data-ui-gradient-key]");
+      if (!root || !themeId) return;
+      var gradientKey = root.getAttribute("data-ui-gradient-key");
+      var map = readGradientMap(gradientKey);
+      map[themeId] = el.checked;
+      writeGradientMap(gradientKey, map);
+      var themeKey = root.getAttribute("data-ui-storage-key");
+      var themeAttr = root.getAttribute("data-ui-attr") || "data-theme";
+      var fallback = root.getAttribute("data-ui-fallback") || "";
+      if (currentPref(root, themeKey, fallback) !== themeId) {
+        try {
+          localStorage.setItem(themeKey, themeId);
+        } catch (e) {}
+        document.documentElement.setAttribute(themeAttr, themeId);
+      }
+      applyThemeGradient(themeId, gradientKey);
+      syncPrefPicker(root);
+      return;
+    }
     if (el.getAttribute("data-ui-cookie") !== "1") return;
     if (!(el instanceof HTMLSelectElement) && !el.hasAttribute("data-form-select-input")) return;
     var key = el.getAttribute("data-ui-storage-key");
