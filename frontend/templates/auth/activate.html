@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}
     {% if pending %}
-        {{ t('ui.auth.activate.title_pending') }}
+        {{ t("ui.auth.activate.title_pending") }}
     {% else %}
-        {{ t('ui.auth.activate.title_reset') }}
+        {{ t("ui.auth.activate.title_reset") }}
     {% endif %}
     — {{ app_name }}
 {% endblock title %}
@@ -14,9 +14,9 @@
                 <h1 class="auth-brand">{{ app_name }}</h1>
                 <p class="mt-3 text-[1.1rem] text-steel">
                     {% if pending %}
-                        {{ t('ui.auth.activate.subtitle_pending') }}
+                        {{ t("ui.auth.activate.subtitle_pending") }}
                     {% else %}
-                        {{ t('ui.auth.activate.subtitle_reset') }}
+                        {{ t("ui.auth.activate.subtitle_reset") }}
                     {% endif %}
                 </p>
             </div>
@@ -29,7 +29,7 @@
                       class="space-y-4">
                     <input type="hidden" name="token" value="{{ token }}">
                     <div>
-                        <label class="label" for="new_password">{{ t('ui.auth.activate.password') }}</label>
+                        <label class="label" for="new_password">{{ t("ui.auth.activate.password") }}</label>
                         <input id="new_password"
                                name="new_password"
                                type="password"
@@ -38,7 +38,7 @@
                                autocomplete="new-password">
                     </div>
                     <div>
-                        <label class="label" for="confirm_password">{{ t('ui.auth.activate.password_confirm') }}</label>
+                        <label class="label" for="confirm_password">{{ t("ui.auth.activate.password_confirm") }}</label>
                         <input id="confirm_password"
                                name="confirm_password"
                                type="password"
@@ -48,7 +48,7 @@
                     </div>
                     {% if pending %}
                         <div>
-                            <label class="label" for="phone">{{ t('ui.auth.activate.phone') }}</label>
+                            <label class="label" for="phone">{{ t("ui.auth.activate.phone") }}</label>
                             <input id="phone"
                                    name="phone"
                                    type="tel"
@@ -58,9 +58,9 @@
                     {% endif %}
                     <button type="submit" class="btn btn-primary w-full !py-3 !text-[1rem]">
                         {% if pending %}
-                            {{ t('ui.auth.activate.submit_pending') }}
+                            {{ t("ui.auth.activate.submit_pending") }}
                         {% else %}
-                            {{ t('ui.auth.activate.submit_reset') }}
+                            {{ t("ui.auth.activate.submit_reset") }}
                         {% endif %}
                     </button>
                 </form>

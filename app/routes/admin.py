@@ -178,7 +178,9 @@ _USER_OK_FLASH = {
 }
 
 
-def _users_redirect(*, ok: str | None = None, edit: int | None = None) -> RedirectResponse:
+def _users_redirect(
+    *, ok: str | None = None, edit: int | None = None
+) -> RedirectResponse:
     parts: list[str] = []
     if edit is not None:
         parts.append(f"edit={edit}")

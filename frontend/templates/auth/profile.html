@@ -12,13 +12,13 @@
     <div class="admin-page-head">
         <div>
             {% if profile_section == 'password' %}
-                <h1 class="issue-title">{{ t('ui.profile.title.password') }}</h1>
-                <p class="admin-page-sub">{{ t('ui.profile.sub.password') }}</p>
+                <h1 class="issue-title">{{ t("ui.profile.title.password") }}</h1>
+                <p class="admin-page-sub">{{ t("ui.profile.sub.password") }}</p>
             {% elif profile_section == 'settings' %}
-                <h1 class="issue-title">{{ t('ui.profile.title.settings') }}</h1>
-                <p class="admin-page-sub">{{ t('ui.profile.sub.settings') }}</p>
+                <h1 class="issue-title">{{ t("ui.profile.title.settings") }}</h1>
+                <p class="admin-page-sub">{{ t("ui.profile.sub.settings") }}</p>
             {% else %}
-                <h1 class="issue-title">{{ t('ui.profile.title.data') }}</h1>
+                <h1 class="issue-title">{{ t("ui.profile.title.data") }}</h1>
                 <p class="admin-page-sub">{{ edit_user.display_name }} · {{ edit_user.email }} · {{ role_labels[edit_user.role] }}</p>
             {% endif %}
         </div>

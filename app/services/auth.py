@@ -82,9 +82,7 @@ def require_matching_passwords(
     password: str, confirm: str, *, lang: str | None = None
 ) -> None:
     if password != confirm:
-        raise ValueError(
-            t(lang or DEFAULT_LANG, "messages.auth.passwords_mismatch")
-        )
+        raise ValueError(t(lang or DEFAULT_LANG, "messages.auth.passwords_mismatch"))
 
 
 def _require_names(first_name: str, last_name: str, *, lang: str) -> tuple[str, str]:

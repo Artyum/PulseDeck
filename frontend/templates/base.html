@@ -42,6 +42,7 @@
         <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
         <script>window.__i18n = {{ js_i18n|tojson }};</script>
         <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+        <script src="{{ url_for('static', path='vendor/alpine.min.js') }}" defer></script>
         <script src="{{ url_for('static', path='js/app.js') }}" defer></script>
         <script src="{{ url_for('static', path='js/attach-picker.js') }}" defer></script>
         <meta name="csrf-token" content="{{ csrf_token }}">
@@ -55,7 +56,7 @@
                 aria-labelledby="app-confirm-title">
             <div class="modal-form">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="app-confirm-title">{{ t('ui.confirm.title') }}</h2>
+                    <h2 class="modal-title" id="app-confirm-title">{{ t("ui.confirm.title") }}</h2>
                     <button type="button"
                             class="modal-close"
                             data-confirm-cancel
@@ -65,8 +66,8 @@
                     <p id="app-confirm-message" class="confirm-message"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-confirm-cancel>{{ t('ui.common.cancel') }}</button>
-                    <button type="button" class="btn btn-primary" id="app-confirm-ok">{{ t('ui.common.confirm') }}</button>
+                    <button type="button" class="btn btn-secondary" data-confirm-cancel>{{ t("ui.common.cancel") }}</button>
+                    <button type="button" class="btn btn-primary" id="app-confirm-ok">{{ t("ui.common.confirm") }}</button>
                 </div>
             </div>
         </dialog>
@@ -82,7 +83,7 @@
                         id="dev-page-copy"
                         class="dev-frame__copy"
                         data-dev-page-info="{{ dev_page_info | tojson | forceescape }}"
-                        aria-label="{{ t('ui.dev.copy_aria') }}">{{ t('ui.dev.copy') }}</button>
+                        aria-label="{{ t('ui.dev.copy_aria') }}">{{ t("ui.dev.copy") }}</button>
             </div>
             <script src="{{ url_for('static', path='js/dev-page-copy.js') }}" defer></script>
         {% endif %}

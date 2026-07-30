@@ -88,16 +88,13 @@
     opts = opts || {};
     const dlg = document.getElementById("app-confirm");
     if (!dlg) {
-      return Promise.resolve(
-        window.confirm(opts.message || i18n("confirm.continue", "Continue?"))
-      );
+      return Promise.resolve(window.confirm(opts.message || i18n("confirm.continue", "Continue?")));
     }
     const titleEl = document.getElementById("app-confirm-title");
     const msgEl = document.getElementById("app-confirm-message");
     const okBtn = document.getElementById("app-confirm-ok");
     titleEl.textContent = opts.title || i18n("confirm.title", "Confirmation");
-    msgEl.textContent =
-      opts.message || i18n("confirm.message_default", "Are you sure you want to continue?");
+    msgEl.textContent = opts.message || i18n("confirm.message_default", "Are you sure you want to continue?");
     okBtn.textContent = opts.confirmLabel || i18n("confirm.confirm_label", "Confirm");
     okBtn.className = opts.danger ? "btn btn-danger" : "btn btn-primary";
     return new Promise(function (resolve) {
@@ -160,8 +157,7 @@
     return window.showConfirm({
       title: form.getAttribute("data-confirm-title") || i18n("confirm.title", "Confirmation"),
       message: message,
-      confirmLabel:
-        form.getAttribute("data-confirm-action") || i18n("confirm.confirm_label", "Confirm"),
+      confirmLabel: form.getAttribute("data-confirm-action") || i18n("confirm.confirm_label", "Confirm"),
       danger: form.hasAttribute("data-confirm-danger"),
     });
   }
@@ -264,55 +260,9 @@
     else if (this.classList.contains("lightbox")) popIn(this, "0");
   };
 
-  function clearMenuPanel(panel) {
-    if (!panel) return;
-    panel._ownerMenu = null;
-  }
-
-  function placeMenuPanel(menu, panel) {
-    panel._ownerMenu = menu;
-  }
-
-  function closeAllMenus(except) {
-    document.querySelectorAll("details.issue-menu[open]").forEach(function (menu) {
-      if (menu !== except) menu.open = false;
-    });
-  }
-
   function resolveFormSelect(el) {
-    var root = el.closest("[data-form-select]");
-    if (root) return root;
-    var panel = el.closest(".issue-menu-panel");
-    return (panel && panel._ownerMenu) || null;
+    return el.closest("[data-form-select]");
   }
-
-  document.addEventListener(
-    "toggle",
-    function (ev) {
-      var menu = ev.target;
-      if (!(menu instanceof HTMLDetailsElement) || !menu.classList.contains("issue-menu")) {
-        return;
-      }
-      if (menu.hasAttribute("data-disabled")) {
-        menu.open = false;
-        return;
-      }
-      if (!menu.open) {
-        menu.querySelectorAll(":scope > .issue-menu-panel").forEach(clearMenuPanel);
-        return;
-      }
-      closeAllMenus(menu);
-      menu.querySelectorAll(":scope > .issue-menu-panel").forEach(function (panel) {
-        placeMenuPanel(menu, panel);
-      });
-    },
-    true
-  );
-
-  document.addEventListener("click", function (ev) {
-    if (ev.target.closest("details.issue-menu, .issue-menu-panel")) return;
-    closeAllMenus();
-  });
 
   document.addEventListener("click", function (ev) {
     var btn = ev.target.closest("[data-form-select-option]");
@@ -335,7 +285,10 @@
       if (on) el.setAttribute("aria-current", "true");
       else el.removeAttribute("aria-current");
     });
-    root.open = false;
+    var alpineRoot = root.closest("[x-data]");
+    if (alpineRoot && typeof Alpine !== "undefined") {
+      Alpine.$data(alpineRoot).open = false;
+    }
     if (root.hasAttribute("data-submit-on-pick")) {
       var form = root.closest("form");
       if (form) form.requestSubmit();
@@ -350,13 +303,7 @@
 
   function writeCookie(name, value) {
     var maxAge = 60 * 60 * 24 * 365 * 5;
-    document.cookie =
-      encodeURIComponent(name) +
-      "=" +
-      encodeURIComponent(value) +
-      "; Path=/; Max-Age=" +
-      maxAge +
-      "; SameSite=Lax";
+    document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; Path=/; Max-Age=" + maxAge + "; SameSite=Lax";
   }
 
   function currentPref(root, key, fallback) {

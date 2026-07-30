@@ -3,22 +3,22 @@
 {% block content %}
     <div class="admin-page-head">
         <div>
-            <h1 class="issue-title">{{ t('ui.admin.dashboard.title') }}</h1>
-            <p class="admin-page-sub">{{ t('ui.admin.dashboard.sub') }}</p>
+            <h1 class="issue-title">{{ t("ui.admin.dashboard.title") }}</h1>
+            <p class="admin-page-sub">{{ t("ui.admin.dashboard.sub") }}</p>
         </div>
     </div>
     <section class="admin-section">
         <div class="admin-stats">
             <a href="{{ url_for('admin_projects') }}" class="admin-stat">
-                <p class="label-tight">{{ t('ui.admin.dashboard.stat_projects') }}</p>
+                <p class="label-tight">{{ t("ui.admin.dashboard.stat_projects") }}</p>
                 <p class="stat-value">{{ projects|length }}</p>
             </a>
             <a href="{{ url_for('admin_users') }}" class="admin-stat">
-                <p class="label-tight">{{ t('ui.admin.dashboard.stat_users') }}</p>
+                <p class="label-tight">{{ t("ui.admin.dashboard.stat_users") }}</p>
                 <p class="stat-value">{{ users|length }}</p>
             </a>
             <a href="{{ url_for('admin_users') }}?new=1" class="admin-stat">
-                <p class="label-tight">{{ t('ui.admin.dashboard.stat_new_user') }}</p>
+                <p class="label-tight">{{ t("ui.admin.dashboard.stat_new_user") }}</p>
                 <p class="stat-value">+</p>
             </a>
         </div>

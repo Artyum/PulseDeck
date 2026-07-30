@@ -9,10 +9,10 @@
                   action="{{ url_for('edit_ticket', ticket_ref=ticket|ticket_label) }}"
                   enctype="multipart/form-data"
                   class="modal-form">
-                {{ modal_header('edit-ticket', t('ui.ticket.edit_modal')) }}
+                {{ modal_header('edit-ticket', t('ui.ticket.edit_modal') ) }}
                 <div class="modal-body">
                     <div>
-                        <label class="label" for="edit-ticket-title">{{ t('ui.portal.feed.field.title') }}</label>
+                        <label class="label" for="edit-ticket-title">{{ t("ui.portal.feed.field.title") }}</label>
                         <input id="edit-ticket-title"
                                name="title"
                                required
@@ -20,7 +20,7 @@
                                class="input mt-1">
                     </div>
                     <div>
-                        <label class="label" for="edit-ticket-description">{{ t('ui.portal.feed.field.description') }}</label>
+                        <label class="label" for="edit-ticket-description">{{ t("ui.portal.feed.field.description") }}</label>
                         <textarea id="edit-ticket-description"
                                   name="description"
                                   required
@@ -31,12 +31,14 @@
                 </div>
                 <div class="modal-footer">
                     {{ modal_cancel("edit-ticket") }}
-                    <button type="submit" class="btn btn-primary">{{ t('ui.common.save') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ t("ui.common.save") }}</button>
                 </div>
             </form>
         </dialog>
     {% endif %}
-    <dialog id="img-lightbox" class="lightbox" aria-label="{{ t('ui.ticket.lightbox_aria') }}">
+    <dialog id="img-lightbox"
+            class="lightbox"
+            aria-label="{{ t('ui.ticket.lightbox_aria') }}">
         <button type="button"
                 class="lightbox-close"
                 aria-label="{{ t('ui.common.close') }}"

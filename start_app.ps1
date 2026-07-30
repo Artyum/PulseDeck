@@ -43,6 +43,8 @@ if (-not (Test-Path (Join-Path $Root "node_modules\prettier"))) {
   }
 }
 
+& (Join-Path $Root "scripts\vendor-static.ps1")
+
 if (-not (Test-Path "frontend/static/css/app.css")) {
   npm run css:build:dev
 }
@@ -61,9 +63,9 @@ if ($cssRunning -eq "1") {
   Write-Host "[CSS] Tailwind watch juz dziala - pomijam nowe okno"
 } else {
   Write-Host "[CSS] Otwieranie okna Tailwind watch"
-  Start-Process cmd.exe -ArgumentList @(
-    '/k', "title PulseDeck CSS Watch & cd /d `"$Root`" & npm run css:watch"
-  )
+  $cli = Join-Path $Root "node_modules\@tailwindcss\cli\dist\index.mjs"
+  $cmdLine = "title PulseDeck CSS Watcher && node `"$cli`" -i frontend/static/css/tailwind.css -o frontend/static/css/app.css --watch"
+  Start-Process -FilePath 'cmd.exe' -ArgumentList @('/k', $cmdLine) -WorkingDirectory $Root
 }
 
 Write-Host "[API] Serwer: http://${hostAddr}:${port}"

@@ -5,7 +5,7 @@
         <div class="w-full max-w-md">
             <div class="mb-8 text-center">
                 <h1 class="auth-brand">{{ app_name }}</h1>
-                <p class="mt-3 text-[1.1rem] text-steel">{{ t('ui.auth.login.tagline') }}</p>
+                <p class="mt-3 text-[1.1rem] text-steel">{{ t("ui.auth.login.tagline") }}</p>
             </div>
             <div class="auth-card">
                 {% if error %}
@@ -15,40 +15,40 @@
                     <p class="alert alert-success mb-4">{{ success }}</p>
                 {% endif %}
                 {% if request.query_params.get('email_confirm') %}
-                    <p class="alert alert-success mb-4">{{ t('ui.auth.login.email_confirm_notice') }}</p>
+                    <p class="alert alert-success mb-4">{{ t("ui.auth.login.email_confirm_notice") }}</p>
                 {% endif %}
                 {% if forgot_sent %}
-                    <p class="alert alert-success mb-4">{{ t('ui.auth.login.forgot_sent') }}</p>
+                    <p class="alert alert-success mb-4">{{ t("ui.auth.login.forgot_sent") }}</p>
                 {% endif %}
                 <form method="post"
                       action="{{ url_for('login_submit') }}"
                       class="space-y-4">
                     <div>
-                        <label class="label" for="email">{{ t('ui.auth.login.email') }}</label>
+                        <label class="label" for="email">{{ t("ui.auth.login.email") }}</label>
                         <input id="email" name="email" type="email" required class="input mt-1.5">
                     </div>
                     <div>
-                        <label class="label" for="password">{{ t('ui.auth.login.password') }}</label>
+                        <label class="label" for="password">{{ t("ui.auth.login.password") }}</label>
                         <input id="password"
                                name="password"
                                type="password"
                                required
                                class="input mt-1.5">
                     </div>
-                    <button type="submit" class="btn btn-primary w-full !py-3 !text-[1rem]">{{ t('ui.auth.login.submit') }}</button>
+                    <button type="submit" class="btn btn-primary w-full !py-3 !text-[1rem]">{{ t("ui.auth.login.submit") }}</button>
                 </form>
-                <div class="divider">{{ t('ui.common.or') }}</div>
+                <div class="divider">{{ t("ui.common.or") }}</div>
                 <form method="post"
                       action="{{ url_for('forgot_password') }}"
                       class="space-y-3">
-                    <label class="label" for="forgot_email">{{ t('ui.auth.login.forgot_label') }}</label>
+                    <label class="label" for="forgot_email">{{ t("ui.auth.login.forgot_label") }}</label>
                     <input id="forgot_email"
                            name="email"
                            type="email"
                            required
                            placeholder="{{ t('ui.auth.login.forgot_placeholder') }}"
                            class="input">
-                    <button type="submit" class="btn btn-secondary w-full !py-3 !text-[1rem]">{{ t('ui.auth.login.forgot_submit') }}</button>
+                    <button type="submit" class="btn btn-secondary w-full !py-3 !text-[1rem]">{{ t("ui.auth.login.forgot_submit") }}</button>
                 </form>
             </div>
         </div>

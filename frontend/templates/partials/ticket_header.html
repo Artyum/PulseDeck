@@ -6,7 +6,7 @@
         <form hx-post="{{ url_for('self_assign', ticket_ref=ticket|ticket_label) }}"
               hx-target="#ticket-view"
               hx-swap="innerHTML">
-            <button type="submit" class="btn btn-primary">{{ t('ui.ticket.self_assign') }}</button>
+            <button type="submit" class="btn btn-primary">{{ t("ui.ticket.self_assign") }}</button>
         </form>
     </div>
 {% endif %}

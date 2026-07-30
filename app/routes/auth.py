@@ -109,9 +109,7 @@ def login_submit(
     lang = resolve_lang(request)
     user = auth_service.authenticate_password(db, email, password)
     if not user:
-        return _render_login(
-            request, error=t(lang, "flash.auth.invalid_credentials")
-        )
+        return _render_login(request, error=t(lang, "flash.auth.invalid_credentials"))
     blocked = auth_service.login_blocked_reason(user, lang=lang)
     if blocked:
         return _render_login(request, error=blocked)
@@ -231,9 +229,7 @@ def confirm_email(request: Request, token: str, db: DbSession):
     lang = resolve_lang(request)
     user = auth_service.confirm_email_change(db, token)
     if not user:
-        return _render_login(
-            request, error=t(lang, "flash.auth.confirm_link_invalid")
-        )
+        return _render_login(request, error=t(lang, "flash.auth.confirm_link_invalid"))
     return _render_login(
         request,
         success=t(lang, "flash.auth.email_confirmed"),

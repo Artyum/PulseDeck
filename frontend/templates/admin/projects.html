@@ -1,21 +1,21 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% block title %}{{ t('ui.admin.projects.title') }} — {{ app_name }}{% endblock title %}
+{% block title %}{{ t("ui.admin.projects.title") }} — {{ app_name }}{% endblock title %}
 {% block content %}
     <div class="admin-page-head">
         <div>
-            <h1 class="issue-title">{{ t('ui.admin.projects.title') }}</h1>
-            <p class="admin-page-sub">{{ t('ui.admin.projects.sub') }}</p>
+            <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
+            <p class="admin-page-sub">{{ t("ui.admin.projects.sub") }}</p>
         </div>
     </div>
     {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     <section class="admin-section">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t('ui.admin.projects.new') }}</h2>
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
         <form method="post"
               action="{{ url_for('create_project') }}"
               class="admin-form-row">
             <div class="admin-form-field">
-                <label class="label-tight" for="project-name">{{ t('ui.admin.projects.name') }}</label>
+                <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
                 <input id="project-name"
                        name="name"
                        required
@@ -24,7 +24,7 @@
                        class="input min-w-[12rem]">
             </div>
             <div class="admin-form-field">
-                <label class="label-tight" for="project-key">{{ t('ui.admin.projects.key') }}</label>
+                <label class="label-tight" for="project-key">{{ t("ui.admin.projects.key") }}</label>
                 <input id="project-key"
                        name="key"
                        required
@@ -36,7 +36,7 @@
                        class="input min-w-[8rem] uppercase">
             </div>
             <div class="admin-form-field">
-                <label class="label-tight" for="project-desc">{{ t('ui.admin.projects.description') }}</label>
+                <label class="label-tight" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
                 <input id="project-desc"
                        name="description"
                        placeholder="{{ t('ui.common.optional') }}"
@@ -45,19 +45,16 @@
             </div>
             <div class="admin-form-field">
                 <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-                <button type="submit" class="btn btn-primary">{{ t('ui.common.create') }}</button>
+                <button type="submit" class="btn btn-primary">{{ t("ui.common.create") }}</button>
             </div>
         </form>
     </section>
     <section class="admin-section">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t('ui.admin.projects.list') }}</h2>
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
         <ul class="admin-list">
             {% for item in projects %}
                 {% set p = item.project %}
-                <li class="admin-entity admin-entity-clickable">
-                    <a href="{{ url_for('project_detail', key=p.key) }}"
-                       class="admin-entity-hit"
-                       aria-label="{{ t('ui.admin.projects.edit_aria', name=p.name) }}"></a>
+                <li class="admin-entity">
                     <div class="admin-entity-main">
                         <p class="admin-entity-title">
                             <span class="admin-entity-name">{{ p.name }}</span>
@@ -71,19 +68,19 @@
                     </div>
                     <div class="admin-entity-actions">
                         <a href="{{ url_for('project_detail', key=p.key) }}"
-                           class="btn btn-secondary">{{ t('ui.common.edit') }}</a>
+                           class="btn btn-secondary">{{ t("ui.common.edit") }}</a>
                         <form method="post"
                               action="{{ url_for('delete_project', key=p.key) }}"
                               data-confirm-title="{{ t('ui.confirm.delete_project.title') }}"
                               data-confirm="{{ t('ui.confirm.delete_project.message', name=p.name, key=p.key) }}"
                               data-confirm-action="{{ t('ui.confirm.delete_project.action') }}"
                               data-confirm-danger>
-                            <button type="submit" class="btn btn-danger">{{ t('ui.common.delete') }}</button>
+                            <button type="submit" class="btn btn-danger">{{ t("ui.common.delete") }}</button>
                         </form>
                     </div>
                 </li>
             {% else %}
-                <li class="empty">{{ t('ui.admin.projects.empty') }}</li>
+                <li class="empty">{{ t("ui.admin.projects.empty") }}</li>
             {% endfor %}
         </ul>
     </section>

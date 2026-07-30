@@ -64,9 +64,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             )
         if exc.status_code == 404 and not request.url.path.startswith("/api/"):
             if request.headers.get("HX-Request"):
-                return HTMLResponse(
-                    t(lang, "messages.http.not_found"), status_code=404
-                )
+                return HTMLResponse(t(lang, "messages.http.not_found"), status_code=404)
             return RedirectResponse("/", status_code=303)
         if request.url.path.startswith("/api/"):
             return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)

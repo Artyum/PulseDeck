@@ -1,9 +1,6 @@
 (function () {
   function projectsWrap(form) {
-    return (
-      form.querySelector("[data-projects-field]") ||
-      form.querySelector("[data-edit-projects-field]")
-    );
+    return form.querySelector("[data-projects-field]") || form.querySelector("[data-edit-projects-field]");
   }
 
   function setProjectsRequiredVisible(wrap, visible) {
@@ -54,9 +51,7 @@
     const phone = row.getAttribute("data-phone") || "";
     const isAdmin = row.getAttribute("data-is-admin") === "1";
     const isPending = row.getAttribute("data-is-pending") === "1";
-    const projectIds = (row.getAttribute("data-project-ids") || "")
-      .split(",")
-      .filter(Boolean);
+    const projectIds = (row.getAttribute("data-project-ids") || "").split(",").filter(Boolean);
 
     const subtitle = dlg.querySelector("[data-edit-subtitle]");
     if (subtitle) {

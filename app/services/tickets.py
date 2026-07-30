@@ -378,9 +378,7 @@ def set_status(
         db.commit()
         return get_ticket(db, ticket.id) or ticket
 
-    raise HTTPException(
-        status_code=403, detail=t(lang, "messages.tickets.no_status")
-    )
+    raise HTTPException(status_code=403, detail=t(lang, "messages.tickets.no_status"))
 
 
 def reopen_ticket(

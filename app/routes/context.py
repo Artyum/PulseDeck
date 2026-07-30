@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from enum import Enum
 from types import SimpleNamespace
 
 from fastapi import Request
@@ -48,7 +49,7 @@ _templates.env.filters["ticket_label"] = ticket_label
 _templates.env.filters["admin_project_path"] = admin_project_path
 
 
-def _enum_label_map(lang: str, group: str, enum_cls: type) -> dict:
+def _enum_label_map(lang: str, group: str, enum_cls: type[Enum]) -> dict:
     flat = translations_prefix(lang, f"enums.{group}")
     return {member: flat.get(member.value, member.value) for member in enum_cls}
 
@@ -139,4 +140,8 @@ def request_lang(request: Request) -> str:
 
 
 def default_lang() -> str:
-    return DEFAULT_LANG if DEFAULT_LANG in {c.id for c in list_languages()} else resolve_lang()
+    return (
+        DEFAULT_LANG
+        if DEFAULT_LANG in {c.id for c in list_languages()}
+        else resolve_lang()
+    )

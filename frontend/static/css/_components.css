@@ -32,10 +32,6 @@
     background: var(--color-surface);
   }
 
-  .app-header:has(.issue-menu[open]) {
-    z-index: 60;
-  }
-
   .app-header .issue-menu {
     position: relative;
     display: inline-block;
@@ -135,24 +131,15 @@
     font-weight: 550;
     line-height: 1.2;
     cursor: pointer;
-    list-style: none;
-  }
-
-  .nav-project-trigger::-webkit-details-marker {
-    display: none;
-  }
-
-  .nav-project-trigger::marker {
-    content: "";
   }
 
   .nav-project-trigger:hover,
-  .issue-menu[open] > .nav-project-trigger {
+  .nav-project-trigger.is-menu-open {
     border-color: var(--color-frame);
     background: color-mix(in oklab, var(--color-surface) 55%, var(--color-soft-blue));
   }
 
-  .issue-menu[open] > .nav-project-trigger .nav-user-caret {
+  .nav-project-trigger.is-menu-open .nav-user-caret {
     transform: rotate(180deg);
   }
 
@@ -199,7 +186,6 @@
     font-weight: 550;
     line-height: 1.2;
     cursor: pointer;
-    list-style: none;
   }
 
   .nav-user-name {
@@ -221,23 +207,13 @@
     transition: transform 0.15s ease;
   }
 
-  .nav-user::-webkit-details-marker,
-  .issue-menu-trigger::-webkit-details-marker {
-    display: none;
-  }
-
-  .nav-user::marker,
-  .issue-menu-trigger::marker {
-    content: "";
-  }
-
   .nav-user:hover,
-  .issue-menu[open] > .nav-user {
+  .nav-user.is-menu-open {
     border-color: var(--color-frame);
     background: color-mix(in oklab, var(--color-surface) 55%, var(--color-soft-blue));
   }
 
-  .issue-menu[open] > .nav-user .nav-user-caret {
+  .nav-user.is-menu-open .nav-user-caret {
     transform: rotate(180deg);
   }
 
@@ -663,11 +639,13 @@
 
   .admin-entity-clickable .admin-entity-actions {
     position: relative;
-    z-index: 1;
   }
 
-  .admin-entity-actions:has(.issue-menu[open]) {
-    z-index: 40;
+  .admin-entity-clickable .admin-entity-actions > button,
+  .admin-entity-clickable .admin-entity-actions > form > button,
+  .admin-entity-clickable .admin-entity-actions .issue-menu-trigger {
+    position: relative;
+    z-index: 1;
   }
 
   .admin-entity-main {
@@ -885,9 +863,6 @@
 
   .admin-form-field > .btn {
     padding: 0.22rem 0.65rem;
-  }
-
-  .admin-form-field > .btn {
     width: auto;
     padding-block: 0;
     white-space: nowrap;
@@ -1534,8 +1509,22 @@
     min-width: 0;
   }
 
-  .issue-menu[open] {
+  .issue-menu.is-menu-open {
     z-index: 40;
+  }
+
+  .issue-menu-panel {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    z-index: 30;
+    min-width: 11.5rem;
+    max-width: min(22rem, calc(100vw - 2rem));
+    padding: 0.4rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    box-shadow: none;
   }
 
   .issue-menu-trigger {
@@ -1546,11 +1535,10 @@
     border: none;
     background: transparent;
     cursor: pointer;
-    list-style: none;
   }
 
   .issue-menu-trigger:hover .chip,
-  .issue-menu[open] > .issue-menu-trigger .chip {
+  .issue-menu-trigger[aria-expanded="true"] .chip {
     filter: brightness(0.97);
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-pulse) 35%, transparent);
   }
@@ -1568,37 +1556,8 @@
   }
 
   .issue-menu-trigger:hover .issue-menu-value,
-  .issue-menu[open] > .issue-menu-trigger .issue-menu-value {
+  .issue-menu-trigger[aria-expanded="true"] .issue-menu-value {
     background: color-mix(in oklab, var(--color-surface) 55%, var(--color-line));
-  }
-
-  .issue-menu-panel {
-    position: absolute;
-    top: calc(100% + 0.4rem);
-    left: 0;
-    z-index: 30;
-    min-width: 11.5rem;
-    max-width: min(22rem, calc(100vw - 2rem));
-    padding: 0.4rem;
-    border: 1px solid var(--color-line);
-    border-radius: 0.5rem;
-    background: var(--color-surface);
-    box-shadow: none;
-  }
-
-  .issue-menu[open] > .issue-menu-panel {
-    animation: issue-menu-in 160ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
-  }
-
-  @keyframes issue-menu-in {
-    from {
-      opacity: 0;
-      transform: translateY(-0.2rem);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   .issue-menu-panel-end {
@@ -1791,7 +1750,7 @@
   }
 
   .issue-menu-trigger:hover .issue-add-btn,
-  .issue-menu[open] > .issue-menu-trigger .issue-add-btn {
+  .issue-menu-trigger[aria-expanded="true"] .issue-add-btn {
     border-color: color-mix(in oklab, var(--color-pulse) 45%, var(--color-line));
     color: var(--color-pulse);
     background: color-mix(in oklab, var(--color-soft-blue) 55%, var(--color-surface));
@@ -2101,7 +2060,7 @@
     overflow-y: auto;
   }
 
-  .modal-body:has(.issue-menu[open]) {
+  .modal-body:has(.is-menu-open) {
     overflow: visible;
   }
 
@@ -2672,10 +2631,6 @@
   @media (prefers-reduced-motion: reduce) {
     .btn {
       transform: none;
-    }
-
-    .issue-menu[open] > .issue-menu-panel {
-      animation: none;
     }
   }
 

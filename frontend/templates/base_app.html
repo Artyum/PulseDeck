@@ -12,20 +12,29 @@
             </div>
             <nav class="app-header-right" aria-label="{{ t('ui.nav.aria') }}">
                 {% if projects is defined and projects and (projects|length > 1 or not (project is defined and project)) %}
-                    <details class="issue-menu nav-project-menu">
-                        <summary class="nav-project-trigger"
-                                 aria-label="{{ t('ui.nav.select_project') }}"
-                                 title="{{ t('ui.nav.select_project') }}">
+                    <div x-data="{ open: false }"
+                         @click.outside="open = false"
+                         :class="{'is-menu-open': open}"
+                         class="issue-menu nav-project-menu relative">
+                        <button type="button"
+                                @click="open = !open"
+                                :aria-expanded="open"
+                                class="nav-project-trigger"
+                                aria-label="{{ t('ui.nav.select_project') }}"
+                                title="{{ t('ui.nav.select_project') }}">
                             <span class="nav-project-trigger-name">
                                 {% if project is defined and project %}
                                     {{ project.name }}
                                 {% else %}
-                                    {{ t('ui.nav.select_project') }}
+                                    {{ t("ui.nav.select_project") }}
                                 {% endif %}
                             </span>
-                            {{ icon("chevron", "nav-user-caret") }}
-                        </summary>
-                        <div class="issue-menu-panel nav-project-panel"
+                            {{ icon('chevron', 'nav-user-caret') }}
+                        </button>
+                        <div x-show="open"
+                             x-transition
+                             x-cloak
+                             class="issue-menu-panel nav-project-panel"
                              role="menu">
                             {% for p in projects %}
                                 <a href="{{ url_for('project_feed', key=p.key) }}"
@@ -37,34 +46,44 @@
                                 </a>
                             {% endfor %}
                         </div>
-                    </details>
+                    </div>
                 {% endif %}
-                <details class="issue-menu">
-                    <summary class="nav-user"
-                             aria-label="{{ t('ui.nav.user_menu') }}"
-                             title="{{ user.display_name }}">
+                <div x-data="{ open: false }"
+                     @click.outside="open = false"
+                     :class="{'is-menu-open': open}"
+                     class="issue-menu relative">
+                    <button type="button"
+                            @click="open = !open"
+                            :aria-expanded="open"
+                            class="nav-user"
+                            aria-label="{{ t('ui.nav.user_menu') }}"
+                            title="{{ user.display_name }}">
                         <span class="nav-user-name">{{ user.display_name }}</span>
-                        {{ icon("chevron", "nav-user-caret") }}
-                    </summary>
-                    <div class="issue-menu-panel" role="menu">
+                        {{ icon('chevron', 'nav-user-caret') }}
+                    </button>
+                    <div x-show="open"
+                         x-transition
+                         x-cloak
+                         class="issue-menu-panel"
+                         role="menu">
                         {% if user.is_admin %}
                             <a href="{{ url_for('admin_home') }}"
                                class="issue-menu-item"
-                               role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t('ui.nav.admin') }}</a>
+                               role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.nav.admin") }}</a>
                         {% endif %}
                         <a href="{{ url_for('profile_page') }}"
                            class="issue-menu-item"
-                           role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t('ui.nav.profile') }}</a>
+                           role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.nav.profile") }}</a>
                         <hr class="issue-menu-sep">
                         <form method="post"
                               action="{{ url_for('logout') }}"
                               class="issue-menu-form">
                             <button type="submit" class="issue-menu-item" role="menuitem">
-                                <span class="section-icon" aria-hidden="true">{{ icon("logout") }}</span>{{ t('ui.nav.logout') }}
+                                <span class="section-icon" aria-hidden="true">{{ icon("logout") }}</span>{{ t("ui.nav.logout") }}
                             </button>
                         </form>
                     </div>
-                </details>
+                </div>
             </nav>
         </div>
     </header>

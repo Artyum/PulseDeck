@@ -6,9 +6,9 @@
     <form method="post"
           action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
           class="panel panel-pad admin-form-stack">
-        {% if is_admin_edit %}<h2 class="issue-section-title">{{ t('ui.profile.title.data') }}</h2>{% endif %}
+        {% if is_admin_edit %}<h2 class="issue-section-title">{{ t("ui.profile.title.data") }}</h2>{% endif %}
         <div class="admin-field">
-            <label class="label" for="first_name">{{ t('ui.profile.field.first_name') }}</label>
+            <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
             <input id="first_name"
                    name="first_name"
                    required
@@ -16,7 +16,7 @@
                    class="input">
         </div>
         <div class="admin-field">
-            <label class="label" for="last_name">{{ t('ui.profile.field.last_name') }}</label>
+            <label class="label" for="last_name">{{ t("ui.profile.field.last_name") }}</label>
             <input id="last_name"
                    name="last_name"
                    required
@@ -24,7 +24,7 @@
                    class="input">
         </div>
         <div class="admin-field">
-            <label class="label" for="email">{{ t('ui.profile.field.email') }}</label>
+            <label class="label" for="email">{{ t("ui.profile.field.email") }}</label>
             <input id="email"
                    name="email"
                    type="email"
@@ -32,14 +32,14 @@
                    value="{{ edit_user.email }}"
                    class="input">
             {% if not is_admin_edit %}
-                <p class="admin-field-hint">{{ t('ui.profile.email_change_hint') }}</p>
+                <p class="admin-field-hint">{{ t("ui.profile.email_change_hint") }}</p>
             {% endif %}
             {% if edit_user.pending_email %}
                 <p class="admin-field-hint">{{ t('ui.profile.email_pending', email=edit_user.pending_email) }}</p>
             {% endif %}
         </div>
         <div class="admin-field">
-            <label class="label" for="phone">{{ t('ui.profile.field.phone') }}</label>
+            <label class="label" for="phone">{{ t("ui.profile.field.phone") }}</label>
             <input id="phone"
                    name="phone"
                    type="tel"
@@ -49,12 +49,12 @@
         </div>
         {% if is_admin_edit %}
             {% if edit_user.is_admin %}
-                <p class="admin-field-hint">{{ t('ui.profile.admin_all_projects_hint') }}</p>
+                <p class="admin-field-hint">{{ t("ui.profile.admin_all_projects_hint") }}</p>
             {% else %}
                 {{ project_checkboxes(projects, form_project_ids) }}
             {% endif %}
         {% endif %}
-        <button type="submit" class="btn btn-primary">{{ t('ui.profile.save_data') }}</button>
+        <button type="submit" class="btn btn-primary">{{ t("ui.profile.save_data") }}</button>
     </form>
 {% endif %}
 {% if show_password %}
@@ -62,7 +62,7 @@
         <form method="post"
               action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
               class="panel panel-pad admin-form-stack">
-            <h2 class="issue-section-title">{{ t('ui.profile.password.section') }}</h2>
+            <h2 class="issue-section-title">{{ t("ui.profile.password.section") }}</h2>
             <input type="password"
                    name="new_password"
                    placeholder="{{ t('ui.profile.password.new') }}"
@@ -74,15 +74,15 @@
                    class="input"
                    autocomplete="new-password">
             <div class="admin-form-actions">
-                <button type="submit" name="action" value="set" class="btn btn-primary">{{ t('ui.profile.password.set') }}</button>
+                <button type="submit" name="action" value="set" class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
                 <button type="submit"
                         name="action"
                         value="send_link"
                         class="btn btn-secondary">
                     {% if edit_user.is_pending %}
-                        {{ t('ui.profile.password.send_activation') }}
+                        {{ t("ui.profile.password.send_activation") }}
                     {% else %}
-                        {{ t('ui.profile.password.send_reset') }}
+                        {{ t("ui.profile.password.send_reset") }}
                     {% endif %}
                 </button>
             </div>
@@ -109,18 +109,18 @@
                    placeholder="{{ t('ui.profile.password.confirm') }}"
                    class="input"
                    autocomplete="new-password">
-            <button type="submit" class="btn btn-primary">{{ t('ui.profile.password.save') }}</button>
+            <button type="submit" class="btn btn-primary">{{ t("ui.profile.password.save") }}</button>
         </form>
     {% endif %}
 {% endif %}
 {% if show_settings %}
     <div class="panel panel-pad admin-form-stack" id="language-settings">
-        <h2 class="issue-section-title">{{ t('ui.settings.language') }}</h2>
-        {{ form_select_menu('', t('ui.settings.language'), lang_choices, ui_lang, value_attr='id', id='ui-lang', class_name='max-w-xs', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
+        <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
+        {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', class_name='max-w-xs', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
     </div>
     <div class="panel panel-pad admin-form-stack" id="theme-settings">
-        <h2 class="issue-section-title">{{ t('ui.profile.settings.theme_title') }}</h2>
-        <p class="admin-field-hint">{{ t('ui.profile.settings.theme_hint') }}</p>
+        <h2 class="issue-section-title">{{ t("ui.profile.settings.theme_title") }}</h2>
+        <p class="admin-field-hint">{{ t("ui.profile.settings.theme_hint") }}</p>
         <div class="theme-picker"
              role="radiogroup"
              aria-label="{{ t('ui.profile.settings.theme_title') }}"
@@ -142,14 +142,14 @@
                         <span class="theme-option-label">{{ theme.label }}</span>
                         <span class="theme-option-desc">{{ theme.description }}</span>
                     </span>
-                    <span class="theme-option-check">{{ t('ui.common.active') }}</span>
+                    <span class="theme-option-check">{{ t("ui.common.active") }}</span>
                 </button>
             {% endfor %}
         </div>
     </div>
     <div class="panel panel-pad admin-form-stack" id="layout-settings">
-        <h2 class="issue-section-title">{{ t('ui.profile.settings.density_title') }}</h2>
-        <p class="admin-field-hint">{{ t('ui.profile.settings.density_hint') }}</p>
+        <h2 class="issue-section-title">{{ t("ui.profile.settings.density_title") }}</h2>
+        <p class="admin-field-hint">{{ t("ui.profile.settings.density_hint") }}</p>
         <div class="pref-segment"
              role="radiogroup"
              aria-label="{{ t('ui.profile.settings.density_title') }}"
@@ -167,8 +167,8 @@
                 </button>
             {% endfor %}
         </div>
-        <h2 class="issue-section-title">{{ t('ui.profile.settings.font_title') }}</h2>
-        <p class="admin-field-hint">{{ t('ui.profile.settings.font_hint') }}</p>
+        <h2 class="issue-section-title">{{ t("ui.profile.settings.font_title") }}</h2>
+        <p class="admin-field-hint">{{ t("ui.profile.settings.font_hint") }}</p>
         <div class="pref-segment"
              role="radiogroup"
              aria-label="{{ t('ui.profile.settings.font_title') }}"

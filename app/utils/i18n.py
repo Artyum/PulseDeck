@@ -40,7 +40,7 @@ def _flatten(data: dict[str, Any], prefix: str = "") -> dict[str, str]:
 def _load_locale_file(path: Path) -> tuple[str, str, dict[str, str]]:
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(raw, dict):
-        raise ValueError(f"Locale file must be a mapping: {path}")
+        raise TypeError(f"Locale file must be a mapping: {path}")
     meta = raw.get("meta") or {}
     if not isinstance(meta, dict):
         meta = {}

@@ -60,9 +60,7 @@ def _load_project(db: Session, key: str, user: User, *, lang: str) -> Project:
 def _parse_ticket_ref(ticket_ref: str, *, lang: str) -> tuple[str, int]:
     match = _TICKET_REF_RE.fullmatch((ticket_ref or "").strip().upper())
     if not match:
-        raise HTTPException(
-            status_code=404, detail=t(lang, "messages.http.not_found")
-        )
+        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
     return match.group(1), int(match.group(2))
 
 
@@ -72,9 +70,7 @@ def _load_ticket(
     key, ticket_id = _parse_ticket_ref(ticket_ref, lang=lang)
     ticket = ticket_service.get_ticket(db, ticket_id)
     if not ticket or not ticket.project or ticket.project.key != key:
-        raise HTTPException(
-            status_code=404, detail=t(lang, "messages.http.not_found")
-        )
+        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
     ticket_service.require_project_access(db, user, ticket.project_id, lang=lang)
     return ticket.project, ticket
 
@@ -457,9 +453,7 @@ def add_tag(
         db,
         user,
         ticket_ref,
-        lambda ticket: ticket_service.add_ticket_tag(
-            db, ticket, user, name, lang=lang
-        ),
+        lambda ticket: ticket_service.add_ticket_tag(db, ticket, user, name, lang=lang),
     )
 
 
@@ -504,9 +498,7 @@ def assign(
         db,
         user,
         ticket_ref,
-        lambda ticket: ticket_service.assign_ticket(
-            db, ticket, user, aid, lang=lang
-        ),
+        lambda ticket: ticket_service.assign_ticket(db, ticket, user, aid, lang=lang),
         after=after,
     )
 
