@@ -16,11 +16,11 @@ class TestProjectPath:
 class TestTicketLabel:
     def test_with_project(self):
         project = cast(Project, type("Project", (), {"key": "DEMO"})())
-        ticket = cast(Ticket, type("Ticket", (), {"id": 42, "project": project})())
+        ticket = cast(Ticket, type("Ticket", (), {"number": 42, "project": project})())
         assert ticket_label(ticket) == "DEMO-42"
 
     def test_without_project_raises(self):
-        ticket = cast(Ticket, type("Ticket", (), {"id": 42, "project": None})())
+        ticket = cast(Ticket, type("Ticket", (), {"number": 42, "project": None})())
         with pytest.raises(ValueError, match="ticket.project.key is required"):
             ticket_label(ticket)
 
@@ -28,7 +28,7 @@ class TestTicketLabel:
 class TestTicketPath:
     def test_returns_path(self):
         project = cast(Project, type("Project", (), {"key": "DEMO"})())
-        ticket = cast(Ticket, type("Ticket", (), {"id": 42, "project": project})())
+        ticket = cast(Ticket, type("Ticket", (), {"number": 42, "project": project})())
         assert ticket_path(ticket) == "/t/DEMO-42"
 
 

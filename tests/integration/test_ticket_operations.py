@@ -25,7 +25,7 @@ class TestTags:
         )
         _login(client, "staff@test.local", "Staff123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/tags",
+            f"/t/{project_with_members.key}-{ticket.number}/tags",
             data={"name": "urgent"},
             follow_redirects=False,
         )
@@ -44,7 +44,7 @@ class TestTags:
         )
         _login(client, "client@test.local", "Client123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/tags",
+            f"/t/{project_with_members.key}-{ticket.number}/tags",
             data={"name": "urgent"},
             follow_redirects=False,
         )
@@ -63,7 +63,7 @@ class TestAssign:
         )
         _login(client, "staff@test.local", "Staff123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/assign",
+            f"/t/{project_with_members.key}-{ticket.number}/assign",
             data={"assignee_id": str(staff_user.id)},
             follow_redirects=False,
         )
@@ -82,7 +82,7 @@ class TestAssign:
         )
         _login(client, "staff@test.local", "Staff123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/self-assign",
+            f"/t/{project_with_members.key}-{ticket.number}/self-assign",
             follow_redirects=False,
         )
         assert r.status_code in (200, 303)
@@ -102,7 +102,7 @@ class TestPriorityType:
         )
         _login(client, "client@test.local", "Client123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/priority",
+            f"/t/{project_with_members.key}-{ticket.number}/priority",
             data={"priority": "HIGH"},
             follow_redirects=False,
         )
@@ -119,7 +119,7 @@ class TestPriorityType:
         )
         _login(client, "client@test.local", "Client123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/type",
+            f"/t/{project_with_members.key}-{ticket.number}/type",
             data={"type": "QUESTION"},
             follow_redirects=False,
         )

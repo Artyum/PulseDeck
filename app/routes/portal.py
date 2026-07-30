@@ -71,12 +71,13 @@ def _parse_ticket_ref(ticket_ref: str, *, lang: str) -> tuple[str, int]:
 def _load_ticket(
     db: Session, ticket_ref: str, user: User, *, lang: str
 ) -> tuple[Project, Ticket]:
-    key, ticket_id = _parse_ticket_ref(ticket_ref, lang=lang)
-    ticket = ticket_service.get_ticket(db, ticket_id)
-    if not ticket or not ticket.project or ticket.project.key != key:
+    key, number = _parse_ticket_ref(ticket_ref, lang=lang)
+    project = project_service.get_project_by_key_or_404(db, key, lang=lang)
+    ticket = ticket_service.get_ticket_by_project_number(db, project.id, number)
+    if not ticket:
         raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
-    ticket_service.require_project_access(db, user, ticket.project_id, lang=lang)
-    return ticket.project, ticket
+    ticket_service.require_project_access(db, user, project.id, lang=lang)
+    return project, ticket
 
 
 def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:

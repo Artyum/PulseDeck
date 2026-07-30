@@ -118,7 +118,7 @@ class TestTicketCRUD:
             ticket_type=TicketType.BUG,
         )
         _login(client, "client@test.local", "Client123!")
-        r = client.get(f"/t/{project_with_members.key}-{ticket.id}")
+        r = client.get(f"/t/{project_with_members.key}-{ticket.number}")
         assert r.status_code == 200
         assert "Detail test" in r.text
 
@@ -133,7 +133,7 @@ class TestTicketCRUD:
         )
         _login(client, "client@test.local", "Client123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/edit",
+            f"/t/{project_with_members.key}-{ticket.number}/edit",
             data={
                 "title": "Edited title",
                 "description": "Edited desc",
@@ -155,7 +155,7 @@ class TestComments:
         )
         _login(client, "client@test.local", "Client123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/comments",
+            f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={
                 "content": "This is a comment",
             },
@@ -176,7 +176,7 @@ class TestComments:
         )
         _login(client, "staff@test.local", "Staff123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/comments",
+            f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={
                 "content": "Internal note",
                 "is_internal": "true",
@@ -199,7 +199,7 @@ class TestComments:
         ticket_service.set_status(db_session, ticket, client_user, TicketStatus.DONE)
         _login(client, "client@test.local", "Client123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/comments",
+            f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={"content": "Late comment"},
             follow_redirects=False,
         )
@@ -221,7 +221,7 @@ class TestTicketStatus:
         )
         _login(client, "staff@test.local", "Staff123!")
         r = client.post(
-            f"/t/{project_with_members.key}-{ticket.id}/status",
+            f"/t/{project_with_members.key}-{ticket.number}/status",
             data={"status": "IN_PROGRESS"},
             follow_redirects=False,
         )

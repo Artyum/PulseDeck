@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     Enum,
     ForeignKey,
+    Integer,
     String,
     Text,
     UniqueConstraint,
@@ -24,6 +25,9 @@ if TYPE_CHECKING:
 
 class Ticket(Base):
     __tablename__ = "tickets"
+    __table_args__ = (
+        UniqueConstraint("project_id", "number", name="uq_ticket_project_number"),
+    )
 
     id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
     project_id: Mapped[int] = mapped_column(
@@ -32,6 +36,7 @@ class Ticket(Base):
         nullable=False,
         index=True,
     )
+    number: Mapped[int] = mapped_column(Integer, nullable=False)
     author_id: Mapped[int] = mapped_column(
         BigInt,
         ForeignKey("users.id", ondelete="CASCADE"),

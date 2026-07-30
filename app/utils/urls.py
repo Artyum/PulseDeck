@@ -15,7 +15,7 @@ def ticket_label(ticket: Ticket) -> str:
     key = ticket.project.key if ticket.project else None
     if not key:
         raise ValueError("ticket.project.key is required for ticket_label")
-    return f"{key}-{ticket.id}"
+    return f"{key}-{ticket.number}"
 
 
 def ticket_path(ticket: Ticket) -> str:

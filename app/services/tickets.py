@@ -230,6 +230,16 @@ def get_ticket(db: Session, ticket_id: int) -> Ticket | None:
     )
 
 
+def get_ticket_by_project_number(
+    db: Session, project_id: int, number: int
+) -> Ticket | None:
+    return db.scalar(
+        select(Ticket)
+        .where(Ticket.project_id == project_id, Ticket.number == number)
+        .options(*_TICKET_LOAD)
+    )
+
+
 def create_ticket(
     db: Session,
     *,
@@ -240,8 +250,25 @@ def create_ticket(
     ticket_type: TicketType,
     priority: TicketPriority = TicketPriority.NORMAL,
 ) -> Ticket:
+    project = db.scalar(
+        select(Project).where(Project.id == project_id).with_for_update()
+    )
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t(DEFAULT_LANG, "messages.http.not_found"),
+        )
+    next_number = (
+        db.scalar(
+            select(func.coalesce(func.max(Ticket.number), 0)).where(
+                Ticket.project_id == project_id
+            )
+        )
+        or 0
+    ) + 1
     ticket = Ticket(
         project_id=project_id,
+        number=next_number,
         author_id=author.id,
         title=title.strip(),
         description=description.strip(),
