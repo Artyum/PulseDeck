@@ -100,7 +100,13 @@
     <div class="issue-side-fields">
         <div class="issue-field">
             <span class="label-tight">{{ t("ui.ticket.reporter") }}</span>
-            <div class="field-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</div>
+            {% if can_assign %}
+                {% call issue_field_menu(t('ui.ticket.change_reporter'), url_for('change_reporter', ticket_ref=tref), 'author_id', project_members, ticket.author_id, value_attr='id') %}
+                    <span class="issue-menu-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</span>
+                {% endcall %}
+            {% else %}
+                <div class="field-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</div>
+            {% endif %}
         </div>
         <div class="issue-field">
             <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>

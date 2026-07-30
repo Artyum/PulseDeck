@@ -520,6 +520,26 @@ def assign(
     )
 
 
+@router.post("/t/{ticket_ref}/reporter", response_class=HTMLResponse)
+def change_reporter(
+    request: Request,
+    ticket_ref: str,
+    user: CurrentUser,
+    db: DbSession,
+    author_id: Annotated[int, Form()],
+):
+    lang = resolve_lang(request)
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda ticket: ticket_service.change_reporter(
+            db, ticket, user, author_id, lang=lang
+        ),
+    )
+
+
 @router.post("/t/{ticket_ref}/self-assign", response_class=HTMLResponse)
 def self_assign(
     request: Request,

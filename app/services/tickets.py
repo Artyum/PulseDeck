@@ -347,6 +347,40 @@ def self_assign(
     return assign_ticket(db, ticket, actor, actor.id, lang=lang)
 
 
+def change_reporter(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    author_id: int,
+    *,
+    lang: str | None = None,
+) -> Ticket:
+    lang = lang or DEFAULT_LANG
+    if not can_assign(actor, ticket, db):
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_change_reporter")
+        )
+    if author_id == ticket.author_id:
+        return get_ticket(db, ticket.id) or ticket
+    author = db.get(User, author_id)
+    if not author or not is_project_member(db, ticket.project_id, author.id):
+        raise HTTPException(
+            status_code=400,
+            detail=t(lang, "messages.tickets.reporter_must_be_member"),
+        )
+    row = db.scalar(
+        select(TicketParticipant).where(
+            TicketParticipant.ticket_id == ticket.id,
+            TicketParticipant.user_id == author_id,
+        )
+    )
+    if row:
+        db.delete(row)
+    ticket.author_id = author.id
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
 def set_status(
     db: Session,
     ticket: Ticket,
