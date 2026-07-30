@@ -36,7 +36,7 @@
                             onclick="document.getElementById('new-ticket').showModal()"
                             class="btn btn-primary">{{ t("ui.portal.feed.create") }}</button>
                 </div>
-                <div class="issue-list">
+                <div id="feed-results" class="issue-list">
                     {% for tkt in tickets %}
                         {{ ticket_row(tkt) }}
                     {% else %}
@@ -58,7 +58,12 @@
                 <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.portal.feed.filters") }}</h2>
                 <form method="get"
                       action="{{ url_for('project_feed', key=project.key) }}"
-                      class="issue-side-fields">
+                      class="issue-side-fields"
+                      hx-get="{{ url_for('project_feed', key=project.key) }}"
+                      hx-target="#feed-results"
+                      hx-select="#feed-results"
+                      hx-swap="outerHTML"
+                      hx-push-url="true">
                     <input type="hidden" name="view" value="{{ current_view }}">
                     <div class="issue-field">
                         <label class="label-tight" for="feed-q">{{ t("ui.portal.feed.search") }}</label>
@@ -95,7 +100,10 @@
                         namespace(value='priority', label=t('ui.portal.feed.sort_options.priority')),
                         ], filter_sort) }}
                     </div>
-                    <button type="submit" class="btn btn-secondary feed-filter-submit">{{ t("ui.portal.feed.filter_submit") }}</button>
+                    <div class="feed-filter-actions">
+                        <button type="button" class="btn btn-ghost" data-feed-filter-clear>{{ t("ui.portal.feed.filter_clear") }}</button>
+                        <button type="submit" class="btn btn-secondary">{{ t("ui.portal.feed.filter_submit") }}</button>
+                    </div>
                 </form>
             </section>
         </aside>

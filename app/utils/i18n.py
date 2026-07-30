@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +21,9 @@ LOCALES_DIR = project_root() / "app" / "locales"
 class LangChoice:
     id: str
     name: str
+
+
+_cache: tuple[float, dict[str, dict[str, str]], tuple[LangChoice, ...]] | None = None
 
 
 def _flatten(data: dict[str, Any], prefix: str = "") -> dict[str, str]:
@@ -50,14 +52,19 @@ def _load_locale_file(path: Path) -> tuple[str, str, dict[str, str]]:
     return code, name, flat
 
 
-@lru_cache(maxsize=1)
 def _catalog() -> tuple[dict[str, dict[str, str]], tuple[LangChoice, ...]]:
-    if not LOCALES_DIR.is_dir():
+    global _cache
+    paths = sorted(LOCALES_DIR.glob("*.yml")) if LOCALES_DIR.is_dir() else []
+    stamp = max((p.stat().st_mtime for p in paths), default=0.0)
+    if _cache is not None and _cache[0] == stamp:
+        return _cache[1], _cache[2]
+    if not paths:
         logger.error("Locales directory missing: %s", LOCALES_DIR)
-        return {}, ()
+        _cache = (stamp, {}, ())
+        return _cache[1], _cache[2]
     by_lang: dict[str, dict[str, str]] = {}
     choices: list[LangChoice] = []
-    for path in sorted(LOCALES_DIR.glob("*.yml")):
+    for path in paths:
         try:
             code, name, flat = _load_locale_file(path)
         except Exception:
@@ -69,11 +76,8 @@ def _catalog() -> tuple[dict[str, dict[str, str]], tuple[LangChoice, ...]]:
         logger.warning(
             "Default locale %s missing; available: %s", DEFAULT_LANG, list(by_lang)
         )
-    return by_lang, tuple(choices)
-
-
-def reload_locales() -> None:
-    _catalog.cache_clear()
+    _cache = (stamp, by_lang, tuple(choices))
+    return _cache[1], _cache[2]
 
 
 def list_languages() -> tuple[LangChoice, ...]:

@@ -141,6 +141,7 @@ ui:
         created: "Data utworzenia"
         priority: "Priorytet"
       filter_submit: "Filtruj"
+      filter_clear: "Wyczyść"
       modal_title: "Utwórz zgłoszenie"
       field:
         title: "Tytuł"

@@ -141,6 +141,7 @@ ui:
         created: "Creation date"
         priority: "Priority"
       filter_submit: "Filter"
+      filter_clear: "Clear"
       modal_title: "Create ticket"
       field:
         title: "Title"

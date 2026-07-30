@@ -301,16 +301,13 @@
     return el.closest("[data-form-select]");
   }
 
-  document.addEventListener("click", function (ev) {
-    var btn = ev.target.closest("[data-form-select-option]");
-    if (!btn) return;
-    var root = resolveFormSelect(btn);
-    if (!root || root.hasAttribute("data-disabled")) return;
-    ev.preventDefault();
+  function setFormSelectValue(root, value) {
     var input = root.querySelector("[data-form-select-input]");
     var face = root.querySelector("[data-form-select-face]");
-    var value = btn.getAttribute("data-value") || "";
-    var label = btn.getAttribute("data-label") || (btn.textContent || "").trim();
+    var opt = root.querySelector('[data-form-select-option][data-value="' + value + '"]');
+    var label = opt
+      ? opt.getAttribute("data-label") || (opt.textContent || "").trim()
+      : "";
     if (input) {
       input.value = value;
       input.dispatchEvent(new Event("change", { bubbles: true }));
@@ -322,6 +319,32 @@
       if (on) el.setAttribute("aria-current", "true");
       else el.removeAttribute("aria-current");
     });
+  }
+
+  document.addEventListener("click", function (ev) {
+    var clearBtn = ev.target.closest("[data-feed-filter-clear]");
+    if (clearBtn) {
+      var clearForm = clearBtn.closest("form");
+      if (!clearForm) return;
+      ev.preventDefault();
+      clearForm.querySelectorAll("input[name='q'], input[name='tag']").forEach(function (el) {
+        el.value = "";
+      });
+      clearForm.querySelectorAll("[data-form-select]").forEach(function (root) {
+        var input = root.querySelector("[data-form-select-input]");
+        var name = input ? input.getAttribute("name") : "";
+        setFormSelectValue(root, name === "sort" ? "updated_at" : "");
+      });
+      clearForm.requestSubmit();
+      return;
+    }
+    var btn = ev.target.closest("[data-form-select-option]");
+    if (!btn) return;
+    var root = resolveFormSelect(btn);
+    if (!root || root.hasAttribute("data-disabled")) return;
+    ev.preventDefault();
+    var value = btn.getAttribute("data-value") || "";
+    setFormSelectValue(root, value);
     var alpineRoot = root.closest("[x-data]");
     if (alpineRoot && typeof Alpine !== "undefined") {
       Alpine.$data(alpineRoot).open = false;

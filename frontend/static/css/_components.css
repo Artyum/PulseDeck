@@ -1393,9 +1393,14 @@
     font-weight: 650;
   }
 
-  .feed-filter-submit {
-    width: 100%;
+  .feed-filter-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
     margin-top: 0.15rem;
+  }
+
+  .feed-filter-actions > .btn {
     min-height: 1.875rem;
     padding: 0.28rem 0.65rem;
     font-size: 0.75rem;
