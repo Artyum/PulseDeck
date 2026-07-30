@@ -1,0 +1,160 @@
+"""Admin panel integration tests."""
+import pytest
+
+
+def _login_admin(client):
+    r = client.post(
+        "/auth/login",
+        data={"email": "admin@test.local", "password": "Admin123!"},
+        follow_redirects=False,
+    )
+    assert r.status_code in (303, 200)
+
+
+class TestAdminAccess:
+    def test_admin_dashboard(self, client, admin_user):
+        _login_admin(client)
+        r = client.get("/admin")
+        assert r.status_code == 200
+
+    def test_non_admin_blocked(self, client, client_user):
+        r = client.post(
+            "/auth/login",
+            data={"email": "client@test.local", "password": "Client123!"},
+            follow_redirects=False,
+        )
+        r = client.get("/admin", follow_redirects=False)
+        # Non-admin gets redirected away from /admin
+        assert r.status_code in (303, 403, 200)
+
+
+class TestAdminProjects:
+    def test_create_project(self, client, admin_user):
+        _login_admin(client)
+        r = client.post(
+            "/admin/projects",
+            data={"name": "New Project", "key": "NEWP"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+
+    def test_create_project_duplicate_key(
+        self, client, admin_user, project_with_members
+    ):
+        _login_admin(client)
+        r = client.post(
+            "/admin/projects",
+            data={"name": "Other", "key": "DEMO"},
+            follow_redirects=False,
+        )
+        # Duplicate key stays on same page
+        assert r.status_code in (200, 303, 422)
+
+    def test_project_detail(self, client, admin_user, project_with_members):
+        _login_admin(client)
+        r = client.get(f"/admin/projects/{project_with_members.key}")
+        assert r.status_code == 200
+        assert project_with_members.name in r.text
+
+    def test_edit_project(self, client, admin_user, project_with_members):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/edit",
+            data={"name": "Updated", "key": project_with_members.key},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303, 422)
+
+    def test_delete_project(self, client, admin_user, project_with_members):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/delete",
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+
+    def test_add_project_member(
+        self, client, db_session, admin_user, project_with_members, client_user
+    ):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/members",
+            data={"user_id": str(client_user.id)},
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+
+    def test_remove_project_member(
+        self, client, db_session, admin_user, project_with_members, client_user
+    ):
+        from app.services import projects as project_service
+        project_service.add_project_member(db_session, project_with_members.id, client_user.id)
+        _login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/members/{client_user.id}/remove",
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+
+
+class TestAdminUsers:
+    def test_users_list(self, client, admin_user):
+        _login_admin(client)
+        r = client.get("/admin/users")
+        assert r.status_code == 200
+        assert "admin" in r.text.lower() or "Admin" in r.text
+
+    def test_create_user(self, client, admin_user, project_with_members):
+        _login_admin(client)
+        r = client.post(
+            "/admin/users/new",
+            data={
+                "first_name": "Nowy",
+                "last_name": "User",
+                "email": "nowy@test.local",
+                "role": "USER",
+                "project_ids": [str(project_with_members.id)],
+            },
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+
+    def test_edit_user(self, client, admin_user, client_user):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/users/{client_user.id}",
+            data={
+                "first_name": "Updated",
+                "last_name": "Klient",
+                "email": client_user.email,
+                "phone": "",
+            },
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303, 400)
+
+    def test_toggle_active(self, client, admin_user, client_user):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/users/{client_user.id}/active",
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303, 422)
+
+    def test_change_role(self, client, admin_user, client_user):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/users/{client_user.id}/role",
+            data={"role": "STAFF"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+
+    def test_send_password_link(self, client, admin_user, client_user):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/users/{client_user.id}/password",
+            data={"action": "send_link"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 303

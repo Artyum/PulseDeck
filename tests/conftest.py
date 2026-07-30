@@ -9,9 +9,14 @@ os.environ.setdefault("STORAGE_SECRET", "test-secret")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("APP_BASE_URL", "http://testserver")
 os.environ.setdefault("ALLOWED_HOSTS", "testserver,localhost,127.0.0.1")
-os.environ.setdefault("ADMIN_EMAIL", "admin@test.local")
-os.environ.setdefault("ADMIN_PASSWORD", "Admin123!")
+os.environ.pop("ADMIN_EMAIL", None)
+os.environ.pop("ADMIN_PASSWORD", None)
 os.environ.setdefault("SECURITY_CSRF_ENABLED", "false")
+os.environ.setdefault("AUTH_LOGIN_RATE_LIMIT", "100/minute")
+os.environ.setdefault("AUTH_FORGOT_PASSWORD_RATE_LIMIT", "100/minute")
+os.environ.setdefault("AUTH_ACTIVATE_RATE_LIMIT", "100/minute")
+os.environ.setdefault("AUTH_ADMIN_USER_CREATE_RATE_LIMIT", "100/minute")
+os.environ.setdefault("UPLOAD_RATE_LIMIT", "100/minute")
 
 import pytest
 from fastapi.testclient import TestClient
