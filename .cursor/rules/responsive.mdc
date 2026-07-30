@@ -1,27 +1,27 @@
 ---
-description: Breakpointy i responsywny layout
+description: Breakpoints and responsive layout
 globs: frontend/**/*
 alwaysApply: false
 ---
 
-# Responsywny design
+# Responsive design
 
-## Breakpointy
+## Breakpoints
 
-- compact ≤479px (telefony, 1 kolumna)
-- mobile ≤768px (pionowo, pełna szerokość).
-- tablet 769-1023px (2 kolumny)
-- desktop ≥1024px (layout docelowy, sidebar, siatki).
+- compact ≤479px (phones, 1 column)
+- mobile ≤768px (portrait, full width).
+- tablet 769-1023px (2 columns)
+- desktop ≥1024px (target layout, sidebar, grids).
 
-## Zasady
+## Rules
 
-- Mobile-first: style bazowe mobile, rozszerzenia od `min-width`.
-- Własne media queries używaj zmiennych `--bp-*`, nie losowych px.
-- Tailwind: preferuj `sm:`, `md:`, `lg:`; dopasuj breakpointy w `@theme` do `--bp-*`.
-- Publiczne szablony: planuj compact→mobile→tablet→desktop. Testuj mobile i desktop.
-- Admin panel: tylko desktop (`min-width: var(--bp-desktop-min)`). Dopuszczalny poziomy scroll, bez pełnej responsywności.
-- Mobile (publiczna): cele dotykowe ≥44px, brak poziomego scrolla całej strony. Tabele: `.table-responsive`.
+- Mobile-first: base styles mobile, extensions from `min-width`.
+- For custom media queries use `--bp-*` variables, not arbitrary px.
+- Tailwind: prefer `sm:`, `md:`, `lg:`; align breakpoints in `@theme` with `--bp-*`.
+- Public templates: plan compact→mobile→tablet→desktop. Test mobile and desktop.
+- Admin panel: desktop only (`min-width: var(--bp-desktop-min)`). Horizontal scroll allowed, no full responsiveness.
+- Mobile (public): touch targets ≥44px, no horizontal scroll of the whole page. Tables: `.table-responsive`.
 
-## Unikaj
+## Avoid
 
-- Sztywnych px bez `max-width: 100%`. Osobnych breakpointów w JS — layout w CSS.
+- Rigid px without `max-width: 100%`. Separate breakpoints in JS — layout in CSS.

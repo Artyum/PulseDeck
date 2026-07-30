@@ -1,49 +1,49 @@
 ---
-description: Bezpieczeństwo
+description: Security
 globs: app/**/*, frontend/templates/**/*
 alwaysApply: false
 ---
 
-# Bezpieczeństwo
+# Security
 
 ## Auth
 
-- Hasła: bcrypt/argon2. Cookie: HttpOnly, Secure (prod), SameSite=Lax.
-- Po zmianie hasła unieważnij sesję. `is_active=false` blokuje API i panel.
-- Jednolity komunikat błędu logowania. Brak publicznej rejestracji.
+- Passwords: bcrypt/argon2. Cookie: HttpOnly, Secure (prod), SameSite=Lax.
+- After password change invalidate the session. `is_active=false` blocks API and panel.
+- Uniform login error message. No public registration.
 
-## Autoryzacja
+## Authorization
 
-- Mutujące endpointy: rola + `owner_id`. Admin tylko gdzie zamierzone.
-- Publiczne GET: tylko `PUBLISHED`/aktywne. Drafty: autor/admin.
+- Mutating endpoints: role + `owner_id`. Admin only where intended.
+- Public GET: only `PUBLISHED`/active. Drafts: author/admin.
 
 ## CSRF
 
-- POST/PUT/PATCH/DELETE z sesją → token CSRF. Wyjątek tylko login.
+- POST/PUT/PATCH/DELETE with session → CSRF token. Exception only for login.
 
-## SQL & walidacja
+## SQL & validation
 
-- Tylko ORM lub parametryzowane zapytania. Walidacja Pydantic na granicy API.
-- URL: tylko `http:`/`https:`, odrzucaj `javascript:`, `data:`.
-- Open redirect: tylko ścieżki względne od `/`.
+- ORM or parameterized queries only. Pydantic validation at the API boundary.
+- URL: only `http:`/`https:`, reject `javascript:`, `data:`.
+- Open redirect: relative paths from `/` only.
 
 ## XSS
 
-- Autoescape w szablonach, `| safe` tylko z zaufanego źródła.
-- Klient: `textContent` lub `escapeHtml()`, nie `innerHTML` z API.
+- Autoescape in templates, `| safe` only from a trusted source.
+- Client: `textContent` or `escapeHtml()`, not `innerHTML` from API.
 - CSP, X-Content-Type-Options, X-Frame-Options.
 
 ## Upload
 
-- Whitelist rozszerzeń + magic bytes. Obrazy: re-encode (PIL→JPEG).
-- Nazwa na dysku: hash/UUID. Zabroń `..` i wyjścia poza upload. Limity rozmiaru.
+- Extension whitelist + magic bytes. Images: re-encode (PIL→JPEG).
+- On-disk name: hash/UUID. Forbid `..` and leaving the upload dir. Size limits.
 
-## Inne
+## Other
 
-- Rate limiting: login (10-20/min), publiczne zapisy, wyszukiwarka.
-- Sekrety tylko z env/secret manager. Brak w logach. TrustedHost w prod.
-- SSRF: URL tylko z konfiguracji. Zakaz pickle/eval/exec na danych użytkownika.
+- Rate limiting: login (10-20/min), public writes, search.
+- Secrets only from env/secret manager. Not in logs. TrustedHost in prod.
+- SSRF: URL only from configuration. No pickle/eval/exec on user data.
 
-## Testy
+## Tests
 
-Sprawdzaj: dostęp anon/user/admin/nieaktywny, CSRF→403, path traversal, SQL/XSS injection, rate limit, open redirect.
+Check: anon/user/admin/inactive access, CSRF→403, path traversal, SQL/XSS injection, rate limit, open redirect.

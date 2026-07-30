@@ -1,55 +1,55 @@
 ---
-description: Zasady projektu PulseDeck
+description: PulseDeck project rules
 alwaysApply: true
 ---
 
-# Zasady
+# Rules
 
-## Ogólne
+## General
 
-- Oszczędzaj tokeny, bądź konkretny, bez lania wody.
-- Pytaj przed destrukcyjnymi operacjami (instalacja, usuwanie plików, zmiany konfiguracji). Bezpieczne polecenia (git status, odczyt) wykonuj bez pytania.
-- Aplikacja i CSS watcher są już uruchomione (`start_app.ps1` + okno Tailwind watch). Nie uruchamiaj ani nie przebudowuj ich automatycznie. Jeśli coś nie działa, poproś o ręczne uruchomienie/restart.
-- Dev: <http://pulsedeck.lan:8005/> (`deploy/env/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → IP LAN, nie 127.0.0.1).
-- Nigdy sam nie uruchamiaj testów — wskaż jak je uruchomić ręcznie.
-- Środowisko Windows — polecenia w PowerShell.
-- Upraszczaj kod i usuwaj zbędne pozostałości.
+- Save tokens, be concrete, no fluff.
+- Ask before destructive operations (install, file deletion, config changes). Safe commands (git status, read) run without asking.
+- The app and CSS watcher are already running (`start_app.ps1` + Tailwind watch window). Do not start or rebuild them automatically. If something does not work, ask for a manual start/restart.
+- Dev: <http://pulsedeck.lan:8005/> (`deploy/env/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
+- Never run tests yourself — point out how to run them manually.
+- Windows environment — commands in PowerShell.
+- Simplify code and remove unnecessary leftovers.
 
-## URL (publiczne / portal)
+## URL (public / portal)
 
-- Bez UUID w linkach UI. Projekt: `/p/{key}`, ticket: `/t/{key}-{number}` (number per projekt, od 1).
-- Helpery: `app/utils/urls.py` (`project_path`, `ticket_path`, `ticket_label`, `admin_project_path`).
-- `key` projektu: ręczne `[A-Z0-9]{1,5}`, unique; nazwa niezależna, unique case-insensitive.
-- Zmiana key/nazwy bez redirectów — stare linki przestają działać.
-- W DB: wszystkie encje mają bigint PK (autoincrement). Key projektu i `ticket.number` tylko do routingów i etykiet.
+- No UUIDs in UI links. Project: `/p/{key}`, ticket: `/t/{key}-{number}` (number per project, from 1).
+- Helpers: `app/utils/urls.py` (`project_path`, `ticket_path`, `ticket_label`, `admin_project_path`).
+- Project `key`: manual `[A-Z0-9]{1,5}`, unique; name independent, unique case-insensitive.
+- Key/name change without redirects — old links stop working.
+- In DB: all entities have bigint PK (autoincrement). Project key and `ticket.number` only for routing and labels.
 
-## Formularze / CSRF
+## Forms / CSRF
 
-- POST z sesją wymaga `X-CSRF-Token` (meta + interceptor w `base.html` lub `hx-headers`).
-- Interceptor formularzy: `fetch` z `redirect: "follow"` (nie `manual` — powoduje pustą stronę).
-- Po sukcesie z redirectem: nawiguj na `r.url` gdy `r.redirected`.
+- Session POST requires `X-CSRF-Token` (meta + interceptor in `base.html` or `hx-headers`).
+- Form interceptor: `fetch` with `redirect: "follow"` (not `manual` — causes a blank page).
+- After success with redirect: navigate to `r.url` when `r.redirected`.
 
-## Kod
+## Code
 
-- Loguj błędy w kluczowych operacjach i try/except.
-- Bezpieczny kod odporny na znane ataki.
-- Bez komentarzy (chyba że użytkownik wymaga).
-- Nigdy nie edytuj `frontend/static/css/app.css` — generowany (`css:watch` / `css:build`).
-- Reużywaj istniejące style — spójność przed nowym CSS.
-- KISS / YAGNI / DRY; SOLID gdy ma sens, bez nadarchitektury.
+- Log errors in key operations and try/except.
+- Secure code resistant to known attacks.
+- No comments (unless the user requires them).
+- Never edit `frontend/static/css/app.css` — generated (`css:watch` / `css:build`).
+- Reuse existing styles — consistency before new CSS.
+- KISS / YAGNI / DRY; SOLID when it makes sense, no over-architecture.
 
 ## CSS/UI
 
-- Tailwind + własne komponenty w `_components.css` (`.btn`, `.input`, `.modal`…). Unikaj zbędnego niestandardowego CSS i inline style.
-- Najpierw szukaj istniejącego komponentu / klasy w `_components.css` / `_primitives.css`, potem łącz klasy Tailwind.
-- Używaj kolorów z `@theme` (`bg-primary`, `text-secondary`, `bg-base-100`).
+- Tailwind + custom components in `_components.css` (`.btn`, `.input`, `.modal`…). Avoid unnecessary custom CSS and inline styles.
+- First look for an existing component / class in `_components.css` / `_primitives.css`, then combine Tailwind classes.
+- Use colors from `@theme` (`bg-primary`, `text-secondary`, `bg-base-100`).
 
 ## Stack
 
-Backend: FastAPI + SQLAlchemy + PostgreSQL + Alembic. CSS: Tailwind + własne komponenty. Start: `start_app.ps1`, npm: `update_npm.ps1`.
+Backend: FastAPI + SQLAlchemy + PostgreSQL + Alembic. CSS: Tailwind + custom components. Start: `start_app.ps1`, npm: `update_npm.ps1`.
 
-## Sieć
+## Network
 
-- Nie pobieraj pełnych stron HTML — użytkownik wkleja dane ręcznie.
-- Dozwolone: sprawdzenie statusu HTTP i nagłówków.
-- Przeglądarka tylko na wyraźną prośbę lub krótki test (<50 linii).
+- Do not fetch full HTML pages — the user pastes data manually.
+- Allowed: checking HTTP status and headers.
+- Browser only on explicit request or a short test (<50 lines).
