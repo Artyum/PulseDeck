@@ -1,16 +1,12 @@
 {% extends "base.html" %}
-{% from "partials/icons.html" import icon %}
+{% from "partials/icons.html" import icon, brand_logo with context %}
 {% block body %}
   {% set path = request.url.path %}
   <div class="admin-shell">
     <aside class="admin-aside">
       <div class="admin-aside-brand">
         <a href="{{ url_for('admin_home') }}" class="brand-mark">
-          <img src="{{ url_for('static', path='images/pulsedeck-logo.png') }}"
-               alt=""
-               class="brand-mark-logo"
-               width="268"
-               height="167">
+          {{ brand_logo() }}
           {{ app_name }}
         </a>
         <p class="admin-aside-label">{{ t("ui.admin.aside_label") }}</p>

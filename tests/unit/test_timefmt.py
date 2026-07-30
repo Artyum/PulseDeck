@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from app.utils.timefmt import _aware, age_since, format_relative, gap_between
+from app.utils.timefmt import _aware, format_relative, gap_between
 
 
 class TestAware:
@@ -57,21 +57,6 @@ class TestFormatRelative:
     def test_negative_delta(self):
         assert format_relative(-30) == "30 s"
         assert format_relative(-3600) == "1 h"
-
-
-class TestAgeSince:
-    def test_none(self):
-        assert age_since(None) == "\u2014"
-
-    def test_seconds_ago(self, monkeypatch):
-        now = datetime(2024, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
-        dt = datetime(2024, 6, 15, 11, 59, 30, tzinfo=timezone.utc)
-        assert age_since(dt, now=now) == "30 s"
-
-    def test_minutes_ago(self, monkeypatch):
-        now = datetime(2024, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
-        dt = datetime(2024, 6, 15, 11, 55, 0, tzinfo=timezone.utc)
-        assert age_since(dt, now=now) == "5 min"
 
 
 class TestGapBetween:

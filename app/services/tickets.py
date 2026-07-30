@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import get_settings
@@ -219,7 +220,13 @@ def list_tickets(
             .where(func.lower(Tag.name) == tag.strip().lower())
         )
     if q:
-        stmt = stmt.where(Ticket.title.ilike(f"%{q.strip()}%"))
+        raw = q.strip()
+        if raw:
+            conditions = [Ticket.title.ilike(f"%{raw}%")]
+            ref = re.fullmatch(r"(?:[A-Za-z0-9]{1,5}-)?(\d+)", raw, flags=re.IGNORECASE)
+            if ref:
+                conditions.append(Ticket.number == int(ref.group(1)))
+            stmt = stmt.where(or_(*conditions))
     stmt = stmt.options(
         selectinload(Ticket.author),
         selectinload(Ticket.assignee),

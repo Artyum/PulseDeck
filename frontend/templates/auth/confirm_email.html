@@ -1,14 +1,11 @@
 {% extends "base.html" %}
+{% from "partials/icons.html" import brand_logo with context %}
 {% block title %}{{ t("ui.auth.confirm_email.title") }} — {{ app_name }}{% endblock title %}
 {% block body %}
   <div class="auth-scene">
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
-        <img src="{{ url_for('static', path='images/pulsedeck-logo.png') }}"
-             alt="{{ app_name }}"
-             class="auth-brand-logo"
-             width="268"
-             height="167">
+        {{ brand_logo(variant='auth', alt=app_name) }}
         <h1 class="sr-only">{{ app_name }}</h1>
         <p class="mt-3 text-[1.1rem] text-steel">{{ t("ui.auth.confirm_email.subtitle") }}</p>
       </div>

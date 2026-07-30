@@ -40,3 +40,12 @@
     </svg>
   {%- endif -%}
 {%- endmacro %}
+{% macro brand_logo(variant='mark', alt='') -%}
+  <span class="brand-logo-tint">
+    <img src="{{ url_for('static', path='images/pulsedeck-logo.png') }}"
+         alt="{{ alt }}"
+         class="{% if variant == 'auth' %}auth-brand-logo{% else %}brand-mark-logo{% endif %}"
+         width="268"
+         height="167">
+  </span>
+{%- endmacro %}

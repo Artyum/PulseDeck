@@ -38,7 +38,7 @@ from app.utils.themes import (
     THEME_GRADIENT_STORAGE_KEY,
     THEME_STORAGE_KEY,
 )
-from app.utils.timefmt import age_since, gap_between
+from app.utils.timefmt import gap_between
 from app.utils.urls import (
     admin_project_path,
     attachment_path,
@@ -50,7 +50,6 @@ from app.utils.urls import (
 logger = logging.getLogger("pulsedeck.app")
 
 _templates = Jinja2Templates(directory=str(project_root() / "frontend" / "templates"))
-_templates.env.filters["age_since"] = age_since
 _templates.env.filters["gap_between"] = gap_between
 _templates.env.filters["project_path"] = project_path
 _templates.env.filters["ticket_path"] = ticket_path

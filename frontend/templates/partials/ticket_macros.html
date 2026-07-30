@@ -31,7 +31,7 @@
     </div>
   {% endif %}
 {%- endmacro %}
-{% macro ticket_row(tkt, show_tags=true, show_age=true) -%}
+{% macro ticket_row(tkt, show_tags=true) -%}
   <a href="{{ url_for('ticket_detail', ticket_ref=tkt|ticket_label) }}"
      class="ticket-row"
      data-status="{{ tkt.status.value }}">
@@ -40,10 +40,6 @@
       <div class="ticket-row-meta">
         <span class="issue-key">{{ tkt|ticket_label }}</span>
         <span class="chip chip-type">{{ type_labels[tkt.type] }}</span>
-        {% if tkt.author %}
-          <span class="ticket-row-dot" aria-hidden="true"></span>
-          <span>{{ tkt.author.display_name }}</span>
-        {% endif %}
         {% if show_tags and tkt.ticket_tags %}
           {% for tt in tkt.ticket_tags %}
             <span class="chip chip-outline">{{ tt.tag.name }}</span>
@@ -56,14 +52,12 @@
         {{ status_chip(tkt.status) }}
         {{ priority_chip(tkt.priority) }}
       </div>
-      <div class="ticket-row-when">
-        {% if tkt.updated_at %}
-          <time datetime="{{ tkt.updated_at.isoformat() }}">{{ tkt.updated_at.strftime("%Y-%m-%d %H:%M") }}</time>
-        {% endif %}
-        {% if show_age and tkt.created_at %}
-          <span title="{{ t('ui.ticket.age_title') }}">{{ tkt.created_at|age_since }}</span>
-        {% endif %}
-      </div>
+      {% if tkt.author %}
+        <div class="ticket-row-author">
+          <span class="ticket-row-author-label">{{ t("ui.ticket.reporter") }}</span>
+          <span>{{ tkt.author.display_name }}</span>
+        </div>
+      {% endif %}
     </div>
   </a>
 {%- endmacro %}

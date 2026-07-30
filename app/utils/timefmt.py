@@ -29,13 +29,6 @@ def format_relative(delta_seconds: float) -> str:
     return f"{years} lat"
 
 
-def age_since(dt: datetime | None, *, now: datetime | None = None) -> str:
-    if dt is None:
-        return "—"
-    current = now or datetime.now(timezone.utc)
-    return format_relative((_aware(current) - _aware(dt)).total_seconds())
-
-
 def gap_between(earlier: datetime | None, later: datetime | None) -> str:
     if earlier is None or later is None:
         return ""

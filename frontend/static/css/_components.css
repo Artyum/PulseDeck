@@ -19,7 +19,26 @@
     display: block;
     height: 2.1rem;
     width: auto;
-    border-radius: 0.4rem;
+  }
+
+  .brand-logo-tint {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    isolation: isolate;
+    line-height: 0;
+  }
+
+  .brand-logo-tint::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-pulse);
+    mix-blend-mode: color;
+    opacity: 0.4;
+    pointer-events: none;
+    mask: url("../images/pulsedeck-logo.png") center / 100% 100% no-repeat;
+    -webkit-mask: url("../images/pulsedeck-logo.png") center / 100% 100% no-repeat;
   }
 
   .app-header {
@@ -100,19 +119,6 @@
     align-items: center;
     gap: 0.75rem;
     flex-shrink: 0;
-  }
-
-  .nav-project-current {
-    max-width: 14rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-left: 0.85rem;
-    border-left: 1px solid var(--color-line);
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--color-ink);
   }
 
   .nav-project-trigger {
@@ -1262,7 +1268,7 @@
 
   .ticket-row-title {
     font-family: var(--font-display);
-    font-size: 0.98rem;
+    font-size: 1.05rem;
     font-weight: 650;
     line-height: 1.35;
     letter-spacing: -0.02em;
@@ -1278,27 +1284,18 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.3rem 0.45rem;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     color: var(--color-steel);
   }
 
   .ticket-row-meta .issue-key {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
   }
 
   .ticket-row-meta .chip {
     padding: 0.14rem 0.45rem 0.12rem;
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     line-height: 1;
-  }
-
-  .ticket-row-dot {
-    width: 0.2rem;
-    height: 0.2rem;
-    border-radius: 9999px;
-    background: currentColor;
-    opacity: 0.45;
-    flex-shrink: 0;
   }
 
   .ticket-row-side {
@@ -1316,14 +1313,21 @@
     gap: 0.35rem;
   }
 
-  .ticket-row-when {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 0.35rem 0.65rem;
-    font-size: 0.72rem;
+  .ticket-row-author {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    font-size: 0.78rem;
     color: var(--color-steel);
     white-space: nowrap;
+  }
+
+  .ticket-row-author-label {
+    font-size: 0.68rem;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-steel) 80%, var(--color-line));
   }
 
   .chip {
@@ -2810,7 +2814,6 @@
     display: inline-block;
     height: clamp(3.25rem, 2.6rem + 2vw, 4.75rem);
     width: auto;
-    border-radius: 0.75rem;
   }
 
   .divider {
@@ -2911,10 +2914,6 @@
       padding-inline: calc(1rem * var(--space-scale));
     }
 
-    .nav-project-current {
-      display: none;
-    }
-
     .nav-user-name {
       max-width: 6.5rem;
     }
@@ -2942,8 +2941,7 @@
       align-items: flex-start;
     }
 
-    .ticket-row-badges,
-    .ticket-row-when {
+    .ticket-row-badges {
       justify-content: flex-start;
     }
 
