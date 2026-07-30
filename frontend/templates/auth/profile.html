@@ -13,21 +13,24 @@
         <div>
             {% if profile_section == 'password' %}
                 <h1 class="issue-title">{{ t("ui.profile.title.password") }}</h1>
-                <p class="admin-page-sub">{{ t("ui.profile.sub.password") }}</p>
             {% elif profile_section == 'settings' %}
                 <h1 class="issue-title">{{ t("ui.profile.title.settings") }}</h1>
-                <p class="admin-page-sub">{{ t("ui.profile.sub.settings") }}</p>
             {% else %}
                 <h1 class="issue-title">{{ t("ui.profile.title.data") }}</h1>
-                <p class="admin-page-sub">{{ edit_user.display_name }} · {{ edit_user.email }} · {{ role_labels[edit_user.role] }}</p>
             {% endif %}
         </div>
     </div>
     {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
     {% if success %}<p class="alert alert-success admin-alert">{{ success }}</p>{% endif %}
-    <section class="admin-section">
-        <div class="admin-panels{% if profile_section == 'settings' %} admin-prefs{% else %} admin-narrow{% endif %}">
+    {% if profile_section == 'settings' %}
+        <div class="admin-prefs">
             {% include "partials/user_profile_form.html" %}
         </div>
-    </section>
+    {% else %}
+        <section class="admin-section">
+            <div class="admin-narrow">
+                {% include "partials/user_profile_form.html" %}
+            </div>
+        </section>
+    {% endif %}
 {% endblock content %}

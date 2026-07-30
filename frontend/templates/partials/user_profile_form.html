@@ -5,7 +5,7 @@
 {% if show_data %}
     <form method="post"
           action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
-          class="panel panel-pad admin-form-stack">
+          class="admin-form-stack">
         {% if is_admin_edit %}<h2 class="issue-section-title">{{ t("ui.profile.title.data") }}</h2>{% endif %}
         <div class="admin-field">
             <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
@@ -61,7 +61,7 @@
     {% if is_admin_edit %}
         <form method="post"
               action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
-              class="panel panel-pad admin-form-stack">
+              class="admin-form-stack">
             <h2 class="issue-section-title">{{ t("ui.profile.password.section") }}</h2>
             <input type="password"
                    name="new_password"
@@ -90,7 +90,7 @@
     {% else %}
         <form method="post"
               action="{{ url_for('change_password') }}"
-              class="panel panel-pad admin-form-stack">
+              class="admin-form-stack">
             <input type="password"
                    name="current_password"
                    required
@@ -114,13 +114,14 @@
     {% endif %}
 {% endif %}
 {% if show_settings %}
-    <div class="panel panel-pad admin-form-stack" id="language-settings">
+    <section class="admin-section" id="language-settings">
         <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
-        {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', class_name='max-w-xs', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
-    </div>
-    <div class="panel panel-pad admin-form-stack" id="theme-settings">
+        <div class="admin-form-stack">
+            {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', class_name='max-w-xs', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
+        </div>
+    </section>
+    <section class="admin-section" id="theme-settings">
         <h2 class="issue-section-title">{{ t("ui.profile.settings.theme_title") }}</h2>
-        <p class="admin-field-hint">{{ t("ui.profile.settings.theme_hint") }}</p>
         <div class="theme-picker"
              role="radiogroup"
              aria-label="{{ t('ui.profile.settings.theme_title') }}"
@@ -161,10 +162,9 @@
                 </div>
             {% endfor %}
         </div>
-    </div>
-    <div class="panel panel-pad admin-form-stack" id="layout-settings">
+    </section>
+    <section class="admin-section" id="layout-settings">
         <h2 class="issue-section-title">{{ t("ui.profile.settings.density_title") }}</h2>
-        <p class="admin-field-hint">{{ t("ui.profile.settings.density_hint") }}</p>
         <div class="pref-segment"
              role="radiogroup"
              aria-label="{{ t('ui.profile.settings.density_title') }}"
@@ -182,8 +182,9 @@
                 </button>
             {% endfor %}
         </div>
+    </section>
+    <section class="admin-section" id="font-settings">
         <h2 class="issue-section-title">{{ t("ui.profile.settings.font_title") }}</h2>
-        <p class="admin-field-hint">{{ t("ui.profile.settings.font_hint") }}</p>
         <div class="pref-segment"
              role="radiogroup"
              aria-label="{{ t('ui.profile.settings.font_title') }}"
@@ -201,5 +202,5 @@
                 </button>
             {% endfor %}
         </div>
-    </div>
+    </section>
 {% endif %}

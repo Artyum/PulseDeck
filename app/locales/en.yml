@@ -90,9 +90,6 @@ ui:
       data: "Profile — {app}"
       password: "Change password — {app}"
       settings: "Settings — {app}"
-    sub:
-      password: "Set a new account password."
-      settings: "Customize the app appearance."
     field:
       first_name: "First name"
       last_name: "Last name"
@@ -113,12 +110,9 @@ ui:
     settings:
       language: "Language"
       theme_title: "Color theme"
-      theme_hint: "Saved in this browser. Use the switch to toggle the background gradient."
       gradient_toggle: "Background gradient"
       density_title: "Spacing"
-      density_hint: "Layout density between elements. Saved in this browser."
       font_title: "Font size"
-      font_hint: "Text size across the whole app."
     admin_all_projects_hint: "Administrators automatically have access to all projects."
   portal:
     empty:

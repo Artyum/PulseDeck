@@ -90,9 +90,6 @@ ui:
       data: "Profil — {app}"
       password: "Zmiana hasła — {app}"
       settings: "Ustawienia — {app}"
-    sub:
-      password: "Ustaw nowe hasło do konta."
-      settings: "Dostosuj wygląd aplikacji."
     field:
       first_name: "Imię"
       last_name: "Nazwisko"
@@ -113,12 +110,9 @@ ui:
     settings:
       language: "Język"
       theme_title: "Motyw kolorystyczny"
-      theme_hint: "Zapisuje się w tej przeglądarce. Suwak włącza gradient tła."
       gradient_toggle: "Gradient tła"
       density_title: "Odstępy"
-      density_hint: "Gęstość układu między elementami. Zapisuje się w tej przeglądarce."
       font_title: "Wielkość czcionki"
-      font_hint: "Rozmiar tekstu w całej aplikacji."
     admin_all_projects_hint: "Administratorzy mają automatyczny dostęp do wszystkich projektów."
   portal:
     empty:

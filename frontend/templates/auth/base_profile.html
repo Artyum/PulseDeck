@@ -38,7 +38,10 @@
                                 title="{{ t('ui.common.logout') }}">{{ icon("logout") }}</button>
                     </form>
                 </div>
-                <a href="{{ url_for('home') }}" class="admin-aside-link">← {{ t("ui.common.back_to_portal") }}</a>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary admin-aside-back">
+                    <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
+                    {{ t("ui.common.back_to_portal") }}
+                </a>
             </div>
         </aside>
         <main class="admin-main">
