@@ -7,7 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.enums import UserRole
-from app.models.ticket import Ticket
+from app.models.ticket import Tag, Ticket, TicketTag
 from app.models.user import Project, ProjectMember, User
 from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.project_key import validate_project_key
@@ -18,6 +18,7 @@ class ProjectSummary:
     project: Project
     member_count: int
     ticket_count: int
+    tags: tuple[Tag, ...] = ()
 
 
 def list_projects(db: Session) -> list[Project]:
@@ -69,11 +70,13 @@ def list_project_summaries(db: Session) -> list[ProjectSummary]:
             .group_by(Ticket.project_id)
         ).all()
     }
+    tags_by_project = list_project_tags_for_projects(db, ids)
     return [
         ProjectSummary(
             project=p,
             member_count=member_counts.get(p.id, 0),
             ticket_count=ticket_counts.get(p.id, 0),
+            tags=tuple(tags_by_project.get(p.id, [])),
         )
         for p in projects
     ]
@@ -90,6 +93,37 @@ def list_user_projects(db: Session, user: User) -> list[Project]:
             .order_by(Project.name)
         ).all()
     )
+
+
+def list_used_project_tags(db: Session, project_id: int) -> list[Tag]:
+    return list(
+        db.scalars(
+            select(Tag)
+            .distinct()
+            .join(TicketTag, TicketTag.tag_id == Tag.id)
+            .join(Ticket, Ticket.id == TicketTag.ticket_id)
+            .where(Tag.project_id == project_id)
+            .order_by(Tag.name)
+        ).all()
+    )
+
+
+def list_project_tags_for_projects(
+    db: Session, project_ids: list[int]
+) -> dict[int, list[Tag]]:
+    if not project_ids:
+        return {}
+    rows = db.scalars(
+        select(Tag)
+        .join(TicketTag, TicketTag.tag_id == Tag.id)
+        .where(Tag.project_id.in_(project_ids))
+        .distinct()
+        .order_by(Tag.name)
+    ).all()
+    result: dict[int, list[Tag]] = {pid: [] for pid in project_ids}
+    for tag in rows:
+        result[tag.project_id].append(tag)
+    return result
 
 
 def list_project_member_users(

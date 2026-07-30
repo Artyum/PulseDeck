@@ -1,11 +1,11 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
-from app.utils.timefmt import _aware, format_relative, age_since, gap_between
+from app.utils.timefmt import _aware, age_since, format_relative, gap_between
 
 
 class TestAware:
     def test_tz_naive_becomes_utc(self):
-        dt = datetime(2024, 1, 1)
+        dt = datetime(2024, 1, 1)  # noqa: DTZ001
         result = _aware(dt)
         assert result.tzinfo is timezone.utc
 
@@ -15,6 +15,7 @@ class TestAware:
 
     def test_non_utc_tz_preserved(self):
         from zoneinfo import ZoneInfo
+
         dt = datetime(2024, 1, 1, tzinfo=ZoneInfo("Europe/Warsaw"))
         result = _aware(dt)
         assert result.tzinfo == ZoneInfo("Europe/Warsaw")
@@ -40,7 +41,7 @@ class TestFormatRelative:
         assert format_relative(172_500) == "47 h"
 
     def test_days(self):
-        assert format_relative(172_800) == "2 d"   # 48h = 2 days
+        assert format_relative(172_800) == "2 d"  # 48h = 2 days
         assert format_relative(86400 * 30) == "30 d"
         assert format_relative(86400 * 59) == "59 d"
 

@@ -3,20 +3,20 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 
-# Must set before importing app
-os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
-os.environ.setdefault("STORAGE_SECRET", "test-secret")
-os.environ.setdefault("ENVIRONMENT", "development")
-os.environ.setdefault("APP_BASE_URL", "http://testserver")
-os.environ.setdefault("ALLOWED_HOSTS", "testserver,localhost,127.0.0.1")
+# Must set before importing app — override any inherited env vars (e.g. from .env.dev)
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["STORAGE_SECRET"] = "test-secret"
+os.environ["ENVIRONMENT"] = "development"
+os.environ["APP_BASE_URL"] = "http://testserver"
+os.environ["ALLOWED_HOSTS"] = "testserver,localhost,127.0.0.1"
 os.environ.pop("ADMIN_EMAIL", None)
 os.environ.pop("ADMIN_PASSWORD", None)
-os.environ.setdefault("SECURITY_CSRF_ENABLED", "false")
-os.environ.setdefault("AUTH_LOGIN_RATE_LIMIT", "100/minute")
-os.environ.setdefault("AUTH_FORGOT_PASSWORD_RATE_LIMIT", "100/minute")
-os.environ.setdefault("AUTH_ACTIVATE_RATE_LIMIT", "100/minute")
-os.environ.setdefault("AUTH_ADMIN_USER_CREATE_RATE_LIMIT", "100/minute")
-os.environ.setdefault("UPLOAD_RATE_LIMIT", "100/minute")
+os.environ["SECURITY_CSRF_ENABLED"] = "false"
+os.environ["AUTH_LOGIN_RATE_LIMIT"] = "100/minute"
+os.environ["AUTH_FORGOT_PASSWORD_RATE_LIMIT"] = "100/minute"
+os.environ["AUTH_ACTIVATE_RATE_LIMIT"] = "100/minute"
+os.environ["AUTH_ADMIN_USER_CREATE_RATE_LIMIT"] = "100/minute"
+os.environ["UPLOAD_RATE_LIMIT"] = "100/minute"
 
 import pytest
 from fastapi.testclient import TestClient
@@ -67,6 +67,9 @@ def client(db_engine, db_session):
         finally:
             db.close()
 
+    from app.config import get_settings
+
+    get_settings.cache_clear()
     app = build_fastapi_app()
     app.dependency_overrides[get_db] = _get_db
     with TestClient(app) as c:

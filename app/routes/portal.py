@@ -225,7 +225,7 @@ def project_feed(
         filter_tag=tag or "",
         filter_q=q or "",
         filter_sort=sort or "updated_at",
-        project_tags=ticket_service.list_project_tags(db, project.id),
+        project_tags=project_service.list_used_project_tags(db, project.id),
     )
 
 

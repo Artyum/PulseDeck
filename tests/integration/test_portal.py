@@ -1,5 +1,5 @@
 """Portal user-facing integration tests."""
-import pytest
+
 from app.models.enums import TicketStatus, TicketType
 from app.services import tickets as ticket_service
 
@@ -20,9 +20,7 @@ class TestFeed:
         assert r.status_code == 200
         assert project_with_members.name in r.text
 
-    def test_project_feed_with_filters(
-        self, client, client_user, project_with_members
-    ):
+    def test_project_feed_with_filters(self, client, client_user, project_with_members):
         _login(client, "client@test.local", "Client123!")
         r = client.get(f"/p/{project_with_members.key}?view=open")
         assert r.status_code == 200
@@ -38,6 +36,46 @@ class TestFeed:
         r = client.get("/", follow_redirects=False)
         # Just check it returns something valid (redirect or empty)
         assert r.status_code in (200, 303)
+
+    def test_feed_used_tags_only(
+        self, client, db_session, staff_user, project_with_members
+    ):
+        from app.models.ticket import Tag
+
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=staff_user,
+            title="Tag test",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        ticket_service.add_ticket_tag(db_session, ticket, staff_user, "urgent")
+        db_session.add(Tag(project_id=project_with_members.id, name="orphan"))
+        db_session.commit()
+        _login(client, "staff@test.local", "Staff123!")
+        r = client.get(f"/p/{project_with_members.key}")
+        assert r.status_code == 200
+        assert "urgent" in r.text
+        assert "orphan" not in r.text
+
+    def test_feed_project_tags_shown(
+        self, client, db_session, staff_user, project_with_members
+    ):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=staff_user,
+            title="Tag visible",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        ticket_service.add_ticket_tag(db_session, ticket, staff_user, "bug")
+        db_session.commit()
+        _login(client, "staff@test.local", "Staff123!")
+        r = client.get(f"/p/{project_with_members.key}")
+        assert r.status_code == 200
+        assert "bug" in r.text
 
 
 class TestTicketCRUD:
@@ -158,9 +196,7 @@ class TestComments:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        ticket_service.set_status(
-            db_session, ticket, client_user, TicketStatus.DONE
-        )
+        ticket_service.set_status(db_session, ticket, client_user, TicketStatus.DONE)
         _login(client, "client@test.local", "Client123!")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.id}/comments",
@@ -172,7 +208,9 @@ class TestComments:
 
 
 class TestTicketStatus:
-    def test_set_status_staff(self, client, db_session, staff_user, project_with_members):
+    def test_set_status_staff(
+        self, client, db_session, staff_user, project_with_members
+    ):
         ticket = ticket_service.create_ticket(
             db_session,
             project_id=project_with_members.id,

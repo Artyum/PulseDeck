@@ -1,5 +1,5 @@
 """Ticket operations: tags, assign, participants, priorities, types."""
-import pytest
+
 from app.models.enums import TicketType
 from app.services import tickets as ticket_service
 
@@ -89,7 +89,9 @@ class TestAssign:
 
 
 class TestPriorityType:
-    def test_change_priority(self, client, db_session, client_user, project_with_members):
+    def test_change_priority(
+        self, client, db_session, client_user, project_with_members
+    ):
         ticket = ticket_service.create_ticket(
             db_session,
             project_id=project_with_members.id,

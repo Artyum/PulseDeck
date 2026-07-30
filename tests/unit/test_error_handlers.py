@@ -1,5 +1,4 @@
 from fastapi.exceptions import RequestValidationError
-from pydantic import ValidationError
 
 from app.error_handlers import friendly_validation_message
 

@@ -37,8 +37,8 @@ def test_validate_project_key_valid(raw):
 @pytest.mark.parametrize(
     "raw",
     [
-        "ABCDEF",     # too long
-        "abcdef",     # too long after upper (6 chars)
+        "ABCDEF",  # too long
+        "abcdef",  # too long after upper (6 chars)
         "",
         "  ",
         "a b",

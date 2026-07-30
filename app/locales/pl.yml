@@ -29,6 +29,10 @@ ui:
       title: "Usunąć projekt?"
       message: "Tej operacji nie można cofnąć. Projekt „{name}” ({key}) zostanie usunięty."
       action: "Usuń"
+    delete_tag:
+      title: "Usunąć tag?"
+      message: "Czy na pewno usunąć tag „{name}”? Zostanie usunięty ze wszystkich zgłoszeń."
+      action: "Usuń"
     change_key:
       title: "Zmiana klucza projektu"
       message: "Zmiana klucza sprawi, że stare linki /p/… i /t/… przestaną działać. Kontynuować?"
@@ -221,6 +225,7 @@ ui:
       key_title: "1–5 znaków A–Z / 0–9"
       description: "Opis"
       list: "Lista projektów"
+      tags: "Tagi ({count})"
       meta: "{members} członków · {tickets} zgłoszeń"
       empty: "Brak projektów. Utwórz pierwszy powyżej."
       edit_aria: "Edytuj {name}"

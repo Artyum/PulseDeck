@@ -28,6 +28,7 @@ def test_normalize_phone_strips_parentheses():
 
 def test_normalize_phone_invalid_raises():
     import pytest
+
     with pytest.raises(ValueError):
         normalize_phone("abc")
     with pytest.raises(ValueError):

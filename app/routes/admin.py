@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.deps.auth import AdminUser, DbSession
 from app.models.enums import UserRole
+from app.models.ticket import Tag
 from app.models.user import Project, User
 from app.rate_limit import limiter
 from app.routes.context import render
@@ -167,6 +168,22 @@ def remove_member(
     project = _admin_project(db, key, lang=resolve_lang(request))
     project_service.remove_project_member(db, project.id, member_id)
     return RedirectResponse(admin_project_path(project), status_code=303)
+
+
+@router.post("/projects/{key}/tags/{tag_id}/delete")
+def delete_project_tag(
+    key: str,
+    tag_id: int,
+    user: AdminUser,
+    db: DbSession,
+):
+    project = _admin_project(db, key)
+    tag = db.get(Tag, tag_id)
+    if not tag or tag.project_id != project.id:
+        raise HTTPException(status_code=404)
+    db.delete(tag)
+    db.commit()
+    return RedirectResponse("/admin/projects", status_code=303)
 
 
 _USER_OK_FLASH = {

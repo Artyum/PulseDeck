@@ -1,4 +1,5 @@
 """Tests for portal helper functions that need DB (like _parse_ticket_ref)."""
+
 import pytest
 from fastapi import HTTPException
 

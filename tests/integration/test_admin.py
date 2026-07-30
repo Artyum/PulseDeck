@@ -1,5 +1,4 @@
 """Admin panel integration tests."""
-import pytest
 
 
 def _login_admin(client):
@@ -88,7 +87,10 @@ class TestAdminProjects:
         self, client, db_session, admin_user, project_with_members, client_user
     ):
         from app.services import projects as project_service
-        project_service.add_project_member(db_session, project_with_members.id, client_user.id)
+
+        project_service.add_project_member(
+            db_session, project_with_members.id, client_user.id
+        )
         _login_admin(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/members/{client_user.id}/remove",
@@ -158,3 +160,65 @@ class TestAdminUsers:
             follow_redirects=False,
         )
         assert r.status_code == 303
+
+
+def _login_client(client):
+    r = client.post(
+        "/auth/login",
+        data={"email": "client@test.local", "password": "Client123!"},
+        follow_redirects=False,
+    )
+    assert r.status_code in (303, 200)
+
+
+class TestAdminProjectTags:
+    def test_tag_delete(self, client, db_session, admin_user, project_with_members):
+        from app.models.enums import TicketType
+        from app.models.ticket import Tag, TicketTag
+        from app.services import tickets as ticket_service
+
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=admin_user,
+            title="Tag to delete",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        tag = Tag(project_id=project_with_members.id, name="delete-me")
+        db_session.add(tag)
+        db_session.flush()
+        db_session.add(TicketTag(ticket_id=ticket.id, tag_id=tag.id))
+        db_session.commit()
+        _login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/tags/{tag.id}/delete",
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+        tag_id = tag.id
+        db_session.expunge_all()
+        assert db_session.get(Tag, tag_id) is None
+
+    def test_tag_delete_non_admin_blocked(
+        self, client, db_session, client_user, project_with_members
+    ):
+        from app.models.ticket import Tag
+
+        tag = Tag(project_id=project_with_members.id, name="cant-delete")
+        db_session.add(tag)
+        db_session.commit()
+        _login_client(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/tags/{tag.id}/delete",
+            follow_redirects=False,
+        )
+        assert r.status_code in (303, 403)
+
+    def test_tag_delete_not_found(self, client, admin_user, project_with_members):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/tags/999/delete",
+            follow_redirects=False,
+        )
+        assert r.status_code in (303, 404)

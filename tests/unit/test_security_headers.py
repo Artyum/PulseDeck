@@ -1,7 +1,11 @@
+from typing import cast
+
+from starlette.requests import Request
+
 from app.middleware.security_headers import (
+    _content_security_policy,
     _request_is_https,
     _request_is_secure_context,
-    _content_security_policy,
 )
 
 
@@ -10,15 +14,18 @@ def _make_request(*, scheme="http", host="example.com", x_forwarded_proto=None):
     if x_forwarded_proto is not None:
         headers["x-forwarded-proto"] = x_forwarded_proto
     url = type("URL", (), {"scheme": scheme, "hostname": host})()
-    return type(
-        "Request",
-        (),
-        {
-            "url": url,
-            "headers": headers,
-            "method": "GET",
-        },
-    )()
+    return cast(
+        Request,
+        type(
+            "Request",
+            (),
+            {
+                "url": url,
+                "headers": headers,
+                "method": "GET",
+            },
+        )(),
+    )
 
 
 class TestRequestIsHttps:

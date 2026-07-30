@@ -1,3 +1,7 @@
+from typing import cast
+
+from starlette.requests import Request
+
 from app.utils.i18n import _flatten, resolve_lang, translations_prefix
 
 
@@ -38,11 +42,15 @@ class TestResolveLang:
         assert lang in ("en", "pl")  # defaults to default
 
     def test_cookie_preferred(self):
-        request = type("Request", (), {"cookies": {"pulsedeck_lang": "pl"}})()
+        request = cast(
+            Request, type("Request", (), {"cookies": {"pulsedeck_lang": "pl"}})()
+        )
         assert resolve_lang(request=request) == "pl"
 
     def test_explicit_overrides_cookie(self):
-        request = type("Request", (), {"cookies": {"pulsedeck_lang": "pl"}})()
+        request = cast(
+            Request, type("Request", (), {"cookies": {"pulsedeck_lang": "pl"}})()
+        )
         assert resolve_lang(request=request, explicit="en") == "en"
 
     def test_default_lang(self):
@@ -60,6 +68,7 @@ class TestTranslationsPrefix:
 
     def test_enum_labels(self):
         from app.utils.i18n import enum_labels
+
         labels = enum_labels("en", "ticket_status")
         # Just check it returns something reasonable
         assert isinstance(labels, dict)

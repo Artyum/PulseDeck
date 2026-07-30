@@ -78,6 +78,14 @@
                             <button type="submit" class="btn btn-danger">{{ t("ui.common.delete") }}</button>
                         </form>
                     </div>
+                    <details class="admin-entity-details">
+                        <summary>{{ t("ui.admin.projects.tags", count=item.tags|length) }}</summary>
+                        <div id="project-{{ p.id }}-tags">
+                            {% with project=p, tags=item.tags %}
+                                {% include "admin/partials/project_tags.html" %}
+                            {% endwith %}
+                        </div>
+                    </details>
                 </li>
             {% else %}
                 <li class="empty">{{ t("ui.admin.projects.empty") }}</li>

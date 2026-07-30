@@ -1,8 +1,8 @@
 import pytest
 
 from app.utils.password import (
-    validate_password_strength,
     hash_password,
+    validate_password_strength,
     verify_password,
 )
 

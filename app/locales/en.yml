@@ -29,6 +29,10 @@ ui:
       title: "Delete project?"
       message: "This action cannot be undone. Project “{name}” ({key}) will be deleted."
       action: "Delete"
+    delete_tag:
+      title: "Delete tag?"
+      message: "Are you sure you want to delete tag “{name}”? It will be removed from all tickets."
+      action: "Delete"
     change_key:
       title: "Change project key"
       message: "Changing the key will break old /p/… and /t/… links. Continue?"
@@ -221,6 +225,7 @@ ui:
       key_title: "1–5 characters A–Z / 0–9"
       description: "Description"
       list: "List of projects"
+      tags: "Tags ({count})"
       meta: "{members} members · {tickets} tickets"
       empty: "No projects. Create the first one above."
       edit_aria: "Edit {name}"

@@ -1,5 +1,4 @@
 """Extended auth integration tests: login edge cases, activation errors, profile."""
-import pytest
 
 
 def _login(client, email, password):
@@ -16,8 +15,9 @@ class TestLogin:
         assert r.status_code in (200, 303)
 
     def test_unactivated_user_blocked(self, client, db_session, project_with_members):
-        from app.models.user import User
         from app.models.enums import UserRole
+        from app.models.user import User
+
         user = User(
             email="unactivated@test.local",
             first_name="Un",
@@ -52,8 +52,8 @@ class TestActivationErrors:
         assert r.status_code in (200, 303)
 
     def test_password_mismatch(self, client, db_session, project_with_members):
-        from app.models.enums import MagicTokenPurpose, UserRole
         from app.services import auth as auth_service
+
         user = _create_pending_user(db_session)
         token_row = auth_service.create_password_link(db_session, user)
         r = client.post(
@@ -70,6 +70,7 @@ class TestActivationErrors:
 
     def test_weak_password(self, client, db_session, project_with_members):
         from app.services import auth as auth_service
+
         user = _create_pending_user(db_session)
         token_row = auth_service.create_password_link(db_session, user)
         r = client.post(
@@ -88,6 +89,7 @@ class TestActivationErrors:
         self, client, db_session, project_with_members
     ):
         from app.services import auth as auth_service
+
         user = _create_pending_user(db_session)
         token_row = auth_service.create_password_link(db_session, user)
         r = client.get(f"/auth/activate?token={token_row.token}")
@@ -133,8 +135,9 @@ class TestProfile:
 
 def _create_pending_user(db_session):
     """Helper to create a pending user for activation tests."""
-    from app.models.user import User
     from app.models.enums import UserRole
+    from app.models.user import User
+
     user = User(
         email="pending@test.local",
         first_name="Pending",
