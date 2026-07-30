@@ -1,5 +1,6 @@
 {% from "partials/ticket_macros.html" import attachment_list, attach_picker with context %}
 {% from "partials/icons.html" import icon %}
+{% from "partials/avatar.html" import user_avatar %}
 <div class="issue-thread">
     {% if user.is_staff %}
         {% set comments = ticket.comments %}
@@ -13,6 +14,7 @@
             <article class="comment {% if c.author and c.author.is_staff %}comment-staff{% endif %}{% if c.is_internal %} comment-internal{% endif %}">
                 <header class="comment-meta">
                     <span class="comment-head">
+                        {{ user_avatar(c.author) }}
                         <span class="comment-author">{{ c.author.display_name if c.author else '' }}</span>
                         {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
                     </span>

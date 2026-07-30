@@ -14,6 +14,7 @@ from app.models.enums import (
     TicketType,
     UserRole,
 )
+from app.utils.avatar import avatar_tone, user_initials
 from app.utils.csrf import ensure_csrf_token
 from app.utils.dev_page_info import build_dev_page_info
 from app.utils.i18n import (
@@ -56,6 +57,8 @@ _templates.env.filters["ticket_path"] = ticket_path
 _templates.env.filters["ticket_label"] = ticket_label
 _templates.env.filters["admin_project_path"] = admin_project_path
 _templates.env.filters["attachment_path"] = attachment_path
+_templates.env.filters["user_initials"] = user_initials
+_templates.env.filters["avatar_tone"] = avatar_tone
 
 
 def _enum_label_map(lang: str, group: str, enum_cls: type[Enum]) -> dict:

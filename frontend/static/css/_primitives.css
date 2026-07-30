@@ -1,6 +1,7 @@
 @layer base {
   html {
     --space-scale: 1;
+    --layout-rem: 16px;
     --font-size-root: 16px;
     font-size: var(--font-size-root);
     scroll-behavior: smooth;

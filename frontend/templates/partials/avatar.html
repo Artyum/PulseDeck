@@ -1,0 +1,6 @@
+{% macro user_avatar(user) -%}
+  {%- if user -%}
+    <span class="avatar avatar-tone-{{ user.id|avatar_tone }}"
+          aria-hidden="true">{{ user.display_name|user_initials }}</span>
+  {%- endif -%}
+{%- endmacro %}
