@@ -4,7 +4,12 @@
   <div class="auth-scene">
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
-        <h1 class="auth-brand">{{ app_name }}</h1>
+        <img src="{{ url_for('static', path='images/pulsedeck-logo.png') }}"
+             alt="{{ app_name }}"
+             class="auth-brand-logo"
+             width="268"
+             height="167">
+        <h1 class="sr-only">{{ app_name }}</h1>
         <p class="mt-3 text-[1.1rem] text-steel">{{ t("ui.auth.confirm_email.subtitle") }}</p>
       </div>
       <div class="auth-card">

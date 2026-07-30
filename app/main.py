@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import mimetypes
 from contextlib import asynccontextmanager
 from typing import cast
 
@@ -77,6 +78,7 @@ def build_fastapi_app() -> FastAPI:
         https_only=settings.environment == "production",
     )
 
+    mimetypes.add_type("application/manifest+json", ".webmanifest")
     static_dir = project_root() / "frontend" / "static"
     static_dir.mkdir(parents=True, exist_ok=True)
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")

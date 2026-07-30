@@ -5,7 +5,14 @@
   <div class="admin-shell">
     <aside class="admin-aside">
       <div class="admin-aside-brand">
-        <a href="{{ url_for('home') }}" class="brand-mark">{{ app_name }}</a>
+        <a href="{{ url_for('home') }}" class="brand-mark">
+          <img src="{{ url_for('static', path='images/pulsedeck-logo.png') }}"
+               alt=""
+               class="brand-mark-logo"
+               width="268"
+               height="167">
+          {{ app_name }}
+        </a>
         <p class="admin-aside-label">{{ t("ui.profile.aside_label") }}</p>
       </div>
       <nav class="admin-nav" aria-label="{{ t('ui.profile.nav_aria') }}">

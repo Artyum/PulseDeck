@@ -15,13 +15,11 @@
     text-decoration: none;
   }
 
-  .brand-mark::before {
-    content: "";
-    width: 1.15rem;
-    height: 1.15rem;
+  .brand-mark-logo {
+    display: block;
+    height: 2.1rem;
+    width: auto;
     border-radius: 0.4rem;
-    background: linear-gradient(145deg, var(--color-pulse-bright) 0%, var(--color-pulse) 100%);
-    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-pulse) 25%, transparent);
   }
 
   .app-header {
@@ -1475,11 +1473,7 @@
     align-items: stretch;
     min-height: calc(100vh - 3.75rem);
     margin: calc(-1.75rem * var(--space-scale)) calc(-1.5rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
-    background-color: var(--color-aside);
-    background-image: var(--aside-gradient);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background: color-mix(in oklab, var(--color-aside) 20%, var(--color-surface));
   }
 
   .issue-page-body {
@@ -2812,6 +2806,13 @@
     color: var(--color-ink);
   }
 
+  .auth-brand-logo {
+    display: inline-block;
+    height: clamp(3.25rem, 2.6rem + 2vw, 4.75rem);
+    width: auto;
+    border-radius: 0.75rem;
+  }
+
   .divider {
     display: flex;
     align-items: center;
@@ -3256,8 +3257,7 @@
 
   html[data-theme-gradient="off"] body,
   html[data-theme-gradient="off"] .auth-scene,
-  html[data-theme-gradient="off"] .admin-aside,
-  html[data-theme-gradient="off"] .issue-page {
+  html[data-theme-gradient="off"] .admin-aside {
     background-image: none;
   }
 
@@ -3268,8 +3268,7 @@
 
   @media (max-width: 48rem) {
     .auth-scene,
-    .admin-aside,
-    .issue-page {
+    .admin-aside {
       background-attachment: scroll;
     }
   }

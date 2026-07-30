@@ -5,7 +5,14 @@
     <div class="app-shell app-header-bar">
       <div class="app-header-left">
         <a href="{%- if project is defined and project -%}{{ url_for('project_feed', key=project.key) }}{%- else -%}{{ url_for('home') }}{%- endif -%}"
-           class="brand-mark shrink-0">{{ app_name }}</a>
+           class="brand-mark shrink-0">
+          <img src="{{ url_for('static', path='images/pulsedeck-logo.png') }}"
+               alt=""
+               class="brand-mark-logo"
+               width="268"
+               height="167">
+          {{ app_name }}
+        </a>
         {% if project is defined and project and projects is defined and projects|length == 1 %}
           <span class="nav-project-current" title="{{ project.name }}">{{ project.name }}</span>
         {% endif %}
