@@ -2,94 +2,94 @@
 {% from "partials/icons.html" import icon %}
 {% block title %}{{ t("ui.admin.projects.title") }} — {{ app_name }}{% endblock title %}
 {% block content %}
-    <div class="admin-page-head">
-        <div>
-            <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
-            <p class="admin-page-sub">{{ t("ui.admin.projects.sub") }}</p>
-        </div>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
+      <p class="admin-page-sub">{{ t("ui.admin.projects.sub") }}</p>
     </div>
-    {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
-    <section class="admin-section">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
-        <form method="post"
-              action="{{ url_for('create_project') }}"
-              class="admin-form-row">
-            <div class="admin-form-field">
-                <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
-                <input id="project-name"
-                       name="name"
-                       required
-                       placeholder="{{ t('ui.admin.projects.name_placeholder') }}"
-                       value="{{ form_name or '' }}"
-                       class="input min-w-[12rem]">
+  </div>
+  {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
+  <section class="admin-section">
+    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
+    <form method="post"
+          action="{{ url_for('create_project') }}"
+          class="admin-form-row">
+      <div class="admin-form-field">
+        <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
+        <input id="project-name"
+               name="name"
+               required
+               placeholder="{{ t('ui.admin.projects.name_placeholder') }}"
+               value="{{ form_name or '' }}"
+               class="input min-w-[12rem]">
+      </div>
+      <div class="admin-form-field">
+        <label class="label-tight" for="project-key">{{ t("ui.admin.projects.key") }}</label>
+        <input id="project-key"
+               name="key"
+               required
+               pattern="[A-Za-z0-9]{1,5}"
+               maxlength="5"
+               placeholder="{{ t('ui.admin.projects.key_placeholder') }}"
+               value="{{ form_key or '' }}"
+               title="{{ t('ui.admin.projects.key_title') }}"
+               class="input min-w-[8rem] uppercase">
+      </div>
+      <div class="admin-form-field">
+        <label class="label-tight" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
+        <input id="project-desc"
+               name="description"
+               placeholder="{{ t('ui.common.optional') }}"
+               value="{{ form_description or '' }}"
+               class="input">
+      </div>
+      <div class="admin-form-field">
+        <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
+        <button type="submit" class="btn btn-primary">{{ t("ui.common.create") }}</button>
+      </div>
+    </form>
+  </section>
+  <section class="admin-section">
+    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
+    <ul class="admin-list">
+      {% for item in projects %}
+        {% set p = item.project %}
+        <li class="admin-entity">
+          <div class="admin-entity-main">
+            <p class="admin-entity-title">
+              <span class="admin-entity-name">{{ p.name }}</span>
+              <span class="issue-key">{{ p.key }}</span>
+            </p>
+            <p class="admin-entity-meta">
+              {% if p.description %}{{ p.description }} ·{% endif %}
+              {{ t('ui.admin.projects.meta', members=item.member_count, tickets=item.ticket_count) }}
+              {% if p.created_at %} · {{ p.created_at.strftime("%Y-%m-%d") }}{% endif %}
+            </p>
+          </div>
+          <div class="admin-entity-actions">
+            <a href="{{ url_for('project_detail', key=p.key) }}"
+               class="btn btn-secondary">{{ t("ui.common.edit") }}</a>
+            <form method="post"
+                  action="{{ url_for('delete_project', key=p.key) }}"
+                  data-confirm-title="{{ t('ui.confirm.delete_project.title') }}"
+                  data-confirm="{{ t('ui.confirm.delete_project.message', name=p.name, key=p.key) }}"
+                  data-confirm-action="{{ t('ui.confirm.delete_project.action') }}"
+                  data-confirm-danger>
+              <button type="submit" class="btn btn-danger">{{ t("ui.common.delete") }}</button>
+            </form>
+          </div>
+          <details class="admin-entity-details">
+            <summary>{{ t("ui.admin.projects.tags", count=item.tags|length) }}</summary>
+            <div id="project-{{ p.id }}-tags">
+              {% with project=p, tags=item.tags %}
+                {% include "admin/partials/project_tags.html" %}
+              {% endwith %}
             </div>
-            <div class="admin-form-field">
-                <label class="label-tight" for="project-key">{{ t("ui.admin.projects.key") }}</label>
-                <input id="project-key"
-                       name="key"
-                       required
-                       pattern="[A-Za-z0-9]{1,5}"
-                       maxlength="5"
-                       placeholder="{{ t('ui.admin.projects.key_placeholder') }}"
-                       value="{{ form_key or '' }}"
-                       title="{{ t('ui.admin.projects.key_title') }}"
-                       class="input min-w-[8rem] uppercase">
-            </div>
-            <div class="admin-form-field">
-                <label class="label-tight" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
-                <input id="project-desc"
-                       name="description"
-                       placeholder="{{ t('ui.common.optional') }}"
-                       value="{{ form_description or '' }}"
-                       class="input">
-            </div>
-            <div class="admin-form-field">
-                <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-                <button type="submit" class="btn btn-primary">{{ t("ui.common.create") }}</button>
-            </div>
-        </form>
-    </section>
-    <section class="admin-section">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
-        <ul class="admin-list">
-            {% for item in projects %}
-                {% set p = item.project %}
-                <li class="admin-entity">
-                    <div class="admin-entity-main">
-                        <p class="admin-entity-title">
-                            <span class="admin-entity-name">{{ p.name }}</span>
-                            <span class="issue-key">{{ p.key }}</span>
-                        </p>
-                        <p class="admin-entity-meta">
-                            {% if p.description %}{{ p.description }} ·{% endif %}
-                            {{ t('ui.admin.projects.meta', members=item.member_count, tickets=item.ticket_count) }}
-                            {% if p.created_at %} · {{ p.created_at.strftime("%Y-%m-%d") }}{% endif %}
-                        </p>
-                    </div>
-                    <div class="admin-entity-actions">
-                        <a href="{{ url_for('project_detail', key=p.key) }}"
-                           class="btn btn-secondary">{{ t("ui.common.edit") }}</a>
-                        <form method="post"
-                              action="{{ url_for('delete_project', key=p.key) }}"
-                              data-confirm-title="{{ t('ui.confirm.delete_project.title') }}"
-                              data-confirm="{{ t('ui.confirm.delete_project.message', name=p.name, key=p.key) }}"
-                              data-confirm-action="{{ t('ui.confirm.delete_project.action') }}"
-                              data-confirm-danger>
-                            <button type="submit" class="btn btn-danger">{{ t("ui.common.delete") }}</button>
-                        </form>
-                    </div>
-                    <details class="admin-entity-details">
-                        <summary>{{ t("ui.admin.projects.tags", count=item.tags|length) }}</summary>
-                        <div id="project-{{ p.id }}-tags">
-                            {% with project=p, tags=item.tags %}
-                                {% include "admin/partials/project_tags.html" %}
-                            {% endwith %}
-                        </div>
-                    </details>
-                </li>
-            {% else %}
-                <li class="empty">{{ t("ui.admin.projects.empty") }}</li>
-            {% endfor %}
-        </ul>
-    </section>
+          </details>
+        </li>
+      {% else %}
+        <li class="empty">{{ t("ui.admin.projects.empty") }}</li>
+      {% endfor %}
+    </ul>
+  </section>
 {% endblock content %}

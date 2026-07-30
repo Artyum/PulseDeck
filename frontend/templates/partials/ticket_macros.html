@@ -1,277 +1,277 @@
 {% from "partials/icons.html" import icon %}
 {% macro status_chip(status) -%}
-    <span class="chip {% if status.value == 'NEW' %}chip-new{% elif status.value == 'IN_PROGRESS' %}chip-progress{% elif status.value == 'WAITING_ON_CLIENT' %}chip-waiting{% else %}chip-done{% endif %}">{{ status_labels[status] }}</span>
+  <span class="chip {% if status.value == 'NEW' %}chip-new{% elif status.value == 'IN_PROGRESS' %}chip-progress{% elif status.value == 'WAITING_ON_CLIENT' %}chip-waiting{% else %}chip-done{% endif %}">{{ status_labels[status] }}</span>
 {%- endmacro %}
 {% macro priority_chip(priority) -%}
-    <span class="chip {% if priority.value == 'HIGH' %}chip-high{% elif priority.value == 'NORMAL' %}chip-normal{% else %}chip-low{% endif %}">{{ priority_labels[priority] }}</span>
+  <span class="chip {% if priority.value == 'HIGH' %}chip-high{% elif priority.value == 'NORMAL' %}chip-normal{% else %}chip-low{% endif %}">{{ priority_labels[priority] }}</span>
 {%- endmacro %}
 {% macro attachment_list(attachments, extra_class='') -%}
-    {% if attachments %}
-        <div class="flex flex-wrap gap-2 {{ extra_class }}">
-            {% for a in attachments %}
-                {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
-                {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
-                    <button type="button"
-                            class="attach-thumb"
-                            data-lightbox-src="{{ a|attachment_path }}"
-                            data-lightbox-alt="{{ a.file_name }}"
-                            title="{{ a.file_name }}">
-                        <img src="{{ a|attachment_path }}"
-                             alt="{{ a.file_name }}"
-                             width="80"
-                             height="80"
-                             loading="lazy">
-                    </button>
-                {% else %}
-                    <a href="{{ a|attachment_path }}"
-                       target="_blank"
-                       class="btn btn-secondary">{{ a.file_name }}</a>
-                {% endif %}
-            {% endfor %}
-        </div>
-    {% endif %}
+  {% if attachments %}
+    <div class="flex flex-wrap gap-2 {{ extra_class }}">
+      {% for a in attachments %}
+        {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
+        {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+          <button type="button"
+                  class="attach-thumb"
+                  data-lightbox-src="{{ a|attachment_path }}"
+                  data-lightbox-alt="{{ a.file_name }}"
+                  title="{{ a.file_name }}">
+            <img src="{{ a|attachment_path }}"
+                 alt="{{ a.file_name }}"
+                 width="80"
+                 height="80"
+                 loading="lazy">
+          </button>
+        {% else %}
+          <a href="{{ a|attachment_path }}"
+             target="_blank"
+             class="btn btn-secondary">{{ a.file_name }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
 {%- endmacro %}
 {% macro ticket_row(tkt, show_tags=true, show_age=true) -%}
-    <a href="{{ url_for('ticket_detail', ticket_ref=tkt|ticket_label) }}"
-       class="ticket-row"
-       data-status="{{ tkt.status.value }}">
-        <div class="ticket-row-main">
-            <span class="ticket-row-title">{{ tkt.title }}</span>
-            <div class="ticket-row-meta">
-                <span class="issue-key">{{ tkt|ticket_label }}</span>
-                <span class="chip chip-type">{{ type_labels[tkt.type] }}</span>
-                {% if tkt.author %}
-                    <span class="ticket-row-dot" aria-hidden="true"></span>
-                    <span>{{ tkt.author.display_name }}</span>
-                {% endif %}
-                {% if show_tags and tkt.ticket_tags %}
-                    {% for tt in tkt.ticket_tags %}
-                        <span class="chip chip-outline">{{ tt.tag.name }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-        <div class="ticket-row-side">
-            <div class="ticket-row-badges">
-                {{ status_chip(tkt.status) }}
-                {{ priority_chip(tkt.priority) }}
-            </div>
-            <div class="ticket-row-when">
-                {% if tkt.updated_at %}
-                    <time datetime="{{ tkt.updated_at.isoformat() }}">{{ tkt.updated_at.strftime("%Y-%m-%d %H:%M") }}</time>
-                {% endif %}
-                {% if show_age and tkt.created_at %}
-                    <span title="{{ t('ui.ticket.age_title') }}">{{ tkt.created_at|age_since }}</span>
-                {% endif %}
-            </div>
-        </div>
-    </a>
+  <a href="{{ url_for('ticket_detail', ticket_ref=tkt|ticket_label) }}"
+     class="ticket-row"
+     data-status="{{ tkt.status.value }}">
+    <div class="ticket-row-main">
+      <span class="ticket-row-title">{{ tkt.title }}</span>
+      <div class="ticket-row-meta">
+        <span class="issue-key">{{ tkt|ticket_label }}</span>
+        <span class="chip chip-type">{{ type_labels[tkt.type] }}</span>
+        {% if tkt.author %}
+          <span class="ticket-row-dot" aria-hidden="true"></span>
+          <span>{{ tkt.author.display_name }}</span>
+        {% endif %}
+        {% if show_tags and tkt.ticket_tags %}
+          {% for tt in tkt.ticket_tags %}
+            <span class="chip chip-outline">{{ tt.tag.name }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="ticket-row-side">
+      <div class="ticket-row-badges">
+        {{ status_chip(tkt.status) }}
+        {{ priority_chip(tkt.priority) }}
+      </div>
+      <div class="ticket-row-when">
+        {% if tkt.updated_at %}
+          <time datetime="{{ tkt.updated_at.isoformat() }}">{{ tkt.updated_at.strftime("%Y-%m-%d %H:%M") }}</time>
+        {% endif %}
+        {% if show_age and tkt.created_at %}
+          <span title="{{ t('ui.ticket.age_title') }}">{{ tkt.created_at|age_since }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </a>
 {%- endmacro %}
 {% macro issue_field_menu(aria_label, post_url, field_name, choices, current_value, labels=none, value_attr='value', empty_value=none, empty_label=none) -%}
-    <div x-data="{ open: false }"
-         @click.outside="open = false"
-         :class="{'is-menu-open': open}"
-         class="issue-menu relative">
-        <button type="button"
-                @click="open = !open"
-                :aria-expanded="open"
-                class="issue-menu-trigger"
-                aria-label="{{ aria_label }}"
-                title="{{ aria_label }}">{{ caller() }}</button>
-        <div x-show="open"
-             x-transition
-             x-cloak
-             class="issue-menu-panel"
-             role="menu">
-            <form hx-post="{{ post_url }}"
-                  hx-target="#ticket-view"
-                  hx-swap="innerHTML"
-                  class="issue-menu-form">
-                {% if empty_label is not none %}
-                    <button type="submit"
-                            name="{{ field_name }}"
-                            value="{{ empty_value if empty_value is not none else '' }}"
-                            class="issue-menu-item{% if current_value == empty_value or ((empty_value is none or empty_value == '') and not current_value) %} is-active{% endif %}">{{ empty_label }}</button>
-                {% endif %}
-                {% for item in choices %}
-                    {% if value_attr == 'id' %}
-                        <button type="submit"
-                                name="{{ field_name }}"
-                                value="{{ item.id }}"
-                                class="issue-menu-item{% if current_value == item.id %} is-active{% endif %}"
-                                {% if current_value == item.id %}aria-current="true"{% endif %}>{{ item.display_name }}</button>
-                    {% else %}
-                        <button type="submit"
-                                name="{{ field_name }}"
-                                value="{{ item.value }}"
-                                class="issue-menu-item{% if current_value == item.value %} is-active{% endif %}"
-                                {% if current_value == item.value %}aria-current="true"{% endif %}>{{ labels[item] }}</button>
-                    {% endif %}
-                {% endfor %}
-            </form>
-        </div>
+  <div x-data="{ open: false }"
+       @click.outside="open = false"
+       :class="{'is-menu-open': open}"
+       class="issue-menu relative">
+    <button type="button"
+            @click="open = !open"
+            :aria-expanded="open"
+            class="issue-menu-trigger"
+            aria-label="{{ aria_label }}"
+            title="{{ aria_label }}">{{ caller() }}</button>
+    <div x-show="open"
+         x-transition
+         x-cloak
+         class="issue-menu-panel"
+         role="menu">
+      <form hx-post="{{ post_url }}"
+            hx-target="#ticket-view"
+            hx-swap="innerHTML"
+            class="issue-menu-form">
+        {% if empty_label is not none %}
+          <button type="submit"
+                  name="{{ field_name }}"
+                  value="{{ empty_value if empty_value is not none else '' }}"
+                  class="issue-menu-item{% if current_value == empty_value or ((empty_value is none or empty_value == '') and not current_value) %} is-active{% endif %}">{{ empty_label }}</button>
+        {% endif %}
+        {% for item in choices %}
+          {% if value_attr == 'id' %}
+            <button type="submit"
+                    name="{{ field_name }}"
+                    value="{{ item.id }}"
+                    class="issue-menu-item{% if current_value == item.id %} is-active{% endif %}"
+                    {% if current_value == item.id %}aria-current="true"{% endif %}>{{ item.display_name }}</button>
+          {% else %}
+            <button type="submit"
+                    name="{{ field_name }}"
+                    value="{{ item.value }}"
+                    class="issue-menu-item{% if current_value == item.value %} is-active{% endif %}"
+                    {% if current_value == item.value %}aria-current="true"{% endif %}>{{ labels[item] }}</button>
+          {% endif %}
+        {% endfor %}
+      </form>
     </div>
+  </div>
 {%- endmacro %}
 {% macro form_select_menu(name, aria_label, choices, current_value, labels=none, id=none, compact=false, disabled=false, submit_on_pick=false, value_attr='value', input_attrs='', class_name='', empty_label=none) -%}
-    {% set ns = namespace(face=none, current=(current_value|string if current_value is not none else '')) %}
-    {% for item in choices %}
+  {% set ns = namespace(face=none, current=(current_value|string if current_value is not none else '')) %}
+  {% for item in choices %}
+    {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
+    {% set item_label = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
+    {% if item_value == ns.current %}
+      {% set ns.face = item_label %}
+    {% endif %}
+  {% endfor %}
+  {% if ns.face is none %}
+    {% if empty_label is not none and not ns.current %}
+      {% set ns.face = empty_label %}
+    {% else %}
+      {% for item in choices %}
+        {% if loop.first %}
+          {% set ns.current = item.id|string if value_attr == 'id' else item.value|string %}
+          {% set ns.face = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+  <div x-data="{ open: false }"
+       @click.outside="open = false"
+       :class="{'is-menu-open': open}"
+       class="issue-menu form-select-menu{% if compact %} issue-filter-menu{% endif %}{% if class_name %} {{ class_name }}{% endif %} relative"
+       data-form-select
+       {% if submit_on_pick %}data-submit-on-pick{% endif %}
+       {% if disabled %}data-disabled{% endif %}>
+    <input type="hidden"
+           {% if name %}name="{{ name }}"{% endif %}
+           {% if id %}id="{{ id }}"{% endif %}
+           value="{{ ns.current }}"
+           data-form-select-input
+           {{ input_attrs|safe }}>
+    <button type="button"
+            @click="if (!$el.closest('[data-disabled]')) open = !open"
+            :aria-expanded="open"
+            class="issue-menu-trigger"
+            aria-label="{{ aria_label }}"
+            title="{{ aria_label }}"
+            {% if disabled %}aria-disabled="true"{% endif %}>
+      <span class="select{% if compact %} select-compact{% endif %} issue-filter-face"
+            data-form-select-face>{{ ns.face }}</span>
+    </button>
+    <div x-show="open"
+         x-transition
+         x-cloak
+         class="issue-menu-panel issue-filter-panel"
+         role="listbox">
+      {% if empty_label is not none %}
+        <button type="button"
+                class="issue-menu-item{% if not ns.current %} is-active{% endif %}"
+                data-form-select-option
+                data-value=""
+                data-label="{{ empty_label }}"
+                {% if not ns.current %}aria-current="true"{% endif %}>{{ empty_label }}</button>
+      {% endif %}
+      {% for item in choices %}
         {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
         {% set item_label = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
-        {% if item_value == ns.current %}
-            {% set ns.face = item_label %}
-        {% endif %}
-    {% endfor %}
-    {% if ns.face is none %}
-        {% if empty_label is not none and not ns.current %}
-            {% set ns.face = empty_label %}
-        {% else %}
-            {% for item in choices %}
-                {% if loop.first %}
-                    {% set ns.current = item.id|string if value_attr == 'id' else item.value|string %}
-                    {% set ns.face = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endif %}
-    <div x-data="{ open: false }"
-         @click.outside="open = false"
-         :class="{'is-menu-open': open}"
-         class="issue-menu form-select-menu{% if compact %} issue-filter-menu{% endif %}{% if class_name %} {{ class_name }}{% endif %} relative"
-         data-form-select
-         {% if submit_on_pick %}data-submit-on-pick{% endif %}
-         {% if disabled %}data-disabled{% endif %}>
-        <input type="hidden"
-               {% if name %}name="{{ name }}"{% endif %}
-               {% if id %}id="{{ id }}"{% endif %}
-               value="{{ ns.current }}"
-               data-form-select-input
-               {{ input_attrs|safe }}>
         <button type="button"
-                @click="if (!$el.closest('[data-disabled]')) open = !open"
-                :aria-expanded="open"
-                class="issue-menu-trigger"
-                aria-label="{{ aria_label }}"
-                title="{{ aria_label }}"
-                {% if disabled %}aria-disabled="true"{% endif %}>
-            <span class="select{% if compact %} select-compact{% endif %} issue-filter-face"
-                  data-form-select-face>{{ ns.face }}</span>
-        </button>
-        <div x-show="open"
-             x-transition
-             x-cloak
-             class="issue-menu-panel issue-filter-panel"
-             role="listbox">
-            {% if empty_label is not none %}
-                <button type="button"
-                        class="issue-menu-item{% if not ns.current %} is-active{% endif %}"
-                        data-form-select-option
-                        data-value=""
-                        data-label="{{ empty_label }}"
-                        {% if not ns.current %}aria-current="true"{% endif %}>{{ empty_label }}</button>
-            {% endif %}
-            {% for item in choices %}
-                {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
-                {% set item_label = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
-                <button type="button"
-                        class="issue-menu-item{% if item_value == ns.current %} is-active{% endif %}"
-                        data-form-select-option
-                        data-value="{{ item_value }}"
-                        data-label="{{ item_label }}"
-                        {% if item_value == ns.current %}aria-current="true"{% endif %}>{{ item_label }}</button>
-            {% endfor %}
-        </div>
+                class="issue-menu-item{% if item_value == ns.current %} is-active{% endif %}"
+                data-form-select-option
+                data-value="{{ item_value }}"
+                data-label="{{ item_label }}"
+                {% if item_value == ns.current %}aria-current="true"{% endif %}>{{ item_label }}</button>
+      {% endfor %}
     </div>
+  </div>
 {%- endmacro %}
 {% macro filter_field_menu(name, aria_label, choices, current_value, labels=none, empty_label=none) -%}
-    {{ form_select_menu(name, aria_label, choices, current_value, labels, compact=true, empty_label=empty_label) }}
+  {{ form_select_menu(name, aria_label, choices, current_value, labels, compact=true, empty_label=empty_label) }}
 {%- endmacro %}
 {% macro attach_picker(input_id, variant='zone', max_files=3, existing=none) -%}
-    {% set file_word = t('ui.ticket.attach.file_one') if max_files == 1 else t('ui.ticket.attach.file_many') %}
-    <div data-attach-picker data-attach-max="{{ max_files }}">
-        {% if variant == 'zone' %}<span class="label">{{ t("ui.ticket.attachments") }}</span>{% endif %}
-        <div class="file-pick{% if variant == 'zone' %} mt-1{% endif %}">
-            <input data-attach-input
-                   id="{{ input_id }}"
-                   type="file"
-                   name="attachments"
-                   accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
-                   multiple
-                   class="file-pick-input">
-            {% if variant == 'zone' %}
-                <label for="{{ input_id }}" class="file-pick-zone file-pick-btn">
-                    <span class="file-pick-zone-title">
-                        <span class="section-icon" aria-hidden="true">{{ icon("attach") }}</span>
-                        {{ t("ui.ticket.attach.add_files") }}
-                    </span>
-                    <span class="file-pick-zone-hint">{{ t('ui.ticket.attach.hint_zone', count=max_files, file_word=file_word) }}</span>
-                </label>
-            {% else %}
-                <label for="{{ input_id }}"
-                       class="btn btn-secondary file-pick-btn file-pick-btn-icon"
-                       title="{{ t('ui.ticket.attach.button') }}"
-                       aria-label="{{ t('ui.ticket.attach.button') }}">{{ icon("attach") }}</label>
-            {% endif %}
-        </div>
-        {% if variant != 'zone' %}
-            <p class="modal-hint">{{ t('ui.ticket.attach.hint_icon', count=max_files, file_word=file_word) }}</p>
-        {% endif %}
-        <div data-attach-remove-box hidden></div>
-        <div data-attach-preview
-             class="attach-preview"
-             {% if not existing %}hidden{% endif %}>
-            {% if existing %}
-                {% for a in existing %}
-                    {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
-                    <div class="attach-preview-item" data-existing-id="{{ a.id }}">
-                        {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
-                            <img src="{{ a|attachment_path }}"
-                                 alt="{{ a.file_name }}"
-                                 width="80"
-                                 height="80">
-                        {% else %}
-                            <span class="attach-preview-file">{{ a.file_name }}</span>
-                        {% endif %}
-                        <button type="button"
-                                class="attach-preview-remove"
-                                data-remove-existing
-                                aria-label="{{ t('ui.ticket.attach.remove', name=a.file_name) }}">×</button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+  {% set file_word = t('ui.ticket.attach.file_one') if max_files == 1 else t('ui.ticket.attach.file_many') %}
+  <div data-attach-picker data-attach-max="{{ max_files }}">
+    {% if variant == 'zone' %}<span class="label">{{ t("ui.ticket.attachments") }}</span>{% endif %}
+    <div class="file-pick{% if variant == 'zone' %} mt-1{% endif %}">
+      <input data-attach-input
+             id="{{ input_id }}"
+             type="file"
+             name="attachments"
+             accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
+             multiple
+             class="file-pick-input">
+      {% if variant == 'zone' %}
+        <label for="{{ input_id }}" class="file-pick-zone file-pick-btn">
+          <span class="file-pick-zone-title">
+            <span class="section-icon" aria-hidden="true">{{ icon("attach") }}</span>
+            {{ t("ui.ticket.attach.add_files") }}
+          </span>
+          <span class="file-pick-zone-hint">{{ t('ui.ticket.attach.hint_zone', count=max_files, file_word=file_word) }}</span>
+        </label>
+      {% else %}
+        <label for="{{ input_id }}"
+               class="btn btn-secondary file-pick-btn file-pick-btn-icon"
+               title="{{ t('ui.ticket.attach.button') }}"
+               aria-label="{{ t('ui.ticket.attach.button') }}">{{ icon("attach") }}</label>
+      {% endif %}
     </div>
+    {% if variant != 'zone' %}
+      <p class="modal-hint">{{ t('ui.ticket.attach.hint_icon', count=max_files, file_word=file_word) }}</p>
+    {% endif %}
+    <div data-attach-remove-box hidden></div>
+    <div data-attach-preview
+         class="attach-preview"
+         {% if not existing %}hidden{% endif %}>
+      {% if existing %}
+        {% for a in existing %}
+          {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
+          <div class="attach-preview-item" data-existing-id="{{ a.id }}">
+            {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+              <img src="{{ a|attachment_path }}"
+                   alt="{{ a.file_name }}"
+                   width="80"
+                   height="80">
+            {% else %}
+              <span class="attach-preview-file">{{ a.file_name }}</span>
+            {% endif %}
+            <button type="button"
+                    class="attach-preview-remove"
+                    data-remove-existing
+                    aria-label="{{ t('ui.ticket.attach.remove', name=a.file_name) }}">×</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
 {%- endmacro %}
 {% macro project_checkboxes(projects, form_project_ids) -%}
-    <fieldset>
-        <legend class="label">{{ t("ui.admin.projects_fieldset") }}</legend>
-        <div class="mt-2 space-y-2">
-            {% for p in projects %}
-                <label class="flex items-center gap-2 text-sm">
-                    <input type="checkbox"
-                           name="project_ids"
-                           value="{{ p.id }}"
-                           {% if p.id in form_project_ids %}checked{% endif %}>
-                    {{ p.name }}
-                    <span class="text-steel">({{ p.key }})</span>
-                </label>
-            {% else %}
-                <p class="text-sm text-steel">{{ t("ui.admin.projects_empty") }}</p>
-            {% endfor %}
-        </div>
-        <p class="mt-1 text-sm text-danger" data-projects-required hidden>{{ t("ui.admin.projects_required") }}</p>
-    </fieldset>
+  <fieldset>
+    <legend class="label">{{ t("ui.admin.projects_fieldset") }}</legend>
+    <div class="mt-2 space-y-2">
+      {% for p in projects %}
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox"
+                 name="project_ids"
+                 value="{{ p.id }}"
+                 {% if p.id in form_project_ids %}checked{% endif %}>
+          {{ p.name }}
+          <span class="text-steel">({{ p.key }})</span>
+        </label>
+      {% else %}
+        <p class="text-sm text-steel">{{ t("ui.admin.projects_empty") }}</p>
+      {% endfor %}
+    </div>
+    <p class="mt-1 text-sm text-danger" data-projects-required hidden>{{ t("ui.admin.projects_required") }}</p>
+  </fieldset>
 {%- endmacro %}
 {% macro modal_header(dialog_id, title) -%}
-    <div class="modal-header">
-        <h2 class="modal-title">{{ title }}</h2>
-        <button type="button"
-                class="modal-close"
-                aria-label="{{ t('ui.common.close') }}"
-                onclick="document.getElementById('{{ dialog_id }}').close()">×</button>
-    </div>
+  <div class="modal-header">
+    <h2 class="modal-title">{{ title }}</h2>
+    <button type="button"
+            class="modal-close"
+            aria-label="{{ t('ui.common.close') }}"
+            onclick="document.getElementById('{{ dialog_id }}').close()">×</button>
+  </div>
 {%- endmacro %}
 {% macro modal_cancel(dialog_id, label=none) -%}
-    <button type="button"
-            onclick="document.getElementById('{{ dialog_id }}').close()"
-            class="btn btn-secondary">{{ label if label is not none else t("ui.common.cancel") }}</button>
+  <button type="button"
+          onclick="document.getElementById('{{ dialog_id }}').close()"
+          class="btn btn-secondary">{{ label if label is not none else t("ui.common.cancel") }}</button>
 {%- endmacro %}

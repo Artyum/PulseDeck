@@ -135,12 +135,12 @@
   }
 
   .nav-project-trigger:hover,
-  .nav-project-trigger.is-menu-open {
+  .is-menu-open > .nav-project-trigger {
     border-color: var(--color-frame);
     background: color-mix(in oklab, var(--color-surface) 55%, var(--color-soft-blue));
   }
 
-  .nav-project-trigger.is-menu-open .nav-user-caret {
+  .is-menu-open > .nav-project-trigger .nav-user-caret {
     transform: rotate(180deg);
   }
 
@@ -209,12 +209,12 @@
   }
 
   .nav-user:hover,
-  .nav-user.is-menu-open {
+  .is-menu-open > .nav-user {
     border-color: var(--color-frame);
     background: color-mix(in oklab, var(--color-surface) 55%, var(--color-soft-blue));
   }
 
-  .nav-user.is-menu-open .nav-user-caret {
+  .is-menu-open > .nav-user .nav-user-caret {
     transform: rotate(180deg);
   }
 
@@ -490,12 +490,22 @@
   }
 
   .admin-field > .select,
-  .admin-form-stack > .select,
-  .admin-form-stack > .form-select-menu .issue-filter-face,
-  .admin-field > .form-select-menu .issue-filter-face {
+  .admin-form-stack > .select {
     padding-right: 1.45rem;
     background-position: right 0.4rem center;
     background-size: 0.7rem;
+  }
+
+  .admin-form-stack > .form-select-menu .issue-filter-face,
+  .admin-field > .form-select-menu .issue-filter-face {
+    padding-right: 1.45rem;
+  }
+
+  .admin-form-stack > .form-select-menu .issue-filter-face::after,
+  .admin-field > .form-select-menu .issue-filter-face::after {
+    right: 0.4rem;
+    width: 0.7rem;
+    height: 0.7rem;
   }
 
   .admin-form-stack > .form-select-menu,
@@ -783,8 +793,17 @@
     line-height: 1.25;
     border-radius: 0.4rem;
     box-shadow: none;
+  }
+
+  .admin-entity-actions .select {
     background-position: right 0.45rem center;
     background-size: 0.7rem;
+  }
+
+  .admin-entity-actions .form-select-menu .issue-filter-face::after {
+    right: 0.45rem;
+    width: 0.7rem;
+    height: 0.7rem;
   }
 
   .admin-entity-actions .form-select-menu {
@@ -951,8 +970,12 @@
     font-size: 0.75rem;
     border-radius: 0.4rem;
     box-shadow: none;
-    background-position: right 0.4rem center;
-    background-size: 0.7rem;
+  }
+
+  .admin-form-field > .form-select-menu .issue-filter-face::after {
+    right: 0.4rem;
+    width: 0.7rem;
+    height: 0.7rem;
   }
 
   .admin-form-field > .select {
@@ -1440,6 +1463,12 @@
     background-size: 0.7rem;
   }
 
+  .issue-filter-face.select-compact::after {
+    right: 0.4rem;
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+
   .issue-page {
     display: grid;
     grid-template-columns: minmax(0, 1fr) calc(19 * var(--layout-rem));
@@ -1608,11 +1637,16 @@
   }
 
   .issue-field:has(.issue-tags) > .label-tight,
-  .issue-field:has(.issue-participant-list) > .label-tight,
-  .issue-field:has(.issue-participants) > .label-tight,
   .issue-field:has(.issue-tag-add) > .label-tight {
     align-self: start;
     padding-top: 0.28rem;
+  }
+
+  .issue-field:has(.issue-participant-list) > .label-tight,
+  .issue-field:has(.issue-participants) > .label-tight {
+    align-self: start;
+    padding-top: 0;
+    min-height: 1.5rem;
   }
 
   .issue-field > :not(.label-tight) {
@@ -1767,12 +1801,33 @@
 
   .issue-filter-face {
     pointer-events: none;
+    position: relative;
     display: inline-flex;
     align-items: center;
     box-sizing: border-box;
     width: 100%;
     text-align: left;
     line-height: 1.25;
+    background-image: none;
+  }
+
+  .issue-filter-face::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    width: 0.85rem;
+    height: 0.85rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%234a5d78' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transform: translateY(-50%);
+    transition: transform 0.15s ease;
+  }
+
+  .form-select-menu.is-menu-open .issue-filter-face::after {
+    transform: translateY(-50%) rotate(180deg);
   }
 
   .issue-filter-panel {
@@ -1833,14 +1888,15 @@
 
   .issue-participants {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: calc(0.5rem * var(--space-scale));
+    gap: calc(0.3rem * var(--space-scale));
     min-width: 0;
+    width: 100%;
   }
 
-  .issue-participants > .issue-menu {
-    flex-shrink: 0;
+  .issue-sidebar .issue-field:has(.issue-participants) > .field-value {
+    align-items: flex-start;
   }
 
   .issue-participant-list {
@@ -1852,19 +1908,27 @@
     list-style: none;
     font-size: 0.875rem;
     color: var(--color-ink);
+    width: 100%;
+  }
+
+  .issue-participant-list > li:first-child,
+  .issue-participants > .text-steel {
+    display: flex;
+    align-items: center;
+    min-height: 1.5rem;
   }
 
   .issue-add-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.6rem;
-    height: 1.6rem;
+    width: 1.25rem;
+    height: 1.25rem;
     border: 1px solid var(--color-line);
     border-radius: 0.35rem;
     background: var(--color-surface);
     color: var(--color-steel);
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 600;
     line-height: 1;
   }
@@ -2346,11 +2410,20 @@
     box-shadow: none;
   }
 
-  .modal-body .select,
-  .modal-body .form-select-menu .issue-filter-face {
+  .modal-body .select {
     padding-right: 1.55rem;
     background-position: right 0.45rem center;
     background-size: 0.7rem;
+  }
+
+  .modal-body .form-select-menu .issue-filter-face {
+    padding-right: 1.55rem;
+  }
+
+  .modal-body .form-select-menu .issue-filter-face::after {
+    right: 0.45rem;
+    width: 0.7rem;
+    height: 0.7rem;
   }
 
   .modal-body .form-select-menu {

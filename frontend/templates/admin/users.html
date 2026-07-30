@@ -3,195 +3,195 @@
 {% from "partials/ticket_macros.html" import project_checkboxes, modal_header, modal_cancel, form_select_menu with context %}
 {% block title %}{{ t("ui.admin.users.title") }} — {{ app_name }}{% endblock title %}
 {% block content %}
-    <div class="admin-page-head">
-        <div>
-            <h1 class="issue-title">{{ t("ui.admin.users.title") }}</h1>
-            <p class="admin-page-sub">{{ t("ui.admin.users.sub") }}</p>
-        </div>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="issue-title">{{ t("ui.admin.users.title") }}</h1>
+      <p class="admin-page-sub">{{ t("ui.admin.users.sub") }}</p>
     </div>
-    <section class="admin-section">
-        <div class="issue-section-bar">
-            <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.admin.users.list") }}</h2>
-            <button type="button"
-                    class="btn btn-primary"
-                    onclick="document.getElementById('new-user').showModal()">{{ t("ui.admin.users.new") }}</button>
+  </div>
+  <section class="admin-section">
+    <div class="issue-section-bar">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.admin.users.list") }}</h2>
+      <button type="button"
+              class="btn btn-primary"
+              onclick="document.getElementById('new-user').showModal()">{{ t("ui.admin.users.new") }}</button>
+    </div>
+    <ul class="admin-list">
+      {% for u in users %}
+        {% set project_ids = u.memberships|map(attribute='project_id')|list %}
+        <li class="admin-entity"
+            data-user-edit
+            data-user-id="{{ u.id }}"
+            data-first-name="{{ u.first_name }}"
+            data-last-name="{{ u.last_name }}"
+            data-email="{{ u.email }}"
+            data-phone="{{ u.phone or '' }}"
+            data-is-admin="{{ 1 if u.is_admin else 0 }}"
+            data-is-pending="{{ 1 if u.is_pending and u.is_active else 0 }}"
+            data-project-ids="{{ project_ids|join(',') }}">
+          <div class="admin-entity-main">
+            <p class="admin-entity-title">
+              <span class="admin-entity-name">{{ u.display_name }}</span>
+              {% if not u.is_active or u.is_pending %}
+                <span class="admin-entity-badges">
+                  {% if not u.is_active %}
+                    <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
+                  {% elif u.is_pending %}
+                    <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
+                  {% endif %}
+                </span>
+              {% endif %}
+            </p>
+            <p class="admin-entity-meta">
+              {{ u.email }}
+              {% if u.phone %}· {{ u.phone }}{% endif %}
+            </p>
+          </div>
+          <div class="admin-entity-actions">
+            <button type="button" class="btn btn-secondary" data-open-edit-user>{{ t("ui.common.edit") }}</button>
+            {% if u.is_pending and u.is_active %}
+              <form method="post"
+                    action="{{ url_for('admin_user_resend_activation', user_id=u.id) }}">
+                <button type="submit" class="btn btn-secondary">{{ t("ui.admin.users.resend") }}</button>
+              </form>
+            {% endif %}
+            {% if u.id != user.id %}
+              <form method="post"
+                    action="{{ url_for('admin_user_active', user_id=u.id) }}">
+                {% if u.is_active %}
+                  <input type="hidden" name="active" value="0">
+                  <button type="submit" class="btn btn-danger">{{ t("ui.admin.users.block") }}</button>
+                {% else %}
+                  <input type="hidden" name="active" value="1">
+                  <button type="submit" class="btn btn-primary">{{ t("ui.admin.users.unblock") }}</button>
+                {% endif %}
+              </form>
+            {% endif %}
+            <form method="post" action="{{ url_for('set_role', user_id=u.id) }}">
+              {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, u.role.value, role_labels, compact=true, disabled=(u.id == user.id), submit_on_pick=true) }}
+            </form>
+          </div>
+        </li>
+      {% else %}
+        <li class="empty">{{ t("ui.admin.users.empty") }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  <dialog id="new-user" class="modal">
+    <form method="post"
+          action="{{ url_for('admin_user_create') }}"
+          class="modal-form">
+      {{ modal_header('new-user', t('ui.admin.user_new.title') ) }}
+      <div class="modal-body">
+        <p class="modal-hint">{{ t("ui.admin.user_new.sub") }}</p>
+        <div class="modal-grid">
+          <div>
+            <label class="label" for="new-user-first-name">{{ t("ui.profile.field.first_name") }}</label>
+            <input id="new-user-first-name"
+                   name="first_name"
+                   required
+                   class="input mt-1">
+          </div>
+          <div>
+            <label class="label" for="new-user-last-name">{{ t("ui.profile.field.last_name") }}</label>
+            <input id="new-user-last-name" name="last_name" required class="input mt-1">
+          </div>
         </div>
-        <ul class="admin-list">
-            {% for u in users %}
-                {% set project_ids = u.memberships|map(attribute='project_id')|list %}
-                <li class="admin-entity"
-                    data-user-edit
-                    data-user-id="{{ u.id }}"
-                    data-first-name="{{ u.first_name }}"
-                    data-last-name="{{ u.last_name }}"
-                    data-email="{{ u.email }}"
-                    data-phone="{{ u.phone or '' }}"
-                    data-is-admin="{{ 1 if u.is_admin else 0 }}"
-                    data-is-pending="{{ 1 if u.is_pending and u.is_active else 0 }}"
-                    data-project-ids="{{ project_ids|join(',') }}">
-                    <div class="admin-entity-main">
-                        <p class="admin-entity-title">
-                            <span class="admin-entity-name">{{ u.display_name }}</span>
-                            {% if not u.is_active or u.is_pending %}
-                                <span class="admin-entity-badges">
-                                    {% if not u.is_active %}
-                                        <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
-                                    {% elif u.is_pending %}
-                                        <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
-                                    {% endif %}
-                                </span>
-                            {% endif %}
-                        </p>
-                        <p class="admin-entity-meta">
-                            {{ u.email }}
-                            {% if u.phone %}· {{ u.phone }}{% endif %}
-                        </p>
-                    </div>
-                    <div class="admin-entity-actions">
-                        <button type="button" class="btn btn-secondary" data-open-edit-user>{{ t("ui.common.edit") }}</button>
-                        {% if u.is_pending and u.is_active %}
-                            <form method="post"
-                                  action="{{ url_for('admin_user_resend_activation', user_id=u.id) }}">
-                                <button type="submit" class="btn btn-secondary">{{ t("ui.admin.users.resend") }}</button>
-                            </form>
-                        {% endif %}
-                        {% if u.id != user.id %}
-                            <form method="post"
-                                  action="{{ url_for('admin_user_active', user_id=u.id) }}">
-                                {% if u.is_active %}
-                                    <input type="hidden" name="active" value="0">
-                                    <button type="submit" class="btn btn-danger">{{ t("ui.admin.users.block") }}</button>
-                                {% else %}
-                                    <input type="hidden" name="active" value="1">
-                                    <button type="submit" class="btn btn-primary">{{ t("ui.admin.users.unblock") }}</button>
-                                {% endif %}
-                            </form>
-                        {% endif %}
-                        <form method="post" action="{{ url_for('set_role', user_id=u.id) }}">
-                            {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, u.role.value, role_labels, compact=true, disabled=(u.id == user.id), submit_on_pick=true) }}
-                        </form>
-                    </div>
-                </li>
-            {% else %}
-                <li class="empty">{{ t("ui.admin.users.empty") }}</li>
-            {% endfor %}
-        </ul>
-    </section>
-    <dialog id="new-user" class="modal">
-        <form method="post"
-              action="{{ url_for('admin_user_create') }}"
-              class="modal-form">
-            {{ modal_header('new-user', t('ui.admin.user_new.title') ) }}
-            <div class="modal-body">
-                <p class="modal-hint">{{ t("ui.admin.user_new.sub") }}</p>
-                <div class="modal-grid">
-                    <div>
-                        <label class="label" for="new-user-first-name">{{ t("ui.profile.field.first_name") }}</label>
-                        <input id="new-user-first-name"
-                               name="first_name"
-                               required
-                               class="input mt-1">
-                    </div>
-                    <div>
-                        <label class="label" for="new-user-last-name">{{ t("ui.profile.field.last_name") }}</label>
-                        <input id="new-user-last-name" name="last_name" required class="input mt-1">
-                    </div>
-                </div>
-                <div>
-                    <label class="label" for="new-user-email">{{ t("ui.profile.field.email") }}</label>
-                    <input id="new-user-email"
-                           name="email"
-                           type="email"
-                           required
-                           class="input mt-1">
-                </div>
-                <div>
-                    <label class="label" for="new-user-role">{{ t("ui.admin.user_new.role") }}</label>
-                    {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, 'USER', role_labels, id='new-user-role', class_name='mt-1', input_attrs='data-role-select') }}
-                </div>
-                <div data-projects-field>{{ project_checkboxes(projects, form_project_ids) }}</div>
-                <p class="admin-field-hint" data-admin-projects-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
+        <div>
+          <label class="label" for="new-user-email">{{ t("ui.profile.field.email") }}</label>
+          <input id="new-user-email"
+                 name="email"
+                 type="email"
+                 required
+                 class="input mt-1">
+        </div>
+        <div>
+          <label class="label" for="new-user-role">{{ t("ui.admin.user_new.role") }}</label>
+          {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, 'USER', role_labels, id='new-user-role', class_name='mt-1', input_attrs='data-role-select') }}
+        </div>
+        <div data-projects-field>{{ project_checkboxes(projects, form_project_ids) }}</div>
+        <p class="admin-field-hint" data-admin-projects-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
+      </div>
+      <div class="modal-footer">
+        {{ modal_cancel("new-user") }}
+        <button type="submit" class="btn btn-primary">{{ t("ui.admin.user_new.submit") }}</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="edit-user" class="modal">
+    <div class="modal-form">
+      {{ modal_header('edit-user', t('ui.admin.user_edit.heading') ) }}
+      <div class="modal-body">
+        <p class="modal-hint" data-edit-subtitle></p>
+        <div data-edit-activation hidden>
+          <p class="admin-field-hint">{{ t("ui.admin.user_edit.activation_hint") }}</p>
+          <form method="post" data-edit-activation-form class="admin-form-actions">
+            <button type="submit" class="btn btn-secondary">{{ t("ui.admin.user_edit.resend") }}</button>
+          </form>
+        </div>
+        <form method="post" data-edit-profile class="admin-form-stack">
+          <div class="modal-grid">
+            <div>
+              <label class="label" for="edit-user-first-name">{{ t("ui.profile.field.first_name") }}</label>
+              <input id="edit-user-first-name"
+                     name="first_name"
+                     required
+                     class="input mt-1">
             </div>
-            <div class="modal-footer">
-                {{ modal_cancel("new-user") }}
-                <button type="submit" class="btn btn-primary">{{ t("ui.admin.user_new.submit") }}</button>
+            <div>
+              <label class="label" for="edit-user-last-name">{{ t("ui.profile.field.last_name") }}</label>
+              <input id="edit-user-last-name" name="last_name" required class="input mt-1">
             </div>
+          </div>
+          <div class="modal-grid">
+            <div>
+              <label class="label" for="edit-user-email">{{ t("ui.profile.field.email") }}</label>
+              <input id="edit-user-email"
+                     name="email"
+                     type="email"
+                     required
+                     class="input mt-1">
+            </div>
+            <div>
+              <label class="label" for="edit-user-phone">{{ t("ui.profile.field.phone") }}</label>
+              <input id="edit-user-phone"
+                     name="phone"
+                     type="tel"
+                     placeholder="+48123456789"
+                     class="input mt-1">
+            </div>
+          </div>
+          <div data-edit-projects-field>{{ project_checkboxes(projects, []) }}</div>
+          <p class="admin-field-hint" data-edit-admin-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
+          <button type="submit" class="btn btn-primary">{{ t("ui.profile.save_data") }}</button>
         </form>
-    </dialog>
-    <dialog id="edit-user" class="modal">
-        <div class="modal-form">
-            {{ modal_header('edit-user', t('ui.admin.user_edit.heading') ) }}
-            <div class="modal-body">
-                <p class="modal-hint" data-edit-subtitle></p>
-                <div data-edit-activation hidden>
-                    <p class="admin-field-hint">{{ t("ui.admin.user_edit.activation_hint") }}</p>
-                    <form method="post" data-edit-activation-form class="admin-form-actions">
-                        <button type="submit" class="btn btn-secondary">{{ t("ui.admin.user_edit.resend") }}</button>
-                    </form>
-                </div>
-                <form method="post" data-edit-profile class="admin-form-stack">
-                    <div class="modal-grid">
-                        <div>
-                            <label class="label" for="edit-user-first-name">{{ t("ui.profile.field.first_name") }}</label>
-                            <input id="edit-user-first-name"
-                                   name="first_name"
-                                   required
-                                   class="input mt-1">
-                        </div>
-                        <div>
-                            <label class="label" for="edit-user-last-name">{{ t("ui.profile.field.last_name") }}</label>
-                            <input id="edit-user-last-name" name="last_name" required class="input mt-1">
-                        </div>
-                    </div>
-                    <div class="modal-grid">
-                        <div>
-                            <label class="label" for="edit-user-email">{{ t("ui.profile.field.email") }}</label>
-                            <input id="edit-user-email"
-                                   name="email"
-                                   type="email"
-                                   required
-                                   class="input mt-1">
-                        </div>
-                        <div>
-                            <label class="label" for="edit-user-phone">{{ t("ui.profile.field.phone") }}</label>
-                            <input id="edit-user-phone"
-                                   name="phone"
-                                   type="tel"
-                                   placeholder="+48123456789"
-                                   class="input mt-1">
-                        </div>
-                    </div>
-                    <div data-edit-projects-field>{{ project_checkboxes(projects, []) }}</div>
-                    <p class="admin-field-hint" data-edit-admin-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
-                    <button type="submit" class="btn btn-primary">{{ t("ui.profile.save_data") }}</button>
-                </form>
-                <form method="post" data-edit-password class="admin-form-stack">
-                    <h2 class="issue-section-title">{{ t("ui.profile.password.section") }}</h2>
-                    <input type="password"
-                           name="new_password"
-                           placeholder="{{ t('ui.profile.password.new') }}"
-                           class="input"
-                           autocomplete="new-password">
-                    <input type="password"
-                           name="confirm_password"
-                           placeholder="{{ t('ui.profile.password.confirm') }}"
-                           class="input"
-                           autocomplete="new-password">
-                    <div class="admin-form-actions">
-                        <button type="submit" name="action" value="set" class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
-                        <button type="submit"
-                                name="action"
-                                value="send_link"
-                                class="btn btn-secondary">
-                            <span data-edit-link-activation>{{ t("ui.profile.password.send_activation") }}</span>
-                            <span data-edit-link-reset hidden>{{ t("ui.profile.password.send_reset") }}</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">{{ modal_cancel("edit-user") }}</div>
-        </div>
-    </dialog>
-    <script type="application/json" id="admin-users-boot">{{ {"flash": flash, "editId": open_edit_id}|tojson }}</script>
-    <script src="{{ url_for('static', path='js/admin-user-form.js') }}" defer></script>
+        <form method="post" data-edit-password class="admin-form-stack">
+          <h2 class="issue-section-title">{{ t("ui.profile.password.section") }}</h2>
+          <input type="password"
+                 name="new_password"
+                 placeholder="{{ t('ui.profile.password.new') }}"
+                 class="input"
+                 autocomplete="new-password">
+          <input type="password"
+                 name="confirm_password"
+                 placeholder="{{ t('ui.profile.password.confirm') }}"
+                 class="input"
+                 autocomplete="new-password">
+          <div class="admin-form-actions">
+            <button type="submit" name="action" value="set" class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
+            <button type="submit"
+                    name="action"
+                    value="send_link"
+                    class="btn btn-secondary">
+              <span data-edit-link-activation>{{ t("ui.profile.password.send_activation") }}</span>
+              <span data-edit-link-reset hidden>{{ t("ui.profile.password.send_reset") }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">{{ modal_cancel("edit-user") }}</div>
+    </div>
+  </dialog>
+  <script type="application/json" id="admin-users-boot">{{ {"flash": flash, "editId": open_edit_id}|tojson }}</script>
+  <script src="{{ url_for('static', path='js/admin-user-form.js') }}" defer></script>
 {% endblock content %}

@@ -1,52 +1,53 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import icon %}
 {% block body %}
-    {% set section = profile_section|default('dane') %}
-    <div class="admin-shell">
-        <aside class="admin-aside">
-            <div class="admin-aside-brand">
-                <a href="{{ url_for('home') }}" class="brand-mark">{{ app_name }}</a>
-                <p class="admin-aside-label">{{ t("ui.profile.aside_label") }}</p>
-            </div>
-            <nav class="admin-nav" aria-label="{{ t('ui.profile.nav_aria') }}">
-                <a href="{{ url_for('profile_page') }}"
-                   class="admin-nav-item{% if section == 'dane' %} is-active{% endif %}">
-                    <span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>
-                    {{ t("ui.profile.nav.data") }}
-                </a>
-                <a href="{{ url_for('profile_password_page') }}"
-                   class="admin-nav-item{% if section == 'password' %} is-active{% endif %}">
-                    <span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>
-                    {{ t("ui.profile.nav.password") }}
-                </a>
-                <a href="{{ url_for('profile_settings_page') }}"
-                   class="admin-nav-item{% if section == 'settings' %} is-active{% endif %}">
-                    <span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>
-                    {{ t("ui.profile.nav.settings") }}
-                </a>
-            </nav>
-            <div class="admin-aside-foot">
-                <div class="admin-aside-user">
-                    <div class="admin-aside-user-meta">
-                        <strong>{{ user.display_name }}</strong>
-                        <span>{{ user.email }}</span>
-                    </div>
-                    <form method="post" action="{{ url_for('logout') }}">
-                        <button type="submit"
-                                class="btn btn-ghost admin-logout-btn"
-                                aria-label="{{ t('ui.common.logout') }}"
-                                title="{{ t('ui.common.logout') }}">{{ icon("logout") }}</button>
-                    </form>
-                </div>
-                <a href="{{ url_for('home') }}" class="btn btn-secondary admin-aside-back">
-                    <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
-                    {{ t("ui.common.back_to_portal") }}
-                </a>
-            </div>
-        </aside>
-        <main class="admin-main">
-            {% block content %}
-            {% endblock content %}
-        </main>
-    </div>
+  {% set section = profile_section|default('dane') %}
+  <div class="admin-shell">
+    <aside class="admin-aside">
+      <div class="admin-aside-brand">
+        <a href="{{ url_for('home') }}" class="brand-mark">{{ app_name }}</a>
+        <p class="admin-aside-label">{{ t("ui.profile.aside_label") }}</p>
+      </div>
+      <nav class="admin-nav" aria-label="{{ t('ui.profile.nav_aria') }}">
+        <a href="{{ url_for('profile_page') }}"
+           class="admin-nav-item{% if section == 'dane' %} is-active{% endif %}">
+          <span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>
+          {{ t("ui.profile.nav.data") }}
+        </a>
+        <a href="{{ url_for('profile_password_page') }}"
+           class="admin-nav-item{% if section == 'password' %} is-active{% endif %}">
+          <span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>
+          {{ t("ui.profile.nav.password") }}
+        </a>
+        <a href="{{ url_for('profile_settings_page') }}"
+           class="admin-nav-item{% if section == 'settings' %} is-active{% endif %}">
+          <span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>
+          {{ t("ui.profile.nav.settings") }}
+        </a>
+      </nav>
+      <div class="admin-aside-foot">
+        <div class="admin-aside-user">
+          <div class="admin-aside-user-meta">
+            <strong>{{ user.display_name }}</strong>
+            <span>{{ user.email }}</span>
+          </div>
+          <form method="post" action="{{ url_for('logout') }}">
+            <button type="submit"
+                    class="btn btn-ghost admin-logout-btn"
+                    aria-label="{{ t('ui.common.logout') }}"
+                    title="{{ t('ui.common.logout') }}">{{ icon("logout") }}</button>
+          </form>
+        </div>
+        <a href="{{ url_for('home') }}"
+           class="btn btn-secondary admin-aside-back">
+          <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
+          {{ t("ui.common.back_to_portal") }}
+        </a>
+      </div>
+    </aside>
+    <main class="admin-main">
+      {% block content %}
+      {% endblock content %}
+    </main>
+  </div>
 {% endblock body %}

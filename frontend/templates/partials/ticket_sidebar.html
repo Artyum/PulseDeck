@@ -2,223 +2,223 @@
 {% from "partials/icons.html" import icon %}
 {% set tref = ticket|ticket_label %}
 <section class="issue-side-block">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
-    <div class="issue-side-fields">
-        <div class="issue-field">
-            <span class="label-tight">{{ t("ui.ticket.created") }}</span>
-            <div class="field-value">{{ ticket.created_at.strftime("%Y-%m-%d %H:%M") if ticket.created_at else t('ui.common.empty_dash') }}</div>
-        </div>
-        {% if ticket.closed_at %}
-            <div class="issue-field">
-                <span class="label-tight">{{ t("ui.ticket.closed") }}</span>
-                <div class="field-value">{{ ticket.closed_at.strftime("%Y-%m-%d %H:%M") }}</div>
-            </div>
-        {% endif %}
-        <div class="issue-field">
-            <span class="label-tight">{{ t("ui.ticket.type") }}</span>
-            {% if user.is_staff or can_edit %}
-                {% call issue_field_menu(t('ui.ticket.change_type'), url_for('change_type', ticket_ref=tref), 'ticket_type', ticket_types, ticket.type.value, labels=type_labels) %}
-                    <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
-                {% endcall %}
-            {% else %}
-                <div class="field-value">
-                    <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
-                </div>
-            {% endif %}
-        </div>
-        <div class="issue-field">
-            <span class="label-tight">{{ t("ui.ticket.status") }}</span>
-            {% if user.is_staff %}
-                {% call issue_field_menu(t('ui.ticket.change_status'), url_for('change_status', ticket_ref=tref), 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}
-                    {{ status_chip(ticket.status) }}
-                {% endcall %}
-            {% elif can_set_done and ticket.status.value != 'DONE' %}
-                <div x-data="{ open: false }"
-                     @click.outside="open = false"
-                     :class="{'is-menu-open': open}"
-                     class="issue-menu relative">
-                    <button type="button"
-                            @click="open = !open"
-                            :aria-expanded="open"
-                            class="issue-menu-trigger"
-                            aria-label="{{ t('ui.ticket.change_status') }}"
-                            title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
-                    <div x-show="open"
-                         x-transition
-                         x-cloak
-                         class="issue-menu-panel"
-                         role="menu">
-                        <form hx-post="{{ url_for('change_status', ticket_ref=tref) }}"
-                              hx-target="#ticket-view"
-                              hx-swap="innerHTML"
-                              class="issue-menu-form">
-                            <button type="submit" name="status" value="DONE" class="issue-menu-item">{{ status_labels[ticket_statuses.DONE] }}</button>
-                        </form>
-                    </div>
-                </div>
-            {% elif can_reopen %}
-                <div x-data="{ open: false }"
-                     @click.outside="open = false"
-                     :class="{'is-menu-open': open}"
-                     class="issue-menu relative">
-                    <button type="button"
-                            @click="open = !open"
-                            :aria-expanded="open"
-                            class="issue-menu-trigger"
-                            aria-label="{{ t('ui.ticket.change_status') }}"
-                            title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
-                    <div x-show="open"
-                         x-transition
-                         x-cloak
-                         class="issue-menu-panel"
-                         role="menu">
-                        <form method="post"
-                              action="{{ url_for('reopen_ticket', ticket_ref=tref) }}"
-                              class="issue-menu-form">
-                            <button type="submit" class="issue-menu-item">{{ t("ui.ticket.reopen") }}</button>
-                        </form>
-                    </div>
-                </div>
-            {% else %}
-                <div class="field-value">{{ status_chip(ticket.status) }}</div>
-            {% endif %}
-        </div>
-        <div class="issue-field">
-            <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
-            {% if user.is_staff %}
-                {% call issue_field_menu(t('ui.ticket.change_priority'), url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
-                    {{ priority_chip(ticket.priority) }}
-                {% endcall %}
-            {% else %}
-                <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
-            {% endif %}
-        </div>
+  <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+  <div class="issue-side-fields">
+    <div class="issue-field">
+      <span class="label-tight">{{ t("ui.ticket.created") }}</span>
+      <div class="field-value">{{ ticket.created_at.strftime("%Y-%m-%d %H:%M") if ticket.created_at else t('ui.common.empty_dash') }}</div>
     </div>
-</section>
-<section class="issue-side-block">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.ticket.people") }}</h2>
-    <div class="issue-side-fields">
-        <div class="issue-field">
-            <span class="label-tight">{{ t("ui.ticket.reporter") }}</span>
-            {% if can_assign %}
-                {% call issue_field_menu(t('ui.ticket.change_reporter'), url_for('change_reporter', ticket_ref=tref), 'author_id', project_members, ticket.author_id, value_attr='id') %}
-                    <span class="issue-menu-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</span>
-                {% endcall %}
-            {% else %}
-                <div class="field-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</div>
-            {% endif %}
-        </div>
-        <div class="issue-field">
-            <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>
-            {% if can_assign %}
-                {% call issue_field_menu(t('ui.ticket.change_assignee'), url_for('assign', ticket_ref=tref), 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label=t('ui.ticket.assignee_none')) %}
-                    <span class="issue-menu-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</span>
-                {% endcall %}
-            {% else %}
-                <div class="field-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</div>
-            {% endif %}
-        </div>
-        <div class="issue-field">
-            <span class="label-tight">
-                {{ t("ui.ticket.participants") }}
-                {% set can_add_participant = user.is_staff or user.id == ticket.author_id %}
-                {% if can_add_participant %}
-                    <span class="issue-participant-add">
-                        <div x-data="{ open: false }"
-                             @click.outside="open = false"
-                             :class="{'is-menu-open': open}"
-                             class="issue-menu relative">
-                            <button type="button"
-                                    @click="open = !open"
-                                    :aria-expanded="open"
-                                    class="issue-menu-trigger"
-                                    aria-label="{{ t('ui.ticket.add_participant') }}"
-                                    title="{{ t('ui.ticket.add_participant') }}">
-                                <span class="issue-add-btn">{{ icon("add") }}</span>
-                            </button>
-                            <div x-show="open"
-                                 x-transition
-                                 x-cloak
-                                 class="issue-menu-panel issue-menu-panel-end"
-                                 role="menu">
-                                <form hx-post="{{ url_for('add_participant', ticket_ref=tref) }}"
-                                      hx-target="#ticket-view"
-                                      hx-swap="innerHTML"
-                                      class="issue-menu-form">
-                                    {% set participant_ids = ticket.participants|map(attribute='user_id')|list %}
-                                    {% set ns = namespace(n=0) %}
-                                    {% for m in project_members %}
-                                        {% if m.id != ticket.author_id and m.id not in participant_ids and not m.is_staff and not m.is_admin %}
-                                            {% set ns.n = ns.n + 1 %}
-                                            <button type="submit"
-                                                    name="user_id"
-                                                    value="{{ m.id }}"
-                                                    class="issue-menu-item">{{ m.display_name }}</button>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if ns.n == 0 %}
-                                        <p class="issue-menu-empty">{{ t("ui.ticket.no_participants_to_add") }}</p>
-                                    {% endif %}
-                                </form>
-                            </div>
-                        </div>
-                    </span>
-                {% endif %}
-            </span>
-            <div class="field-value">
-                {% set participant_ids = ticket.participants|map(attribute='user_id')|list %}
-                <div class="issue-participants">
-                    {% if ticket.participants %}
-                        <ul class="issue-participant-list">
-                            {% for p in ticket.participants %}<li>{{ p.user.display_name if p.user else p.user_id }}</li>{% endfor %}
-                        </ul>
-                    {% else %}
-                        <span class="text-steel">{{ t("ui.common.none") }}</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="issue-side-block">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.ticket.tags") }}</h2>
-    <div class="issue-side-fields">
+    {% if ticket.closed_at %}
+      <div class="issue-field">
+        <span class="label-tight">{{ t("ui.ticket.closed") }}</span>
+        <div class="field-value">{{ ticket.closed_at.strftime("%Y-%m-%d %H:%M") }}</div>
+      </div>
+    {% endif %}
+    <div class="issue-field">
+      <span class="label-tight">{{ t("ui.ticket.type") }}</span>
+      {% if user.is_staff or can_edit %}
+        {% call issue_field_menu(t('ui.ticket.change_type'), url_for('change_type', ticket_ref=tref), 'ticket_type', ticket_types, ticket.type.value, labels=type_labels) %}
+          <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
+        {% endcall %}
+      {% else %}
         <div class="field-value">
-            <div class="issue-tags">
-                {% for tt in ticket.ticket_tags %}
-                    {% if can_manage_tags %}
-                        <form hx-post="{{ url_for('remove_tag', ticket_ref=tref) }}"
-                              hx-target="#ticket-view"
-                              hx-swap="innerHTML"
-                              class="chip chip-outline inline-flex items-center gap-1">
-                            <input type="hidden" name="tag_id" value="{{ tt.tag_id }}">
-                            <span>{{ tt.tag.name }}</span>
-                            <button type="submit"
-                                    class="text-steel hover:text-ink"
-                                    title="{{ t('ui.common.delete') }}">×</button>
-                        </form>
-                    {% else %}
-                        <span class="chip chip-outline">{{ tt.tag.name }}</span>
-                    {% endif %}
-                {% endfor %}
-                {% if not ticket.ticket_tags and not can_manage_tags %}<span class="text-steel">{{ t("ui.common.empty_dash") }}</span>{% endif %}
-            </div>
-            {% if can_manage_tags %}
-                <form hx-post="{{ url_for('add_tag', ticket_ref=tref) }}"
+          <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
+        </div>
+      {% endif %}
+    </div>
+    <div class="issue-field">
+      <span class="label-tight">{{ t("ui.ticket.status") }}</span>
+      {% if user.is_staff %}
+        {% call issue_field_menu(t('ui.ticket.change_status'), url_for('change_status', ticket_ref=tref), 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}
+          {{ status_chip(ticket.status) }}
+        {% endcall %}
+      {% elif can_set_done and ticket.status.value != 'DONE' %}
+        <div x-data="{ open: false }"
+             @click.outside="open = false"
+             :class="{'is-menu-open': open}"
+             class="issue-menu relative">
+          <button type="button"
+                  @click="open = !open"
+                  :aria-expanded="open"
+                  class="issue-menu-trigger"
+                  aria-label="{{ t('ui.ticket.change_status') }}"
+                  title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
+          <div x-show="open"
+               x-transition
+               x-cloak
+               class="issue-menu-panel"
+               role="menu">
+            <form hx-post="{{ url_for('change_status', ticket_ref=tref) }}"
+                  hx-target="#ticket-view"
+                  hx-swap="innerHTML"
+                  class="issue-menu-form">
+              <button type="submit" name="status" value="DONE" class="issue-menu-item">{{ status_labels[ticket_statuses.DONE] }}</button>
+            </form>
+          </div>
+        </div>
+      {% elif can_reopen %}
+        <div x-data="{ open: false }"
+             @click.outside="open = false"
+             :class="{'is-menu-open': open}"
+             class="issue-menu relative">
+          <button type="button"
+                  @click="open = !open"
+                  :aria-expanded="open"
+                  class="issue-menu-trigger"
+                  aria-label="{{ t('ui.ticket.change_status') }}"
+                  title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
+          <div x-show="open"
+               x-transition
+               x-cloak
+               class="issue-menu-panel"
+               role="menu">
+            <form method="post"
+                  action="{{ url_for('reopen_ticket', ticket_ref=tref) }}"
+                  class="issue-menu-form">
+              <button type="submit" class="issue-menu-item">{{ t("ui.ticket.reopen") }}</button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <div class="field-value">{{ status_chip(ticket.status) }}</div>
+      {% endif %}
+    </div>
+    <div class="issue-field">
+      <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
+      {% if user.is_staff %}
+        {% call issue_field_menu(t('ui.ticket.change_priority'), url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
+          {{ priority_chip(ticket.priority) }}
+        {% endcall %}
+      {% else %}
+        <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<section class="issue-side-block">
+  <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.ticket.people") }}</h2>
+  <div class="issue-side-fields">
+    <div class="issue-field">
+      <span class="label-tight">{{ t("ui.ticket.reporter") }}</span>
+      {% if can_assign %}
+        {% call issue_field_menu(t('ui.ticket.change_reporter'), url_for('change_reporter', ticket_ref=tref), 'author_id', project_members, ticket.author_id, value_attr='id') %}
+          <span class="issue-menu-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</span>
+        {% endcall %}
+      {% else %}
+        <div class="field-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</div>
+      {% endif %}
+    </div>
+    <div class="issue-field">
+      <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>
+      {% if can_assign %}
+        {% call issue_field_menu(t('ui.ticket.change_assignee'), url_for('assign', ticket_ref=tref), 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label=t('ui.ticket.assignee_none')) %}
+          <span class="issue-menu-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</span>
+        {% endcall %}
+      {% else %}
+        <div class="field-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</div>
+      {% endif %}
+    </div>
+    <div class="issue-field">
+      <span class="label-tight">
+        {{ t("ui.ticket.participants") }}
+        {% set can_add_participant = user.is_staff or user.id == ticket.author_id %}
+        {% if can_add_participant %}
+          <span class="issue-participant-add">
+            <div x-data="{ open: false }"
+                 @click.outside="open = false"
+                 :class="{'is-menu-open': open}"
+                 class="issue-menu relative">
+              <button type="button"
+                      @click="open = !open"
+                      :aria-expanded="open"
+                      class="issue-menu-trigger"
+                      aria-label="{{ t('ui.ticket.add_participant') }}"
+                      title="{{ t('ui.ticket.add_participant') }}">
+                <span class="issue-add-btn">{{ icon("add") }}</span>
+              </button>
+              <div x-show="open"
+                   x-transition
+                   x-cloak
+                   class="issue-menu-panel issue-menu-panel-end"
+                   role="menu">
+                <form hx-post="{{ url_for('add_participant', ticket_ref=tref) }}"
                       hx-target="#ticket-view"
                       hx-swap="innerHTML"
-                      class="issue-tag-add">
-                    <input list="project-tag-list"
-                           name="name"
-                           required
-                           placeholder="{{ t('ui.ticket.add_tag_placeholder') }}"
-                           class="input input-compact">
-                    <datalist id="project-tag-list">
-                        {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
-                    </datalist>
-                    <button type="submit" class="btn btn-secondary">{{ t("ui.common.add") }}</button>
+                      class="issue-menu-form">
+                  {% set participant_ids = ticket.participants|map(attribute='user_id')|list %}
+                  {% set ns = namespace(n=0) %}
+                  {% for m in project_members %}
+                    {% if m.id != ticket.author_id and m.id not in participant_ids and not m.is_staff and not m.is_admin %}
+                      {% set ns.n = ns.n + 1 %}
+                      <button type="submit"
+                              name="user_id"
+                              value="{{ m.id }}"
+                              class="issue-menu-item">{{ m.display_name }}</button>
+                    {% endif %}
+                  {% endfor %}
+                  {% if ns.n == 0 %}
+                    <p class="issue-menu-empty">{{ t("ui.ticket.no_participants_to_add") }}</p>
+                  {% endif %}
                 </form>
-            {% endif %}
+              </div>
+            </div>
+          </span>
+        {% endif %}
+      </span>
+      <div class="field-value">
+        {% set participant_ids = ticket.participants|map(attribute='user_id')|list %}
+        <div class="issue-participants">
+          {% if ticket.participants %}
+            <ul class="issue-participant-list">
+              {% for p in ticket.participants %}<li>{{ p.user.display_name if p.user else p.user_id }}</li>{% endfor %}
+            </ul>
+          {% else %}
+            <span class="text-steel">{{ t("ui.common.none") }}</span>
+          {% endif %}
         </div>
+      </div>
     </div>
+  </div>
+</section>
+<section class="issue-side-block">
+  <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.ticket.tags") }}</h2>
+  <div class="issue-side-fields">
+    <div class="field-value">
+      <div class="issue-tags">
+        {% for tt in ticket.ticket_tags %}
+          {% if can_manage_tags %}
+            <form hx-post="{{ url_for('remove_tag', ticket_ref=tref) }}"
+                  hx-target="#ticket-view"
+                  hx-swap="innerHTML"
+                  class="chip chip-outline inline-flex items-center gap-1">
+              <input type="hidden" name="tag_id" value="{{ tt.tag_id }}">
+              <span>{{ tt.tag.name }}</span>
+              <button type="submit"
+                      class="text-steel hover:text-ink"
+                      title="{{ t('ui.common.delete') }}">×</button>
+            </form>
+          {% else %}
+            <span class="chip chip-outline">{{ tt.tag.name }}</span>
+          {% endif %}
+        {% endfor %}
+        {% if not ticket.ticket_tags and not can_manage_tags %}<span class="text-steel">{{ t("ui.common.empty_dash") }}</span>{% endif %}
+      </div>
+      {% if can_manage_tags %}
+        <form hx-post="{{ url_for('add_tag', ticket_ref=tref) }}"
+              hx-target="#ticket-view"
+              hx-swap="innerHTML"
+              class="issue-tag-add">
+          <input list="project-tag-list"
+                 name="name"
+                 required
+                 placeholder="{{ t('ui.ticket.add_tag_placeholder') }}"
+                 class="input input-compact">
+          <datalist id="project-tag-list">
+            {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
+          </datalist>
+          <button type="submit" class="btn btn-secondary">{{ t("ui.common.add") }}</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
 </section>

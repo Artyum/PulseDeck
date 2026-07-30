@@ -1,36 +1,36 @@
 {% from "partials/ticket_macros.html" import attachment_list with context %}
 {% from "partials/icons.html" import icon %}
 <div class="issue-page-body">
-    <nav class="issue-crumb">
-        <a href="{{ url_for('project_feed', key=project.key) }}"
-           class="link-quiet">{{ project.name }}</a>
-        <span aria-hidden="true">/</span>
-        <a href="{{ url_for('ticket_detail', ticket_ref=ticket|ticket_label) }}"
-           class="issue-key"
-           aria-current="page">{{ ticket|ticket_label }}</a>
-    </nav>
-    {% include "partials/ticket_header.html" %}
-    <section class="issue-section">
-        <div class="issue-section-bar">
-            <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
-            {% if can_edit %}
-                <button type="button"
-                        onclick="document.getElementById('edit-ticket').showModal()"
-                        class="btn btn-ghost">{{ t("ui.ticket.edit") }}</button>
-            {% endif %}
-        </div>
-        <p class="issue-description">{{ ticket.description }}</p>
-        {% if ticket.attachments %}
-            <div class="issue-attachments">
-                <h3 class="issue-subhead"><span class="section-icon" aria-hidden="true">{{ icon("attachments") }}</span>{{ t("ui.ticket.attachments") }}</h3>
-                {{ attachment_list(ticket.attachments, 'mt-2') }}
-            </div>
-        {% endif %}
-    </section>
-    <section class="issue-section" id="thread">
-        {% include "partials/thread.html" %}
-    </section>
+  <nav class="issue-crumb">
+    <a href="{{ url_for('project_feed', key=project.key) }}"
+       class="link-quiet">{{ project.name }}</a>
+    <span aria-hidden="true">/</span>
+    <a href="{{ url_for('ticket_detail', ticket_ref=ticket|ticket_label) }}"
+       class="issue-key"
+       aria-current="page">{{ ticket|ticket_label }}</a>
+  </nav>
+  {% include "partials/ticket_header.html" %}
+  <section class="issue-section">
+    <div class="issue-section-bar">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
+      {% if can_edit %}
+        <button type="button"
+                onclick="document.getElementById('edit-ticket').showModal()"
+                class="btn btn-ghost">{{ t("ui.ticket.edit") }}</button>
+      {% endif %}
+    </div>
+    <p class="issue-description">{{ ticket.description }}</p>
+    {% if ticket.attachments %}
+      <div class="issue-attachments">
+        <h3 class="issue-subhead"><span class="section-icon" aria-hidden="true">{{ icon("attachments") }}</span>{{ t("ui.ticket.attachments") }}</h3>
+        {{ attachment_list(ticket.attachments, 'mt-2') }}
+      </div>
+    {% endif %}
+  </section>
+  <section class="issue-section" id="thread">
+    {% include "partials/thread.html" %}
+  </section>
 </div>
 <aside class="issue-sidebar">
-    {% include "partials/ticket_sidebar.html" %}
+  {% include "partials/ticket_sidebar.html" %}
 </aside>

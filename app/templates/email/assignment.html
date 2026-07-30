@@ -1,18 +1,18 @@
 {% extends "_base.html" %}
 {% block title %}{{ t('email.assignment.subject', title=ticket.title) }}{% endblock title %}
 {% block body %}
-    <p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#0f172a;">{{ t('email.assignment.title', title=ticket.title) }}</p>
-    <p style="margin:0 0 12px;">{{ t('email.assignment.greeting', name=assignee.first_name) }}</p>
-    <p style="margin:0 0 20px;">{{ t('email.assignment.body', title=ticket.title) }}</p>
-    <p style="margin:0 0 16px;">
-        <a href="{{ url }}"
-           style="display:inline-block;
-                  background:#2f72e8;
-                  color:#ffffff;
-                  text-decoration:none;
-                  padding:12px 20px;
-                  border-radius:6px;
-                  font-weight:600">{{ t('email.assignment.cta', app=app_name) }}</a>
-    </p>
-    <p style="margin:0;font-size:12px;color:#64748b;word-break:break-all;">{{ url }}</p>
+  <p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#0f172a;">{{ t('email.assignment.title', title=ticket.title) }}</p>
+  <p style="margin:0 0 12px;">{{ t('email.assignment.greeting', name=assignee.first_name) }}</p>
+  <p style="margin:0 0 20px;">{{ t('email.assignment.body', title=ticket.title) }}</p>
+  <p style="margin:0 0 16px;">
+    <a href="{{ url }}"
+       style="display:inline-block;
+              background:#2f72e8;
+              color:#ffffff;
+              text-decoration:none;
+              padding:12px 20px;
+              border-radius:6px;
+              font-weight:600">{{ t('email.assignment.cta', app=app_name) }}</a>
+  </p>
+  <p style="margin:0;font-size:12px;color:#64748b;word-break:break-all;">{{ url }}</p>
 {% endblock body %}

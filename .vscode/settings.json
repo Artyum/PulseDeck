@@ -34,7 +34,9 @@
   // Konfiguracja dla plików CSS
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode", // używaj Prettier do formatowania CSS
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
   },
   "css.lint.unknownAtRules": "ignore",
 
@@ -60,17 +62,22 @@
   // djLint jest w bazowym Miniconda, nie w env pulsedeck
   "djlint.useVenv": false,
   "djlint.executablePath": "C:\\Users\\arkad\\miniconda3\\Scripts\\djlint.exe",
+  "djlint.indent": 2,
 
   // Konfiguracja dla plików HTML/Jinja — wszystkie .html to szablony Jinja
   "[html]": {
     "editor.defaultFormatter": "monosans.djlint",
     "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file"
+    "editor.formatOnSaveMode": "file",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
   },
   "[jinja-html]": {
     "editor.defaultFormatter": "monosans.djlint",
     "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file"
+    "editor.formatOnSaveMode": "file",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
   },
 
   // Wyłącz wbudowany formatter HTML — niech tylko Prettier/djLint formatują

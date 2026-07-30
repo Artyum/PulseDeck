@@ -1,17 +1,17 @@
 <div class="project-tags">
-    {% for tag in tags %}
-        <span class="project-tag">
-            <a href="{{ url_for('project_feed', key=project.key) }}?tag={{ tag.name }}"
-               class="project-tag-link">{{ tag.name }}</a>
-            <form method="post"
-                  action="{{ url_for('delete_project_tag', key=project.key, tag_id=tag.id) }}"
-                  class="project-tag-del-form"
-                  data-confirm-title="{{ t('ui.confirm.delete_tag.title') }}"
-                  data-confirm="{{ t('ui.confirm.delete_tag.message', name=tag.name) }}"
-                  data-confirm-action="{{ t('ui.confirm.delete_tag.action') }}"
-                  data-confirm-danger>
-                <button type="submit" class="project-tag-del">×</button>
-            </form>
-        </span>
-    {% endfor %}
+  {% for tag in tags %}
+    <span class="project-tag">
+      <a href="{{ url_for('project_feed', key=project.key) }}?tag={{ tag.name }}"
+         class="project-tag-link">{{ tag.name }}</a>
+      <form method="post"
+            action="{{ url_for('delete_project_tag', key=project.key, tag_id=tag.id) }}"
+            class="project-tag-del-form"
+            data-confirm-title="{{ t('ui.confirm.delete_tag.title') }}"
+            data-confirm="{{ t('ui.confirm.delete_tag.message', name=tag.name) }}"
+            data-confirm-action="{{ t('ui.confirm.delete_tag.action') }}"
+            data-confirm-danger>
+        <button type="submit" class="project-tag-del">×</button>
+      </form>
+    </span>
+  {% endfor %}
 </div>
