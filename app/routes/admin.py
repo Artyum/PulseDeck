@@ -192,19 +192,28 @@ _USER_OK_FLASH = {
     "password_link": "flash.admin.password_link_sent",
     "password_set": "flash.admin.password_set",
     "activation_resent": "flash.admin.activation_resent",
+    "notifications": "flash.admin.notifications_updated",
 }
 
 
-def _users_redirect(
-    *, ok: str | None = None, edit: int | None = None
-) -> RedirectResponse:
-    parts: list[str] = []
-    if edit is not None:
-        parts.append(f"edit={edit}")
-    if ok:
-        parts.append(f"ok={ok}")
-    query = f"?{'&'.join(parts)}" if parts else ""
+def _users_redirect(*, ok: str | None = None) -> RedirectResponse:
+    query = f"?ok={ok}" if ok else ""
     return RedirectResponse(f"/admin/users{query}", status_code=303)
+
+
+def _user_edit_redirect(user_id: int, *, ok: str | None = None) -> RedirectResponse:
+    query = f"?ok={ok}" if ok else ""
+    return RedirectResponse(f"/admin/users/{user_id}{query}", status_code=303)
+
+
+def _user_edit_ctx(db: Session, target: User, *, flash: str | None = None) -> dict:
+    return {
+        "edit_user": target,
+        "projects": project_service.list_projects(db),
+        "form_project_ids": [m.project_id for m in target.memberships],
+        "is_admin_edit": True,
+        "flash": flash,
+    }
 
 
 @router.get("/users", response_class=HTMLResponse)
@@ -212,8 +221,6 @@ def admin_users(request: Request, user: AdminUser, db: DbSession):
     lang = resolve_lang(request)
     ok = request.query_params.get("ok") or ""
     flash_key = _USER_OK_FLASH.get(ok)
-    edit_raw = request.query_params.get("edit")
-    open_edit_id = int(edit_raw) if edit_raw and edit_raw.isdigit() else None
     return render(
         request,
         "admin/users.html",
@@ -222,7 +229,6 @@ def admin_users(request: Request, user: AdminUser, db: DbSession):
         projects=project_service.list_projects(db),
         form_project_ids=[],
         flash=t(lang, flash_key) if flash_key else None,
-        open_edit_id=open_edit_id,
     )
 
 
@@ -262,15 +268,23 @@ async def admin_user_create(
     except ValueError as exc:
         db.rollback()
         return JSONResponse({"detail": str(exc)}, status_code=400)
-    return _users_redirect(edit=target.id, ok="created")
+    return _user_edit_redirect(target.id, ok="created")
 
 
-@router.get("/users/{user_id}")
+@router.get("/users/{user_id}", response_class=HTMLResponse)
 def admin_user_edit(request: Request, user_id: int, user: AdminUser, db: DbSession):
     lang = resolve_lang(request)
-    _get_user_or_404(db, user_id, lang=lang)
-    ok = "created" if request.query_params.get("created") else None
-    return _users_redirect(edit=user_id, ok=ok)
+    target = _get_user_or_404(db, user_id, lang=lang)
+    ok = request.query_params.get("ok") or ""
+    flash_key = _USER_OK_FLASH.get(ok)
+    return render(
+        request,
+        "admin/user_edit.html",
+        user=user,
+        **_user_edit_ctx(
+            db, target, flash=t(lang, flash_key) if flash_key else None
+        ),
+    )
 
 
 @router.post("/users/{user_id}")
@@ -287,6 +301,7 @@ async def admin_user_update(
     last_name = str(form.get("last_name") or "")
     email = str(form.get("email") or "")
     phone = str(form.get("phone") or "")
+    role_raw = str(form.get("role") or "")
     project_ids = [int(str(x)) for x in form.getlist("project_ids") if x]
     try:
         auth_service.update_profile_fields(
@@ -298,13 +313,20 @@ async def admin_user_update(
             lang=lang,
         )
         auth_service.admin_set_email(db, target, email, lang=lang)
+        if role_raw and target.id != user.id:
+            try:
+                new_role = UserRole(role_raw)
+            except ValueError:
+                raise ValueError(t(lang, "messages.admin.invalid_role")) from None
+            if new_role != target.role:
+                auth_service.set_user_role(db, target, new_role, lang=lang)
         project_service.set_user_projects(db, target.id, project_ids, lang=lang)
         db.commit()
         db.refresh(target)
     except ValueError as exc:
         db.rollback()
         return JSONResponse({"detail": str(exc)}, status_code=400)
-    return _users_redirect(ok="updated")
+    return _user_edit_redirect(user_id, ok="updated")
 
 
 @router.post("/users/{user_id}/active")
@@ -314,6 +336,7 @@ def admin_user_active(
     user: AdminUser,
     db: DbSession,
     active: Annotated[str, Form()],
+    return_to: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     target = db.get(User, user_id)
@@ -328,7 +351,9 @@ def admin_user_active(
             )
         except ValueError:
             pass
-    return RedirectResponse("/admin/users", status_code=303)
+    if return_to == "edit":
+        return _user_edit_redirect(user_id)
+    return _users_redirect()
 
 
 @router.post("/users/{user_id}/password")
@@ -360,7 +385,29 @@ def admin_user_password(
     except ValueError as exc:
         db.rollback()
         return JSONResponse({"detail": str(exc)}, status_code=400)
-    return _users_redirect(ok=ok)
+    return _user_edit_redirect(user_id, ok=ok)
+
+
+@router.post("/users/{user_id}/notifications")
+def admin_user_notifications(
+    request: Request,
+    user_id: int,
+    user: AdminUser,
+    db: DbSession,
+    notify_new_ticket: Annotated[str, Form()] = "",
+    notify_reply: Annotated[str, Form()] = "",
+    notify_ticket_update: Annotated[str, Form()] = "",
+):
+    lang = resolve_lang(request)
+    target = _get_user_or_404(db, user_id, lang=lang)
+    auth_service.update_notification_prefs(
+        db,
+        target,
+        notify_new_ticket=bool(notify_new_ticket),
+        notify_reply=bool(notify_reply),
+        notify_ticket_update=bool(notify_ticket_update),
+    )
+    return _user_edit_redirect(user_id, ok="notifications")
 
 
 @router.post("/users/{user_id}/resend-activation")
@@ -370,6 +417,7 @@ def admin_user_resend_activation(
     user_id: int,
     user: AdminUser,
     db: DbSession,
+    return_to: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     target = _get_user_or_404(db, user_id, lang=lang)
@@ -381,22 +429,6 @@ def admin_user_resend_activation(
         auth_service.send_password_link(db, target, lang=lang)
     except ValueError as exc:
         return JSONResponse({"detail": str(exc)}, status_code=400)
+    if return_to == "edit":
+        return _user_edit_redirect(user_id, ok="activation_resent")
     return _users_redirect(ok="activation_resent")
-
-
-@router.post("/users/{user_id}/role")
-def set_role(
-    request: Request,
-    user_id: int,
-    user: AdminUser,
-    db: DbSession,
-    role: Annotated[str, Form()],
-):
-    lang = resolve_lang(request)
-    target = db.get(User, user_id)
-    if target and target.id != user.id:
-        try:
-            auth_service.set_user_role(db, target, UserRole(role), lang=lang)
-        except ValueError:
-            pass
-    return RedirectResponse("/admin/users", status_code=303)

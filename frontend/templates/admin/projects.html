@@ -3,10 +3,7 @@
 {% block title %}{{ t("ui.admin.projects.title") }} — {{ app_name }}{% endblock title %}
 {% block content %}
   <div class="admin-page-head">
-    <div>
-      <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
-      <p class="admin-page-sub">{{ t("ui.admin.projects.sub") }}</p>
-    </div>
+    <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
   </div>
   {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
   <section class="admin-section">

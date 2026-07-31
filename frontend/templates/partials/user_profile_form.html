@@ -1,13 +1,18 @@
 {% from "partials/ticket_macros.html" import project_checkboxes, form_select_menu with context %}
+{% from "partials/icons.html" import icon %}
 {% set show_data = is_admin_edit or profile_section|default('dane') == 'dane' %}
 {% set show_password = is_admin_edit or profile_section|default('dane') == 'password' %}
-{% set show_notifications = not is_admin_edit and profile_section|default('dane') == 'notifications' %}
+{% set show_notifications = is_admin_edit or profile_section|default('dane') == 'notifications' %}
 {% set show_appearance = not is_admin_edit and profile_section|default('dane') == 'appearance' %}
 {% if show_data %}
+  {% if is_admin_edit %}
+    <section class="admin-section">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.profile.title.data") }}</h2>
+      <div class="admin-narrow">
+  {% endif %}
   <form method="post"
         action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
         class="admin-form-stack">
-    {% if is_admin_edit %}<h2 class="issue-section-title">{{ t("ui.profile.title.data") }}</h2>{% endif %}
     <div class="admin-field">
       <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
       <input id="first_name"
@@ -49,45 +54,54 @@
              class="input">
     </div>
     {% if is_admin_edit %}
-      {% if edit_user.is_admin %}
-        <p class="admin-field-hint">{{ t("ui.profile.admin_all_projects_hint") }}</p>
-      {% else %}
-        {{ project_checkboxes(projects, form_project_ids) }}
-      {% endif %}
+      <div class="admin-field">
+        <label class="label" for="edit-user-role">{{ t("ui.admin.user_new.role") }}</label>
+        {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, edit_user.role.value, role_labels, id='edit-user-role', input_attrs='data-role-select', disabled=(edit_user.id == user.id)) }}
+      </div>
+      <div data-projects-field {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
+      <p class="admin-field-hint" data-admin-projects-hint {% if not edit_user.is_admin %}hidden{% endif %}>{{ t("ui.profile.admin_all_projects_hint") }}</p>
     {% endif %}
     <button type="submit" class="btn btn-primary">{{ t("ui.profile.save_data") }}</button>
   </form>
+  {% if is_admin_edit %}
+      </div>
+    </section>
+  {% endif %}
 {% endif %}
 {% if show_password %}
   {% if is_admin_edit %}
-    <form method="post"
-          action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
-          class="admin-form-stack">
-      <h2 class="issue-section-title">{{ t("ui.profile.password.section") }}</h2>
-      <input type="password"
-             name="new_password"
-             placeholder="{{ t('ui.profile.password.new') }}"
-             class="input"
-             autocomplete="new-password">
-      <input type="password"
-             name="confirm_password"
-             placeholder="{{ t('ui.profile.password.confirm') }}"
-             class="input"
-             autocomplete="new-password">
-      <div class="admin-form-actions">
-        <button type="submit" name="action" value="set" class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
-        <button type="submit"
-                name="action"
-                value="send_link"
-                class="btn btn-secondary">
-          {% if edit_user.is_pending %}
-            {{ t("ui.profile.password.send_activation") }}
-          {% else %}
-            {{ t("ui.profile.password.send_reset") }}
-          {% endif %}
-        </button>
+    <section class="admin-section">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>{{ t("ui.profile.password.section") }}</h2>
+      <div class="admin-narrow">
+        <form method="post"
+              action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
+              class="admin-form-stack">
+          <input type="password"
+                 name="new_password"
+                 placeholder="{{ t('ui.profile.password.new') }}"
+                 class="input"
+                 autocomplete="new-password">
+          <input type="password"
+                 name="confirm_password"
+                 placeholder="{{ t('ui.profile.password.confirm') }}"
+                 class="input"
+                 autocomplete="new-password">
+          <div class="admin-form-actions">
+            <button type="submit" name="action" value="set" class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
+            <button type="submit"
+                    name="action"
+                    value="send_link"
+                    class="btn btn-secondary">
+              {% if edit_user.is_pending %}
+                {{ t("ui.profile.password.send_activation") }}
+              {% else %}
+                {{ t("ui.profile.password.send_reset") }}
+              {% endif %}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </section>
   {% else %}
     <form method="post"
           action="{{ url_for('change_password') }}"
@@ -115,53 +129,60 @@
   {% endif %}
 {% endif %}
 {% if show_notifications %}
-  <section class="admin-section" id="notification-settings">
-    <form method="post"
-          action="{{ url_for('update_notifications') }}"
-          class="admin-form-stack">
-      {% if edit_user.is_staff %}
-        <div class="admin-field">
-          <span class="label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
-          <p class="admin-field-hint">{{ t("ui.profile.settings.notify_new_ticket_hint") }}</p>
-          <label class="theme-gradient-switch mt-2">
-            <input type="checkbox"
-                   name="notify_new_ticket"
-                   value="1"
-                   {% if edit_user.notify_new_ticket %}checked{% endif %}>
-            <span class="theme-gradient-track" aria-hidden="true">
-              <span class="theme-gradient-thumb"></span>
-            </span>
-          </label>
-        </div>
-      {% endif %}
+  {% if is_admin_edit %}
+    <section class="admin-section">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
+      <div class="admin-narrow">
+  {% else %}
+    <section class="admin-section" id="notification-settings">
+  {% endif %}
+  <form method="post"
+        action="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}"
+        class="admin-form-stack">
+    {% if edit_user.is_staff %}
       <div class="admin-field">
-        <span class="label">{{ t("ui.profile.settings.notify_reply") }}</span>
-        <p class="admin-field-hint">{{ t("ui.profile.settings.notify_reply_hint") }}</p>
+        <span class="label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
+        <p class="admin-field-hint">{{ t("ui.profile.settings.notify_new_ticket_hint") }}</p>
         <label class="theme-gradient-switch mt-2">
           <input type="checkbox"
-                 name="notify_reply"
+                 name="notify_new_ticket"
                  value="1"
-                 {% if edit_user.notify_reply %}checked{% endif %}>
+                 {% if edit_user.notify_new_ticket %}checked{% endif %}>
           <span class="theme-gradient-track" aria-hidden="true">
             <span class="theme-gradient-thumb"></span>
           </span>
         </label>
       </div>
-      <div class="admin-field">
-        <span class="label">{{ t("ui.profile.settings.notify_ticket_update") }}</span>
-        <p class="admin-field-hint">{{ t("ui.profile.settings.notify_ticket_update_hint") }}</p>
-        <label class="theme-gradient-switch mt-2">
-          <input type="checkbox"
-                 name="notify_ticket_update"
-                 value="1"
-                 {% if edit_user.notify_ticket_update %}checked{% endif %}>
-          <span class="theme-gradient-track" aria-hidden="true">
-            <span class="theme-gradient-thumb"></span>
-          </span>
-        </label>
-      </div>
-      <button type="submit" class="btn btn-primary">{{ t("ui.profile.settings.notifications_save") }}</button>
-    </form>
+    {% endif %}
+    <div class="admin-field">
+      <span class="label">{{ t("ui.profile.settings.notify_reply") }}</span>
+      <p class="admin-field-hint">{{ t("ui.profile.settings.notify_reply_hint") }}</p>
+      <label class="theme-gradient-switch mt-2">
+        <input type="checkbox"
+               name="notify_reply"
+               value="1"
+               {% if edit_user.notify_reply %}checked{% endif %}>
+        <span class="theme-gradient-track" aria-hidden="true">
+          <span class="theme-gradient-thumb"></span>
+        </span>
+      </label>
+    </div>
+    <div class="admin-field">
+      <span class="label">{{ t("ui.profile.settings.notify_ticket_update") }}</span>
+      <p class="admin-field-hint">{{ t("ui.profile.settings.notify_ticket_update_hint") }}</p>
+      <label class="theme-gradient-switch mt-2">
+        <input type="checkbox"
+               name="notify_ticket_update"
+               value="1"
+               {% if edit_user.notify_ticket_update %}checked{% endif %}>
+        <span class="theme-gradient-track" aria-hidden="true">
+          <span class="theme-gradient-thumb"></span>
+        </span>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ t("ui.profile.settings.notifications_save") }}</button>
+  </form>
+  {% if is_admin_edit %}</div>{% endif %}
   </section>
 {% endif %}
 {% if show_appearance %}

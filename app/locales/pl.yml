@@ -220,13 +220,11 @@ ui:
       users: "Użytkownicy"
     dashboard:
       title: "Przegląd"
-      sub: "Szybki podgląd zasobów systemu."
       stat_projects: "Projekty"
       stat_users: "Użytkownicy"
       stat_new_user: "Nowy użytkownik"
     projects:
       title: "Projekty"
-      sub: "Twórz projekty i zarządzaj ich kluczami."
       new: "Nowy projekt"
       name: "Nazwa"
       name_placeholder: "Nazwa projektu"
@@ -247,7 +245,6 @@ ui:
       add_user: "Dodaj użytkownika"
     users:
       title: "Użytkownicy"
-      sub: "Role, status konta i edycja profili."
       new: "Nowy użytkownik"
       list: "Lista użytkowników"
       empty: "Brak użytkowników."
@@ -258,10 +255,8 @@ ui:
       unblock: "Odblokuj"
       edit_aria: "Edytuj {name}"
     user_new:
-      crumb: "Nowy"
       title: "Nowy użytkownik"
       sub: "Utwórz konto i wyślij link aktywacyjny na e-mail."
-      section: "Dane konta"
       role: "Rola"
       submit: "Utwórz i wyślij aktywację"
     user_edit:
@@ -375,6 +370,7 @@ flash:
     password_link_sent: "Wysłano e-mail z linkiem do ustawienia hasła."
     password_set: "Hasło zostało ustawione."
     activation_resent: "Wysłano ponownie link aktywacyjny."
+    notifications_updated: "Zapisano preferencje powiadomień."
 
 messages:
   auth:

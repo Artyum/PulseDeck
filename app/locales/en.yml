@@ -220,13 +220,11 @@ ui:
       users: "Users"
     dashboard:
       title: "Overview"
-      sub: "Quick overview of system resources."
       stat_projects: "Projects"
       stat_users: "Users"
       stat_new_user: "New user"
     projects:
       title: "Projects"
-      sub: "Create projects and manage their keys."
       new: "New project"
       name: "Name"
       name_placeholder: "Project name"
@@ -247,7 +245,6 @@ ui:
       add_user: "Add user"
     users:
       title: "Users"
-      sub: "Roles, account status and profile editing."
       new: "New user"
       list: "List of users"
       empty: "No users."
@@ -258,10 +255,8 @@ ui:
       unblock: "Unblock"
       edit_aria: "Edit {name}"
     user_new:
-      crumb: "New"
       title: "New user"
       sub: "Create an account and send an activation link by email."
-      section: "Account data"
       role: "Role"
       submit: "Create and send activation"
     user_edit:
@@ -375,6 +370,7 @@ flash:
     password_link_sent: "An email with a password link has been sent."
     password_set: "The password has been set."
     activation_resent: "The activation link has been resent."
+    notifications_updated: "Notification preferences saved."
 
 messages:
   auth:
