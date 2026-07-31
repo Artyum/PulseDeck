@@ -1517,7 +1517,7 @@
     align-items: stretch;
     min-height: calc(100vh - 3.75rem);
     margin: calc(-1.75rem * var(--space-scale)) calc(-1.5rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
-    background-color: color-mix(in oklab, var(--color-aside) 28%, var(--color-surface));
+    background-color: color-mix(in oklab, var(--color-aside) 14%, var(--color-surface));
     background-image: var(--rail-gradient);
     background-repeat: no-repeat;
     background-size: cover;
