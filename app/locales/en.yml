@@ -81,15 +81,18 @@ ui:
     nav:
       data: "Data"
       password: "Change password"
-      settings: "Settings"
+      notifications: "Notifications"
+      appearance: "Appearance"
     title:
       data: "Account data"
       password: "Change password"
-      settings: "Settings"
+      notifications: "Notifications"
+      appearance: "Appearance"
     title_doc:
       data: "Profile — {app}"
       password: "Change password — {app}"
-      settings: "Settings — {app}"
+      notifications: "Notifications — {app}"
+      appearance: "Appearance — {app}"
     field:
       first_name: "First name"
       last_name: "Last name"
@@ -113,6 +116,13 @@ ui:
       gradient_toggle: "Background gradient"
       density_title: "Spacing"
       font_title: "Font size"
+      notify_new_ticket: "New tickets"
+      notify_new_ticket_hint: "Email when a new ticket is created in your projects."
+      notify_reply: "Replies"
+      notify_reply_hint: "Email when someone replies on a ticket you're involved in."
+      notify_ticket_update: "Status, type and priority"
+      notify_ticket_update_hint: "Email when ticket status, type or priority changes."
+      notifications_save: "Save notifications"
     admin_all_projects_hint: "Administrators automatically have access to all projects."
   portal:
     empty:
@@ -355,6 +365,7 @@ flash:
     confirm_pending_email: "Confirm your new email before signing in."
     profile_updated: "Your profile has been updated."
     password_changed: "Your password has been changed."
+    notifications_updated: "Notification preferences saved."
     current_password_invalid: "Your current password is incorrect."
     confirm_link_invalid: "The confirmation link is invalid or has expired."
     email_confirmed: "Your email has been confirmed. Sign in with the new address."
@@ -407,6 +418,7 @@ messages:
     user_must_be_member: "The user must be a project member."
     invalid_status: "Invalid status."
     invalid_type: "Invalid type."
+    invalid_priority: "Invalid priority."
     select_user: "Select a user."
   uploads:
     empty: "Empty file."
@@ -510,17 +522,23 @@ email:
     title: "New reply in ticket: {title}"
     body: "A new reply was added to ticket: {title}"
     cta: "Open the thread"
-  status_change:
-    subject: "Status change — {title}"
-    title: "Status changed for ticket: {title}"
-    body: "The status changed for ticket: {title}"
-    new_status: "New status: {status}"
+  ticket_update:
+    subject: "Ticket update — {title}"
+    title: "Ticket updated: {title}"
+    body: "A field changed for ticket: {title}"
+    new_value: "New value: {value}"
     cta: "Open in {app}"
   assignment:
     subject: "Assignment — {title}"
     title: "You've been assigned a ticket: {title}"
     greeting: "Hi {name},"
     body: "You've been assigned the ticket: {title}"
+    cta: "Open in {app}"
+  unassignment:
+    subject: "Unassignment — {title}"
+    title: "You're no longer assigned: {title}"
+    greeting: "Hi {name},"
+    body: "You're no longer the assignee for ticket: {title}"
     cta: "Open in {app}"
   common:
     footer: "This message was sent by {app}."

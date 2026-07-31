@@ -11,8 +11,8 @@ report/
 data/uploads/*
 !data/uploads/.gitkeep
 frontend/static/css/app.css
-.env
 *.log
 .DS_Store
 deploy/env/.env.*
 !deploy/env/*.example
+.cursor/mcp.json

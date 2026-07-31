@@ -32,3 +32,15 @@ class TicketPriority(str, enum.Enum):
 class MagicTokenPurpose(str, enum.Enum):
     EMAIL_CONFIRM = "email_confirm"
     PASSWORD_SET = "password_set"
+
+
+class EmailOutboxPriority(str, enum.Enum):
+    AUTH = "auth"
+    TICKET = "ticket"
+
+
+class EmailOutboxStatus(str, enum.Enum):
+    PENDING = "pending"
+    SENDING = "sending"
+    SENT = "sent"
+    FAILED = "failed"

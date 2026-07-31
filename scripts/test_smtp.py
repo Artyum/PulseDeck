@@ -62,7 +62,7 @@ def main() -> int:
     os.environ.setdefault("STORAGE_SECRET", "mailpit-test-secret")
 
     from app.config import get_settings
-    from app.services.email import _env, _send_email_sync
+    from app.services.email import render_email_html, send_email_sync
 
     get_settings.cache_clear()
     settings = get_settings()
@@ -80,11 +80,13 @@ def main() -> int:
         last_name="Mailpit",
     )
     url = f"{settings.app_base_url}/auth/activate?token=mailpit-test-token"
-    html = _env.get_template("account_activate.html").render(
-        user=user,
-        url=url,
-        ttl_days=settings.auth_link_ttl_days,
-        app_name="PulseDeck",
+    html = render_email_html(
+        "account_activate.html",
+        {
+            "user": user,
+            "url": url,
+            "ttl_days": settings.auth_link_ttl_days,
+        },
     )
     subject = "PulseDeck — test Mailpit (aktywacja)"
 
@@ -92,7 +94,7 @@ def main() -> int:
         f"[SMTP] {settings.smtp_server}:{settings.smtp_port} ssl={settings.smtp_use_ssl}"
     )
     print(f"[SEND] {subject} → {recipient}")
-    if not _send_email_sync(recipient, subject, html):
+    if not send_email_sync(recipient, subject, html):
         print("BLAD — wysylka nieudana (szczegoly w logu).", file=sys.stderr)
         return 1
     print("OK — wiadomość wysłana (sprawdź UI Mailpit).")

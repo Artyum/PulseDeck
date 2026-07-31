@@ -59,6 +59,13 @@ class Settings(BaseSettings):
     smtp_pass: str = ""
     email_from: str = ""
 
+    mail_min_interval_ms: int = Field(
+        default=3000, validation_alias="MAIL_MIN_INTERVAL_MS"
+    )
+    mail_max_per_hour: int = Field(default=300, validation_alias="MAIL_MAX_PER_HOUR")
+    mail_max_attempts: int = Field(default=5, validation_alias="MAIL_MAX_ATTEMPTS")
+    mail_idle_ms: int = Field(default=1000, validation_alias="MAIL_IDLE_MS")
+
     auth_link_ttl_days: int = Field(default=7, validation_alias="AUTH_LINK_TTL_DAYS")
     email_confirm_ttl_minutes: int = Field(
         default=60, validation_alias="EMAIL_CONFIRM_TTL_MINUTES"

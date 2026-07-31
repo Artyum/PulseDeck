@@ -221,6 +221,23 @@ def update_profile_fields(
     return user
 
 
+def update_notification_prefs(
+    db: Session,
+    user: User,
+    *,
+    notify_new_ticket: bool,
+    notify_reply: bool,
+    notify_ticket_update: bool,
+) -> User:
+    if user.is_staff:
+        user.notify_new_ticket = notify_new_ticket
+    user.notify_reply = notify_reply
+    user.notify_ticket_update = notify_ticket_update
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 def request_email_change(
     db: Session, user: User, new_email: str, *, lang: str | None = None
 ) -> tuple[MagicToken, str]:
@@ -313,12 +330,12 @@ def create_password_link(
 
 
 def send_password_link(
-    db: Session, background, user: User, *, lang: str | None = None
+    db: Session, user: User, *, lang: str | None = None
 ) -> MagicToken:
     from app.services.email import notify_password_set
 
     token_row, raw = create_password_link(db, user, lang=lang)
-    notify_password_set(background, user, raw, lang=lang)
+    notify_password_set(db, user, raw, lang=lang)
     return token_row
 
 

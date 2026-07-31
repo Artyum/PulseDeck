@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Form, Request
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.config import get_settings
@@ -62,7 +62,7 @@ def _render_profile(
     error: str | None = None,
     success: str | None = None,
 ):
-    if section not in ("dane", "password", "settings"):
+    if section not in ("dane", "password", "notifications", "appearance"):
         section = "dane"
     return render(
         request,
@@ -125,14 +125,13 @@ def login_submit(
 @limiter.limit(_forgot_limit)
 def forgot_password(
     request: Request,
-    background_tasks: BackgroundTasks,
     db: DbSession,
     email: Annotated[str, Form()],
 ):
     lang = resolve_lang(request)
     user = auth_service.get_user_by_email(db, email)
     if user and auth_service.can_receive_password_link(user):
-        auth_service.send_password_link(db, background_tasks, user, lang=lang)
+        auth_service.send_password_link(db, user, lang=lang)
     return _render_login(request, forgot_sent=True)
 
 
@@ -152,15 +151,19 @@ def profile_password_page(request: Request, user: CurrentUser):
     return _render_profile(request, user, section="password")
 
 
-@router.get("/profile/settings", response_class=HTMLResponse)
-def profile_settings_page(request: Request, user: CurrentUser):
-    return _render_profile(request, user, section="settings")
+@router.get("/profile/notifications", response_class=HTMLResponse)
+def profile_notifications_page(request: Request, user: CurrentUser):
+    return _render_profile(request, user, section="notifications")
+
+
+@router.get("/profile/appearance", response_class=HTMLResponse)
+def profile_appearance_page(request: Request, user: CurrentUser):
+    return _render_profile(request, user, section="appearance")
 
 
 @router.post("/profile")
 def update_profile(
     request: Request,
-    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: DbSession,
     first_name: Annotated[str, Form()],
@@ -183,7 +186,7 @@ def update_profile(
             _token_row, raw = auth_service.request_email_change(
                 db, user, new_email, lang=lang
             )
-            notify_email_confirm(background_tasks, user, raw, new_email, lang=lang)
+            notify_email_confirm(db, user, raw, new_email, lang=lang)
             clear_user_session(request)
             return RedirectResponse("/login?email_confirm=1", status_code=303)
         db.commit()
@@ -226,6 +229,31 @@ def change_password(
         user,
         section="password",
         success=t(lang, "flash.auth.password_changed"),
+    )
+
+
+@router.post("/profile/notifications")
+def update_notifications(
+    request: Request,
+    user: CurrentUser,
+    db: DbSession,
+    notify_new_ticket: Annotated[str, Form()] = "",
+    notify_reply: Annotated[str, Form()] = "",
+    notify_ticket_update: Annotated[str, Form()] = "",
+):
+    lang = resolve_lang(request)
+    auth_service.update_notification_prefs(
+        db,
+        user,
+        notify_new_ticket=bool(notify_new_ticket),
+        notify_reply=bool(notify_reply),
+        notify_ticket_update=bool(notify_ticket_update),
+    )
+    return _render_profile(
+        request,
+        user,
+        section="notifications",
+        success=t(lang, "flash.auth.notifications_updated"),
     )
 
 

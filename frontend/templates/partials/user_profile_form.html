@@ -1,7 +1,8 @@
 {% from "partials/ticket_macros.html" import project_checkboxes, form_select_menu with context %}
 {% set show_data = is_admin_edit or profile_section|default('dane') == 'dane' %}
 {% set show_password = is_admin_edit or profile_section|default('dane') == 'password' %}
-{% set show_settings = not is_admin_edit and profile_section|default('dane') == 'settings' %}
+{% set show_notifications = not is_admin_edit and profile_section|default('dane') == 'notifications' %}
+{% set show_appearance = not is_admin_edit and profile_section|default('dane') == 'appearance' %}
 {% if show_data %}
   <form method="post"
         action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
@@ -113,7 +114,57 @@
     </form>
   {% endif %}
 {% endif %}
-{% if show_settings %}
+{% if show_notifications %}
+  <section class="admin-section" id="notification-settings">
+    <form method="post"
+          action="{{ url_for('update_notifications') }}"
+          class="admin-form-stack">
+      {% if edit_user.is_staff %}
+        <div class="admin-field">
+          <span class="label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
+          <p class="admin-field-hint">{{ t("ui.profile.settings.notify_new_ticket_hint") }}</p>
+          <label class="theme-gradient-switch mt-2">
+            <input type="checkbox"
+                   name="notify_new_ticket"
+                   value="1"
+                   {% if edit_user.notify_new_ticket %}checked{% endif %}>
+            <span class="theme-gradient-track" aria-hidden="true">
+              <span class="theme-gradient-thumb"></span>
+            </span>
+          </label>
+        </div>
+      {% endif %}
+      <div class="admin-field">
+        <span class="label">{{ t("ui.profile.settings.notify_reply") }}</span>
+        <p class="admin-field-hint">{{ t("ui.profile.settings.notify_reply_hint") }}</p>
+        <label class="theme-gradient-switch mt-2">
+          <input type="checkbox"
+                 name="notify_reply"
+                 value="1"
+                 {% if edit_user.notify_reply %}checked{% endif %}>
+          <span class="theme-gradient-track" aria-hidden="true">
+            <span class="theme-gradient-thumb"></span>
+          </span>
+        </label>
+      </div>
+      <div class="admin-field">
+        <span class="label">{{ t("ui.profile.settings.notify_ticket_update") }}</span>
+        <p class="admin-field-hint">{{ t("ui.profile.settings.notify_ticket_update_hint") }}</p>
+        <label class="theme-gradient-switch mt-2">
+          <input type="checkbox"
+                 name="notify_ticket_update"
+                 value="1"
+                 {% if edit_user.notify_ticket_update %}checked{% endif %}>
+          <span class="theme-gradient-track" aria-hidden="true">
+            <span class="theme-gradient-thumb"></span>
+          </span>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary">{{ t("ui.profile.settings.notifications_save") }}</button>
+    </form>
+  </section>
+{% endif %}
+{% if show_appearance %}
   <section class="admin-section" id="language-settings">
     <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
     <div class="admin-form-stack">

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Form, HTTPException, Request
+from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -230,7 +230,6 @@ def admin_users(request: Request, user: AdminUser, db: DbSession):
 @limiter.limit(_admin_user_create_limit)
 async def admin_user_create(
     request: Request,
-    background_tasks: BackgroundTasks,
     user: AdminUser,
     db: DbSession,
 ):
@@ -259,7 +258,7 @@ async def admin_user_create(
             project_ids=project_ids,
             lang=lang,
         )
-        auth_service.send_password_link(db, background_tasks, target, lang=lang)
+        auth_service.send_password_link(db, target, lang=lang)
     except ValueError as exc:
         db.rollback()
         return JSONResponse({"detail": str(exc)}, status_code=400)
@@ -335,7 +334,6 @@ def admin_user_active(
 @router.post("/users/{user_id}/password")
 def admin_user_password(
     request: Request,
-    background_tasks: BackgroundTasks,
     user_id: int,
     user: AdminUser,
     db: DbSession,
@@ -349,7 +347,7 @@ def admin_user_password(
         if action == "send_link":
             if not auth_service.can_receive_password_link(target):
                 raise ValueError(t(lang, "flash.auth.account_blocked"))
-            auth_service.send_password_link(db, background_tasks, target, lang=lang)
+            auth_service.send_password_link(db, target, lang=lang)
             ok = "password_link"
         elif action == "set":
             auth_service.require_matching_passwords(
@@ -369,7 +367,6 @@ def admin_user_password(
 @limiter.limit(_admin_user_create_limit)
 def admin_user_resend_activation(
     request: Request,
-    background_tasks: BackgroundTasks,
     user_id: int,
     user: AdminUser,
     db: DbSession,
@@ -381,7 +378,7 @@ def admin_user_resend_activation(
             raise ValueError(t(lang, "messages.admin.already_activated"))
         if not auth_service.can_receive_password_link(target):
             raise ValueError(t(lang, "flash.auth.account_blocked"))
-        auth_service.send_password_link(db, background_tasks, target, lang=lang)
+        auth_service.send_password_link(db, target, lang=lang)
     except ValueError as exc:
         return JSONResponse({"detail": str(exc)}, status_code=400)
     return _users_redirect(ok="activation_resent")

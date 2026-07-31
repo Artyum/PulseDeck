@@ -81,15 +81,18 @@ ui:
     nav:
       data: "Dane"
       password: "Zmiana hasła"
-      settings: "Ustawienia"
+      notifications: "Powiadomienia"
+      appearance: "Wygląd"
     title:
       data: "Dane konta"
       password: "Zmiana hasła"
-      settings: "Ustawienia"
+      notifications: "Powiadomienia"
+      appearance: "Wygląd"
     title_doc:
       data: "Profil — {app}"
       password: "Zmiana hasła — {app}"
-      settings: "Ustawienia — {app}"
+      notifications: "Powiadomienia — {app}"
+      appearance: "Wygląd — {app}"
     field:
       first_name: "Imię"
       last_name: "Nazwisko"
@@ -113,6 +116,13 @@ ui:
       gradient_toggle: "Gradient tła"
       density_title: "Odstępy"
       font_title: "Wielkość czcionki"
+      notify_new_ticket: "Nowe zgłoszenia"
+      notify_new_ticket_hint: "E-mail gdy w Twoich projektach powstanie nowe zgłoszenie."
+      notify_reply: "Odpowiedzi"
+      notify_reply_hint: "E-mail gdy ktoś odpowie w zgłoszeniu, którego dotyczy."
+      notify_ticket_update: "Status, typ i priorytet"
+      notify_ticket_update_hint: "E-mail przy zmianie statusu, typu lub priorytetu zgłoszenia."
+      notifications_save: "Zapisz powiadomienia"
     admin_all_projects_hint: "Administratorzy mają automatyczny dostęp do wszystkich projektów."
   portal:
     empty:
@@ -355,6 +365,7 @@ flash:
     confirm_pending_email: "Potwierdź nowy adres e-mail, zanim się zalogujesz."
     profile_updated: "Profil został zaktualizowany."
     password_changed: "Hasło zostało zmienione."
+    notifications_updated: "Zapisano preferencje powiadomień."
     current_password_invalid: "Obecne hasło jest nieprawidłowe."
     confirm_link_invalid: "Link potwierdzający jest nieważny lub wygasł."
     email_confirmed: "E-mail został potwierdzony. Zaloguj się nowym adresem."
@@ -407,6 +418,7 @@ messages:
     user_must_be_member: "Użytkownik musi być członkiem projektu."
     invalid_status: "Nieprawidłowy status."
     invalid_type: "Nieprawidłowy typ."
+    invalid_priority: "Nieprawidłowy priorytet."
     select_user: "Wybierz użytkownika."
   uploads:
     empty: "Pusty plik."
@@ -510,17 +522,23 @@ email:
     title: "Nowa odpowiedź w zgłoszeniu: {title}"
     body: "Dodano nową odpowiedź w zgłoszeniu: {title}"
     cta: "Otwórz wątek"
-  status_change:
-    subject: "Zmiana statusu — {title}"
-    title: "Zmieniono status zgłoszenia: {title}"
-    body: "Zmieniono status zgłoszenia: {title}"
-    new_status: "Nowy status: {status}"
+  ticket_update:
+    subject: "Aktualizacja zgłoszenia — {title}"
+    title: "Zaktualizowano zgłoszenie: {title}"
+    body: "Zmieniono pole w zgłoszeniu: {title}"
+    new_value: "Nowa wartość: {value}"
     cta: "Otwórz w {app}"
   assignment:
     subject: "Przypisanie — {title}"
     title: "Przypisano Ci zgłoszenie: {title}"
     greeting: "Cześć {name},"
     body: "Przypisano Ci zgłoszenie: {title}"
+    cta: "Otwórz w {app}"
+  unassignment:
+    subject: "Odpięcie — {title}"
+    title: "Nie jesteś już przypisany: {title}"
+    greeting: "Cześć {name},"
+    body: "Nie jesteś już obsługującym zgłoszenia: {title}"
     cta: "Otwórz w {app}"
   common:
     footer: "Ta wiadomość została wysłana przez {app}."

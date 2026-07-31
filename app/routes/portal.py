@@ -6,7 +6,6 @@ from typing import Annotated
 
 from fastapi import (
     APIRouter,
-    BackgroundTasks,
     File,
     Form,
     HTTPException,
@@ -35,7 +34,7 @@ from app.services.email import (
     notify_assignment,
     notify_new_comment,
     notify_new_ticket,
-    notify_status_change,
+    notify_ticket_update,
 )
 from app.services.uploads import (
     file_response_for_attachment,
@@ -273,7 +272,6 @@ def ticket_detail(
 async def create_ticket(
     request: Request,
     key: str,
-    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: DbSession,
     title: Annotated[str, Form()],
@@ -299,7 +297,7 @@ async def create_ticket(
     )
     await _attach_many(db, attachments, ticket_id=ticket.id, lang=lang)
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
-    notify_new_ticket(background_tasks, db, ticket)
+    notify_new_ticket(db, ticket)
     return RedirectResponse(ticket_path(ticket), status_code=303)
 
 
@@ -308,7 +306,6 @@ async def create_ticket(
 async def add_comment(
     request: Request,
     ticket_ref: str,
-    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: DbSession,
     content: Annotated[str, Form()],
@@ -318,7 +315,6 @@ async def add_comment(
     lang = resolve_lang(request)
     _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
     internal = bool(is_internal) and user.is_staff
-    prev_assignee = ticket.assignee_id
     comment = ticket_service.add_comment(
         db, ticket, user, content, is_internal=internal, lang=lang
     )
@@ -326,12 +322,7 @@ async def add_comment(
         db, attachments, ticket_id=ticket.id, comment_id=comment.id, lang=lang
     )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
-    notify_new_comment(background_tasks, db, ticket, user.id, is_internal=internal)
-    auto_assigned = (
-        not internal and prev_assignee is None and ticket.assignee_id == user.id
-    )
-    if auto_assigned:
-        notify_assignment(background_tasks, ticket, user)
+    notify_new_comment(db, ticket, user.id, is_internal=internal)
     return _ticket_mutation_response(request, db, user, ticket)
 
 
@@ -339,7 +330,6 @@ async def add_comment(
 def change_status(
     request: Request,
     ticket_ref: str,
-    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: DbSession,
     status: Annotated[str, Form()],
@@ -361,7 +351,8 @@ def change_status(
 
     def after(ticket: Ticket) -> None:
         if ticket.status != prev_status:
-            notify_status_change(background_tasks, db, ticket, user.id)
+            label = t(lang, f"enums.ticket_status.{ticket.status.value}")
+            notify_ticket_update(db, ticket, user.id, change_label=label)
 
     return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
@@ -370,20 +361,22 @@ def change_status(
 def reopen_ticket(
     request: Request,
     ticket_ref: str,
-    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: DbSession,
 ):
     lang = resolve_lang(request)
+
+    def after(ticket: Ticket) -> None:
+        label = t(lang, f"enums.ticket_status.{ticket.status.value}")
+        notify_ticket_update(db, ticket, user.id, change_label=label)
+
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
         lambda ticket: ticket_service.reopen_ticket(db, ticket, user, lang=lang),
-        after=lambda ticket: notify_status_change(
-            background_tasks, db, ticket, user.id
-        ),
+        after=after,
     )
 
 
@@ -425,15 +418,26 @@ def change_priority(
     priority: Annotated[str, Form()],
 ):
     lang = resolve_lang(request)
-    return _mutate_ticket(
-        request,
-        db,
-        user,
-        ticket_ref,
-        lambda ticket: ticket_service.set_priority(
-            db, ticket, user, TicketPriority(priority), lang=lang
-        ),
-    )
+    try:
+        new_priority = TicketPriority(priority)
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.invalid_priority")
+        ) from None
+
+    prev: TicketPriority | None = None
+
+    def mutate(ticket: Ticket) -> Ticket:
+        nonlocal prev
+        prev = ticket.priority
+        return ticket_service.set_priority(db, ticket, user, new_priority, lang=lang)
+
+    def after(ticket: Ticket) -> None:
+        if prev is not None and ticket.priority != prev:
+            label = t(lang, f"enums.ticket_priority.{ticket.priority.value}")
+            notify_ticket_update(db, ticket, user.id, change_label=label)
+
+    return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
 
 @router.post("/t/{ticket_ref}/type", response_class=HTMLResponse)
@@ -451,13 +455,20 @@ def change_type(
         raise HTTPException(
             status_code=400, detail=t(lang, "messages.tickets.invalid_type")
         ) from None
-    return _mutate_ticket(
-        request,
-        db,
-        user,
-        ticket_ref,
-        lambda ticket: ticket_service.set_type(db, ticket, user, new_type, lang=lang),
-    )
+
+    prev: TicketType | None = None
+
+    def mutate(ticket: Ticket) -> Ticket:
+        nonlocal prev
+        prev = ticket.type
+        return ticket_service.set_type(db, ticket, user, new_type, lang=lang)
+
+    def after(ticket: Ticket) -> None:
+        if prev is not None and ticket.type != prev:
+            label = t(lang, f"enums.ticket_type.{ticket.type.value}")
+            notify_ticket_update(db, ticket, user.id, change_label=label)
+
+    return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
 
 @router.post("/t/{ticket_ref}/tags", response_class=HTMLResponse)
@@ -502,24 +513,34 @@ def remove_tag(
 def assign(
     request: Request,
     ticket_ref: str,
-    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: DbSession,
     assignee_id: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     aid = int(assignee_id) if assignee_id else None
+    previous: User | None = None
+
+    def mutate(ticket: Ticket) -> Ticket:
+        nonlocal previous
+        previous = ticket.assignee
+        return ticket_service.assign_ticket(db, ticket, user, aid, lang=lang)
 
     def after(ticket: Ticket) -> None:
-        if ticket.assignee:
-            notify_assignment(background_tasks, ticket, ticket.assignee)
+        notify_assignment(
+            db,
+            ticket,
+            actor_id=user.id,
+            previous=previous,
+            new=ticket.assignee,
+        )
 
     return _mutate_ticket(
         request,
         db,
         user,
         ticket_ref,
-        lambda ticket: ticket_service.assign_ticket(db, ticket, user, aid, lang=lang),
+        mutate,
         after=after,
     )
 
@@ -548,7 +569,6 @@ def change_reporter(
 def self_assign(
     request: Request,
     ticket_ref: str,
-    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: DbSession,
 ):
@@ -559,7 +579,6 @@ def self_assign(
         user,
         ticket_ref,
         lambda ticket: ticket_service.self_assign(db, ticket, user, lang=lang),
-        after=lambda ticket: notify_assignment(background_tasks, ticket, user),
     )
 
 
