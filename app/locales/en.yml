@@ -310,12 +310,6 @@ ui:
     yesterday_at: "Yesterday at {time}"
     am: "AM"
     pm: "PM"
-    seconds: "{n} s"
-    minutes: "{n} min"
-    hours: "{n} h"
-    days: "{n} d"
-    months: "{n} mo"
-    years: "{n} y"
     month_abbr:
       1: "Jan"
       2: "Feb"

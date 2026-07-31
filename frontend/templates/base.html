@@ -77,6 +77,7 @@
   <body class="min-h-screen antialiased"
         data-datetime-prefs-locked="{{ '1' if datetime_prefs_locked else '0' }}"
         data-lang-storage-key="{{ lang_storage_key }}"
+        data-available-langs="{{ lang_choices|map(attribute='id') |join(',') }}"
         hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
     {% block body %}
     {% endblock body %}

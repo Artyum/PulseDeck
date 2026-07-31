@@ -16,7 +16,8 @@
       {% if can_edit %}
         <button type="button"
                 onclick="document.getElementById('edit-ticket').showModal()"
-                class="btn btn-ghost">{{ t("ui.ticket.edit") }}</button>
+                class="btn btn-ghost comment-action"
+                aria-label="{{ t('ui.ticket.edit') }}">{{ icon("edit") }}</button>
       {% endif %}
     </div>
     <p class="issue-description">{{ ticket.description }}</p>

@@ -561,7 +561,8 @@
     var navLang = (navigator.language || "").toString();
     var primary = navLang.toLowerCase().replace("_", "-").split("-")[0];
     var langKey = body.getAttribute("data-lang-storage-key") || "pulsedeck_lang";
-    var detectedLang = !readCookie(langKey) && (primary === "pl" || primary === "en") ? primary : "";
+    var availableLangs = (body.getAttribute("data-available-langs") || "").split(",").filter(Boolean);
+    var detectedLang = !readCookie(langKey) && availableLangs.indexOf(primary) >= 0 ? primary : "";
     postForm("/profile/datetime-prefs-auto", {
       timezone: tz,
       datetime_format: detectDatetimeFormat(navLang),
