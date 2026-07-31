@@ -1,7 +1,7 @@
 FROM node:22-alpine AS frontend
 WORKDIR /build
-COPY package.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY frontend ./frontend
 RUN npx tailwindcss -i frontend/static/css/tailwind.css -o frontend/static/css/app.css --minify
 

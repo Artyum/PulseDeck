@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pulsedeck
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pulsedeck}
+      POSTGRES_DB: pulsedeck
+    volumes:
+      - pulsedeck_preprod_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pulsedeck -d pulsedeck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    image: ${PULSEDECK_IMAGE:-ghcr.io/artyum/pulsedeck:main-latest}
+    env_file:
+      - env/.env.preprod
+    environment:
+      TZ: Europe/Warsaw
+      ALEMBIC_MAX_RETRIES: "20"
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8000"
+      UVICORN_PROXY_HEADERS: "true"
+    volumes:
+      - ../data/uploads:/app/data/uploads
+      - ../logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PULSEDECK_HTTP_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  mail:
+    image: ${PULSEDECK_IMAGE:-ghcr.io/artyum/pulsedeck:main-latest}
+    env_file:
+      - env/.env.preprod
+    environment:
+      TZ: Europe/Warsaw
+      ALEMBIC_MAX_RETRIES: "20"
+    entrypoint: ["/bin/sh", "/app/deploy/entrypoint_mail.sh"]
+    volumes:
+      - ../logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pulsedeck_preprod_pg:
