@@ -5,6 +5,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
+from starlette.responses import Response
 
 from app.config import get_settings
 from app.deps.auth import (
@@ -21,12 +22,30 @@ from app.routes.context import render
 from app.services import auth as auth_service
 from app.services.email import notify_email_confirm
 from app.utils.csrf import ensure_csrf_token
-from app.utils.i18n import resolve_lang, t
+from app.utils.i18n import (
+    LANG_STORAGE_KEY,
+    available_lang_ids,
+    normalize_lang,
+    resolve_lang,
+    t,
+)
 from app.utils.password import verify_password
 from app.utils.unsubscribe import apply_unsubscribe, parse_unsubscribe_token
 
 router = APIRouter(tags=["auth"])
 logger = logging.getLogger("pulsedeck.auth")
+
+_LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 5
+
+
+def _set_lang_cookie(response: Response, lang: str) -> None:
+    response.set_cookie(
+        LANG_STORAGE_KEY,
+        normalize_lang(lang),
+        max_age=_LANG_COOKIE_MAX_AGE,
+        path="/",
+        samesite="lax",
+    )
 
 
 def _login_limit() -> str:
@@ -125,8 +144,15 @@ def login_submit(
     clear_user_session(request)
     set_user_session(request, user)
     ensure_csrf_token(request)
+    cookie_lang = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
+    response = RedirectResponse("/", status_code=303)
+    if cookie_lang in available_lang_ids():
+        if cookie_lang != user.ui_lang:
+            auth_service.update_ui_lang(db, user, cookie_lang)
+    else:
+        _set_lang_cookie(response, user.ui_lang)
     logger.info("Login ok email=%s user_id=%s ip=%s", user.email, user.id, ip)
-    return RedirectResponse("/", status_code=303)
+    return response
 
 
 @router.post("/auth/forgot-password")
@@ -197,7 +223,7 @@ def update_profile(
         success_key = "flash.auth.profile_updated"
         if new_email != user.email:
             _, raw = auth_service.request_email_change(db, user, new_email, lang=lang)
-            notify_email_confirm(db, user, raw, new_email, lang=lang)
+            notify_email_confirm(db, user, raw, new_email)
             success_key = "flash.auth.email_confirm_sent"
         else:
             db.commit()
@@ -264,6 +290,19 @@ def update_notifications(
         section="notifications",
         success=t(lang, "flash.auth.notifications_updated"),
     )
+
+
+@router.post("/profile/language")
+def update_language(
+    request: Request,
+    user: CurrentUser,
+    db: DbSession,
+    lang: Annotated[str, Form()],
+):
+    auth_service.update_ui_lang(db, user, lang)
+    response = PlainTextResponse("ok")
+    _set_lang_cookie(response, lang)
+    return response
 
 
 def _render_confirm_email(

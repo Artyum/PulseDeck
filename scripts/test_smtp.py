@@ -103,7 +103,7 @@ def main() -> int:
     new_ticket_ctx, new_ticket_unsub = notify_ctx("notify_new_ticket")
     comment_ctx, comment_unsub = notify_ctx("notify_reply")
     update_ctx, update_unsub = notify_ctx(
-        "notify_ticket_update", change_label="Status → W trakcie"
+        "notify_ticket_update", change_key="enums.ticket_status.IN_PROGRESS"
     )
 
     samples = [

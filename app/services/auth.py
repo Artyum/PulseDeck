@@ -11,7 +11,7 @@ from app.models.enums import MagicTokenPurpose, UserRole
 from app.models.ticket import MagicToken
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
-from app.utils.i18n import DEFAULT_LANG, t
+from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.password import (
     hash_password,
     validate_password_strength,
@@ -236,6 +236,13 @@ def update_notification_prefs(
     return user
 
 
+def update_ui_lang(db: Session, user: User, lang: str) -> User:
+    user.ui_lang = normalize_lang(lang)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 def request_email_change(
     db: Session, user: User, new_email: str, *, lang: str | None = None
 ) -> tuple[MagicToken, str]:
@@ -333,7 +340,7 @@ def send_password_link(
     from app.services.email import notify_password_set
 
     token_row, raw = create_password_link(db, user, lang=lang)
-    notify_password_set(db, user, raw, lang=lang)
+    notify_password_set(db, user, raw)
     return token_row
 
 
@@ -372,7 +379,7 @@ def create_pending_user(
     project_ids: list[int],
     lang: str | None = None,
 ) -> User:
-    lang = lang or DEFAULT_LANG
+    lang = normalize_lang(lang)
     fn, ln = _require_names(first_name, last_name, lang=lang)
     normalized = normalize_email(email)
     if not normalized:
@@ -391,6 +398,7 @@ def create_pending_user(
         is_active=True,
         activated_at=None,
         password_hash=None,
+        ui_lang=lang,
     )
     db.add(user)
     db.flush()

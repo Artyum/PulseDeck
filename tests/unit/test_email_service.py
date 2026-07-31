@@ -203,6 +203,30 @@ class TestNotify:
 
         assert db_session.scalar(select(EmailOutbox)) is None
 
+    def test_notify_uses_recipient_ui_lang(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        staff_user.notify_new_ticket = True
+        staff_user.ui_lang = "pl"
+        db_session.commit()
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=client_user,
+            title="Lang",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        from sqlalchemy import select
+
+        row = db_session.scalar(
+            select(EmailOutbox).where(EmailOutbox.to_email == staff_user.email)
+        )
+        assert row is not None
+        assert 'lang="pl"' in row.html_body
+        assert "Nowe zgłoszenie" in row.subject
+
     def test_notify_ticket_update(
         self, db_session, project_with_members, client_user, staff_user
     ):
@@ -217,7 +241,7 @@ class TestNotify:
             ticket_type=TicketType.BUG,
         )
         email_service.notify_ticket_update(
-            db_session, ticket, staff_user.id, change_label="status"
+            db_session, ticket, staff_user.id, change_key="enums.ticket_status.DONE"
         )
         from sqlalchemy import select
 

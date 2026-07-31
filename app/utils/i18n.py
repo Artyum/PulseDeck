@@ -90,6 +90,16 @@ def available_lang_ids() -> frozenset[str]:
     return frozenset(_catalog()[0])
 
 
+def normalize_lang(code: str | None) -> str:
+    langs = available_lang_ids()
+    cleaned = (code or "").strip().lower()
+    if cleaned in langs:
+        return cleaned
+    if DEFAULT_LANG in langs:
+        return DEFAULT_LANG
+    return next(iter(langs), DEFAULT_LANG)
+
+
 def resolve_lang(request: Request | None = None, explicit: str | None = None) -> str:
     langs = available_lang_ids()
     if explicit and explicit in langs:
@@ -98,9 +108,7 @@ def resolve_lang(request: Request | None = None, explicit: str | None = None) ->
         cookie = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
         if cookie in langs:
             return cookie
-    if DEFAULT_LANG in langs:
-        return DEFAULT_LANG
-    return next(iter(langs), DEFAULT_LANG)
+    return normalize_lang(None)
 
 
 def t(lang: str, message_key: str, **kwargs: Any) -> str:

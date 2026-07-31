@@ -12,7 +12,7 @@ from app.db.session import get_db
 from app.middleware.session_sliding import SESSION_ACTIVITY_KEY
 from app.models.enums import UserRole
 from app.models.user import User
-from app.utils.i18n import resolve_lang, t
+from app.utils.i18n import LANG_STORAGE_KEY, available_lang_ids, resolve_lang, t
 
 SESSION_USER_ID_KEY = "user_id"
 SESSION_AUTH_EPOCH_KEY = "auth_epoch"
@@ -87,6 +87,11 @@ def require_user(request: Request, db: DbSession) -> User:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=t(resolve_lang(request), "messages.http.login_required"),
         )
+    cookie = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
+    if cookie in available_lang_ids() and cookie != user.ui_lang:
+        from app.services import auth as auth_service
+
+        auth_service.update_ui_lang(db, user, cookie)
     return user
 
 

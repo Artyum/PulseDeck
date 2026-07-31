@@ -478,7 +478,21 @@
     var value = el.value;
     if (!key || !value) return;
     writeCookie(key, value);
-    window.location.reload();
+    var csrf = document.querySelector('meta[name="csrf-token"]');
+    var token = csrf ? csrf.content : "";
+    var body = new FormData();
+    body.append("lang", value);
+    fetch("/profile/language", {
+      method: "POST",
+      body: body,
+      headers: token ? { "X-CSRF-Token": token } : {},
+      credentials: "same-origin",
+      redirect: "follow",
+    })
+      .catch(function () {})
+      .finally(function () {
+        window.location.reload();
+      });
   });
 
   document.querySelectorAll("[data-ui-storage-key]").forEach(function (root) {

@@ -22,7 +22,7 @@ from app.models.enums import EmailOutboxPriority, EmailOutboxStatus, UserRole
 from app.models.ticket import Ticket, TicketParticipant
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
-from app.utils.i18n import DEFAULT_LANG, t
+from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.unsubscribe import make_unsubscribe_url
 from app.utils.urls import ticket_label, ticket_path
 
@@ -235,19 +235,21 @@ def enqueue_email(
 def _enqueue_users(
     db: Session,
     recipients: Iterable[User],
-    subject: str,
+    subject_key: str,
     template: str,
     context: dict,
     *,
     pref: str,
-    lang: str = DEFAULT_LANG,
+    subject_kwargs: dict | None = None,
 ) -> None:
     seen: set[str] = set()
+    subject_kwargs = subject_kwargs or {}
     for user in recipients:
         email = (user.email or "").strip().lower()
         if not email or email in seen:
             continue
         seen.add(email)
+        lang = normalize_lang(user.ui_lang)
         unsub = make_unsubscribe_url(user.id, pref)
         html = render_email_html(
             template,
@@ -257,7 +259,7 @@ def _enqueue_users(
         enqueue_email(
             db,
             to_email=email,
-            subject=subject,
+            subject=t(lang, subject_key, **subject_kwargs),
             html_body=html,
             list_unsubscribe_url=unsub,
         )
@@ -343,7 +345,6 @@ def _send_pref_mails(
     key: str,
     pref: str,
     ctx: dict,
-    lang: str = DEFAULT_LANG,
 ) -> None:
     if not recipients:
         return
@@ -351,11 +352,11 @@ def _send_pref_mails(
     _enqueue_users(
         db,
         recipients,
-        t(lang, f"email.{key}.subject", label=ctx["label"], title=ticket.title),
+        f"email.{key}.subject",
         f"{key}.html",
         ctx,
         pref=pref,
-        lang=lang,
+        subject_kwargs={"label": ctx["label"], "title": ticket.title},
     )
 
 
@@ -377,10 +378,8 @@ def notify_email_confirm(
     user: User,
     token: str,
     to_email: str,
-    *,
-    lang: str | None = None,
 ) -> None:
-    lang = lang or DEFAULT_LANG
+    lang = normalize_lang(user.ui_lang)
     settings = get_settings()
     _enqueue_auth(
         db,
@@ -400,10 +399,8 @@ def notify_password_set(
     db: Session,
     user: User,
     token: str,
-    *,
-    lang: str | None = None,
 ) -> None:
-    lang = lang or DEFAULT_LANG
+    lang = normalize_lang(user.ui_lang)
     settings = get_settings()
     activation = user.activated_at is None
     _enqueue_auth(
@@ -467,7 +464,7 @@ def notify_new_comment(
 
 
 def notify_ticket_update(
-    db: Session, ticket: Ticket, actor_id: int, *, change_label: str
+    db: Session, ticket: Ticket, actor_id: int, *, change_key: str
 ) -> None:
     loaded = _load_ticket(db, ticket.id) or ticket
     by_id = {u.id: u for u in (*_staff_circle(db, loaded), *_client_circle(loaded))}
@@ -476,7 +473,7 @@ def notify_ticket_update(
         _pick(by_id.values(), exclude_id=actor_id, pref="notify_ticket_update"),
         key="ticket_update",
         pref="notify_ticket_update",
-        ctx=_ticket_mail_ctx(loaded, change_label=change_label),
+        ctx=_ticket_mail_ctx(loaded, change_key=change_key),
     )
 
 
@@ -499,10 +496,10 @@ def notify_assignment(
         targets.append((previous, "unassignment"))
     if not targets:
         return
-    lang = DEFAULT_LANG
     loaded = _load_ticket(db, ticket.id) or ticket
     ctx = _ticket_mail_ctx(loaded)
     for user, key in targets:
+        lang = normalize_lang(user.ui_lang)
         enqueue_email(
             db,
             to_email=user.email,

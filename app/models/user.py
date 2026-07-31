@@ -60,6 +60,9 @@ class User(Base):
     notify_ticket_update: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, server_default="true"
     )
+    ui_lang: Mapped[str] = mapped_column(
+        String(8), nullable=False, default="en", server_default="en"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

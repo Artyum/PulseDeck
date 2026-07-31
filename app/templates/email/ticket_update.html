@@ -2,5 +2,5 @@
 {% from "_macros.html" import ticket_mail with context %}
 {% block title %}{{ t('email.ticket_update.subject', label=label, title=ticket.title) }}{% endblock title %}
 {% block body %}
-  {{ ticket_mail('ticket_update', user.first_name, label, ticket.title, url, extra=t('email.ticket_update.new_value', value=change_label) ) }}
+  {{ ticket_mail('ticket_update', user.first_name, label, ticket.title, url, extra=t('email.ticket_update.new_value', value=t(change_key) ) ) }}
 {% endblock body %}

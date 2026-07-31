@@ -53,6 +53,18 @@ class TestResolveLang:
         )
         assert resolve_lang(request=request, explicit="en") == "en"
 
+    def test_normalize_lang_valid(self):
+        from app.utils.i18n import normalize_lang
+
+        assert normalize_lang("pl") == "pl"
+        assert normalize_lang("EN") == "en"
+
+    def test_normalize_lang_invalid(self):
+        from app.utils.i18n import normalize_lang
+
+        assert normalize_lang("de") == "en"
+        assert normalize_lang(None) == "en"
+
     def test_default_lang(self):
         assert resolve_lang() == "en"
 

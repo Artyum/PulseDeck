@@ -352,8 +352,12 @@ def change_status(
 
     def after(ticket: Ticket) -> None:
         if ticket.status != prev_status:
-            label = t(lang, f"enums.ticket_status.{ticket.status.value}")
-            notify_ticket_update(db, ticket, user.id, change_label=label)
+            notify_ticket_update(
+                db,
+                ticket,
+                user.id,
+                change_key=f"enums.ticket_status.{ticket.status.value}",
+            )
 
     return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
@@ -368,8 +372,12 @@ def reopen_ticket(
     lang = resolve_lang(request)
 
     def after(ticket: Ticket) -> None:
-        label = t(lang, f"enums.ticket_status.{ticket.status.value}")
-        notify_ticket_update(db, ticket, user.id, change_label=label)
+        notify_ticket_update(
+            db,
+            ticket,
+            user.id,
+            change_key=f"enums.ticket_status.{ticket.status.value}",
+        )
 
     return _mutate_ticket(
         request,
@@ -435,8 +443,12 @@ def change_priority(
 
     def after(ticket: Ticket) -> None:
         if prev is not None and ticket.priority != prev:
-            label = t(lang, f"enums.ticket_priority.{ticket.priority.value}")
-            notify_ticket_update(db, ticket, user.id, change_label=label)
+            notify_ticket_update(
+                db,
+                ticket,
+                user.id,
+                change_key=f"enums.ticket_priority.{ticket.priority.value}",
+            )
 
     return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
@@ -466,8 +478,12 @@ def change_type(
 
     def after(ticket: Ticket) -> None:
         if prev is not None and ticket.type != prev:
-            label = t(lang, f"enums.ticket_type.{ticket.type.value}")
-            notify_ticket_update(db, ticket, user.id, change_label=label)
+            notify_ticket_update(
+                db,
+                ticket,
+                user.id,
+                change_key=f"enums.ticket_type.{ticket.type.value}",
+            )
 
     return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
