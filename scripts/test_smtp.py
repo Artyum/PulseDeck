@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.load_env import apply_env_file
 
-DEFAULT_ENV = ROOT / "deploy" / "env" / ".env.dev"
+DEFAULT_ENV = ROOT / "deploy" / ".env.dev"
 DEFAULT_MAILPIT_HOST = "192.168.50.50"
 DEFAULT_MAILPIT_PORT = 1025
 
@@ -27,7 +27,7 @@ def main() -> int:
     parser.add_argument(
         "--env",
         default=str(DEFAULT_ENV),
-        help="Ścieżka do pliku .env (domyślnie deploy/env/.env.dev)",
+        help="Ścieżka do pliku .env (domyślnie deploy/.env.dev)",
     )
     parser.add_argument(
         "--mailpit",

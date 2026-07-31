@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     def validate_settings(self) -> Self:
         url = (self.database_url or "").strip()
         if not url:
-            msg = "DATABASE_URL is empty. Set it in deploy/env/.env.dev (start_app.ps1) or Docker env."
+            msg = "DATABASE_URL is empty. Set it in deploy/.env.dev (start_app.ps1) or Docker env."
             raise ValueError(msg)
         try:
             make_url(url)

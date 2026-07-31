@@ -10,7 +10,7 @@ alwaysApply: true
 - Save tokens, be concrete, no fluff.
 - Ask before destructive operations (install, file deletion, config changes). Safe commands (git status, read) run without asking.
 - The app and CSS watcher are already running (`start_app.ps1` + Tailwind watch window). Do not start or rebuild them automatically. If something does not work, ask for a manual start/restart.
-- Dev: <http://pulsedeck.lan:8005/> (`deploy/env/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
+- Dev: <http://pulsedeck.lan:8005/> (`deploy/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
 - Never run tests yourself — point out how to run them manually.
 - Windows environment — commands in PowerShell.
 - Simplify code and remove unnecessary leftovers.

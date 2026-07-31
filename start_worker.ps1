@@ -1,5 +1,5 @@
 param(
-  [string]$EnvFile = "deploy/env/.env.dev"
+  [string]$EnvFile = "deploy/.env.dev"
 )
 
 $ErrorActionPreference = "Stop"
@@ -32,5 +32,5 @@ if ($env:CONDA_DEFAULT_ENV -ne $CondaEnv) {
   Write-Error "conda env `"$CondaEnv`" nie istnieje"
 }
 
-Write-Host "[MAIL] Worker outbox (Ctrl+C aby zatrzymac)"
+Write-Host "[WORKER] Mail outbox (Ctrl+C aby zatrzymac)"
 python -m app.workers.mail

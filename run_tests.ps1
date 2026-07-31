@@ -71,7 +71,7 @@ function Resolve-TestFile {
     return $null
 }
 
-$envDev = Join-Path $Root 'deploy\env\.env.dev'
+$envDev = Join-Path $Root 'deploy\.env.dev'
 $envLegacy = Join-Path $Root '.env'
 if (Test-Path $envDev) {
     if (-not (Import-EnvFile $envDev)) { exit 1 }

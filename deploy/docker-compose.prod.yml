@@ -1,9 +1,9 @@
 services:
   web:
     image: ${PULSEDECK_IMAGE}
-    container_name: pulsedeck_preprod
+    container_name: pulsedeck_prod
     env_file:
-      - .env.preprod
+      - .env.prod
     volumes:
       - ./data/uploads:/app/data/uploads
       - ./logs:/app/logs
@@ -19,9 +19,9 @@ services:
 
   worker:
     image: ${PULSEDECK_IMAGE}
-    container_name: pulsedeck_preprod_worker
+    container_name: pulsedeck_prod_worker
     env_file:
-      - .env.preprod
+      - .env.prod
     entrypoint: ["/bin/sh", "/app/deploy/entrypoint_worker.sh"]
     volumes:
       - ./logs:/app/logs

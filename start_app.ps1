@@ -1,5 +1,5 @@
 param(
-  [string]$EnvFile = "deploy/env/.env.dev"
+  [string]$EnvFile = "deploy/.env.dev"
 )
 
 $ErrorActionPreference = "Stop"
