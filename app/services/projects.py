@@ -21,8 +21,11 @@ class ProjectSummary:
     tags: tuple[Tag, ...] = ()
 
 
-def list_projects(db: Session) -> list[Project]:
-    return list(db.scalars(select(Project).order_by(Project.name)).all())
+def list_projects(db: Session, *, active_only: bool = False) -> list[Project]:
+    stmt = select(Project)
+    if active_only:
+        stmt = stmt.where(Project.is_active.is_(True))
+    return list(db.scalars(stmt.order_by(Project.name)).all())
 
 
 def list_admins(db: Session) -> list[User]:
@@ -84,12 +87,15 @@ def list_project_summaries(db: Session) -> list[ProjectSummary]:
 
 def list_user_projects(db: Session, user: User) -> list[Project]:
     if user.is_admin:
-        return list_projects(db)
+        return list_projects(db, active_only=True)
     return list(
         db.scalars(
             select(Project)
             .join(ProjectMember, ProjectMember.project_id == Project.id)
-            .where(ProjectMember.user_id == user.id)
+            .where(
+                ProjectMember.user_id == user.id,
+                Project.is_active.is_(True),
+            )
             .order_by(Project.name)
         ).all()
     )
@@ -151,10 +157,14 @@ def get_project_by_key(db: Session, key: str) -> Project | None:
 
 
 def get_project_by_key_or_404(
-    db: Session, key: str, *, lang: str | None = None
+    db: Session,
+    key: str,
+    *,
+    lang: str | None = None,
+    require_active: bool = False,
 ) -> Project:
     project = get_project_by_key(db, key)
-    if not project:
+    if not project or (require_active and not project.is_active):
         raise HTTPException(
             status_code=404, detail=t(lang or DEFAULT_LANG, "messages.http.not_found")
         )
@@ -238,9 +248,11 @@ def update_project(
     return project
 
 
-def delete_project(db: Session, project: Project) -> None:
-    db.delete(project)
+def set_project_active(db: Session, project: Project, *, active: bool) -> Project:
+    project.is_active = active
     db.commit()
+    db.refresh(project)
+    return project
 
 
 def _membership_row(db: Session, project_id: int, user_id: int) -> ProjectMember | None:

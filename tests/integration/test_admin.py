@@ -64,13 +64,26 @@ class TestAdminProjects:
         )
         assert r.status_code in (200, 303, 422)
 
-    def test_delete_project(self, client, admin_user, project_with_members):
+    def test_toggle_project_active(
+        self, client, db_session, admin_user, project_with_members
+    ):
         _login_admin(client)
         r = client.post(
-            f"/admin/projects/{project_with_members.key}/delete",
+            f"/admin/projects/{project_with_members.key}/active",
+            data={"active": "0"},
             follow_redirects=False,
         )
         assert r.status_code == 303
+        db_session.refresh(project_with_members)
+        assert project_with_members.is_active is False
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/active",
+            data={"active": "1"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+        db_session.refresh(project_with_members)
+        assert project_with_members.is_active is True
 
     def test_add_project_member(
         self, client, db_session, admin_user, project_with_members, client_user

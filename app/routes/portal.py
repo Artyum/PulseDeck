@@ -55,7 +55,9 @@ def _upload_limit() -> str:
 
 
 def _load_project(db: Session, key: str, user: User, *, lang: str) -> Project:
-    project = project_service.get_project_by_key_or_404(db, key, lang=lang)
+    project = project_service.get_project_by_key_or_404(
+        db, key, lang=lang, require_active=True
+    )
     ticket_service.require_project_access(db, user, project.id, lang=lang)
     return project
 
@@ -71,11 +73,10 @@ def _load_ticket(
     db: Session, ticket_ref: str, user: User, *, lang: str
 ) -> tuple[Project, Ticket]:
     key, number = _parse_ticket_ref(ticket_ref, lang=lang)
-    project = project_service.get_project_by_key_or_404(db, key, lang=lang)
+    project = _load_project(db, key, user, lang=lang)
     ticket = ticket_service.get_ticket_by_project_number(db, project.id, number)
     if not ticket:
         raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
-    ticket_service.require_project_access(db, user, project.id, lang=lang)
     return project, ticket
 
 

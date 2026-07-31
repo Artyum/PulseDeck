@@ -31,10 +31,10 @@ ui:
     title: "Confirmation"
     message_default: "Are you sure you want to continue?"
     continue: "Continue?"
-    delete_project:
-      title: "Delete project?"
-      message: "This action cannot be undone. Project “{name}” ({key}) will be deleted."
-      action: "Delete"
+    disable_project:
+      title: "Disable project?"
+      message: "Project “{name}” ({key}) will be disabled and hidden from the portal."
+      action: "Disable"
     delete_tag:
       title: "Delete tag?"
       message: "Are you sure you want to delete tag “{name}”? It will be removed from all tickets."
@@ -241,6 +241,9 @@ ui:
       meta: "{members} members · {tickets} tickets"
       empty: "No projects. Create the first one above."
       edit_aria: "Edit {name}"
+      disabled: "Disabled"
+      disable: "Disable"
+      enable: "Enable"
     project:
       open_portal: "Open in portal"
       settings: "Settings"

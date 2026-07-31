@@ -29,6 +29,10 @@ def _admin_project(db: Session, key: str, *, lang: str | None = None) -> Project
     return project_service.get_project_by_key_or_404(db, key, lang=lang)
 
 
+def _form_truthy(value: str) -> bool:
+    return value in ("1", "true", "on")
+
+
 def _get_user_or_404(db: Session, user_id: int, *, lang: str | None = None) -> User:
     target = db.get(User, user_id)
     if not target:
@@ -85,11 +89,16 @@ def create_project(
     return RedirectResponse("/admin/projects", status_code=303)
 
 
-@router.post("/projects/{key}/delete")
-def delete_project(key: str, user: AdminUser, db: DbSession):
+@router.post("/projects/{key}/active")
+def admin_project_active(
+    key: str,
+    user: AdminUser,
+    db: DbSession,
+    active: Annotated[str, Form()],
+):
     project = project_service.get_project_by_key(db, key)
     if project:
-        project_service.delete_project(db, project)
+        project_service.set_project_active(db, project, active=_form_truthy(active))
     return RedirectResponse("/admin/projects", status_code=303)
 
 
@@ -344,7 +353,7 @@ def admin_user_active(
                 db,
                 target,
                 actor=user,
-                active=active in ("1", "true", "on"),
+                active=_form_truthy(active),
                 lang=lang,
             )
         except ValueError:

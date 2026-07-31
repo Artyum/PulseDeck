@@ -31,10 +31,10 @@ ui:
     title: "Potwierdzenie"
     message_default: "Czy na pewno chcesz kontynuować?"
     continue: "Kontynuować?"
-    delete_project:
-      title: "Usunąć projekt?"
-      message: "Tej operacji nie można cofnąć. Projekt „{name}” ({key}) zostanie usunięty."
-      action: "Usuń"
+    disable_project:
+      title: "Wyłączyć projekt?"
+      message: "Projekt „{name}” ({key}) zostanie wyłączony i zniknie z portalu."
+      action: "Wyłącz"
     delete_tag:
       title: "Usunąć tag?"
       message: "Czy na pewno usunąć tag „{name}”? Zostanie usunięty ze wszystkich zgłoszeń."
@@ -241,6 +241,9 @@ ui:
       meta: "{members} członków · {tickets} zgłoszeń"
       empty: "Brak projektów. Utwórz pierwszy powyżej."
       edit_aria: "Edytuj {name}"
+      disabled: "Wyłączony"
+      disable: "Wyłącz"
+      enable: "Włącz"
     project:
       open_portal: "Otwórz w portalu"
       settings: "Ustawienia"

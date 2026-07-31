@@ -52,6 +52,11 @@
             <p class="admin-entity-title">
               <span class="admin-entity-name">{{ p.name }}</span>
               <span class="issue-key">{{ p.key }}</span>
+              {% if not p.is_active %}
+                <span class="admin-entity-badges">
+                  <span class="chip chip-blocked">{{ t("ui.admin.projects.disabled") }}</span>
+                </span>
+              {% endif %}
             </p>
             <p class="admin-entity-meta">
               {% if p.description %}{{ p.description }} ·{% endif %}
@@ -63,12 +68,20 @@
             <a href="{{ url_for('project_detail', key=p.key) }}"
                class="btn btn-secondary">{{ t("ui.common.edit") }}</a>
             <form method="post"
-                  action="{{ url_for('delete_project', key=p.key) }}"
-                  data-confirm-title="{{ t('ui.confirm.delete_project.title') }}"
-                  data-confirm="{{ t('ui.confirm.delete_project.message', name=p.name, key=p.key) }}"
-                  data-confirm-action="{{ t('ui.confirm.delete_project.action') }}"
-                  data-confirm-danger>
-              <button type="submit" class="btn btn-danger">{{ t("ui.common.delete") }}</button>
+                  action="{{ url_for('admin_project_active', key=p.key) }}"
+                  {% if p.is_active %}
+                  data-confirm-title="{{ t('ui.confirm.disable_project.title') }}"
+                  data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}"
+                  data-confirm-action="{{ t('ui.confirm.disable_project.action') }}"
+                  data-confirm-danger
+                  {% endif %}>
+              {% if p.is_active %}
+                <input type="hidden" name="active" value="0">
+                <button type="submit" class="btn btn-danger">{{ t("ui.admin.projects.disable") }}</button>
+              {% else %}
+                <input type="hidden" name="active" value="1">
+                <button type="submit" class="btn btn-primary">{{ t("ui.admin.projects.enable") }}</button>
+              {% endif %}
             </form>
           </div>
           <details class="admin-entity-details">
