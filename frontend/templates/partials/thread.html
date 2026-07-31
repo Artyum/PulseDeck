@@ -9,7 +9,6 @@
   {% endif %}
   {% if comments %}
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
-    {% set ns = namespace(prev=None) %}
     {% for c in comments %}
       <article class="comment {% if c.author and c.author.is_staff %}comment-staff{% endif %}{% if c.is_internal %} comment-internal{% endif %}"
                {% if can_edit_comments %}x-data="{ editing: false }"{% endif %}>
@@ -48,9 +47,8 @@
                   {% endif %}
                 </span>
               {% endif %}
-              <span class="comment-when">{{ c.created_at.strftime("%Y-%m-%d %H:%M") if c.created_at else '' }}</span>
+              <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
             </span>
-            {% if ns.prev %}<span class="comment-gap">+{{ ns.prev|gap_between(c.created_at) }}</span>{% endif %}
           </span>
         </header>
         <p class="comment-body"
@@ -77,7 +75,6 @@
         {% endif %}
         {{ attachment_list(c.attachments, 'mt-3') }}
       </article>
-      {% set ns.prev = c.created_at %}
     {% endfor %}
   {% endif %}
   {% if can_comment %}

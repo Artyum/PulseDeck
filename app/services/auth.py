@@ -3,7 +3,8 @@ import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, or_, select, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
@@ -18,6 +19,7 @@ from app.utils.password import (
     verify_password,
 )
 from app.utils.phone import normalize_phone
+from app.utils.timefmt import normalize_datetime_format, normalize_timezone
 
 logger = logging.getLogger("pulsedeck.auth")
 
@@ -241,6 +243,47 @@ def update_ui_lang(db: Session, user: User, lang: str) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+
+def update_datetime_prefs(
+    db: Session,
+    user: User,
+    *,
+    datetime_format: str,
+    timezone: str,
+) -> User:
+    user.datetime_format = normalize_datetime_format(datetime_format)
+    user.timezone = normalize_timezone(timezone)
+    user.datetime_prefs_locked = True
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def apply_auto_datetime_prefs(
+    db: Session,
+    user: User,
+    *,
+    timezone: str,
+    datetime_format: str,
+    ui_lang: str | None = None,
+) -> bool:
+    values: dict = {
+        "datetime_format": normalize_datetime_format(datetime_format),
+        "timezone": normalize_timezone(timezone),
+        "datetime_prefs_locked": True,
+    }
+    if ui_lang is not None:
+        values["ui_lang"] = normalize_lang(ui_lang)
+    result = db.execute(
+        update(User)
+        .where(User.id == user.id, User.datetime_prefs_locked.is_(False))
+        .values(**values)
+    )
+    db.commit()
+    db.refresh(user)
+    rowcount = result.rowcount if isinstance(result, CursorResult) else 0
+    return bool(rowcount)
 
 
 def request_email_change(

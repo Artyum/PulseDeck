@@ -52,10 +52,10 @@
         {{ status_chip(tkt.status) }}
         {{ priority_chip(tkt.priority) }}
       </div>
-      {% if tkt.author %}
-        <div class="ticket-row-author">
-          <span class="ticket-row-author-label">{{ t("ui.ticket.reporter") }}</span>
-          <span>{{ tkt.author.display_name }}</span>
+      {% if tkt.updated_at %}
+        <div class="ticket-row-activity">
+          <span class="ticket-row-activity-label">{{ t("ui.portal.feed.updated") }}</span>
+          <span>{{ tkt.updated_at|format_dt }}</span>
         </div>
       {% endif %}
     </div>

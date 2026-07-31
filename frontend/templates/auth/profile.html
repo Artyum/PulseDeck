@@ -1,36 +1,17 @@
 {% extends "auth/base_profile.html" %}
-{% block title %}
-  {% if profile_section == 'password' %}
-    {{ t('ui.profile.title_doc.password', app=app_name) }}
-  {% elif profile_section == 'notifications' %}
-    {{ t('ui.profile.title_doc.notifications', app=app_name) }}
-  {% elif profile_section == 'appearance' %}
-    {{ t('ui.profile.title_doc.appearance', app=app_name) }}
-  {% else %}
-    {{ t('ui.profile.title_doc.data', app=app_name) }}
-  {% endif %}
-{% endblock title %}
+{% set section_key = profile_section if profile_section in ('data', 'password', 'notifications', 'appearance') else 'profile' %}
+{% block title %}{{ t('ui.profile.title_doc.' ~ section_key, app=app_name) }}{% endblock title %}
 {% block content %}
   <div class="admin-page-head">
     <div>
-      {% if profile_section == 'password' %}
-        <h1 class="issue-title">{{ t("ui.profile.title.password") }}</h1>
-      {% elif profile_section == 'notifications' %}
-        <h1 class="issue-title">{{ t("ui.profile.title.notifications") }}</h1>
-      {% elif profile_section == 'appearance' %}
-        <h1 class="issue-title">{{ t("ui.profile.title.appearance") }}</h1>
-      {% else %}
-        <h1 class="issue-title">{{ t("ui.profile.title.data") }}</h1>
-      {% endif %}
+      <h1 class="issue-title">{{ t("ui.profile.title." ~ section_key) }}</h1>
     </div>
   </div>
   {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
   {% if success %}<p class="alert alert-success admin-alert">{{ success }}</p>{% endif %}
-  {% if profile_section == 'appearance' %}
+  {% if profile_section in ('appearance', 'notifications') %}
     <div class="admin-prefs">{% include "partials/user_profile_form.html" %}</div>
   {% else %}
-    <section class="admin-section">
-      <div class="admin-narrow">{% include "partials/user_profile_form.html" %}</div>
-    </section>
+    <div class="admin-narrow">{% include "partials/user_profile_form.html" %}</div>
   {% endif %}
 {% endblock content %}

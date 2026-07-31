@@ -1,18 +1,28 @@
 __pycache__/
-/! Docs/
 *.py[cod]
+
 .venv/
 venv/
+
 node_modules/
+
 .pytest_cache/
 .ruff_cache/
-logs/
+.coverage
+htmlcov/
 report/
+
+logs/
+*.log
+
 data/uploads/*
 !data/uploads/.gitkeep
 frontend/static/css/app.css
-*.log
-.DS_Store
+
+/! Docs/
+
 deploy/.env.*
 !deploy/.env.*.example
+
+.DS_Store
 .cursor/mcp.json

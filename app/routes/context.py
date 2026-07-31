@@ -6,6 +6,7 @@ from types import SimpleNamespace
 
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
+from jinja2 import pass_context
 
 from app.config import get_settings, project_root
 from app.models.enums import (
@@ -38,7 +39,15 @@ from app.utils.themes import (
     THEME_GRADIENT_STORAGE_KEY,
     THEME_STORAGE_KEY,
 )
-from app.utils.timefmt import gap_between
+from app.utils.timefmt import (
+    DEFAULT_DATETIME_FORMAT,
+    DEFAULT_TIMEZONE,
+    format_datetime,
+    list_datetime_formats,
+    list_timezones,
+    normalize_datetime_format,
+    normalize_timezone,
+)
 from app.utils.urls import (
     admin_project_path,
     attachment_path,
@@ -50,7 +59,19 @@ from app.utils.urls import (
 logger = logging.getLogger("pulsedeck.app")
 
 _templates = Jinja2Templates(directory=str(project_root() / "frontend" / "templates"))
-_templates.env.filters["gap_between"] = gap_between
+
+
+@pass_context
+def _format_dt_filter(ctx, value):
+    return format_datetime(
+        value,
+        ctx.get("ui_datetime_format"),
+        tz=ctx.get("ui_timezone"),
+        lang=ctx.get("ui_lang"),
+    )
+
+
+_templates.env.filters["format_dt"] = _format_dt_filter
 _templates.env.filters["project_path"] = project_path
 _templates.env.filters["ticket_path"] = ticket_path
 _templates.env.filters["ticket_label"] = ticket_label
@@ -115,6 +136,11 @@ def common_context(request: Request, **extra) -> dict:
         "ui_font_size": DEFAULT_FONT_SIZE,
         "font_size_choices": _appearance_choices(lang, "font_size", FONT_SIZE_CHOICES),
         "font_size_storage_key": FONT_SIZE_STORAGE_KEY,
+        "ui_datetime_format": DEFAULT_DATETIME_FORMAT,
+        "ui_timezone": DEFAULT_TIMEZONE,
+        "datetime_prefs_locked": True,
+        "datetime_format_choices": (),
+        "timezone_choices": (),
         "ticket_types": TicketType,
         "ticket_statuses": TicketStatus,
         "ticket_priorities": TicketPriority,
@@ -132,6 +158,16 @@ def common_context(request: Request, **extra) -> dict:
 
     ctx["t"] = _t
     ctx.update(extra)
+    user = ctx.get("user")
+    if user is not None:
+        ui_tz = normalize_timezone(user.timezone)
+        ui_fmt = normalize_datetime_format(user.datetime_format)
+        ctx["ui_timezone"] = ui_tz
+        ctx["ui_datetime_format"] = ui_fmt
+        ctx["datetime_prefs_locked"] = bool(user.datetime_prefs_locked)
+        if ctx.get("profile_section") == "profile":
+            ctx["datetime_format_choices"] = list_datetime_formats(lang, tz=ui_tz)
+            ctx["timezone_choices"] = list_timezones(current=ui_tz)
     return ctx
 
 

@@ -448,6 +448,40 @@
     btn.click();
   });
 
+  function csrfToken() {
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.content : "";
+  }
+
+  function postForm(url, fields) {
+    var body = new FormData();
+    Object.keys(fields).forEach(function (k) {
+      if (fields[k] != null && fields[k] !== "") body.append(k, fields[k]);
+    });
+    var token = csrfToken();
+    return fetch(url, {
+      method: "POST",
+      body: body,
+      headers: token ? { "X-CSRF-Token": token } : {},
+      credentials: "same-origin",
+      redirect: "follow",
+    });
+  }
+
+  function detectDatetimeFormat(locale) {
+    var lower = (locale || "").toLowerCase().replace("_", "-");
+    var primary = lower.split("-")[0];
+    if (lower.indexOf("en-us") === 0 || lower.indexOf("en-ph") === 0) return "US_SLASH";
+    if (lower.indexOf("en-gb") === 0 || lower.indexOf("en-au") === 0 || lower.indexOf("en-nz") === 0 || lower.indexOf("en-ie") === 0) {
+      return "UK_SLASH";
+    }
+    if (primary === "sv") return "ISO_8601";
+    if ("pl de cs sk hu ro bg uk ru hr sl sr fr it es pt nl da fi no".split(" ").indexOf(primary) >= 0) {
+      return "EU_DOT";
+    }
+    return "ISO_8601";
+  }
+
   document.addEventListener("change", function (ev) {
     var el = ev.target;
     if (!(el instanceof HTMLElement)) return;
@@ -472,23 +506,39 @@
       syncPrefPicker(root);
       return;
     }
+    var prefsRoot = el.closest("[data-datetime-prefs]");
+    if (prefsRoot && el.hasAttribute("data-datetime-pref") && (el instanceof HTMLSelectElement || el.hasAttribute("data-form-select-input"))) {
+      var prefsUrl = prefsRoot.getAttribute("data-datetime-prefs-url");
+      var formatInput = prefsRoot.querySelector('[data-datetime-pref="format"]');
+      var tzInput = prefsRoot.querySelector('[data-datetime-pref="timezone"]');
+      if (!prefsUrl || !formatInput || !tzInput) return;
+      postForm(prefsUrl, {
+        datetime_format: formatInput.value,
+        timezone: tzInput.value,
+      }).catch(function () {});
+      return;
+    }
+    var notifRoot = el.closest("[data-notif-prefs]");
+    if (notifRoot && el.hasAttribute("data-notif-pref")) {
+      var notifUrl = notifRoot.getAttribute("data-notif-prefs-url");
+      if (!notifUrl) return;
+      var newTicket = notifRoot.querySelector('[data-notif-pref="new_ticket"]');
+      var reply = notifRoot.querySelector('[data-notif-pref="reply"]');
+      var update = notifRoot.querySelector('[data-notif-pref="update"]');
+      postForm(notifUrl, {
+        notify_new_ticket: newTicket && newTicket.checked ? "1" : "",
+        notify_reply: reply && reply.checked ? "1" : "",
+        notify_ticket_update: update && update.checked ? "1" : "",
+      }).catch(function () {});
+      return;
+    }
     if (el.getAttribute("data-ui-cookie") !== "1") return;
     if (!(el instanceof HTMLSelectElement) && !el.hasAttribute("data-form-select-input")) return;
     var key = el.getAttribute("data-ui-storage-key");
     var value = el.value;
     if (!key || !value) return;
     writeCookie(key, value);
-    var csrf = document.querySelector('meta[name="csrf-token"]');
-    var token = csrf ? csrf.content : "";
-    var body = new FormData();
-    body.append("lang", value);
-    fetch("/profile/language", {
-      method: "POST",
-      body: body,
-      headers: token ? { "X-CSRF-Token": token } : {},
-      credentials: "same-origin",
-      redirect: "follow",
-    })
+    postForm("/profile/language", { lang: value })
       .catch(function () {})
       .finally(function () {
         window.location.reload();
@@ -499,4 +549,27 @@
     if (root.matches("select") || root.hasAttribute("data-form-select-input")) return;
     syncPrefPicker(root);
   });
+
+  (function probeDatetimePrefs() {
+    var body = document.body;
+    if (!body || body.getAttribute("data-datetime-prefs-locked") !== "0") return;
+    var tz = "";
+    try {
+      tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    } catch (e) {}
+    if (!tz) return;
+    var navLang = (navigator.language || "").toString();
+    var primary = navLang.toLowerCase().replace("_", "-").split("-")[0];
+    var langKey = body.getAttribute("data-lang-storage-key") || "pulsedeck_lang";
+    var detectedLang = !readCookie(langKey) && (primary === "pl" || primary === "en") ? primary : "";
+    postForm("/profile/datetime-prefs-auto", {
+      timezone: tz,
+      datetime_format: detectDatetimeFormat(navLang),
+      lang: detectedLang,
+    })
+      .then(function (r) {
+        if (r.status === 200) window.location.reload();
+      })
+      .catch(function () {});
+  })();
 })();

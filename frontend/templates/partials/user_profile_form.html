@@ -1,9 +1,34 @@
 {% from "partials/ticket_macros.html" import project_checkboxes, form_select_menu with context %}
 {% from "partials/icons.html" import icon %}
-{% set show_data = is_admin_edit or profile_section|default('dane') == 'dane' %}
-{% set show_password = is_admin_edit or profile_section|default('dane') == 'password' %}
-{% set show_notifications = is_admin_edit or profile_section|default('dane') == 'notifications' %}
-{% set show_appearance = not is_admin_edit and profile_section|default('dane') == 'appearance' %}
+{% set sec = profile_section|default('profile') %}
+{% set show_profile = not is_admin_edit and sec == 'profile' %}
+{% set show_data = is_admin_edit or sec == 'data' %}
+{% set show_password = is_admin_edit or sec == 'password' %}
+{% set show_notifications = is_admin_edit or sec == 'notifications' %}
+{% set show_appearance = not is_admin_edit and sec == 'appearance' %}
+{% if show_profile %}
+  <section class="admin-section" id="language-settings">
+    <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
+    <div class="admin-form-stack">
+      {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', class_name='max-w-xs', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
+    </div>
+  </section>
+  <section class="admin-section" id="datetime-settings">
+    <h2 class="issue-section-title">{{ t("ui.profile.settings.datetime_title") }}</h2>
+    <div class="admin-form-stack"
+         data-datetime-prefs
+         data-datetime-prefs-url="{{ url_for('update_datetime_prefs') }}">
+      <div class="admin-field">
+        <span class="label">{{ t("ui.profile.settings.datetime_format") }}</span>
+        {{ form_select_menu('datetime_format', t('ui.profile.settings.datetime_format') , datetime_format_choices, ui_datetime_format, value_attr='id', id='ui-datetime-format', class_name='max-w-md', input_attrs='data-datetime-pref="format"') }}
+      </div>
+      <div class="admin-field">
+        <span class="label">{{ t("ui.profile.settings.timezone") }}</span>
+        {{ form_select_menu('timezone', t('ui.profile.settings.timezone') , timezone_choices, ui_timezone, value_attr='id', id='ui-timezone', class_name='max-w-md', input_attrs='data-datetime-pref="timezone"') }}
+      </div>
+    </div>
+  </section>
+{% endif %}
 {% if show_data %}
   {% if is_admin_edit %}
     <section class="admin-section">
@@ -139,7 +164,8 @@
       {% endif %}
       <form method="post"
             action="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}"
-            class="admin-form-stack">
+            class="admin-form-stack"
+            {% if not is_admin_edit %}data-notif-prefs data-notif-prefs-url="{{ url_for('update_notifications') }}"{% endif %}>
         {% if edit_user.is_staff %}
           <div class="admin-field">
             <span class="label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
@@ -148,6 +174,7 @@
               <input type="checkbox"
                      name="notify_new_ticket"
                      value="1"
+                     data-notif-pref="new_ticket"
                      {% if edit_user.notify_new_ticket %}checked{% endif %}>
               <span class="theme-gradient-track" aria-hidden="true">
                 <span class="theme-gradient-thumb"></span>
@@ -162,6 +189,7 @@
             <input type="checkbox"
                    name="notify_reply"
                    value="1"
+                   data-notif-pref="reply"
                    {% if edit_user.notify_reply %}checked{% endif %}>
             <span class="theme-gradient-track" aria-hidden="true">
               <span class="theme-gradient-thumb"></span>
@@ -175,24 +203,21 @@
             <input type="checkbox"
                    name="notify_ticket_update"
                    value="1"
+                   data-notif-pref="update"
                    {% if edit_user.notify_ticket_update %}checked{% endif %}>
             <span class="theme-gradient-track" aria-hidden="true">
               <span class="theme-gradient-thumb"></span>
             </span>
           </label>
         </div>
-        <button type="submit" class="btn btn-primary">{{ t("ui.profile.settings.notifications_save") }}</button>
+        {% if is_admin_edit %}
+          <button type="submit" class="btn btn-primary">{{ t("ui.profile.settings.notifications_save") }}</button>
+        {% endif %}
       </form>
       {% if is_admin_edit %}</div>{% endif %}
   </section>
 {% endif %}
 {% if show_appearance %}
-  <section class="admin-section" id="language-settings">
-    <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
-    <div class="admin-form-stack">
-      {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', class_name='max-w-xs', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
-    </div>
-  </section>
   <section class="admin-section" id="theme-settings">
     <h2 class="issue-section-title">{{ t("ui.profile.settings.theme_title") }}</h2>
     <div class="theme-picker"

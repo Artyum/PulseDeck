@@ -13,7 +13,8 @@ alwaysApply: true
 - Dev: <http://pulsedeck.lan:8005/> (`deploy/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
 - Never run tests yourself — point out how to run them manually.
 - Windows environment — commands in PowerShell.
-- Simplify code and remove unnecessary leftovers.
+
+- Before finishing: rethink the implementation — simplify as far as reasonable (reuse or add shared helpers if that shortens the result), then strip leftovers. Do not stop at "it works".
 
 ## URL (public / portal)
 

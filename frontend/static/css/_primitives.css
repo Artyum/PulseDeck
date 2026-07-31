@@ -1,27 +1,27 @@
 @layer base {
   html {
-    --space-scale: 1;
+    --space-scale: 1.18;
     --layout-rem: 16px;
-    --font-size-root: 16px;
+    --font-size-root: 17.5px;
     font-size: var(--font-size-root);
     scroll-behavior: smooth;
     color-scheme: light;
   }
 
   html[data-density="tight"] {
-    --space-scale: 0.82;
+    --space-scale: 1;
   }
 
   html[data-density="airy"] {
-    --space-scale: 1.18;
+    --space-scale: 1.36;
   }
 
   html[data-font-size="compact"] {
-    --font-size-root: 14.5px;
+    --font-size-root: 16px;
   }
 
   html[data-font-size="large"] {
-    --font-size-root: 17.5px;
+    --font-size-root: 19px;
   }
 
   body {

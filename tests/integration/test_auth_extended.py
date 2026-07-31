@@ -109,6 +109,8 @@ class TestProfile:
     def test_profile_subpages(self, client, client_user):
         _login(client, "client@test.local", "Client123!")
         for path in (
+            "/profile",
+            "/profile/data",
             "/profile/password",
             "/profile/notifications",
             "/profile/appearance",
@@ -119,10 +121,11 @@ class TestProfile:
     def test_profile_update(self, client, client_user):
         _login(client, "client@test.local", "Client123!")
         r = client.post(
-            "/profile",
+            "/profile/data",
             data={
                 "first_name": "Updated",
                 "last_name": "Name",
+                "email": "client@test.local",
                 "phone": "",
             },
             follow_redirects=False,

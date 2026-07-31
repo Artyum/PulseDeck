@@ -61,7 +61,6 @@
             <p class="admin-entity-meta">
               {% if p.description %}{{ p.description }} ·{% endif %}
               {{ t('ui.admin.projects.meta', members=item.member_count, tickets=item.ticket_count) }}
-              {% if p.created_at %} · {{ p.created_at.strftime("%Y-%m-%d") }}{% endif %}
             </p>
           </div>
           <div class="admin-entity-actions">

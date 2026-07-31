@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import icon, brand_logo with context %}
 {% block body %}
-  {% set section = profile_section|default('dane') %}
-  <div class="admin-shell">
+  {% set section = profile_section|default('profile') %}
+  <div class="admin-shell profile-shell">
     <aside class="admin-aside">
       <div class="admin-aside-brand">
         <a href="{{ url_for('home') }}" class="brand-mark">
@@ -13,7 +13,12 @@
       </div>
       <nav class="admin-nav" aria-label="{{ t('ui.profile.nav_aria') }}">
         <a href="{{ url_for('profile_page') }}"
-           class="admin-nav-item{% if section == 'dane' %} is-active{% endif %}">
+           class="admin-nav-item{% if section == 'profile' %} is-active{% endif %}">
+          <span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>
+          {{ t("ui.profile.nav.profile") }}
+        </a>
+        <a href="{{ url_for('profile_data_page') }}"
+           class="admin-nav-item{% if section == 'data' %} is-active{% endif %}">
           <span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>
           {{ t("ui.profile.nav.data") }}
         </a>

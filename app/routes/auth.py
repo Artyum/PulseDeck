@@ -80,12 +80,12 @@ def _render_profile(
     request: Request,
     user: User,
     *,
-    section: str = "dane",
+    section: str = "profile",
     error: str | None = None,
     success: str | None = None,
 ):
-    if section not in ("dane", "password", "notifications", "appearance"):
-        section = "dane"
+    if section not in ("profile", "data", "password", "notifications", "appearance"):
+        section = "profile"
     return render(
         request,
         "auth/profile.html",
@@ -181,7 +181,12 @@ def logout(request: Request):
 
 @router.get("/profile", response_class=HTMLResponse)
 def profile_page(request: Request, user: CurrentUser):
-    return _render_profile(request, user, section="dane")
+    return _render_profile(request, user, section="profile")
+
+
+@router.get("/profile/data", response_class=HTMLResponse)
+def profile_data_page(request: Request, user: CurrentUser):
+    return _render_profile(request, user, section="data")
 
 
 @router.get("/profile/password", response_class=HTMLResponse)
@@ -199,7 +204,7 @@ def profile_appearance_page(request: Request, user: CurrentUser):
     return _render_profile(request, user, section="appearance")
 
 
-@router.post("/profile")
+@router.post("/profile/data")
 def update_profile(
     request: Request,
     user: CurrentUser,
@@ -230,8 +235,8 @@ def update_profile(
         db.refresh(user)
     except ValueError as exc:
         db.rollback()
-        return _render_profile(request, user, section="dane", error=str(exc))
-    return _render_profile(request, user, section="dane", success=t(lang, success_key))
+        return _render_profile(request, user, section="data", error=str(exc))
+    return _render_profile(request, user, section="data", success=t(lang, success_key))
 
 
 @router.post("/profile/password")
@@ -302,6 +307,51 @@ def update_language(
     auth_service.update_ui_lang(db, user, lang)
     response = PlainTextResponse("ok")
     _set_lang_cookie(response, lang)
+    return response
+
+
+@router.post("/profile/datetime-prefs")
+def update_datetime_prefs(
+    user: CurrentUser,
+    db: DbSession,
+    datetime_format: Annotated[str, Form()],
+    timezone: Annotated[str, Form()],
+):
+    auth_service.update_datetime_prefs(
+        db,
+        user,
+        datetime_format=datetime_format,
+        timezone=timezone,
+    )
+    return PlainTextResponse("ok")
+
+
+@router.post("/profile/datetime-prefs-auto")
+def update_datetime_prefs_auto(
+    request: Request,
+    user: CurrentUser,
+    db: DbSession,
+    timezone: Annotated[str, Form()],
+    datetime_format: Annotated[str, Form()],
+    lang: Annotated[str, Form()] = "",
+):
+    cookie_lang = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
+    lang_raw = (lang or "").strip().lower()
+    ui_lang = None
+    if cookie_lang not in available_lang_ids() and lang_raw in available_lang_ids():
+        ui_lang = lang_raw
+    changed = auth_service.apply_auto_datetime_prefs(
+        db,
+        user,
+        timezone=timezone,
+        datetime_format=datetime_format,
+        ui_lang=ui_lang,
+    )
+    if not changed:
+        return Response(status_code=204)
+    response = PlainTextResponse("ok")
+    if ui_lang:
+        _set_lang_cookie(response, ui_lang)
     return response
 
 

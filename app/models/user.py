@@ -63,6 +63,15 @@ class User(Base):
     ui_lang: Mapped[str] = mapped_column(
         String(8), nullable=False, default="en", server_default="en"
     )
+    datetime_format: Mapped[str] = mapped_column(
+        String(16), nullable=False, default="ISO_8601", server_default="ISO_8601"
+    )
+    timezone: Mapped[str] = mapped_column(
+        String(64), nullable=False, default="UTC", server_default="UTC"
+    )
+    datetime_prefs_locked: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
