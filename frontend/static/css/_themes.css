@@ -45,8 +45,11 @@ html[data-theme="morning-mist"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #765c16;
   --color-chip-yellow-border: #d8c686;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(168 205 240 / 0.34), transparent 62%), linear-gradient(180deg, #eef5fc 0%, #f4f8fc 42%, #f5f8fc 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(150 190 230 / 0.22), transparent 62%), linear-gradient(180deg, #e4edf7 0%, #eef3fa 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 205 240 / 0.4), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(186 214 242 / 0.2), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(206 222 240 / 0.16), transparent 68%), linear-gradient(180deg, #e7f0fa 0%, #eef5fc 26%, #f3f7fb 58%, #f5f8fc 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(150 190 230 / 0.28), transparent 62%), linear-gradient(185deg, #dde8f4 0%, #e6eff8 34%, #eef3fa 68%, #e8f0f7 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(155 195 235 / 0.22), transparent 60%), linear-gradient(180deg, #e4edf7 0%, #eef3fa 42%, #e7eff7 100%);
   --comment-bg: color-mix(in oklab, var(--color-surface-2) 25%, var(--color-surface));
   color-scheme: light;
 }
@@ -97,8 +100,11 @@ html[data-theme="sandy-dawn"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #765c18;
   --color-chip-yellow-border: #d8c686;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(238 205 155 / 0.32), transparent 62%), linear-gradient(180deg, #f7efe4 0%, #f9f3eb 42%, #faf5ee 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(228 190 140 / 0.2), transparent 62%), linear-gradient(180deg, #ebe0d0 0%, #f3ebe0 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(238 205 155 / 0.38), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(236 214 178 / 0.2), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(242 226 200 / 0.15), transparent 68%), linear-gradient(180deg, #f4eadc 0%, #f7efe4 26%, #f9f3eb 58%, #faf5ee 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(228 190 140 / 0.26), transparent 62%), linear-gradient(185deg, #e6d8c4 0%, #ede2d2 34%, #f3ebe0 68%, #efe5d8 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(230 195 150 / 0.2), transparent 60%), linear-gradient(180deg, #ebe0d0 0%, #f3ebe0 42%, #eee4d6 100%);
   color-scheme: light;
 }
 
@@ -148,8 +154,11 @@ html[data-theme="green-meadow"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #6c5a18;
   --color-chip-yellow-border: #d2c486;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(160 210 180 / 0.3), transparent 62%), linear-gradient(180deg, #ebf4ee 0%, #f1f7f2 42%, #f4f8f4 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(145 195 165 / 0.2), transparent 62%), linear-gradient(180deg, #ddeae3 0%, #e8f0ea 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(160 210 180 / 0.36), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(178 218 192 / 0.18), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(198 226 208 / 0.14), transparent 68%), linear-gradient(180deg, #e4f0e8 0%, #ebf4ee 26%, #f1f7f2 58%, #f4f8f4 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(145 195 165 / 0.26), transparent 62%), linear-gradient(185deg, #d5e6dc 0%, #e0ece4 34%, #e8f0ea 68%, #e2ece6 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(148 198 168 / 0.2), transparent 60%), linear-gradient(180deg, #ddeae3 0%, #e8f0ea 42%, #e1ebe5 100%);
   color-scheme: light;
 }
 
@@ -199,8 +208,11 @@ html[data-theme="graphite-day"] {
   --color-chip-red-border: #dbafa8;
   --color-chip-yellow-fg: #6c5a18;
   --color-chip-yellow-border: #d2c486;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(168 188 225 / 0.28), transparent 62%), linear-gradient(180deg, #eef1f6 0%, #f3f4f7 42%, #f5f6f8 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(155 172 210 / 0.18), transparent 62%), linear-gradient(180deg, #e2e5ec 0%, #eceef3 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 188 225 / 0.34), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(180 196 222 / 0.16), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(200 208 222 / 0.12), transparent 68%), linear-gradient(180deg, #e8ebf2 0%, #eef1f6 26%, #f3f4f7 58%, #f5f6f8 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(155 172 210 / 0.24), transparent 62%), linear-gradient(185deg, #dbdee7 0%, #e4e7ee 34%, #eceef3 68%, #e6e9f0 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(158 176 212 / 0.18), transparent 60%), linear-gradient(180deg, #e2e5ec 0%, #eceef3 42%, #e5e8ef 100%);
   color-scheme: light;
 }
 
@@ -250,8 +262,11 @@ html[data-theme="deep-ocean"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d48c;
   --color-chip-yellow-border: #96884c;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(48 118 195 / 0.28), transparent 62%), linear-gradient(180deg, #12243a 0%, #0e1a2c 42%, #0c1726 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(55 125 200 / 0.2), transparent 62%), linear-gradient(180deg, #152840 0%, #101c2e 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(48 118 195 / 0.34), transparent 58%), radial-gradient(ellipse 55% 42% at 92% 14%, rgb(42 96 160 / 0.18), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 8% 82%, rgb(28 58 96 / 0.22), transparent 68%), linear-gradient(180deg, #152a44 0%, #12243a 26%, #0e1a2c 58%, #0c1726 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(55 125 200 / 0.26), transparent 62%), linear-gradient(185deg, #18304c 0%, #152840 34%, #101c2e 68%, #0e1a2a 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(58 128 205 / 0.2), transparent 60%), linear-gradient(180deg, #152840 0%, #101c2e 42%, #0e1a2a 100%);
   color-scheme: dark;
 }
 
@@ -301,8 +316,11 @@ html[data-theme="midnight-berry"] {
   --color-chip-red-border: #9e6870;
   --color-chip-yellow-fg: #e8ce8e;
   --color-chip-yellow-border: #92804c;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(130 85 175 / 0.28), transparent 62%), linear-gradient(180deg, #1a1422 0%, #141018 42%, #120e16 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(140 90 180 / 0.2), transparent 62%), linear-gradient(180deg, #1d1726 0%, #17131c 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(130 85 175 / 0.34), transparent 58%), radial-gradient(ellipse 55% 42% at 92% 14%, rgb(110 70 150 / 0.18), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 8% 82%, rgb(72 48 100 / 0.2), transparent 68%), linear-gradient(180deg, #1e1728 0%, #1a1422 26%, #141018 58%, #120e16 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(140 90 180 / 0.26), transparent 62%), linear-gradient(185deg, #221a2c 0%, #1d1726 34%, #17131c 68%, #15111a 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(142 92 182 / 0.2), transparent 60%), linear-gradient(180deg, #1d1726 0%, #17131c 42%, #15111a 100%);
   color-scheme: dark;
 }
 
@@ -352,8 +370,11 @@ html[data-theme="northern-spruce"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d48c;
   --color-chip-yellow-border: #96884c;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(55 140 110 / 0.26), transparent 62%), linear-gradient(180deg, #15241c 0%, #101a14 42%, #0e1612 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(60 145 115 / 0.18), transparent 62%), linear-gradient(180deg, #18261e 0%, #121b16 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(55 140 110 / 0.32), transparent 58%), radial-gradient(ellipse 55% 42% at 92% 14%, rgb(42 112 88 / 0.16), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 8% 82%, rgb(28 68 52 / 0.2), transparent 68%), linear-gradient(180deg, #182a20 0%, #15241c 26%, #101a14 58%, #0e1612 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(60 145 115 / 0.24), transparent 62%), linear-gradient(185deg, #1c2c22 0%, #18261e 34%, #121b16 68%, #101914 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(62 148 118 / 0.18), transparent 60%), linear-gradient(180deg, #18261e 0%, #121b16 42%, #101914 100%);
   color-scheme: dark;
 }
 
@@ -403,8 +424,11 @@ html[data-theme="charcoal-dusk"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d48c;
   --color-chip-yellow-border: #96884c;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(55 140 160 / 0.24), transparent 62%), linear-gradient(180deg, #151a1e 0%, #101316 42%, #0e1012 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(60 145 165 / 0.16), transparent 62%), linear-gradient(180deg, #181c20 0%, #13161a 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(55 140 160 / 0.3), transparent 58%), radial-gradient(ellipse 55% 42% at 92% 14%, rgb(42 108 124 / 0.14), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 8% 82%, rgb(28 48 58 / 0.18), transparent 68%), linear-gradient(180deg, #181e24 0%, #151a1e 26%, #101316 58%, #0e1012 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(60 145 165 / 0.22), transparent 62%), linear-gradient(185deg, #1c2228 0%, #181c20 34%, #13161a 68%, #111418 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(62 148 168 / 0.16), transparent 60%), linear-gradient(180deg, #181c20 0%, #13161a 42%, #111418 100%);
   color-scheme: dark;
 }
 
@@ -454,8 +478,11 @@ html[data-theme="amber-night"] {
   --color-chip-red-border: #9e6862;
   --color-chip-yellow-fg: #e8d080;
   --color-chip-yellow-border: #9a8448;
-  --page-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(180 130 55 / 0.24), transparent 62%), linear-gradient(180deg, #1a1510 0%, #14110c 42%, #13100c 100%);
-  --aside-gradient: radial-gradient(ellipse 140% 90% at 50% -30%, rgb(185 135 55 / 0.16), transparent 62%), linear-gradient(180deg, #1d1812 0%, #181410 100%);
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(180 130 55 / 0.3), transparent 58%), radial-gradient(ellipse 55% 42% at 92% 14%, rgb(150 105 42 / 0.14), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 8% 82%, rgb(88 62 28 / 0.18), transparent 68%), linear-gradient(180deg, #1e1812 0%, #1a1510 26%, #14110c 58%, #13100c 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(185 135 55 / 0.22), transparent 62%), linear-gradient(185deg, #221c14 0%, #1d1812 34%, #181410 68%, #16120e 100%);
+  --rail-gradient: radial-gradient(ellipse 95% 48% at 50% -16%, rgb(188 138 58 / 0.16), transparent 60%), linear-gradient(180deg, #1d1812 0%, #181410 42%, #16120e 100%);
   color-scheme: dark;
 }
 

@@ -37,8 +37,8 @@
     mix-blend-mode: color;
     opacity: 0.4;
     pointer-events: none;
-    mask: url("../images/pulsedeck-logo.png") center / 100% 100% no-repeat;
     -webkit-mask: url("../images/pulsedeck-logo.png") center / 100% 100% no-repeat;
+    mask: url("../images/pulsedeck-logo.png") center / 100% 100% no-repeat;
   }
 
   .app-header {
@@ -46,8 +46,17 @@
     top: 0;
     z-index: 40;
     border-bottom: 1px solid var(--color-line);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 92%, transparent) 0%, color-mix(in oklab, var(--color-surface) 86%, var(--color-mist)) 100%);
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-surface) 94%, transparent) 0%,
+      color-mix(in oklab, var(--color-surface) 88%, var(--color-mist)) 72%,
+      color-mix(in oklab, var(--color-surface) 82%, var(--color-mist)) 100%
+    );
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--color-surface) 55%, transparent) inset,
+      0 8px 22px -16px color-mix(in oklab, var(--color-ink) 14%, transparent);
   }
 
   .app-header .issue-menu {
@@ -246,6 +255,22 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
+    isolation: isolate;
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--color-surface) 28%, transparent),
+      10px 0 28px -18px color-mix(in oklab, var(--color-ink) 16%, transparent);
+  }
+
+  .admin-aside::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--color-pulse) 32%, transparent) 16%, color-mix(in oklab, var(--color-pulse) 14%, transparent) 52%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
   }
 
   .admin-aside-brand {
@@ -339,10 +364,13 @@
 
   .admin-nav-item.is-active {
     color: var(--color-chip-blue-fg);
-    background: var(--color-surface);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 92%, var(--color-soft-blue)) 0%, var(--color-surface) 100%);
     border-color: color-mix(in oklab, var(--color-pulse) 35%, var(--color-frame));
     font-weight: 650;
-    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-ink) 6%, transparent);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--color-surface) 70%, transparent) inset,
+      0 1px 3px color-mix(in oklab, var(--color-ink) 8%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--color-pulse) 8%, transparent);
   }
 
   .admin-nav-item .section-icon {
@@ -830,6 +858,7 @@
     color: var(--color-steel);
     font-weight: 550;
     font-size: 0.75rem;
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -999,6 +1028,7 @@
 
   .admin-form-spacer {
     visibility: hidden;
+    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
   }
@@ -1120,13 +1150,17 @@
     border: 1px solid var(--color-frame);
     background-color: var(--color-surface);
     padding: 0.55rem 0.8rem;
-    min-height: 2.35rem;
     font-size: 0.875rem;
     color: var(--color-ink);
     box-shadow: inset 0 1px 2px color-mix(in oklab, var(--color-ink) 4%, transparent);
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease;
+  }
+
+  .input,
+  .select {
+    min-height: 2.35rem;
   }
 
   .select {
@@ -1139,7 +1173,6 @@
   }
 
   .textarea {
-    min-height: auto;
     padding: 0.7rem 0.8rem;
     line-height: 1.5;
   }
@@ -1182,8 +1215,10 @@
     border: 1px solid var(--color-frame);
     background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
     box-shadow:
-      0 1px 0 color-mix(in oklab, var(--color-surface) 80%, transparent),
-      0 2px 6px color-mix(in oklab, var(--color-ink) 7%, transparent);
+      0 1px 0 color-mix(in oklab, var(--color-surface) 80%, transparent) inset,
+      0 1px 0 color-mix(in oklab, var(--color-surface) 55%, transparent),
+      0 3px 10px color-mix(in oklab, var(--color-ink) 6%, transparent),
+      0 12px 28px -18px color-mix(in oklab, var(--color-ink) 10%, transparent);
   }
 
   .panel-pad {
@@ -1205,7 +1240,10 @@
     border: 1px solid var(--color-frame);
     border-radius: 0.85rem;
     overflow: hidden;
-    background: var(--color-surface);
+    background: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 94%, var(--color-surface-2)) 100%);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--color-surface) 70%, transparent) inset,
+      0 4px 14px -8px color-mix(in oklab, var(--color-ink) 8%, transparent);
   }
 
   .issue-list > .empty {
@@ -1479,14 +1517,22 @@
     align-items: stretch;
     min-height: calc(100vh - 3.75rem);
     margin: calc(-1.75rem * var(--space-scale)) calc(-1.5rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
-    background: color-mix(in oklab, var(--color-aside) 20%, var(--color-surface));
+    background-color: color-mix(in oklab, var(--color-aside) 28%, var(--color-surface));
+    background-image: var(--rail-gradient);
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   .issue-page-body {
+    position: relative;
+    z-index: 1;
     min-width: 0;
     padding: calc(1.5rem * var(--space-scale)) calc(2rem * var(--space-scale)) calc(3.5rem * var(--space-scale)) calc(1.5rem * var(--space-scale));
-    background: var(--color-surface);
+    background: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 94%, var(--color-surface-2)) 100%);
     border-right: 1px solid var(--color-line);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--color-surface) 55%, transparent) inset,
+      8px 0 28px -16px color-mix(in oklab, var(--color-ink) 12%, transparent);
   }
 
   .issue-sidebar {
@@ -1498,6 +1544,20 @@
     display: flex;
     flex-direction: column;
     padding: calc(1.75rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
+    background-color: transparent;
+    isolation: isolate;
+  }
+
+  .issue-sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--color-pulse) 28%, transparent) 18%, color-mix(in oklab, var(--color-pulse) 12%, transparent) 55%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
   }
 
   .issue-page-body > .issue-crumb {
@@ -1673,8 +1733,11 @@
     padding: 0.4rem;
     border: 1px solid var(--color-line);
     border-radius: 0.5rem;
-    background: var(--color-surface);
-    box-shadow: none;
+    background: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 92%, var(--color-surface-2)) 100%);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--color-surface) 70%, transparent) inset,
+      0 8px 24px color-mix(in oklab, var(--color-ink) 10%, transparent),
+      0 2px 6px color-mix(in oklab, var(--color-ink) 6%, transparent);
   }
 
   .issue-menu-trigger {
@@ -1995,6 +2058,7 @@
     line-height: 1;
     letter-spacing: 0.02em;
     color: #fff;
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -2300,6 +2364,7 @@
 
   .modal::backdrop {
     background: rgb(6 13 22 / 0.55);
+    -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
   }
 
@@ -2799,8 +2864,10 @@
     background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
     padding: 2rem;
     box-shadow:
+      0 1px 0 color-mix(in oklab, var(--color-surface) 80%, transparent) inset,
       0 1px 0 var(--color-surface),
-      0 12px 32px color-mix(in oklab, var(--color-ink) 10%, transparent);
+      0 14px 36px color-mix(in oklab, var(--color-ink) 12%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--color-pulse) 6%, transparent);
   }
 
   .auth-brand {
@@ -2880,6 +2947,7 @@
   .issue-crumb > span[aria-hidden="true"] {
     color: color-mix(in oklab, var(--color-steel) 70%, var(--color-line));
     font-weight: 400;
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -2957,6 +3025,9 @@
       padding: 1.5rem 1rem 1.25rem;
       order: 0;
       border-right: none;
+      box-shadow:
+        0 1px 0 color-mix(in oklab, var(--color-surface) 55%, transparent) inset,
+        0 10px 24px -18px color-mix(in oklab, var(--color-ink) 10%, transparent);
     }
 
     .issue-sidebar {
@@ -2966,6 +3037,14 @@
       order: 1;
       padding: 1.25rem 1rem 2.5rem;
       border-top: 1px solid var(--color-line);
+      background-image: var(--rail-gradient);
+      background-repeat: no-repeat;
+      background-size: cover;
+      box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-surface) 22%, transparent);
+    }
+
+    .issue-sidebar::before {
+      display: none;
     }
   }
 
@@ -3257,13 +3336,36 @@
 
   html[data-theme-gradient="off"] body,
   html[data-theme-gradient="off"] .auth-scene,
-  html[data-theme-gradient="off"] .admin-aside {
+  html[data-theme-gradient="off"] .admin-aside,
+  html[data-theme-gradient="off"] .issue-page,
+  html[data-theme-gradient="off"] .issue-sidebar {
     background-image: none;
   }
 
   html[data-theme-gradient="off"] .app-header {
     background: var(--color-surface);
+    -webkit-backdrop-filter: none;
     backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  html[data-theme-gradient="off"] .admin-aside {
+    box-shadow: none;
+  }
+
+  html[data-theme-gradient="off"] .admin-aside::after,
+  html[data-theme-gradient="off"] .issue-sidebar::before {
+    display: none;
+  }
+
+  html[data-theme-gradient="off"] .issue-page-body {
+    background: var(--color-surface);
+    box-shadow: none;
+  }
+
+  html[data-theme-gradient="off"] .admin-nav-item.is-active {
+    background: var(--color-surface);
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-ink) 6%, transparent);
   }
 
   @media (max-width: 48rem) {
