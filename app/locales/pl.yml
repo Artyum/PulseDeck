@@ -136,6 +136,8 @@ ui:
       timezone: "Strefa czasowa"
       theme_title: "Motyw kolorystyczny"
       gradient_toggle: "Gradient tła"
+      gradient_on: "Głębia"
+      gradient_off: "Płaski"
       density_title: "Odstępy"
       font_title: "Wielkość czcionki"
       notify_new_ticket: "Nowe zgłoszenia"
@@ -344,7 +346,7 @@ enums:
 themes:
   morning-mist:
     label: "Poranna mgła"
-    description: "Perłowy błękit z miękką poświatą — domyślny wygląd."
+    description: "Perłowy błękit z miękką poświatą."
   sandy-dawn:
     label: "Piaskowy brzask"
     description: "Ciepły piasek i miodowy bursztyn w łagodnym blasku."

@@ -487,7 +487,7 @@
 
   .admin-section:first-of-type {
     border-top: none;
-    padding-top: calc(1.35rem * var(--space-scale));
+    padding-top: 0;
   }
 
   .profile-shell .admin-narrow,
@@ -3487,7 +3487,7 @@
     align-items: flex-end;
     justify-content: center;
     gap: 0.45rem;
-    min-width: 4.5rem;
+    min-width: 6.5rem;
   }
 
   .theme-option-check {
@@ -3508,6 +3508,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    gap: 0.45rem;
     cursor: pointer;
   }
 
@@ -3523,6 +3524,7 @@
     display: block;
     width: 2.5rem;
     height: 1.35rem;
+    flex-shrink: 0;
     border-radius: 999px;
     border: 1px solid var(--color-frame);
     background: var(--color-surface-3);
@@ -3542,16 +3544,37 @@
     transition: transform 0.18s ease;
   }
 
-  .theme-gradient-switch input:checked + .theme-gradient-track {
+  .theme-gradient-hint {
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    color: var(--color-steel);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .theme-gradient-hint-on {
+    display: none;
+  }
+
+  .theme-gradient-switch input:checked + .theme-gradient-hint .theme-gradient-hint-on {
+    display: inline;
+  }
+
+  .theme-gradient-switch input:checked + .theme-gradient-hint .theme-gradient-hint-off {
+    display: none;
+  }
+
+  .theme-gradient-switch input:checked ~ .theme-gradient-track {
     border-color: color-mix(in oklab, var(--color-pulse) 45%, var(--color-frame));
     background: var(--color-pulse);
   }
 
-  .theme-gradient-switch input:checked + .theme-gradient-track .theme-gradient-thumb {
+  .theme-gradient-switch input:checked ~ .theme-gradient-track .theme-gradient-thumb {
     transform: translateX(1.1rem);
   }
 
-  .theme-gradient-switch input:focus-visible + .theme-gradient-track {
+  .theme-gradient-switch input:focus-visible ~ .theme-gradient-track {
     outline: 2px solid var(--color-pulse);
     outline-offset: 2px;
   }

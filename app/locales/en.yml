@@ -136,6 +136,8 @@ ui:
       timezone: "Time zone"
       theme_title: "Color theme"
       gradient_toggle: "Background gradient"
+      gradient_on: "Depth"
+      gradient_off: "Flat"
       density_title: "Spacing"
       font_title: "Font size"
       notify_new_ticket: "New tickets"
@@ -344,7 +346,7 @@ enums:
 themes:
   morning-mist:
     label: "Morning Mist"
-    description: "Pearly blue with a soft glow — the default look."
+    description: "Pearly blue with a soft glow."
   sandy-dawn:
     label: "Sandy Dawn"
     description: "Warm sand and honeyed amber in a gentle wash."
