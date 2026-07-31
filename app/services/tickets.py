@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -22,6 +23,8 @@ from app.models.user import Project, ProjectMember, User
 from app.services.projects import is_project_member
 from app.utils.i18n import DEFAULT_LANG, t
 
+logger = logging.getLogger("pulsedeck.app.tickets")
+
 _OPEN_STATUSES = (
     TicketStatus.NEW,
     TicketStatus.IN_PROGRESS,
@@ -33,6 +36,7 @@ _TICKET_LOAD = (
     selectinload(Ticket.author),
     selectinload(Ticket.assignee),
     selectinload(Ticket.comments).selectinload(Comment.author),
+    selectinload(Ticket.comments).selectinload(Comment.edited_by),
     selectinload(Ticket.comments).selectinload(Comment.attachments),
     selectinload(Ticket.participants).selectinload(TicketParticipant.user),
     selectinload(Ticket.attachments),
@@ -51,6 +55,8 @@ class TicketPermissions:
     can_edit: bool
     can_manage_tags: bool
     can_comment: bool
+    can_edit_comments: bool
+    can_delete_comments: bool
 
 
 def _is_member(db: Session, user: User, ticket: Ticket, member: bool | None) -> bool:
@@ -65,6 +71,14 @@ def can_comment(
     if ticket.status == TicketStatus.DONE:
         return False
     return _is_member(db, user, ticket, member)
+
+
+def can_edit_comments(user: User) -> bool:
+    return user.is_staff
+
+
+def can_delete_comments(user: User) -> bool:
+    return user.is_admin
 
 
 def can_assign(
@@ -127,6 +141,8 @@ def get_ticket_permissions(
         can_edit=can_edit_ticket(user, ticket, db, member=member),
         can_manage_tags=can_manage_tags(user, ticket, db, member=member),
         can_comment=can_comment(db, user, ticket, member=member),
+        can_edit_comments=can_edit_comments(user),
+        can_delete_comments=can_delete_comments(user),
     )
 
 
@@ -346,6 +362,78 @@ def add_comment(
     db.commit()
     db.refresh(comment)
     return comment
+
+
+def _get_ticket_comment(
+    db: Session, ticket: Ticket, comment_id: int, *, lang: str
+) -> Comment:
+    comment = db.scalar(
+        select(Comment)
+        .where(Comment.id == comment_id, Comment.ticket_id == ticket.id)
+        .options(selectinload(Comment.attachments))
+    )
+    if not comment:
+        raise HTTPException(
+            status_code=404, detail=t(lang, "messages.tickets.comment_not_found")
+        )
+    return comment
+
+
+def update_comment(
+    db: Session,
+    ticket: Ticket,
+    comment_id: int,
+    actor: User,
+    content: str,
+    *,
+    lang: str | None = None,
+) -> Comment:
+    lang = lang or DEFAULT_LANG
+    if not can_edit_comments(actor):
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
+        )
+    text = content.strip()
+    if not text:
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.comment_empty")
+        )
+    comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
+    comment.content = text
+    comment.edited_at = datetime.now(timezone.utc)
+    comment.edited_by_id = actor.id
+    db.commit()
+    db.refresh(comment)
+    return comment
+
+
+def delete_comment(
+    db: Session,
+    ticket: Ticket,
+    comment_id: int,
+    actor: User,
+    *,
+    lang: str | None = None,
+) -> None:
+    lang = lang or DEFAULT_LANG
+    if not can_delete_comments(actor):
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_delete_comment")
+        )
+    comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
+    file_paths = [a.file_path for a in comment.attachments if a.file_path]
+    db.delete(comment)
+    db.commit()
+    from app.services.uploads import resolve_safe_upload_path
+
+    for rel in file_paths:
+        path = resolve_safe_upload_path(rel)
+        if path is None:
+            continue
+        try:
+            path.unlink(missing_ok=True)
+        except OSError:
+            logger.warning("Failed to delete attachment file %s", rel, exc_info=True)
 
 
 def assign_ticket(

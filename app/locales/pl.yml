@@ -47,6 +47,10 @@ ui:
       title: "Usunąć członka?"
       message: "Usunąć {name} z projektu „{project}”?"
       action: "Usuń"
+    delete_comment:
+      title: "Usunąć komentarz?"
+      message: "Komentarz zostanie trwale usunięty wraz z załącznikami."
+      action: "Usuń"
   nav:
     aria: "Nawigacja"
     select_project: "Wybierz projekt"
@@ -210,6 +214,11 @@ ui:
     add_tag_placeholder: "Dodaj tag…"
     activity: "Aktywność"
     internal: "Wewnętrzny"
+    edited_by: "edytowany przez: {name}"
+    edit_comment: "Edytuj komentarz"
+    save_comment: "Zapisz komentarz"
+    cancel_edit: "Anuluj edycję"
+    delete_comment: "Usuń komentarz"
     reply_placeholder: "Napisz odpowiedź…"
     internal_note: "Notatka wewnętrzna"
     closed_notice: "Zgłoszenie zakończone."
@@ -409,6 +418,10 @@ messages:
   tickets:
     no_project_access: "Brak dostępu do projektu."
     no_comment: "Brak uprawnień do komentowania."
+    no_edit_comment: "Brak uprawnień do edycji komentarzy."
+    no_delete_comment: "Brak uprawnień do usuwania komentarzy."
+    comment_empty: "Treść komentarza nie może być pusta."
+    comment_not_found: "Nie znaleziono komentarza."
     internal_staff_only: "Notatki wewnętrzne tylko dla obsługi."
     no_assign: "Brak uprawnień do przypisania."
     assignee_must_be_staff: "Assignee musi być STAFF lub ADMIN."
@@ -481,6 +494,7 @@ js:
     generic: "Wystąpił błąd. Spróbuj ponownie."
     submit_failed: "Nie udało się wysłać formularza."
     network: "Nie udało się połączyć z serwerem."
+    comment_empty: "Treść komentarza nie może być pusta."
   validation:
     missing_user: "Wybierz użytkownika."
     missing_field: "Brakuje {label}."

@@ -2032,7 +2032,7 @@
   .comment-meta {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: calc(0.35rem * var(--space-scale)) calc(0.75rem * var(--space-scale));
   }
@@ -2166,14 +2166,78 @@
     color: var(--color-ink);
   }
 
+  .comment-edited {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-steel);
+  }
+
+  .comment-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+  }
+
+  .comment-delete-form {
+    display: inline-flex;
+    margin: 0;
+  }
+
+  .comment-meta-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+    margin-left: auto;
+  }
+
+  .comment-meta-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .comment-action {
+    min-height: 1.25rem;
+    min-width: 1.25rem;
+    padding: 0.15rem;
+    color: var(--color-steel);
+  }
+
+  .comment-action:hover {
+    color: var(--color-ink);
+  }
+
+  .comment-action .icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .comment-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.45rem * var(--space-scale));
+    margin-top: calc(0.55rem * var(--space-scale));
+  }
+
+  .comment-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+  }
+
   .comment-when {
     font-size: 0.75rem;
+    line-height: 1.25rem;
     color: var(--color-steel);
     text-align: right;
+    white-space: nowrap;
   }
 
   .comment-gap {
-    display: block;
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--color-steel);
     opacity: 0.75;
   }
 

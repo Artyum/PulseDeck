@@ -140,9 +140,16 @@ class Comment(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    edited_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    edited_by_id: Mapped[int | None] = mapped_column(
+        BigInt, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
 
     ticket: Mapped[Ticket] = relationship(back_populates="comments")
-    author: Mapped[User] = relationship()
+    author: Mapped[User] = relationship(foreign_keys=[author_id])
+    edited_by: Mapped[User | None] = relationship(foreign_keys=[edited_by_id])
     attachments: Mapped[list[Attachment]] = relationship(
         back_populates="comment",
         cascade="all, delete-orphan",

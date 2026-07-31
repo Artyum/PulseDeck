@@ -47,6 +47,10 @@ ui:
       title: "Remove member?"
       message: "Remove {name} from project “{project}”?"
       action: "Remove"
+    delete_comment:
+      title: "Delete comment?"
+      message: "The comment will be permanently deleted along with its attachments."
+      action: "Delete"
   nav:
     aria: "Navigation"
     select_project: "Select project"
@@ -210,6 +214,11 @@ ui:
     add_tag_placeholder: "Add tag…"
     activity: "Activity"
     internal: "Internal"
+    edited_by: "edited by: {name}"
+    edit_comment: "Edit comment"
+    save_comment: "Save comment"
+    cancel_edit: "Cancel edit"
+    delete_comment: "Delete comment"
     reply_placeholder: "Write a reply…"
     internal_note: "Internal note"
     closed_notice: "Ticket closed."
@@ -409,6 +418,10 @@ messages:
   tickets:
     no_project_access: "No access to this project."
     no_comment: "You don't have permission to comment."
+    no_edit_comment: "You don't have permission to edit comments."
+    no_delete_comment: "You don't have permission to delete comments."
+    comment_empty: "Comment content cannot be empty."
+    comment_not_found: "Comment not found."
     internal_staff_only: "Internal notes are for staff only."
     no_assign: "You don't have permission to assign."
     assignee_must_be_staff: "The assignee must be STAFF or ADMIN."
@@ -481,6 +494,7 @@ js:
     generic: "Something went wrong. Please try again."
     submit_failed: "Failed to submit the form."
     network: "Failed to connect to the server."
+    comment_empty: "Comment content cannot be empty."
   validation:
     missing_user: "Select a user."
     missing_field: "Missing {label}."

@@ -97,6 +97,8 @@ def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:
         "can_edit": perms.can_edit,
         "can_manage_tags": perms.can_manage_tags,
         "can_comment": perms.can_comment,
+        "can_edit_comments": perms.can_edit_comments,
+        "can_delete_comments": perms.can_delete_comments,
         "staff_members": [m for m in members if m.is_staff],
         "project_members": members,
         "project_tags": ticket_service.list_project_tags(db, ticket.project_id),
@@ -324,6 +326,41 @@ async def add_comment(
     )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     notify_new_comment(db, ticket, user.id, is_internal=internal)
+    return _ticket_mutation_response(request, db, user, ticket)
+
+
+@router.post("/t/{ticket_ref}/comments/{comment_id}/edit", response_class=HTMLResponse)
+def edit_comment(
+    request: Request,
+    ticket_ref: str,
+    comment_id: int,
+    user: CurrentUser,
+    db: DbSession,
+    content: Annotated[str, Form()],
+):
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
+    ticket_service.update_comment(
+        db, ticket, comment_id, user, content, lang=lang
+    )
+    ticket = ticket_service.get_ticket(db, ticket.id) or ticket
+    return _ticket_mutation_response(request, db, user, ticket)
+
+
+@router.post(
+    "/t/{ticket_ref}/comments/{comment_id}/delete", response_class=HTMLResponse
+)
+def delete_comment(
+    request: Request,
+    ticket_ref: str,
+    comment_id: int,
+    user: CurrentUser,
+    db: DbSession,
+):
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
+    ticket_service.delete_comment(db, ticket, comment_id, user, lang=lang)
+    ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     return _ticket_mutation_response(request, db, user, ticket)
 
 
