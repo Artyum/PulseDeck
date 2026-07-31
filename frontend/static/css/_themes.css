@@ -49,7 +49,7 @@ html[data-theme="morning-mist"] {
     radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 205 240 / 0.4), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(186 214 242 / 0.2), transparent 62%),
     radial-gradient(ellipse 48% 36% at 6% 78%, rgb(206 222 240 / 0.16), transparent 68%), linear-gradient(180deg, #e7f0fa 0%, #eef5fc 26%, #f3f7fb 58%, #f5f8fc 100%);
   --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(150 190 230 / 0.28), transparent 62%), linear-gradient(185deg, #dde8f4 0%, #e6eff8 34%, #eef3fa 68%, #e8f0f7 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(155 195 235 / 0.05), transparent 68%), linear-gradient(180deg, #f5f8fc 0%, #f3f6fb 48%, #f2f5fa 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(155 195 235 / 0.04), transparent 68%), linear-gradient(180deg, #fbfcfe 0%, #f9fbfd 48%, #f7f9fc 100%);
   --comment-bg: color-mix(in oklab, var(--color-surface-2) 25%, var(--color-surface));
   color-scheme: light;
 }
@@ -104,7 +104,7 @@ html[data-theme="sandy-dawn"] {
     radial-gradient(ellipse 120% 68% at 48% -22%, rgb(238 205 155 / 0.38), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(236 214 178 / 0.2), transparent 62%),
     radial-gradient(ellipse 48% 36% at 6% 78%, rgb(242 226 200 / 0.15), transparent 68%), linear-gradient(180deg, #f4eadc 0%, #f7efe4 26%, #f9f3eb 58%, #faf5ee 100%);
   --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(228 190 140 / 0.26), transparent 62%), linear-gradient(185deg, #e6d8c4 0%, #ede2d2 34%, #f3ebe0 68%, #efe5d8 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(230 195 150 / 0.05), transparent 68%), linear-gradient(180deg, #faf6f0 0%, #f8f3ec 48%, #f7f1ea 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(230 195 150 / 0.04), transparent 68%), linear-gradient(180deg, #fefcf9 0%, #fdfaf6 48%, #fcf8f3 100%);
   color-scheme: light;
 }
 
@@ -158,7 +158,7 @@ html[data-theme="green-meadow"] {
     radial-gradient(ellipse 120% 68% at 48% -22%, rgb(160 210 180 / 0.36), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(178 218 192 / 0.18), transparent 62%),
     radial-gradient(ellipse 48% 36% at 6% 78%, rgb(198 226 208 / 0.14), transparent 68%), linear-gradient(180deg, #e4f0e8 0%, #ebf4ee 26%, #f1f7f2 58%, #f4f8f4 100%);
   --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(145 195 165 / 0.26), transparent 62%), linear-gradient(185deg, #d5e6dc 0%, #e0ece4 34%, #e8f0ea 68%, #e2ece6 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(148 198 168 / 0.05), transparent 68%), linear-gradient(180deg, #f3f7f4 0%, #f1f5f2 48%, #eff4f0 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(148 198 168 / 0.04), transparent 68%), linear-gradient(180deg, #fbfdfb 0%, #f9fcfa 48%, #f7faf8 100%);
   color-scheme: light;
 }
 
@@ -212,7 +212,7 @@ html[data-theme="graphite-day"] {
     radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 188 225 / 0.34), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(180 196 222 / 0.16), transparent 62%),
     radial-gradient(ellipse 48% 36% at 6% 78%, rgb(200 208 222 / 0.12), transparent 68%), linear-gradient(180deg, #e8ebf2 0%, #eef1f6 26%, #f3f4f7 58%, #f5f6f8 100%);
   --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(155 172 210 / 0.24), transparent 62%), linear-gradient(185deg, #dbdee7 0%, #e4e7ee 34%, #eceef3 68%, #e6e9f0 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(158 176 212 / 0.05), transparent 68%), linear-gradient(180deg, #f4f5f7 0%, #f2f3f6 48%, #f1f2f5 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(158 176 212 / 0.04), transparent 68%), linear-gradient(180deg, #fbfbfc 0%, #f9fafb 48%, #f8f9fa 100%);
   color-scheme: light;
 }
 

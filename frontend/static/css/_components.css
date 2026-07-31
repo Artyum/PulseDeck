@@ -42,6 +42,14 @@
   }
 
   .app-header {
+    --nav-chrome-radius: 0.5rem;
+    --nav-chrome-pad-y: 0.45rem;
+    --nav-chrome-pad-x: 0.75rem;
+    --nav-chrome-gap: 0.55rem;
+    --nav-hamburger-size: 2.5rem;
+    --nav-panel-offset: 0.4rem;
+    --nav-brand-max: 9rem;
+    --nav-user-max: 12rem;
     position: sticky;
     top: 0;
     z-index: 40;
@@ -68,7 +76,7 @@
   }
 
   .app-header .issue-menu-panel {
-    top: calc(100% + 0.35rem);
+    top: calc(100% + var(--nav-panel-offset));
     left: 0;
     right: auto;
     min-width: 100%;
@@ -130,14 +138,20 @@
     flex-shrink: 0;
   }
 
-  .nav-project-trigger {
+  .app-header-nav-mobile {
+    display: none;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .nav-chrome {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
+    gap: var(--nav-chrome-gap);
     margin: 0;
-    padding: 0.45rem 0.75rem;
+    padding: var(--nav-chrome-pad-y) var(--nav-chrome-pad-x);
     border: 1px solid transparent;
-    border-radius: 0.5rem;
+    border-radius: var(--nav-chrome-radius);
     background: transparent;
     color: var(--color-ink);
     font: inherit;
@@ -147,22 +161,64 @@
     cursor: pointer;
   }
 
-  .nav-project-trigger:hover,
-  .is-menu-open > .nav-project-trigger {
+  .nav-chrome:hover,
+  .is-menu-open > .nav-chrome {
     border-color: var(--color-frame);
     background: color-mix(in oklab, var(--color-surface) 55%, var(--color-soft-blue));
   }
 
-  .is-menu-open > .nav-project-trigger .nav-user-caret {
+  .is-menu-open > .nav-chrome .nav-user-caret {
     transform: rotate(180deg);
   }
 
-  .nav-project-trigger-name {
+  .nav-hamburger {
+    justify-content: center;
+    width: var(--nav-hamburger-size);
+    height: var(--nav-hamburger-size);
+    padding: 0;
+  }
+
+  .nav-hamburger .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .app-header .nav-mobile-panel {
+    left: auto;
+    right: 0;
+    z-index: 50;
+    width: min(20rem, calc(100vw - 2rem));
+    min-width: 0;
+  }
+
+  .nav-mobile-label,
+  .nav-mobile-user {
+    margin: 0;
+    padding: 0.45rem 0.65rem 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+  }
+
+  .nav-mobile-user {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .nav-project-panel .issue-menu-item {
-    display: flex;
+  .nav-chrome-label {
+    white-space: nowrap;
+  }
+
+  .nav-project-panel .issue-menu-item,
+  .nav-mobile-panel .issue-menu-item:has(.nav-project-option-name) {
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
@@ -180,26 +236,13 @@
     color: var(--color-steel);
   }
 
-  .nav-project-panel .issue-menu-item.is-active .nav-project-option-key {
+  .nav-project-panel .issue-menu-item.is-active .nav-project-option-key,
+  .nav-mobile-panel .issue-menu-item.is-active .nav-project-option-key {
     color: var(--color-pulse);
   }
 
   .nav-user {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    max-width: 12rem;
-    margin: 0;
-    padding: 0.45rem 0.75rem;
-    border: 1px solid transparent;
-    border-radius: 0.5rem;
-    background: transparent;
-    color: var(--color-ink);
-    font: inherit;
-    font-size: 0.875rem;
-    font-weight: 550;
-    line-height: 1.2;
-    cursor: pointer;
+    max-width: var(--nav-user-max);
   }
 
   .nav-user-name {
@@ -219,16 +262,6 @@
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: transform 0.15s ease;
-  }
-
-  .nav-user:hover,
-  .is-menu-open > .nav-user {
-    border-color: var(--color-frame);
-    background: color-mix(in oklab, var(--color-surface) 55%, var(--color-soft-blue));
-  }
-
-  .is-menu-open > .nav-user .nav-user-caret {
-    transform: rotate(180deg);
   }
 
   .admin-shell {
@@ -3127,8 +3160,19 @@
       padding-inline: calc(1rem * var(--space-scale));
     }
 
-    .nav-user-name {
-      max-width: 6.5rem;
+    .app-header-nav-desktop {
+      display: none;
+    }
+
+    .app-header-nav-mobile {
+      display: block;
+    }
+
+    .brand-mark-name {
+      max-width: var(--nav-brand-max);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .btn {
@@ -3162,6 +3206,8 @@
       grid-template-columns: 1fr;
       min-height: 0;
       margin: -1.75rem -1rem -3.5rem;
+      background-color: transparent;
+      background-image: none;
     }
 
     .issue-page-body {
@@ -3180,10 +3226,8 @@
       order: 1;
       padding: 1.25rem 1rem 2.5rem;
       border-top: 1px solid var(--color-line);
-      background-image: var(--rail-gradient);
-      background-repeat: no-repeat;
-      background-size: cover;
-      box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-surface) 22%, transparent);
+      background-image: none;
+      box-shadow: none;
     }
 
     .issue-sidebar::before {

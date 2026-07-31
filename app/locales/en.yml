@@ -55,6 +55,7 @@ ui:
     aria: "Navigation"
     select_project: "Select project"
     user_menu: "User menu"
+    menu: "Menu"
     admin: "Administration"
     profile: "Profile"
     logout: "Log out"
