@@ -69,33 +69,32 @@
           class="modal-form">
       {{ modal_header('new-user', t('ui.admin.user_new.title') ) }}
       <div class="modal-body">
-        <p class="modal-hint">{{ t("ui.admin.user_new.sub") }}</p>
         <div class="modal-grid">
-          <div>
+          <div class="admin-field">
             <label class="label" for="new-user-first-name">{{ t("ui.profile.field.first_name") }}</label>
             <input id="new-user-first-name"
                    name="first_name"
                    required
-                   class="input mt-1">
+                   class="input">
           </div>
-          <div>
+          <div class="admin-field">
             <label class="label" for="new-user-last-name">{{ t("ui.profile.field.last_name") }}</label>
-            <input id="new-user-last-name" name="last_name" required class="input mt-1">
+            <input id="new-user-last-name" name="last_name" required class="input">
           </div>
         </div>
-        <div>
+        <div class="admin-field">
           <label class="label" for="new-user-email">{{ t("ui.profile.field.email") }}</label>
           <input id="new-user-email"
                  name="email"
                  type="email"
                  required
-                 class="input mt-1">
+                 class="input">
         </div>
-        <div>
+        <div class="admin-field">
           <label class="label" for="new-user-role">{{ t("ui.admin.user_new.role") }}</label>
-          {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, 'USER', role_labels, id='new-user-role', class_name='mt-1', input_attrs='data-role-select') }}
+          {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, 'USER', role_labels, id='new-user-role', input_attrs='data-role-select') }}
         </div>
-        <div data-projects-field>{{ project_checkboxes(projects, form_project_ids) }}</div>
+        <div class="admin-field" data-projects-field>{{ project_checkboxes(projects, form_project_ids) }}</div>
         <p class="admin-field-hint" data-admin-projects-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
       </div>
       <div class="modal-footer">

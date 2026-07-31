@@ -3,23 +3,21 @@
 {% block title %}{{ t("ui.auth.confirm_email.title") }} — {{ app_name }}{% endblock title %}
 {% block body %}
   <div class="auth-scene">
-    <div class="w-full max-w-md">
-      <div class="mb-8 text-center">
-        {{ brand_logo(variant='auth', alt=app_name) }}
-        <h1 class="sr-only">{{ app_name }}</h1>
-        <p class="mt-3 text-[1.1rem] text-steel">{{ t("ui.auth.confirm_email.subtitle") }}</p>
+    <div class="auth-stack">
+      <div class="auth-stack-brand">
+        {{ brand_logo(variant='auth', alt='') }}
+        <h1 class="auth-brand mt-3">{{ app_name }}</h1>
       </div>
       <div class="auth-card">
         {% if error %}
           <p class="alert alert-error mb-4">{{ error }}</p>
         {% endif %}
+        <p class="mb-4 text-[1.1rem] text-steel">{{ t("ui.auth.confirm_email.subtitle") }}</p>
         <form method="post"
               action="{{ url_for('confirm_email_submit') }}"
               class="space-y-4">
           <input type="hidden" name="token" value="{{ token }}">
-          <button type="submit" class="btn btn-primary w-full !py-3 !text-[1rem]">
-            {{ t("ui.auth.confirm_email.submit") }}
-          </button>
+          <button type="submit" class="btn btn-primary w-full">{{ t("ui.auth.confirm_email.submit") }}</button>
         </form>
       </div>
     </div>

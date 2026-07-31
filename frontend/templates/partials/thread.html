@@ -88,19 +88,19 @@
                 rows="3"
                 placeholder="{{ t('ui.ticket.reply_placeholder') }}"
                 class="textarea"></textarea>
-      {% if user.is_staff %}
-        <label class="issue-composer-opt">
-          <input type="checkbox"
-                 name="is_internal"
-                 value="1"
-                 class="rounded border-line">
-          {{ t("ui.ticket.internal_note") }}
-        </label>
-      {% endif %}
       <div class="issue-composer-bar">
-        {{ attach_picker('comment-attachments', 'icon') }}
-        <button type="submit" class="btn btn-primary">{{ t("ui.common.send") }}</button>
+        {% if user.is_staff %}
+          <label class="issue-composer-opt">
+            <input type="checkbox"
+                   name="is_internal"
+                   value="1"
+                   class="rounded border-line">
+            {{ t("ui.ticket.internal_note") }}
+          </label>
+        {% endif %}
+        <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
       </div>
+      {{ attach_picker('comment-attachments', 'zone') }}
     </form>
   {% elif ticket.status.value == 'DONE' %}
     <p class="alert alert-muted">

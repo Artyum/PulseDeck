@@ -182,8 +182,7 @@
 {% macro attach_picker(input_id, variant='zone', max_files=3, existing=none) -%}
   {% set file_word = t('ui.ticket.attach.file_one') if max_files == 1 else t('ui.ticket.attach.file_many') %}
   <div data-attach-picker data-attach-max="{{ max_files }}">
-    {% if variant == 'zone' %}<span class="label">{{ t("ui.ticket.attachments") }}</span>{% endif %}
-    <div class="file-pick{% if variant == 'zone' %} mt-1{% endif %}">
+    <div class="file-pick">
       <input data-attach-input
              id="{{ input_id }}"
              type="file"

@@ -14,7 +14,6 @@ ui:
     send: "Wyślij"
     empty_dash: "—"
     none: "Brak"
-    or: "lub"
     back_to_portal: "Wróć do portalu"
     back_home: "Strona główna"
     logout: "Wyloguj"
@@ -62,13 +61,13 @@ ui:
   auth:
     login:
       title: "Logowanie — {app}"
-      tagline: "Portal zgłoszeń i komunikacji z klientami"
       email: "E-mail"
       password: "Hasło"
       submit: "Zaloguj się"
       forgot_label: "Nie pamiętam hasła"
       forgot_placeholder: "adres@firma.pl"
-      forgot_submit: "Wyślij link resetujący"
+      forgot_submit: "Wyślij link do zmiany hasła"
+      forgot_back: "Wróć do logowania"
       forgot_sent: "Jeśli konto istnieje i nie jest zablokowane, wysłaliśmy link na e-mail."
     activate:
       title_pending: "Aktywacja konta"
@@ -145,7 +144,6 @@ ui:
       notify_reply_hint: "E-mail, gdy ktoś odpowie w zgłoszeniu, w którym jesteś autorem lub uczestnikiem."
       notify_ticket_update: "Status, typ i priorytet"
       notify_ticket_update_hint: "E-mail, gdy w zgłoszeniu, w którym uczestniczysz, zmieni się status, typ lub priorytet."
-      notifications_save: "Zapisz powiadomienia"
     admin_all_projects_hint: "Administratorzy mają automatyczny dostęp do wszystkich projektów."
   portal:
     empty:
@@ -287,7 +285,6 @@ ui:
       edit_aria: "Edytuj {name}"
     user_new:
       title: "Nowy użytkownik"
-      sub: "Utwórz konto i wyślij link aktywacyjny na e-mail."
       role: "Rola"
       submit: "Utwórz i wyślij aktywację"
     user_edit:
@@ -499,7 +496,7 @@ messages:
     need_digit: "Hasło musi zawierać cyfrę."
     need_special: "Hasło musi zawierać znak specjalny."
   phone:
-    e164: "Telefon musi być w formacie międzynarodowym E.164 (np. +48123456789)."
+    e164: "Podaj numer w formacie +48123456789."
   project_key:
     invalid: "Klucz musi mieć {min}–{max} znaków A–Z / 0–9 (bez myślników)."
 

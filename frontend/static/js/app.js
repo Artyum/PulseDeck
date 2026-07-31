@@ -545,6 +545,24 @@
       });
   });
 
+  document.addEventListener("click", function (ev) {
+    var btn = ev.target.closest("[data-auth-show]");
+    if (!btn) return;
+    var card = btn.closest(".auth-card");
+    if (!card) return;
+    var target = btn.getAttribute("data-auth-show");
+    if (!target) return;
+    ev.preventDefault();
+    card.querySelectorAll("[data-auth-panel]").forEach(function (panel) {
+      var on = panel.getAttribute("data-auth-panel") === target;
+      panel.hidden = !on;
+      if (on) {
+        var focusEl = panel.querySelector("input:not([type='hidden']), button[type='submit']");
+        if (focusEl) focusEl.focus();
+      }
+    });
+  });
+
   document.querySelectorAll("[data-ui-storage-key]").forEach(function (root) {
     if (root.matches("select") || root.hasAttribute("data-form-select-input")) return;
     syncPrefPicker(root);

@@ -160,12 +160,13 @@
            {% if not is_admin_edit %}id="notification-settings"{% endif %}>
     {% if is_admin_edit %}
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
-      <div class="admin-narrow">
+      <div class="admin-prefs">
       {% endif %}
       <form method="post"
             action="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}"
             class="admin-form-stack"
-            {% if not is_admin_edit %}data-notif-prefs data-notif-prefs-url="{{ url_for('update_notifications') }}"{% endif %}>
+            data-notif-prefs
+            data-notif-prefs-url="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}">
         {% if edit_user.is_staff %}
           <div class="admin-field">
             <span class="label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
@@ -210,9 +211,6 @@
             </span>
           </label>
         </div>
-        {% if is_admin_edit %}
-          <button type="submit" class="btn btn-primary">{{ t("ui.profile.settings.notifications_save") }}</button>
-        {% endif %}
       </form>
       {% if is_admin_edit %}</div>{% endif %}
   </section>

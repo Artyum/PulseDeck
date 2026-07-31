@@ -14,7 +14,6 @@ ui:
     send: "Send"
     empty_dash: "—"
     none: "None"
-    or: "or"
     back_to_portal: "Back to portal"
     back_home: "Home"
     logout: "Log out"
@@ -62,13 +61,13 @@ ui:
   auth:
     login:
       title: "Sign in — {app}"
-      tagline: "Client tickets and communication portal"
       email: "E-mail"
       password: "Password"
       submit: "Sign in"
       forgot_label: "Forgot your password"
       forgot_placeholder: "address@company.com"
-      forgot_submit: "Send reset link"
+      forgot_submit: "Send password change link"
+      forgot_back: "Back to sign in"
       forgot_sent: "If the account exists and isn't blocked, we've sent a link by email."
     activate:
       title_pending: "Account activation"
@@ -145,7 +144,6 @@ ui:
       notify_reply_hint: "Email when someone replies to a ticket you created or are involved in."
       notify_ticket_update: "Status, type and priority"
       notify_ticket_update_hint: "Email when status, type or priority changes on a ticket you're involved in."
-      notifications_save: "Save notifications"
     admin_all_projects_hint: "Administrators automatically have access to all projects."
   portal:
     empty:
@@ -287,7 +285,6 @@ ui:
       edit_aria: "Edit {name}"
     user_new:
       title: "New user"
-      sub: "Create an account and send an activation link by email."
       role: "Role"
       submit: "Create and send activation"
     user_edit:
@@ -499,7 +496,7 @@ messages:
     need_digit: "The password must contain a digit."
     need_special: "The password must contain a special character."
   phone:
-    e164: "The phone number must be in international E.164 format (e.g. +48123456789)."
+    e164: "Enter the number in the format +48123456789."
   project_key:
     invalid: "The key must be {min}–{max} characters A–Z / 0–9 (no hyphens)."
 
