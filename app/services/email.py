@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import logging
+import re
 import smtplib
 from collections.abc import Iterable
 from datetime import datetime, timezone
 from email.message import EmailMessage
+from email.utils import formatdate, make_msgid, parseaddr
 from functools import partial
+from html import unescape
+from html.parser import HTMLParser
+from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sqlalchemy import select
@@ -23,11 +28,123 @@ from app.utils.urls import ticket_path
 logger = logging.getLogger("pulsedeck.mail")
 
 APP_NAME = "PulseDeck"
+LOGO_CID = "pulsedeck-logo-mail"
+LOGO_PATH = (
+    project_root() / "frontend" / "static" / "images" / "pulsedeck-logo-mail.png"
+)
 
 _env = Environment(
     loader=FileSystemLoader(str(project_root() / "app" / "templates" / "email")),
     autoescape=select_autoescape(["html", "xml"]),
 )
+
+_BLOCK_TAGS = frozenset(
+    {"p", "div", "tr", "table", "h1", "h2", "h3", "h4", "h5", "h6", "li", "br", "hr"}
+)
+_SKIP_TAGS = frozenset({"script", "style", "head", "title"})
+
+
+class _HTMLToText(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self._chunks: list[str] = []
+        self._skip = 0
+        self._href: str | None = None
+        self._link_start = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in _SKIP_TAGS:
+            self._skip += 1
+            return
+        if self._skip:
+            return
+        if tag == "br" or tag == "hr":
+            self._chunks.append("\n")
+            return
+        if tag in _BLOCK_TAGS:
+            self._chunks.append("\n")
+        if tag == "a":
+            self._href = dict(attrs).get("href")
+            self._link_start = len(self._chunks)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in _SKIP_TAGS and self._skip:
+            self._skip -= 1
+            return
+        if self._skip:
+            return
+        if tag == "a" and self._href:
+            href = self._href.strip()
+            label = "".join(self._chunks[self._link_start :]).strip()
+            self._href = None
+            if href and not href.startswith("cid:") and href != label:
+                self._chunks.append(f" ({href})")
+        if tag in _BLOCK_TAGS and tag not in {"br", "hr"}:
+            self._chunks.append("\n")
+
+    def handle_data(self, data: str) -> None:
+        if not self._skip and data:
+            self._chunks.append(data)
+
+    def text(self) -> str:
+        raw = unescape("".join(self._chunks))
+        raw = raw.replace("\r\n", "\n").replace("\r", "\n")
+        raw = re.sub(r"[ \t]+\n", "\n", raw)
+        raw = re.sub(r"\n{3,}", "\n\n", raw)
+        raw = re.sub(r"[ \t]{2,}", " ", raw)
+        return raw.strip()
+
+
+def html_to_plain(html_body: str) -> str:
+    parser = _HTMLToText()
+    try:
+        parser.feed(html_body)
+        parser.close()
+    except Exception:
+        logger.exception("Failed to convert HTML email to plain text")
+        return re.sub(r"<[^>]+>", " ", html_body)
+    return parser.text()
+
+
+def _mail_domain(from_addr: str, app_base_url: str) -> str:
+    _, addr = parseaddr(from_addr)
+    if "@" in addr:
+        return addr.rsplit("@", 1)[-1].strip().lower()
+    host = urlparse(app_base_url).hostname
+    return (host or "localhost").lower()
+
+
+def _build_message(to: str, subject: str, html_body: str) -> EmailMessage:
+    settings = get_settings()
+    from_addr = settings.email_from_address
+    domain = _mail_domain(from_addr, settings.app_base_url)
+    plain = html_to_plain(html_body)
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = from_addr
+    msg["To"] = to
+    msg["Date"] = formatdate(localtime=True)
+    msg["Message-ID"] = make_msgid(domain=domain)
+    msg["MIME-Version"] = "1.0"
+    msg["Auto-Submitted"] = "auto-generated"
+    msg["X-Auto-Response-Suppress"] = "All"
+    msg["X-Mailer"] = APP_NAME
+    msg["List-Id"] = f"<{APP_NAME.lower()}.{domain}>"
+
+    msg.set_content(plain, charset="utf-8")
+    msg.add_alternative(html_body, subtype="html", charset="utf-8")
+    html_part = msg.get_body(preferencelist=("html",))
+    if html_part is not None and LOGO_PATH.is_file():
+        html_part.add_related(
+            LOGO_PATH.read_bytes(),
+            maintype="image",
+            subtype="png",
+            cid=LOGO_CID,
+        )
+    elif not LOGO_PATH.is_file():
+        logger.warning("Email logo missing: %s", LOGO_PATH)
+    return msg
 
 
 def send_email_sync(to: str, subject: str, html_body: str) -> bool:
@@ -35,11 +152,7 @@ def send_email_sync(to: str, subject: str, html_body: str) -> bool:
     if not settings.smtp_configured:
         logger.warning("SMTP not configured — skip email to %s subject=%s", to, subject)
         return False
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = settings.email_from_address
-    msg["To"] = to
-    msg.set_content(html_body, subtype="html")
+    msg = _build_message(to, subject, html_body)
     try:
         if settings.smtp_use_ssl:
             with smtplib.SMTP_SSL(
@@ -74,6 +187,7 @@ def render_email_html(template: str, context: dict, *, lang: str = DEFAULT_LANG)
         **context,
         app_name=APP_NAME,
         ui_lang=lang,
+        logo_src=f"cid:{LOGO_CID}",
         t=partial(t, lang),
     )
 

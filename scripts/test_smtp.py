@@ -14,6 +14,8 @@ from scripts.load_env import apply_env_file
 DEFAULT_ENV = ROOT / "deploy" / ".env.dev"
 DEFAULT_MAILPIT_HOST = "192.168.50.50"
 DEFAULT_MAILPIT_PORT = 1025
+LANG = "pl"
+APP = "PulseDeck"
 
 
 def main() -> int:
@@ -63,6 +65,7 @@ def main() -> int:
 
     from app.config import get_settings
     from app.services.email import render_email_html, send_email_sync
+    from app.utils.i18n import t
 
     get_settings.cache_clear()
     settings = get_settings()
@@ -76,28 +79,91 @@ def main() -> int:
     recipient = args.to.strip()
     user = SimpleNamespace(
         email=recipient,
-        first_name="Test",
-        last_name="Mailpit",
+        first_name="Jan",
+        last_name="Kowalski",
     )
-    url = f"{settings.app_base_url}/auth/activate?token=mailpit-test-token"
-    html = render_email_html(
-        "account_activate.html",
-        {
-            "user": user,
-            "url": url,
-            "ttl_days": settings.auth_link_ttl_days,
-        },
-    )
-    subject = "PulseDeck — test Mailpit (aktywacja)"
+    ticket = SimpleNamespace(title="Testowe zgłoszenie Mailpit")
+    ticket_url = f"{settings.app_base_url}/t/DEMO-1"
+    activate_url = f"{settings.app_base_url}/auth/activate?token=mailpit-test-token"
+    confirm_url = f"{settings.app_base_url}/auth/confirm-email?token=mailpit-test-token"
+
+    samples = [
+        (
+            t(LANG, "email.confirm.subject", app=APP),
+            "email_confirm.html",
+            {
+                "user": user,
+                "url": confirm_url,
+                "ttl_minutes": settings.email_confirm_ttl_minutes,
+            },
+        ),
+        (
+            t(LANG, "email.activate.subject", app=APP),
+            "account_activate.html",
+            {
+                "user": user,
+                "url": activate_url,
+                "ttl_days": settings.auth_link_ttl_days,
+            },
+        ),
+        (
+            t(LANG, "email.reset.subject", app=APP),
+            "password_reset.html",
+            {
+                "user": user,
+                "url": activate_url,
+                "ttl_days": settings.auth_link_ttl_days,
+            },
+        ),
+        (
+            t(LANG, "email.new_ticket.subject", title=ticket.title),
+            "new_ticket.html",
+            {"ticket": ticket, "url": ticket_url},
+        ),
+        (
+            t(LANG, "email.new_comment.subject", title=ticket.title),
+            "new_comment.html",
+            {"ticket": ticket, "url": ticket_url},
+        ),
+        (
+            t(LANG, "email.ticket_update.subject", title=ticket.title),
+            "ticket_update.html",
+            {
+                "ticket": ticket,
+                "url": ticket_url,
+                "change_label": "Status → W trakcie",
+            },
+        ),
+        (
+            t(LANG, "email.assignment.subject", title=ticket.title),
+            "assignment.html",
+            {"ticket": ticket, "url": ticket_url, "assignee": user},
+        ),
+        (
+            t(LANG, "email.unassignment.subject", title=ticket.title),
+            "unassignment.html",
+            {"ticket": ticket, "url": ticket_url, "assignee": user},
+        ),
+    ]
 
     print(
         f"[SMTP] {settings.smtp_server}:{settings.smtp_port} ssl={settings.smtp_use_ssl}"
     )
-    print(f"[SEND] {subject} → {recipient}")
-    if not send_email_sync(recipient, subject, html):
-        print("BLAD — wysylka nieudana (szczegoly w logu).", file=sys.stderr)
+    print(f"[LANG] {LANG} — {len(samples)} wiadomości → {recipient}")
+    failed = 0
+    for subject, template, context in samples:
+        html = render_email_html(template, context, lang=LANG)
+        print(f"[SEND] {subject}")
+        if not send_email_sync(recipient, subject, html):
+            print(f"  BLAD — {template}", file=sys.stderr)
+            failed += 1
+        else:
+            print(f"  OK — {template}")
+
+    if failed:
+        print(f"BLAD — nieudanych: {failed}/{len(samples)}", file=sys.stderr)
         return 1
-    print("OK — wiadomość wysłana (sprawdź UI Mailpit).")
+    print(f"OK — wysłano {len(samples)} wiadomości (sprawdź UI Mailpit).")
     return 0
 
 

@@ -545,3 +545,4 @@ email:
     cta: "Otwórz w {app}"
   common:
     footer: "Ta wiadomość została wysłana przez {app}."
+    link_hint: "Jeśli przycisk nie działa, skopiuj i wklej ten link do przeglądarki:"
