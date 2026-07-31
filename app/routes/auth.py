@@ -141,7 +141,7 @@ def login_submit(
     if blocked:
         logger.warning("Login blocked email=%s ip=%s", email_norm, ip)
         return _render_login(request, error=blocked)
-    clear_user_session(request)
+    clear_user_session(request, preserve_last_project=True)
     set_user_session(request, user)
     ensure_csrf_token(request)
     cookie_lang = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
@@ -173,7 +173,7 @@ def forgot_password(
 @router.post("/auth/logout")
 def logout(request: Request):
     user_id = request.session.get("user_id")
-    clear_user_session(request)
+    clear_user_session(request, preserve_last_project=True)
     if user_id is not None:
         logger.info("Logout user_id=%s", user_id)
     return RedirectResponse("/login", status_code=303)

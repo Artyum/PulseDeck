@@ -27,8 +27,13 @@ def set_user_session(request: Request, user: User) -> None:
     request.session[SESSION_ACTIVITY_KEY] = int(time.time())
 
 
-def clear_user_session(request: Request) -> None:
+def clear_user_session(
+    request: Request, *, preserve_last_project: bool = False
+) -> None:
+    last = get_last_project_key(request) if preserve_last_project else None
     request.session.clear()
+    if last:
+        request.session[SESSION_LAST_PROJECT_KEY] = last
 
 
 def set_last_project_key(request: Request, key: str) -> None:

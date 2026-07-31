@@ -25,7 +25,8 @@
           <span class="comment-meta-aside">
             <span class="comment-meta-row">
               {% if can_edit_comments or can_delete_comments %}
-                <span class="comment-actions" {% if can_edit_comments %}x-show="!editing"{% endif %}>
+                <span class="comment-actions"
+                      {% if can_edit_comments %}x-show="!editing"{% endif %}>
                   {% if can_edit_comments %}
                     <button type="button"
                             class="btn btn-ghost comment-action"
@@ -52,7 +53,8 @@
             {% if ns.prev %}<span class="comment-gap">+{{ ns.prev|gap_between(c.created_at) }}</span>{% endif %}
           </span>
         </header>
-        <p class="comment-body" {% if can_edit_comments %}x-show="!editing"{% endif %}>{{ c.content }}</p>
+        <p class="comment-body"
+           {% if can_edit_comments %}x-show="!editing"{% endif %}>{{ c.content }}</p>
         {% if can_edit_comments %}
           <form hx-post="{{ url_for('edit_comment', ticket_ref=ticket|ticket_label, comment_id=c.id) }}"
                 hx-target="#ticket-view"
@@ -61,11 +63,7 @@
                 x-show="editing"
                 x-cloak
                 @submit="if (!$refs.editBody.value.trim()) { $event.preventDefault(); window.showToast(window.__i18n['errors.comment_empty'] || '', 'error'); } else { editing = false; }">
-            <textarea name="content"
-                      required
-                      rows="3"
-                      class="textarea"
-                      x-ref="editBody">{{ c.content }}</textarea>
+            <textarea name="content" required rows="3" class="textarea" x-ref="editBody">{{ c.content }}</textarea>
             <div class="comment-edit-actions">
               <button type="submit"
                       class="btn btn-ghost comment-action"

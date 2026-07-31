@@ -41,6 +41,21 @@ class TestSessionHelpers:
         assert deps_auth.get_last_project_key(request) == "DEMO"
         assert deps_auth.get_last_project_key(_request({})) is None
 
+    def test_clear_preserves_last_project(self, client_user):
+        request = _request({})
+        deps_auth.set_user_session(request, client_user)
+        deps_auth.set_last_project_key(request, "DEMO")
+        deps_auth.clear_user_session(request, preserve_last_project=True)
+        assert deps_auth.get_last_project_key(request) == "DEMO"
+        assert deps_auth.SESSION_USER_ID_KEY not in request.session
+
+    def test_clear_drops_last_project_by_default(self, client_user):
+        request = _request({})
+        deps_auth.set_user_session(request, client_user)
+        deps_auth.set_last_project_key(request, "DEMO")
+        deps_auth.clear_user_session(request)
+        assert request.session == {}
+
     def test_get_optional_user_id_invalid(self):
         request = _request({deps_auth.SESSION_USER_ID_KEY: "abc"})
         assert deps_auth.get_optional_user_id(request) is None

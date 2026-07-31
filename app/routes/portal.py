@@ -340,9 +340,7 @@ def edit_comment(
 ):
     lang = resolve_lang(request)
     _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
-    ticket_service.update_comment(
-        db, ticket, comment_id, user, content, lang=lang
-    )
+    ticket_service.update_comment(db, ticket, comment_id, user, content, lang=lang)
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     return _ticket_mutation_response(request, db, user, ticket)
 
