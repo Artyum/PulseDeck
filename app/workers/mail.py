@@ -95,7 +95,9 @@ def process_row(db, row: EmailOutbox) -> None:
     elif row.attempts >= settings.mail_max_attempts:
         row.status = EmailOutboxStatus.FAILED
         row.last_error = "send failed"
-        logger.error("Email outbox id=%s failed permanently to=%s", row.id, row.to_email)
+        logger.error(
+            "Email outbox id=%s failed permanently to=%s", row.id, row.to_email
+        )
     else:
         row.status = EmailOutboxStatus.PENDING
         row.available_at = datetime.now(timezone.utc) + timedelta(

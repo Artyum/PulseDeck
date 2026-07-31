@@ -16,9 +16,15 @@ ui:
     none: "None"
     or: "or"
     back_to_portal: "Back to portal"
+    back_home: "Home"
     logout: "Log out"
     optional: "Optional"
     active: "Active"
+  errors:
+    not_found:
+      title: "Not found — {app}"
+      heading: "Page not found"
+      body: "This address does not exist or has been removed."
   settings:
     language: "Language"
   confirm:
@@ -227,9 +233,7 @@ ui:
       title: "Projects"
       new: "New project"
       name: "Name"
-      name_placeholder: "Project name"
       key: "Key"
-      key_placeholder: "e.g. VOYA"
       key_title: "1–5 characters A–Z / 0–9"
       description: "Description"
       list: "List of projects"
@@ -437,7 +441,7 @@ messages:
       tag: "tag"
       required: "a required field"
   http:
-    not_found: "Not found"
+    not_found: "Not found."
     login_required: "Login required."
     admin_required: "Administrator privileges required."
   csrf:

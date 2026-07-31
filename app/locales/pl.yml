@@ -16,9 +16,15 @@ ui:
     none: "Brak"
     or: "lub"
     back_to_portal: "Wróć do portalu"
+    back_home: "Strona główna"
     logout: "Wyloguj"
     optional: "Opcjonalnie"
     active: "Aktywny"
+  errors:
+    not_found:
+      title: "Nie znaleziono — {app}"
+      heading: "Nie znaleziono strony"
+      body: "Ten adres nie istnieje lub został usunięty."
   settings:
     language: "Język"
   confirm:
@@ -227,9 +233,7 @@ ui:
       title: "Projekty"
       new: "Nowy projekt"
       name: "Nazwa"
-      name_placeholder: "Nazwa projektu"
       key: "Klucz"
-      key_placeholder: "np. VOYA"
       key_title: "1–5 znaków A–Z / 0–9"
       description: "Opis"
       list: "Lista projektów"
@@ -437,7 +441,7 @@ messages:
       tag: "tagu"
       required: "wymaganego pola"
   http:
-    not_found: "Nie znaleziono"
+    not_found: "Nie znaleziono."
     login_required: "Wymagane logowanie."
     admin_required: "Wymagane uprawnienia administratora."
   csrf:

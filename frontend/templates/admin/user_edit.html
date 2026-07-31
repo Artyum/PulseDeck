@@ -5,7 +5,8 @@
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.user_edit.heading") }}</h1>
     {% if edit_user.id != user.id %}
-      <form method="post" action="{{ url_for('admin_user_active', user_id=edit_user.id) }}">
+      <form method="post"
+            action="{{ url_for('admin_user_active', user_id=edit_user.id) }}">
         <input type="hidden" name="return_to" value="edit">
         {% if edit_user.is_active %}
           <input type="hidden" name="active" value="0">

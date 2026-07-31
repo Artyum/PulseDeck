@@ -184,9 +184,7 @@ def update_profile(
         new_email = auth_service.normalize_email(email)
         success_key = "flash.auth.profile_updated"
         if new_email != user.email:
-            _, raw = auth_service.request_email_change(
-                db, user, new_email, lang=lang
-            )
+            _, raw = auth_service.request_email_change(db, user, new_email, lang=lang)
             notify_email_confirm(db, user, raw, new_email, lang=lang)
             success_key = "flash.auth.email_confirm_sent"
         else:
@@ -195,9 +193,7 @@ def update_profile(
     except ValueError as exc:
         db.rollback()
         return _render_profile(request, user, section="dane", error=str(exc))
-    return _render_profile(
-        request, user, section="dane", success=t(lang, success_key)
-    )
+    return _render_profile(request, user, section="dane", success=t(lang, success_key))
 
 
 @router.post("/profile/password")

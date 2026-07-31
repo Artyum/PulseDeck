@@ -281,9 +281,7 @@ def admin_user_edit(request: Request, user_id: int, user: AdminUser, db: DbSessi
         request,
         "admin/user_edit.html",
         user=user,
-        **_user_edit_ctx(
-            db, target, flash=t(lang, flash_key) if flash_key else None
-        ),
+        **_user_edit_ctx(db, target, flash=t(lang, flash_key) if flash_key else None),
     )
 
 

@@ -16,7 +16,6 @@
         <input id="project-name"
                name="name"
                required
-               placeholder="{{ t('ui.admin.projects.name_placeholder') }}"
                value="{{ form_name or '' }}"
                class="input min-w-[12rem]">
       </div>
@@ -27,16 +26,13 @@
                required
                pattern="[A-Za-z0-9]{1,5}"
                maxlength="5"
-               placeholder="{{ t('ui.admin.projects.key_placeholder') }}"
                value="{{ form_key or '' }}"
-               title="{{ t('ui.admin.projects.key_title') }}"
                class="input min-w-[8rem] uppercase">
       </div>
       <div class="admin-form-field">
         <label class="label-tight" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
         <input id="project-desc"
                name="description"
-               placeholder="{{ t('ui.common.optional') }}"
                value="{{ form_description or '' }}"
                class="input">
       </div>

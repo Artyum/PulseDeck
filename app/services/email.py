@@ -312,9 +312,7 @@ def notify_ticket_update(
 ) -> None:
     loaded = _load_ticket(db, ticket.id) or ticket
     by_id = {u.id: u for u in (*_staff_circle(db, loaded), *_client_circle(loaded))}
-    recipients = _pick(
-        by_id.values(), exclude_id=actor_id, pref="notify_ticket_update"
-    )
+    recipients = _pick(by_id.values(), exclude_id=actor_id, pref="notify_ticket_update")
     if not recipients:
         return
     lang = DEFAULT_LANG

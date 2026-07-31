@@ -135,7 +135,7 @@ def common_context(request: Request, **extra) -> dict:
     return ctx
 
 
-def render(request: Request, name: str, **extra):
+def render(request: Request, name: str, *, status_code: int = 200, **extra):
     ctx = common_context(request, **extra)
     if ctx.get("is_dev"):
         try:
@@ -145,7 +145,7 @@ def render(request: Request, name: str, **extra):
         except Exception:
             logger.exception("Dev page info failed for template %s", name)
             ctx["dev_page_info"] = None
-    return _templates.TemplateResponse(request, name, ctx)
+    return _templates.TemplateResponse(request, name, ctx, status_code=status_code)
 
 
 def request_lang(request: Request) -> str:

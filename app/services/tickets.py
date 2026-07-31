@@ -222,11 +222,12 @@ def list_tickets(
     if q:
         raw = q.strip()
         if raw:
-            conditions = [Ticket.title.ilike(f"%{raw}%")]
+            title_match = Ticket.title.ilike(f"%{raw}%")
             ref = re.fullmatch(r"(?:[A-Za-z0-9]{1,5}-)?(\d+)", raw, flags=re.IGNORECASE)
             if ref:
-                conditions.append(Ticket.number == int(ref.group(1)))
-            stmt = stmt.where(or_(*conditions))
+                stmt = stmt.where(or_(title_match, Ticket.number == int(ref.group(1))))
+            else:
+                stmt = stmt.where(title_match)
     stmt = stmt.options(
         selectinload(Ticket.author),
         selectinload(Ticket.assignee),

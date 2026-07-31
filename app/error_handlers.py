@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.routes.context import render
 from app.utils.i18n import resolve_lang, t
 
 _FIELD_KEYS = frozenset(
@@ -43,9 +44,24 @@ def friendly_validation_message(exc: RequestValidationError, lang: str) -> str:
     return t(lang, "messages.validation.invalid_form")
 
 
+def _not_found_response(request: Request):
+    lang = resolve_lang(request)
+    message = t(lang, "messages.http.not_found")
+    path = request.url.path
+    if path.startswith("/api/"):
+        return JSONResponse({"detail": message}, status_code=404)
+    if request.headers.get("HX-Request"):
+        return HTMLResponse(message, status_code=404)
+    if request.method in ("GET", "HEAD"):
+        return render(request, "errors/404.html", status_code=404)
+    return JSONResponse({"detail": message}, status_code=404)
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def validation_exc_handler(request: Request, exc: RequestValidationError):
+        if any((err.get("loc") or ())[:1] == ("path",) for err in exc.errors()):
+            return _not_found_response(request)
         lang = resolve_lang(request)
         return JSONResponse(
             {"detail": friendly_validation_message(exc, lang)}, status_code=422
@@ -53,19 +69,12 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(StarletteHTTPException)
     async def http_exc_handler(request: Request, exc: StarletteHTTPException):
-        lang = resolve_lang(request)
+        if exc.status_code == 404:
+            return _not_found_response(request)
         if exc.status_code in (401, 403) and not request.url.path.startswith("/api/"):
             if exc.status_code == 401:
                 return RedirectResponse("/login", status_code=303)
-            return (
-                JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
-                if request.headers.get("HX-Request")
-                else RedirectResponse("/", status_code=303)
-            )
-        if exc.status_code == 404 and not request.url.path.startswith("/api/"):
             if request.headers.get("HX-Request"):
-                return HTMLResponse(t(lang, "messages.http.not_found"), status_code=404)
+                return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
             return RedirectResponse("/", status_code=303)
-        if request.url.path.startswith("/api/"):
-            return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
         return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
