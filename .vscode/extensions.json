@@ -1,4 +1,21 @@
 {
-  "recommendations": ["ms-python.ruff", "esbenp.prettier-vscode", "monosans.djlint"],
-  "unwantedRecommendations": ["ms-python.autopep8", "ms-python.flake8", "ms-pyright.pyright"]
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "charliermarsh.ruff",
+    "esbenp.prettier-vscode",
+    "monosans.djlint",
+    "samuelcolvin.jinjahtml",
+    "bradlc.vscode-tailwindcss",
+    "stylelint.vscode-stylelint",
+    "ms-vscode.powershell"
+  ],
+  "unwantedRecommendations": [
+    "ms-python.autopep8",
+    "ms-python.black-formatter",
+    "ms-python.flake8",
+    "ms-python.isort",
+    "ms-python.ruff",
+    "ms-pyright.pyright"
+  ]
 }

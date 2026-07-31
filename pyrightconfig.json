@@ -1,6 +1,6 @@
 {
   "include": ["app", "tests", "alembic"],
-  "exclude": ["**/node_modules", "**/__pycache__", "frontend", "data", "logs", "report"],
+  "exclude": ["**/.*", "**/node_modules", "**/__pycache__", "frontend", "data", "logs", "report"],
   "pythonVersion": "3.13",
   "typeCheckingMode": "standard",
   "reportMissingTypeStubs": false

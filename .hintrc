@@ -1,0 +1,9 @@
+{
+  "extends": ["development"],
+  "browserslist": [
+    "chrome >= 120",
+    "firefox >= 121",
+    "safari >= 17",
+    "edge >= 120"
+  ]
+}
