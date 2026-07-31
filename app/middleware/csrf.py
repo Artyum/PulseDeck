@@ -17,6 +17,7 @@ _EXEMPT: tuple[tuple[str, str], ...] = (
     ("/auth/login", "POST"),
     ("/auth/forgot-password", "POST"),
     ("/auth/activate", "POST"),
+    ("/email/unsubscribe", "POST"),
 )
 
 

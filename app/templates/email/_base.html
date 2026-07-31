@@ -63,14 +63,20 @@
                 {% endblock body %}
               </td>
             </tr>
-            <tr>
-              <td style="padding:8px 36px;
-                         background:#f4f7fb;
-                         border-top:1px solid #e2e8f0;
-                         font-size:10px;
-                         line-height:1.3;
-                         color:#94a3b8">{{ t('email.common.footer', app=app_name) }}</td>
-            </tr>
+            {% if unsubscribe_url %}
+              <tr>
+                <td style="padding:16px 36px 20px;
+                           background:#f4f7fb;
+                           border-top:1px solid #e2e8f0;
+                           text-align:center">
+                  <a href="{{ unsubscribe_url }}"
+                     style="font-size:13px;
+                            line-height:1.45;
+                            color:#64748b;
+                            text-decoration:underline">{{ t("email.common.unsubscribe") }}</a>
+                </td>
+              </tr>
+            {% endif %}
           </table>
         </td>
       </tr>

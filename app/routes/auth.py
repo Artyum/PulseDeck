@@ -4,7 +4,7 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 
 from app.config import get_settings
 from app.deps.auth import (
@@ -23,6 +23,7 @@ from app.services.email import notify_email_confirm
 from app.utils.csrf import ensure_csrf_token
 from app.utils.i18n import resolve_lang, t
 from app.utils.password import verify_password
+from app.utils.unsubscribe import apply_unsubscribe, parse_unsubscribe_token
 
 router = APIRouter(tags=["auth"])
 logger = logging.getLogger("pulsedeck.auth")
@@ -364,3 +365,48 @@ def activate_submit(
         pending,
     )
     return RedirectResponse("/", status_code=303)
+
+
+def _unsubscribe(db, token: str):
+    parsed = parse_unsubscribe_token(token)
+    if parsed is None:
+        return None
+    user = apply_unsubscribe(db, *parsed)
+    if user is None:
+        return None
+    return user, parsed[1]
+
+
+@router.get("/email/unsubscribe", response_class=HTMLResponse)
+def email_unsubscribe_get(request: Request, db: DbSession, token: str = ""):
+    lang = resolve_lang(request)
+    result = _unsubscribe(db, token)
+    if result is None:
+        logger.warning("Unsubscribe invalid token ip=%s", client_ip_key(request))
+        return render(
+            request,
+            "auth/unsubscribed.html",
+            error=t(lang, "ui.auth.unsubscribe.invalid"),
+        )
+    user, pref = result
+    logger.info("Unsubscribe ok user_id=%s pref=%s", user.id, pref)
+    return render(
+        request,
+        "auth/unsubscribed.html",
+        success=t(
+            lang,
+            "ui.auth.unsubscribe.done",
+            type=t(lang, f"ui.profile.settings.{pref}"),
+        ),
+    )
+
+
+@router.post("/email/unsubscribe")
+def email_unsubscribe_post(request: Request, db: DbSession, token: str = ""):
+    result = _unsubscribe(db, token)
+    if result is None:
+        logger.warning("Unsubscribe POST invalid token ip=%s", client_ip_key(request))
+        return PlainTextResponse("Invalid token", status_code=400)
+    user, pref = result
+    logger.info("Unsubscribe one-click user_id=%s pref=%s", user.id, pref)
+    return PlainTextResponse("OK", status_code=200)

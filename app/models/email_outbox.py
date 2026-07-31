@@ -25,6 +25,9 @@ class EmailOutbox(Base):
     to_email: Mapped[str] = mapped_column(String(320), nullable=False)
     subject: Mapped[str] = mapped_column(String(500), nullable=False)
     html_body: Mapped[str] = mapped_column(Text, nullable=False)
+    list_unsubscribe_url: Mapped[str | None] = mapped_column(
+        String(2000), nullable=True
+    )
     status: Mapped[EmailOutboxStatus] = mapped_column(
         Enum(
             EmailOutboxStatus, name="email_outbox_status", native_enum=False, length=20

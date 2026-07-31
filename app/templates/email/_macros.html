@@ -1,3 +1,24 @@
+{% macro ticket_ref(label, title) -%}
+  <strong style="font-weight:600;color:#0f172a">{{ label }}: {{ title }}</strong>
+{%- endmacro %}
+{% macro ticket_mail(key, name, label, title, url, extra=none) -%}
+  <p style="margin:0 0 12px;">{{ t('email.common.greeting', name=name) }}</p>
+  {% if extra %}
+    <p style="margin:0 0 12px;">
+      {{- t('email.' ~ key ~ '.body_before') -}}
+      {{- ticket_ref(label, title) -}}
+      {{- t('email.' ~ key ~ '.body_after', app=app_name) -}}
+    </p>
+    <p style="margin:0 0 20px;">{{ extra }}</p>
+  {% else %}
+    <p style="margin:0 0 20px;">
+      {{- t('email.' ~ key ~ '.body_before') -}}
+      {{- ticket_ref(label, title) -}}
+      {{- t('email.' ~ key ~ '.body_after', app=app_name) -}}
+    </p>
+  {% endif %}
+  {{ cta(url, t('email.' ~ key ~ '.cta', app=app_name) ) }}
+{%- endmacro %}
 {% macro cta(url, label) -%}
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
     <tr>
@@ -17,7 +38,8 @@
         <table role="presentation"
                cellspacing="0"
                cellpadding="0"
-               style="max-width:420px;width:100%;">
+               style="max-width:420px;
+                      width:100%">
           <tr>
             <td style="padding:12px 14px;
                        background:#f8fafc;
@@ -27,7 +49,7 @@
               <p style="margin:0 0 6px;
                         font-size:11px;
                         line-height:1.4;
-                        color:#94a3b8">{{ t('email.common.link_hint') }}</p>
+                        color:#94a3b8">{{ t("email.common.link_hint") }}</p>
               <a href="{{ url }}"
                  style="font-size:12px;
                         line-height:1.45;

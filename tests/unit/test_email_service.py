@@ -22,6 +22,28 @@ class TestEnqueueAndRender:
         assert row is not None
         assert row.to_email == "a@test.local"
         assert row.priority == EmailOutboxPriority.AUTH
+        assert row.list_unsubscribe_url is None
+
+    def test_build_message_list_unsubscribe_headers(self, monkeypatch):
+        from app.config import get_settings
+
+        monkeypatch.setenv("EMAIL_FROM", "PulseDeck <noreply@pulsedeck.local>")
+        get_settings.cache_clear()
+        try:
+            unsub = "https://pulsedeck.lan/email/unsubscribe?token=abc"
+            msg = email_service._build_message(
+                "a@b.c",
+                "subj",
+                "<p>hi</p>",
+                list_unsubscribe_url=unsub,
+            )
+            assert msg["List-Unsubscribe"] == f"<{unsub}>"
+            assert msg["List-Unsubscribe-Post"] == "List-Unsubscribe=One-Click"
+            bare = email_service._build_message("a@b.c", "subj", "<p>hi</p>")
+            assert bare.get("List-Unsubscribe") is None
+            assert bare.get("List-Unsubscribe-Post") is None
+        finally:
+            get_settings.cache_clear()
 
     def test_render_email_html(self):
         html = email_service.render_email_html(
@@ -125,6 +147,9 @@ class TestNotify:
 
         rows = list(db_session.scalars(select(EmailOutbox)).all())
         assert len(rows) >= 1
+        assert rows[0].list_unsubscribe_url
+        assert "/email/unsubscribe?token=" in rows[0].list_unsubscribe_url
+        assert "/email/unsubscribe?token=" in rows[0].html_body
 
     def test_notify_new_ticket_skips_staff_author(
         self, db_session, project_with_members, staff_user

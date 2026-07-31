@@ -86,7 +86,12 @@ def claim_next(db) -> EmailOutbox | None:
 
 def process_row(db, row: EmailOutbox) -> None:
     settings = get_settings()
-    ok = send_email_sync(row.to_email, row.subject, row.html_body)
+    ok = send_email_sync(
+        row.to_email,
+        row.subject,
+        row.html_body,
+        list_unsubscribe_url=row.list_unsubscribe_url,
+    )
     row.attempts += 1
     if ok:
         row.status = EmailOutboxStatus.SENT

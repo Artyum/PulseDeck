@@ -23,7 +23,8 @@ from app.models.ticket import Ticket, TicketParticipant
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
 from app.utils.i18n import DEFAULT_LANG, t
-from app.utils.urls import ticket_path
+from app.utils.unsubscribe import make_unsubscribe_url
+from app.utils.urls import ticket_label, ticket_path
 
 logger = logging.getLogger("pulsedeck.mail")
 
@@ -114,7 +115,13 @@ def _mail_domain(from_addr: str, app_base_url: str) -> str:
     return (host or "localhost").lower()
 
 
-def _build_message(to: str, subject: str, html_body: str) -> EmailMessage:
+def _build_message(
+    to: str,
+    subject: str,
+    html_body: str,
+    *,
+    list_unsubscribe_url: str | None = None,
+) -> EmailMessage:
     settings = get_settings()
     from_addr = settings.email_from_address
     domain = _mail_domain(from_addr, settings.app_base_url)
@@ -131,6 +138,9 @@ def _build_message(to: str, subject: str, html_body: str) -> EmailMessage:
     msg["X-Auto-Response-Suppress"] = "All"
     msg["X-Mailer"] = APP_NAME
     msg["List-Id"] = f"<{APP_NAME.lower()}.{domain}>"
+    if list_unsubscribe_url:
+        msg["List-Unsubscribe"] = f"<{list_unsubscribe_url}>"
+        msg["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
 
     msg.set_content(plain, charset="utf-8")
     msg.add_alternative(html_body, subtype="html", charset="utf-8")
@@ -147,12 +157,20 @@ def _build_message(to: str, subject: str, html_body: str) -> EmailMessage:
     return msg
 
 
-def send_email_sync(to: str, subject: str, html_body: str) -> bool:
+def send_email_sync(
+    to: str,
+    subject: str,
+    html_body: str,
+    *,
+    list_unsubscribe_url: str | None = None,
+) -> bool:
     settings = get_settings()
     if not settings.smtp_configured:
         logger.warning("SMTP not configured — skip email to %s subject=%s", to, subject)
         return False
-    msg = _build_message(to, subject, html_body)
+    msg = _build_message(
+        to, subject, html_body, list_unsubscribe_url=list_unsubscribe_url
+    )
     try:
         if settings.smtp_use_ssl:
             with smtplib.SMTP_SSL(
@@ -199,6 +217,7 @@ def enqueue_email(
     subject: str,
     html_body: str,
     priority: EmailOutboxPriority = EmailOutboxPriority.TICKET,
+    list_unsubscribe_url: str | None = None,
 ) -> None:
     db.add(
         EmailOutbox(
@@ -206,6 +225,7 @@ def enqueue_email(
             to_email=to_email.strip().lower(),
             subject=subject,
             html_body=html_body,
+            list_unsubscribe_url=list_unsubscribe_url,
             status=EmailOutboxStatus.PENDING,
             available_at=datetime.now(timezone.utc),
         )
@@ -219,18 +239,27 @@ def _enqueue_users(
     template: str,
     context: dict,
     *,
-    priority: EmailOutboxPriority = EmailOutboxPriority.TICKET,
+    pref: str,
     lang: str = DEFAULT_LANG,
 ) -> None:
-    html = render_email_html(template, context, lang=lang)
     seen: set[str] = set()
     for user in recipients:
         email = (user.email or "").strip().lower()
         if not email or email in seen:
             continue
         seen.add(email)
+        unsub = make_unsubscribe_url(user.id, pref)
+        html = render_email_html(
+            template,
+            {**context, "user": user, "unsubscribe_url": unsub},
+            lang=lang,
+        )
         enqueue_email(
-            db, to_email=email, subject=subject, html_body=html, priority=priority
+            db,
+            to_email=email,
+            subject=subject,
+            html_body=html,
+            list_unsubscribe_url=unsub,
         )
     if seen:
         db.commit()
@@ -296,12 +325,38 @@ def _pick(
     return out
 
 
-def _ticket_url(ticket: Ticket) -> str:
+def _ticket_mail_ctx(ticket: Ticket, **extra) -> dict:
     settings = get_settings()
     try:
-        return f"{settings.app_base_url}{ticket_path(ticket)}"
+        label = ticket_label(ticket)
+        url = f"{settings.app_base_url}{ticket_path(ticket)}"
     except ValueError:
-        return f"{settings.app_base_url}/"
+        label = str(ticket.number)
+        url = f"{settings.app_base_url}/"
+    return {"ticket": ticket, "url": url, "label": label, **extra}
+
+
+def _send_pref_mails(
+    db: Session,
+    recipients: list[User],
+    *,
+    key: str,
+    pref: str,
+    ctx: dict,
+    lang: str = DEFAULT_LANG,
+) -> None:
+    if not recipients:
+        return
+    ticket = ctx["ticket"]
+    _enqueue_users(
+        db,
+        recipients,
+        t(lang, f"email.{key}.subject", label=ctx["label"], title=ticket.title),
+        f"{key}.html",
+        ctx,
+        pref=pref,
+        lang=lang,
+    )
 
 
 def _load_ticket(db: Session, ticket_id: int) -> Ticket | None:
@@ -373,21 +428,16 @@ def notify_new_ticket(db: Session, ticket: Ticket) -> None:
     if ticket.author and ticket.author.is_staff:
         return
     loaded = _load_ticket(db, ticket.id) or ticket
-    recipients = _pick(
-        _staff_circle(db, loaded),
-        exclude_id=loaded.author_id,
-        pref="notify_new_ticket",
-    )
-    if not recipients:
-        return
-    lang = DEFAULT_LANG
-    _enqueue_users(
+    _send_pref_mails(
         db,
-        recipients,
-        t(lang, "email.new_ticket.subject", title=loaded.title),
-        "new_ticket.html",
-        {"ticket": loaded, "url": _ticket_url(loaded)},
-        lang=lang,
+        _pick(
+            _staff_circle(db, loaded),
+            exclude_id=loaded.author_id,
+            pref="notify_new_ticket",
+        ),
+        key="new_ticket",
+        pref="notify_new_ticket",
+        ctx=_ticket_mail_ctx(loaded),
     )
 
 
@@ -407,17 +457,12 @@ def notify_new_comment(
         if author and author.is_staff
         else _staff_circle(db, loaded)
     )
-    recipients = _pick(circle, exclude_id=author_id, pref="notify_reply")
-    if not recipients:
-        return
-    lang = DEFAULT_LANG
-    _enqueue_users(
+    _send_pref_mails(
         db,
-        recipients,
-        t(lang, "email.new_comment.subject", title=loaded.title),
-        "new_comment.html",
-        {"ticket": loaded, "url": _ticket_url(loaded)},
-        lang=lang,
+        _pick(circle, exclude_id=author_id, pref="notify_reply"),
+        key="new_comment",
+        pref="notify_reply",
+        ctx=_ticket_mail_ctx(loaded),
     )
 
 
@@ -426,21 +471,12 @@ def notify_ticket_update(
 ) -> None:
     loaded = _load_ticket(db, ticket.id) or ticket
     by_id = {u.id: u for u in (*_staff_circle(db, loaded), *_client_circle(loaded))}
-    recipients = _pick(by_id.values(), exclude_id=actor_id, pref="notify_ticket_update")
-    if not recipients:
-        return
-    lang = DEFAULT_LANG
-    _enqueue_users(
+    _send_pref_mails(
         db,
-        recipients,
-        t(lang, "email.ticket_update.subject", title=loaded.title),
-        "ticket_update.html",
-        {
-            "ticket": loaded,
-            "url": _ticket_url(loaded),
-            "change_label": change_label,
-        },
-        lang=lang,
+        _pick(by_id.values(), exclude_id=actor_id, pref="notify_ticket_update"),
+        key="ticket_update",
+        pref="notify_ticket_update",
+        ctx=_ticket_mail_ctx(loaded, change_label=change_label),
     )
 
 
@@ -464,16 +500,20 @@ def notify_assignment(
     if not targets:
         return
     lang = DEFAULT_LANG
-    url = _ticket_url(ticket)
+    loaded = _load_ticket(db, ticket.id) or ticket
+    ctx = _ticket_mail_ctx(loaded)
     for user, key in targets:
         enqueue_email(
             db,
             to_email=user.email,
-            subject=t(lang, f"email.{key}.subject", title=ticket.title),
+            subject=t(
+                lang,
+                f"email.{key}.subject",
+                label=ctx["label"],
+                title=loaded.title,
+            ),
             html_body=render_email_html(
-                f"{key}.html",
-                {"ticket": ticket, "url": url, "assignee": user},
-                lang=lang,
+                f"{key}.html", {**ctx, "user": user}, lang=lang
             ),
         )
     db.commit()

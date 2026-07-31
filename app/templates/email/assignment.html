@@ -1,9 +1,6 @@
 {% extends "_base.html" %}
-{% from "_macros.html" import cta with context %}
-{% block title %}{{ t('email.assignment.subject', title=ticket.title) }}{% endblock title %}
+{% from "_macros.html" import ticket_mail with context %}
+{% block title %}{{ t('email.assignment.subject', label=label, title=ticket.title) }}{% endblock title %}
 {% block body %}
-  <p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#0f172a;">{{ t('email.assignment.title', title=ticket.title) }}</p>
-  <p style="margin:0 0 12px;">{{ t('email.assignment.greeting', name=assignee.first_name) }}</p>
-  <p style="margin:0 0 20px;">{{ t('email.assignment.body', title=ticket.title) }}</p>
-  {{ cta(url, t('email.assignment.cta', app=app_name)) }}
+  {{ ticket_mail('assignment', user.first_name, label, ticket.title, url) }}
 {% endblock body %}

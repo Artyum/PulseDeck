@@ -66,6 +66,7 @@ def main() -> int:
     from app.config import get_settings
     from app.services.email import render_email_html, send_email_sync
     from app.utils.i18n import t
+    from app.utils.unsubscribe import make_unsubscribe_url
 
     get_settings.cache_clear()
     settings = get_settings()
@@ -78,6 +79,7 @@ def main() -> int:
 
     recipient = args.to.strip()
     user = SimpleNamespace(
+        id=1,
         email=recipient,
         first_name="Jan",
         last_name="Kowalski",
@@ -86,6 +88,23 @@ def main() -> int:
     ticket_url = f"{settings.app_base_url}/t/DEMO-1"
     activate_url = f"{settings.app_base_url}/auth/activate?token=mailpit-test-token"
     confirm_url = f"{settings.app_base_url}/auth/confirm-email?token=mailpit-test-token"
+
+    def notify_ctx(pref: str, **extra):
+        url = make_unsubscribe_url(1, pref)
+        return {
+            "user": user,
+            "ticket": ticket,
+            "url": ticket_url,
+            "label": "DEMO-1",
+            "unsubscribe_url": url,
+            **extra,
+        }, url
+
+    new_ticket_ctx, new_ticket_unsub = notify_ctx("notify_new_ticket")
+    comment_ctx, comment_unsub = notify_ctx("notify_reply")
+    update_ctx, update_unsub = notify_ctx(
+        "notify_ticket_update", change_label="Status → W trakcie"
+    )
 
     samples = [
         (
@@ -96,6 +115,7 @@ def main() -> int:
                 "url": confirm_url,
                 "ttl_minutes": settings.email_confirm_ttl_minutes,
             },
+            None,
         ),
         (
             t(LANG, "email.activate.subject", app=APP),
@@ -105,6 +125,7 @@ def main() -> int:
                 "url": activate_url,
                 "ttl_days": settings.auth_link_ttl_days,
             },
+            None,
         ),
         (
             t(LANG, "email.reset.subject", app=APP),
@@ -114,35 +135,47 @@ def main() -> int:
                 "url": activate_url,
                 "ttl_days": settings.auth_link_ttl_days,
             },
+            None,
         ),
         (
-            t(LANG, "email.new_ticket.subject", title=ticket.title),
+            t(LANG, "email.new_ticket.subject", label="DEMO-1", title=ticket.title),
             "new_ticket.html",
-            {"ticket": ticket, "url": ticket_url},
+            new_ticket_ctx,
+            new_ticket_unsub,
         ),
         (
-            t(LANG, "email.new_comment.subject", title=ticket.title),
+            t(LANG, "email.new_comment.subject", label="DEMO-1", title=ticket.title),
             "new_comment.html",
-            {"ticket": ticket, "url": ticket_url},
+            comment_ctx,
+            comment_unsub,
         ),
         (
-            t(LANG, "email.ticket_update.subject", title=ticket.title),
+            t(LANG, "email.ticket_update.subject", label="DEMO-1", title=ticket.title),
             "ticket_update.html",
+            update_ctx,
+            update_unsub,
+        ),
+        (
+            t(LANG, "email.assignment.subject", label="DEMO-1", title=ticket.title),
+            "assignment.html",
             {
                 "ticket": ticket,
                 "url": ticket_url,
-                "change_label": "Status → W trakcie",
+                "label": "DEMO-1",
+                "user": user,
             },
+            None,
         ),
         (
-            t(LANG, "email.assignment.subject", title=ticket.title),
-            "assignment.html",
-            {"ticket": ticket, "url": ticket_url, "assignee": user},
-        ),
-        (
-            t(LANG, "email.unassignment.subject", title=ticket.title),
+            t(LANG, "email.unassignment.subject", label="DEMO-1", title=ticket.title),
             "unassignment.html",
-            {"ticket": ticket, "url": ticket_url, "assignee": user},
+            {
+                "ticket": ticket,
+                "url": ticket_url,
+                "label": "DEMO-1",
+                "user": user,
+            },
+            None,
         ),
     ]
 
@@ -151,10 +184,12 @@ def main() -> int:
     )
     print(f"[LANG] {LANG} — {len(samples)} wiadomości → {recipient}")
     failed = 0
-    for subject, template, context in samples:
+    for subject, template, context, list_unsub in samples:
         html = render_email_html(template, context, lang=LANG)
         print(f"[SEND] {subject}")
-        if not send_email_sync(recipient, subject, html):
+        if not send_email_sync(
+            recipient, subject, html, list_unsubscribe_url=list_unsub
+        ):
             print(f"  BLAD — {template}", file=sys.stderr)
             failed += 1
         else:
