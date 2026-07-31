@@ -81,13 +81,13 @@
 
   .app-shell {
     margin-inline: auto;
-    max-width: calc(76 * var(--layout-rem));
+    max-width: calc(84 * var(--layout-rem));
     padding-inline: calc(1.5rem * var(--space-scale));
   }
 
   .app-main {
     margin-inline: auto;
-    max-width: calc(76 * var(--layout-rem));
+    max-width: calc(84 * var(--layout-rem));
     padding: calc(1.75rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
   }
 
@@ -237,7 +237,7 @@
     min-height: 100vh;
     min-width: var(--bp-desktop-min);
     margin-inline: auto;
-    max-width: calc(76 * var(--layout-rem));
+    max-width: calc(84 * var(--layout-rem));
   }
 
   .admin-aside {
@@ -1513,7 +1513,7 @@
 
   .issue-page {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) calc(19 * var(--layout-rem));
+    grid-template-columns: minmax(0, 1fr) calc(22 * var(--layout-rem));
     align-items: stretch;
     min-height: calc(100vh - 3.75rem);
     margin: calc(-1.75rem * var(--space-scale)) calc(-1.5rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
