@@ -106,6 +106,16 @@ class TestProfile:
         r = client.get("/profile", follow_redirects=False)
         assert r.status_code in (200, 303)
 
+    def test_profile_subpages(self, client, client_user):
+        _login(client, "client@test.local", "Client123!")
+        for path in (
+            "/profile/password",
+            "/profile/notifications",
+            "/profile/appearance",
+        ):
+            r = client.get(path, follow_redirects=False)
+            assert r.status_code in (200, 303)
+
     def test_profile_update(self, client, client_user):
         _login(client, "client@test.local", "Client123!")
         r = client.post(
@@ -131,6 +141,51 @@ class TestProfile:
             follow_redirects=False,
         )
         assert r.status_code in (200, 303, 422)
+
+    def test_profile_notifications(self, client, client_user):
+        _login(client, "client@test.local", "Client123!")
+        r = client.post(
+            "/profile/notifications",
+            data={
+                "notify_reply": "on",
+                "notify_ticket_update": "on",
+            },
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+
+class TestForgotAndConfirmEmail:
+    def test_forgot_password(self, client, client_user):
+        r = client.post(
+            "/auth/forgot-password",
+            data={"email": "client@test.local"},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+    def test_login_page(self, client):
+        r = client.get("/login")
+        assert r.status_code == 200
+
+    def test_confirm_email_flow(self, client, db_session, client_user):
+        from app.services import auth as auth_service
+
+        _row, raw = auth_service.request_email_change(
+            db_session, client_user, "confirm@test.local"
+        )
+        r = client.get(f"/auth/confirm-email?token={raw}")
+        assert r.status_code in (200, 303)
+        r = client.post(
+            "/auth/confirm-email",
+            data={"token": raw},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+    def test_set_password_redirect(self, client):
+        r = client.get("/auth/set-password?token=abc", follow_redirects=False)
+        assert r.status_code in (302, 303)
 
 
 def _create_pending_user(db_session):

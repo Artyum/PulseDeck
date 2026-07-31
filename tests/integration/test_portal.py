@@ -226,3 +226,95 @@ class TestTicketStatus:
             follow_redirects=False,
         )
         assert r.status_code in (200, 303)
+
+    def test_reopen_ticket(self, client, db_session, staff_user, project_with_members):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=staff_user,
+            title="Reopen me",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        ticket_service.set_status(db_session, ticket, staff_user, TicketStatus.DONE)
+        _login(client, "staff@test.local", "Staff123!")
+        r = client.post(
+            f"/t/{project_with_members.key}-{ticket.number}/reopen",
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+
+class TestInactiveProject:
+    def test_inactive_project_not_accessible(
+        self, client, db_session, client_user, project_with_members
+    ):
+        from app.services import projects as project_service
+
+        project_service.set_project_active(
+            db_session, project_with_members, active=False
+        )
+        _login(client, "client@test.local", "Client123!")
+        r = client.get(f"/p/{project_with_members.key}", follow_redirects=False)
+        assert r.status_code in (303, 404)
+
+
+class TestParticipantsAndReporter:
+    def test_add_participant(
+        self, client, db_session, client_user, staff_user, project_with_members
+    ):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=client_user,
+            title="Participants",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        _login(client, "client@test.local", "Client123!")
+        r = client.post(
+            f"/t/{project_with_members.key}-{ticket.number}/participants",
+            data={"user_id": str(staff_user.id)},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+    def test_change_reporter(
+        self, client, db_session, client_user, staff_user, project_with_members
+    ):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=staff_user,
+            title="Reporter",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        _login(client, "staff@test.local", "Staff123!")
+        r = client.post(
+            f"/t/{project_with_members.key}-{ticket.number}/reporter",
+            data={"author_id": str(client_user.id)},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+
+class TestRemoveTag:
+    def test_remove_tag(self, client, db_session, staff_user, project_with_members):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=staff_user,
+            title="Untag",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        tagged = ticket_service.add_ticket_tag(db_session, ticket, staff_user, "temp")
+        tag_id = tagged.ticket_tags[0].tag_id
+        _login(client, "staff@test.local", "Staff123!")
+        r = client.post(
+            f"/t/{project_with_members.key}-{ticket.number}/tags/remove",
+            data={"tag_id": str(tag_id)},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)

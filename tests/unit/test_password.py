@@ -1,3 +1,5 @@
+import pytest
+
 from app.utils.password import (
     hash_password,
     validate_password_strength,
@@ -18,3 +20,8 @@ def test_password_strength():
     except ValueError:
         pass
     assert validate_password_strength("Admin123!") == "Admin123!"
+
+
+def test_password_too_long():
+    with pytest.raises(ValueError):
+        hash_password("a" * 1000)

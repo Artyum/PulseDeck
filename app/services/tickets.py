@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, or_, select
+from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import get_settings
@@ -174,7 +174,7 @@ def _apply_sort(stmt, sort: str | None):
     if sort == "created_at":
         return stmt.order_by(Ticket.created_at.desc())
     if sort == "priority":
-        priority_order = func.case(
+        priority_order = case(
             (Ticket.priority == TicketPriority.HIGH, 0),
             (Ticket.priority == TicketPriority.NORMAL, 1),
             else_=2,

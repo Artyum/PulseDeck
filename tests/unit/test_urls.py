@@ -4,7 +4,13 @@ import pytest
 
 from app.models.ticket import Ticket
 from app.models.user import Project
-from app.utils.urls import admin_project_path, project_path, ticket_label, ticket_path
+from app.utils.urls import (
+    admin_project_path,
+    attachment_path,
+    project_path,
+    ticket_label,
+    ticket_path,
+)
 
 
 class TestProjectPath:
@@ -36,3 +42,11 @@ class TestAdminProjectPath:
     def test_returns_path(self):
         project = cast(Project, type("Project", (), {"key": "DEMO"})())
         assert admin_project_path(project) == "/admin/projects/DEMO"
+
+
+class TestAttachmentPath:
+    def test_returns_path(self):
+        from app.models.ticket import Attachment
+
+        att = cast(Attachment, type("Attachment", (), {"id": 7})())
+        assert attachment_path(att) == "/files/7"

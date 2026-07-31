@@ -180,6 +180,64 @@ class TestAdminUsers:
         )
         assert r.status_code == 303
 
+    def test_user_edit_page(self, client, admin_user, client_user):
+        _login_admin(client)
+        r = client.get(f"/admin/users/{client_user.id}")
+        assert r.status_code == 200
+
+    def test_user_notifications(self, client, admin_user, client_user):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/users/{client_user.id}/notifications",
+            data={
+                "notify_reply": "on",
+                "notify_ticket_update": "on",
+            },
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+    def test_resend_activation(self, client, db_session, admin_user):
+        from app.models.enums import UserRole
+        from app.models.user import User
+
+        pending = User(
+            email="resend@test.local",
+            first_name="Resend",
+            last_name="User",
+            role=UserRole.USER,
+            activated_at=None,
+            is_active=True,
+        )
+        db_session.add(pending)
+        db_session.commit()
+        db_session.refresh(pending)
+        _login_admin(client)
+        r = client.post(
+            f"/admin/users/{pending.id}/resend-activation",
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+    def test_set_password_direct(self, client, admin_user, client_user):
+        _login_admin(client)
+        r = client.post(
+            f"/admin/users/{client_user.id}/password",
+            data={
+                "action": "set",
+                "new_password": "AdminSet1!",
+                "confirm_password": "AdminSet1!",
+            },
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+    def test_projects_list(self, client, admin_user, project_with_members):
+        _login_admin(client)
+        r = client.get("/admin/projects")
+        assert r.status_code == 200
+        assert project_with_members.name in r.text
+
 
 def _login_client(client):
     r = client.post(
