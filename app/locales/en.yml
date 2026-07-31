@@ -58,7 +58,6 @@ ui:
       forgot_label: "Forgot your password"
       forgot_placeholder: "address@company.com"
       forgot_submit: "Send reset link"
-      email_confirm_notice: "We've sent a confirmation link to your new email. Sign-in is unavailable until you confirm."
       forgot_sent: "If the account exists and isn't blocked, we've sent a link by email."
     activate:
       title_pending: "Account activation"
@@ -98,7 +97,7 @@ ui:
       last_name: "Last name"
       email: "E-mail"
       phone: "Phone"
-    email_change_hint: "Changing your email requires confirmation at the new address. Sign-in will be blocked until you confirm."
+    email_change_hint: "Changing your email requires confirmation at the new address. You keep signing in with your current address until you confirm."
     email_pending: "Pending confirmation: {email}"
     save_data: "Save data"
     password:
@@ -362,8 +361,8 @@ flash:
     invalid_credentials: "Invalid email or password."
     account_blocked: "This account is blocked."
     account_not_activated: "This account hasn't been activated. Check your email or use the “Forgot password” option."
-    confirm_pending_email: "Confirm your new email before signing in."
     profile_updated: "Your profile has been updated."
+    email_confirm_sent: "We've sent a confirmation link to your new email. You keep signing in with your current address until you confirm."
     password_changed: "Your password has been changed."
     notifications_updated: "Notification preferences saved."
     current_password_invalid: "Your current password is incorrect."

@@ -26,7 +26,7 @@
   </div>
   {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
   {% if success %}<p class="alert alert-success admin-alert">{{ success }}</p>{% endif %}
-  {% if profile_section in ('notifications', 'appearance') %}
+  {% if profile_section == 'appearance' %}
     <div class="admin-prefs">{% include "partials/user_profile_form.html" %}</div>
   {% else %}
     <section class="admin-section">

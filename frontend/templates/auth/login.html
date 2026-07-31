@@ -16,9 +16,6 @@
         {% if success %}
           <p class="alert alert-success mb-4">{{ success }}</p>
         {% endif %}
-        {% if request.query_params.get('email_confirm') %}
-          <p class="alert alert-success mb-4">{{ t("ui.auth.login.email_confirm_notice") }}</p>
-        {% endif %}
         {% if forgot_sent %}
           <p class="alert alert-success mb-4">{{ t("ui.auth.login.forgot_sent") }}</p>
         {% endif %}

@@ -59,8 +59,6 @@ def login_blocked_reason(user: User, *, lang: str | None = None) -> str | None:
         return t(lang, "flash.auth.account_blocked")
     if user.activated_at is None:
         return t(lang, "flash.auth.account_not_activated")
-    if user.pending_email:
-        return t(lang, "flash.auth.confirm_pending_email")
     return None
 
 

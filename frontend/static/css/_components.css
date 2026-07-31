@@ -443,7 +443,7 @@
   }
 
   .admin-narrow {
-    max-width: calc(36 * var(--layout-rem));
+    max-width: calc(26 * var(--layout-rem));
   }
 
   .admin-prefs {
@@ -530,6 +530,8 @@
   .admin-form-stack > .btn,
   .admin-field .btn,
   .admin-form-actions > .btn {
+    align-self: flex-start;
+    width: auto;
     min-height: 1.875rem;
     padding: 0.28rem 0.7rem;
     font-size: 0.75rem;

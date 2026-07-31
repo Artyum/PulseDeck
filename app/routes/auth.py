@@ -182,20 +182,21 @@ def update_profile(
             lang=lang,
         )
         new_email = auth_service.normalize_email(email)
+        success_key = "flash.auth.profile_updated"
         if new_email != user.email:
-            _token_row, raw = auth_service.request_email_change(
+            _, raw = auth_service.request_email_change(
                 db, user, new_email, lang=lang
             )
             notify_email_confirm(db, user, raw, new_email, lang=lang)
-            clear_user_session(request)
-            return RedirectResponse("/login?email_confirm=1", status_code=303)
-        db.commit()
+            success_key = "flash.auth.email_confirm_sent"
+        else:
+            db.commit()
         db.refresh(user)
     except ValueError as exc:
         db.rollback()
         return _render_profile(request, user, section="dane", error=str(exc))
     return _render_profile(
-        request, user, section="dane", success=t(lang, "flash.auth.profile_updated")
+        request, user, section="dane", success=t(lang, success_key)
     )
 
 

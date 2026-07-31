@@ -58,7 +58,6 @@ ui:
       forgot_label: "Nie pamiętam hasła"
       forgot_placeholder: "adres@firma.pl"
       forgot_submit: "Wyślij link resetujący"
-      email_confirm_notice: "Wysłaliśmy link potwierdzający na nowy e-mail. Do potwierdzenia logowanie jest niedostępne."
       forgot_sent: "Jeśli konto istnieje i nie jest zablokowane, wysłaliśmy link na e-mail."
     activate:
       title_pending: "Aktywacja konta"
@@ -98,7 +97,7 @@ ui:
       last_name: "Nazwisko"
       email: "E-mail"
       phone: "Telefon"
-    email_change_hint: "Zmiana e-maila wymaga potwierdzenia na nowy adres. Do potwierdzenia logowanie będzie zablokowane."
+    email_change_hint: "Zmiana e-maila wymaga potwierdzenia na nowy adres. Do potwierdzenia logujesz się obecnym adresem."
     email_pending: "Oczekuje na potwierdzenie: {email}"
     save_data: "Zapisz dane"
     password:
@@ -362,8 +361,8 @@ flash:
     invalid_credentials: "Nieprawidłowy e-mail lub hasło."
     account_blocked: "Konto jest zablokowane."
     account_not_activated: "Konto nie zostało aktywowane. Sprawdź e-mail lub użyj opcji „Nie pamiętam hasła”."
-    confirm_pending_email: "Potwierdź nowy adres e-mail, zanim się zalogujesz."
     profile_updated: "Profil został zaktualizowany."
+    email_confirm_sent: "Wysłaliśmy link potwierdzający na nowy e-mail. Do potwierdzenia logujesz się obecnym adresem."
     password_changed: "Hasło zostało zmienione."
     notifications_updated: "Zapisano preferencje powiadomień."
     current_password_invalid: "Obecne hasło jest nieprawidłowe."
