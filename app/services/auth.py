@@ -19,7 +19,7 @@ from app.utils.password import (
 )
 from app.utils.phone import normalize_phone
 
-logger = logging.getLogger("pulsedeck.services.auth")
+logger = logging.getLogger("pulsedeck.auth")
 
 
 def hash_magic_token(raw: str) -> str:

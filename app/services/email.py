@@ -20,7 +20,7 @@ from app.services import projects as project_service
 from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.urls import ticket_path
 
-logger = logging.getLogger("pulsedeck.services.email")
+logger = logging.getLogger("pulsedeck.mail")
 
 APP_NAME = "PulseDeck"
 

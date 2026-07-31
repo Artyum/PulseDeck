@@ -17,19 +17,24 @@ from starlette.types import ExceptionHandler
 from app.config import get_settings, project_root, resolve_upload_dir
 from app.db.session import SessionLocal
 from app.error_handlers import register_exception_handlers
+from app.logging_setup import setup_logging
 from app.middleware.csrf import CSRFProtectMiddleware
 from app.middleware.security_headers import apply_security_headers
 from app.middleware.session_sliding import SessionSlidingMiddleware
-from app.rate_limit import limiter
+from app.rate_limit import client_ip_key, limiter
 from app.routes import admin, auth, health, portal
 from app.services.auth import ensure_admin_seed
 
 logger = logging.getLogger("pulsedeck.app")
+security_logger = logging.getLogger("pulsedeck.security")
+db_logger = logging.getLogger("pulsedeck.db")
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    setup_logging()
     resolve_upload_dir()
+    db_logger.info("Database engine ready")
     db = SessionLocal()
     try:
         ensure_admin_seed(db)
@@ -42,7 +47,18 @@ async def lifespan(_app: FastAPI):
     logger.info("PulseDeck stopping")
 
 
+def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    security_logger.warning(
+        "Rate limit exceeded path=%s method=%s ip=%s",
+        request.url.path,
+        request.method,
+        client_ip_key(request),
+    )
+    return _rate_limit_exceeded_handler(request, exc)
+
+
 def build_fastapi_app() -> FastAPI:
+    setup_logging()
     settings = get_settings()
     app = FastAPI(
         title="PulseDeck",
@@ -53,7 +69,7 @@ def build_fastapi_app() -> FastAPI:
     )
     app.state.limiter = limiter
     app.add_exception_handler(
-        RateLimitExceeded, cast(ExceptionHandler, _rate_limit_exceeded_handler)
+        RateLimitExceeded, cast(ExceptionHandler, _rate_limit_handler)
     )
     register_exception_handlers(app)
 

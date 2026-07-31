@@ -138,5 +138,14 @@ def resolve_upload_dir() -> Path:
     return path
 
 
+def resolve_log_dir() -> Path:
+    settings = get_settings()
+    path = Path(settings.log_dir)
+    if not path.is_absolute():
+        path = _PROJECT_ROOT / path
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def project_root() -> Path:
     return _PROJECT_ROOT

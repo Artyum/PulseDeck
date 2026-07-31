@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.requests import ClientDisconnect
 
 from app.routes.context import render
 from app.utils.i18n import resolve_lang, t
+
+logger = logging.getLogger("pulsedeck.app")
 
 _FIELD_KEYS = frozenset(
     {"user_id", "content", "title", "description", "email", "password", "tag"}
@@ -57,6 +62,14 @@ def _not_found_response(request: Request):
     return JSONResponse({"detail": message}, status_code=404)
 
 
+def _server_error_response(request: Request):
+    lang = resolve_lang(request)
+    message = t(lang, "messages.http.server_error")
+    if request.url.path.startswith("/api/") or request.headers.get("HX-Request"):
+        return JSONResponse({"detail": message}, status_code=500)
+    return HTMLResponse(f"<p>{message}</p>", status_code=500)
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def validation_exc_handler(request: Request, exc: RequestValidationError):
@@ -71,6 +84,14 @@ def register_exception_handlers(app: FastAPI) -> None:
     async def http_exc_handler(request: Request, exc: StarletteHTTPException):
         if exc.status_code == 404:
             return _not_found_response(request)
+        if exc.status_code >= 500:
+            logger.error(
+                "HTTP %s %s %s detail=%s",
+                exc.status_code,
+                request.method,
+                request.url.path,
+                exc.detail,
+            )
         if exc.status_code in (401, 403) and not request.url.path.startswith("/api/"):
             if exc.status_code == 401:
                 return RedirectResponse("/login", status_code=303)
@@ -78,3 +99,10 @@ def register_exception_handlers(app: FastAPI) -> None:
                 return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
             return RedirectResponse("/", status_code=303)
         return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
+
+    @app.exception_handler(Exception)
+    async def unhandled_exc_handler(request: Request, exc: Exception):
+        if isinstance(exc, ClientDisconnect):
+            return Response(status_code=400)
+        logger.exception("Unhandled exception %s %s", request.method, request.url.path)
+        return _server_error_response(request)

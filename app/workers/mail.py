@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import sys
 import time
 from datetime import datetime, timedelta, timezone
 
@@ -9,11 +8,12 @@ from sqlalchemy import case, func, select, update
 
 from app.config import get_settings
 from app.db.session import SessionLocal
+from app.logging_setup import setup_logging
 from app.models.email_outbox import EmailOutbox
 from app.models.enums import EmailOutboxPriority, EmailOutboxStatus
 from app.services.email import send_email_sync
 
-logger = logging.getLogger("pulsedeck.workers.mail")
+logger = logging.getLogger("pulsedeck.mail")
 
 
 def _recover_stuck(db) -> None:
@@ -131,11 +131,7 @@ def run_forever() -> None:
 
 
 def main() -> None:
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
-        stream=sys.stdout,
-    )
+    setup_logging()
     run_forever()
 
 

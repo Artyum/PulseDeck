@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Form, Request
@@ -15,7 +16,7 @@ from app.deps.auth import (
 )
 from app.models.enums import MagicTokenPurpose
 from app.models.user import User
-from app.rate_limit import limiter
+from app.rate_limit import client_ip_key, limiter
 from app.routes.context import render
 from app.services import auth as auth_service
 from app.services.email import notify_email_confirm
@@ -24,6 +25,7 @@ from app.utils.i18n import resolve_lang, t
 from app.utils.password import verify_password
 
 router = APIRouter(tags=["auth"])
+logger = logging.getLogger("pulsedeck.auth")
 
 
 def _login_limit() -> str:
@@ -109,15 +111,20 @@ def login_submit(
     password: Annotated[str, Form()],
 ):
     lang = resolve_lang(request)
+    ip = client_ip_key(request)
+    email_norm = email.strip().lower()
     user = auth_service.authenticate_password(db, email, password)
     if not user:
+        logger.warning("Login failed email=%s ip=%s", email_norm, ip)
         return _render_login(request, error=t(lang, "flash.auth.invalid_credentials"))
     blocked = auth_service.login_blocked_reason(user, lang=lang)
     if blocked:
+        logger.warning("Login blocked email=%s ip=%s", email_norm, ip)
         return _render_login(request, error=blocked)
     clear_user_session(request)
     set_user_session(request, user)
     ensure_csrf_token(request)
+    logger.info("Login ok email=%s user_id=%s ip=%s", user.email, user.id, ip)
     return RedirectResponse("/", status_code=303)
 
 
@@ -132,12 +139,16 @@ def forgot_password(
     user = auth_service.get_user_by_email(db, email)
     if user and auth_service.can_receive_password_link(user):
         auth_service.send_password_link(db, user, lang=lang)
+        logger.info("Password reset link sent user_id=%s email=%s", user.id, user.email)
     return _render_login(request, forgot_sent=True)
 
 
 @router.post("/auth/logout")
 def logout(request: Request):
+    user_id = request.session.get("user_id")
     clear_user_session(request)
+    if user_id is not None:
+        logger.info("Logout user_id=%s", user_id)
     return RedirectResponse("/login", status_code=303)
 
 
@@ -288,7 +299,9 @@ def confirm_email_submit(
     lang = resolve_lang(request)
     user = auth_service.confirm_email_change(db, token)
     if not user:
+        logger.warning("Email confirm failed invalid token")
         return _render_login(request, error=t(lang, "flash.auth.confirm_link_invalid"))
+    logger.info("Email confirmed user_id=%s email=%s", user.id, user.email)
     return _render_login(
         request,
         success=t(lang, "flash.auth.email_confirmed"),
@@ -339,8 +352,15 @@ def activate_submit(
     except ValueError as exc:
         return _render_activate(request, token=token, pending=pending, error=str(exc))
     if not user:
+        logger.warning("Activation failed invalid token ip=%s", client_ip_key(request))
         return _render_login(
             request, error=t(lang, "flash.auth.activation_link_invalid")
         )
     set_user_session(request, user)
+    logger.info(
+        "Activation ok user_id=%s email=%s pending_was=%s",
+        user.id,
+        user.email,
+        pending,
+    )
     return RedirectResponse("/", status_code=303)

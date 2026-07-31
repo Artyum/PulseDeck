@@ -10,7 +10,7 @@ from fastapi import Request
 
 from app.config import project_root
 
-logger = logging.getLogger("pulsedeck.i18n")
+logger = logging.getLogger("pulsedeck.app.i18n")
 
 LANG_STORAGE_KEY = "pulsedeck_lang"
 DEFAULT_LANG = "en"
@@ -24,6 +24,8 @@ class LangChoice:
 
 
 _cache: tuple[float, dict[str, dict[str, str]], tuple[LangChoice, ...]] | None = None
+_missing_keys: set[str] = set()
+_format_failed: set[str] = set()
 
 
 def _flatten(data: dict[str, Any], prefix: str = "") -> dict[str, str]:
@@ -107,13 +109,20 @@ def t(lang: str, message_key: str, **kwargs: Any) -> str:
     if text is None and lang != DEFAULT_LANG:
         text = by_lang.get(DEFAULT_LANG, {}).get(message_key)
     if text is None:
-        logger.warning("Missing i18n key %s (lang=%s)", message_key, lang)
+        miss = f"{lang}:{message_key}"
+        if miss not in _missing_keys:
+            _missing_keys.add(miss)
+            logger.warning("Missing i18n key %s (lang=%s)", message_key, lang)
         text = message_key
     if kwargs:
         try:
             return text.format(**kwargs)
         except (KeyError, ValueError):
-            logger.warning("i18n format failed for %s kwargs=%s", message_key, kwargs)
+            if message_key not in _format_failed:
+                _format_failed.add(message_key)
+                logger.warning(
+                    "i18n format failed for %s kwargs=%s", message_key, kwargs
+                )
             return text
     return text
 

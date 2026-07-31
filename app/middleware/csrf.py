@@ -11,7 +11,7 @@ from app.config import get_settings
 from app.utils.csrf import CSRF_HEADER, CSRF_SESSION_KEY, ensure_csrf_token
 from app.utils.i18n import resolve_lang, t
 
-logger = logging.getLogger("pulsedeck.middleware.csrf")
+logger = logging.getLogger("pulsedeck.security")
 
 _EXEMPT: tuple[tuple[str, str], ...] = (
     ("/auth/login", "POST"),

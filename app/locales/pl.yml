@@ -445,6 +445,7 @@ messages:
       required: "wymaganego pola"
   http:
     not_found: "Nie znaleziono."
+    server_error: "Coś poszło nie tak. Spróbuj ponownie później."
     login_required: "Wymagane logowanie."
     admin_required: "Wymagane uprawnienia administratora."
   csrf:

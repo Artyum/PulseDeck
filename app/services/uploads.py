@@ -19,7 +19,7 @@ from app.models.user import User
 from app.services import tickets as ticket_service
 from app.utils.i18n import DEFAULT_LANG, t
 
-logger = logging.getLogger("pulsedeck.uploads")
+logger = logging.getLogger("pulsedeck.app.uploads")
 
 ALLOWED_IMAGE = frozenset({".jpg", ".jpeg", ".png", ".webp", ".gif"})
 ALLOWED_PDF = frozenset({".pdf"})
