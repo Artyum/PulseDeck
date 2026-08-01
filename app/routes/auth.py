@@ -31,6 +31,7 @@ from app.utils.i18n import (
 )
 from app.utils.password import verify_password
 from app.utils.unsubscribe import apply_unsubscribe, parse_unsubscribe_token
+from app.utils.urls import safe_next_path
 
 router = APIRouter(tags=["auth"])
 logger = logging.getLogger("pulsedeck.auth")
@@ -66,6 +67,7 @@ def _render_login(
     error: str | None = None,
     success: str | None = None,
     forgot_sent: bool = False,
+    next_path: str = "/",
 ):
     return render(
         request,
@@ -73,6 +75,7 @@ def _render_login(
         error=error,
         success=success,
         forgot_sent=forgot_sent,
+        next_path=next_path,
     )
 
 
@@ -115,11 +118,12 @@ def _render_activate(
 
 
 @router.get("/login", response_class=HTMLResponse)
-def login_page(request: Request, db: DbSession):
+def login_page(request: Request, db: DbSession, next: str = ""):
+    dest = safe_next_path(next)
     user = get_optional_user(request, db)
     if user:
-        return RedirectResponse("/", status_code=303)
-    return _render_login(request)
+        return RedirectResponse(dest, status_code=303)
+    return _render_login(request, next_path=dest)
 
 
 @router.post("/auth/login")
@@ -129,23 +133,29 @@ def login_submit(
     db: DbSession,
     email: Annotated[str, Form()],
     password: Annotated[str, Form()],
+    next: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     ip = client_ip_key(request)
     email_norm = email.strip().lower()
+    dest = safe_next_path(next)
     user = auth_service.authenticate_password(db, email, password)
     if not user:
         logger.warning("Login failed email=%s ip=%s", email_norm, ip)
-        return _render_login(request, error=t(lang, "flash.auth.invalid_credentials"))
+        return _render_login(
+            request,
+            error=t(lang, "flash.auth.invalid_credentials"),
+            next_path=dest,
+        )
     blocked = auth_service.login_blocked_reason(user, lang=lang)
     if blocked:
         logger.warning("Login blocked email=%s ip=%s", email_norm, ip)
-        return _render_login(request, error=blocked)
+        return _render_login(request, error=blocked, next_path=dest)
     clear_user_session(request, preserve_last_project=True)
     set_user_session(request, user)
     ensure_csrf_token(request)
     cookie_lang = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
-    response = RedirectResponse("/", status_code=303)
+    response = RedirectResponse(dest, status_code=303)
     if cookie_lang in available_lang_ids():
         if cookie_lang != user.ui_lang:
             auth_service.update_ui_lang(db, user, cookie_lang)

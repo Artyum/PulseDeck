@@ -1770,6 +1770,7 @@
     display: flex;
     align-items: center;
     gap: 0.35rem;
+    font-size: 0.65rem;
   }
 
   .issue-field {
@@ -1782,8 +1783,7 @@
   }
 
   .issue-field:has(.issue-tags),
-  .issue-field:has(.issue-participant-list),
-  .issue-field:has(.issue-participants),
+  .issue-field:has(.field-value-participants),
   .issue-field:has(.issue-tag-add) {
     align-items: start;
   }
@@ -1801,11 +1801,30 @@
     padding-top: 0.28rem;
   }
 
-  .issue-field:has(.issue-participant-list) > .label-tight,
-  .issue-field:has(.issue-participants) > .label-tight {
+  .issue-field:has(.field-value-participants) > .issue-participant-label-col {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
     align-self: start;
-    padding-top: 0;
-    min-height: 1.5rem;
+    min-width: 0;
+  }
+
+  .issue-field:has(.field-value-participants) > .issue-participant-label-col > .label-tight {
+    align-self: start;
+    padding-top: calc((1.5rem - 0.65rem * 1.25) / 2);
+    min-height: 0;
+  }
+
+  .issue-field:has(.field-value-participants) > .field-value-participants {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .issue-field:has(.field-value-participants) > .issue-participant-label-col .issue-menu {
+    min-height: 0;
   }
 
   .issue-field > :not(.label-tight) {
@@ -1933,14 +1952,40 @@
   }
 
   .issue-sidebar .field-value {
-    font-size: 0.875rem;
-    line-height: 1.45;
+    font-size: 0.9375rem;
+    line-height: 1.55;
     min-width: 0;
     min-height: 1.5rem;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.35rem;
+  }
+
+  .issue-sidebar .field-value:not(:has(*)) {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .issue-sidebar .issue-menu-value {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .issue-sidebar .field-value-participants {
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: start;
+    flex-wrap: nowrap;
+    gap: calc(0.3rem * var(--space-scale));
+  }
+
+  .issue-participant-primary {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 1.5rem;
+    width: 100%;
   }
 
   .issue-sidebar .issue-menu {
@@ -2014,7 +2059,8 @@
   }
 
   .issue-sidebar .issue-field {
-    grid-template-columns: 6.5rem minmax(0, 1fr);
+    grid-template-columns: 5rem minmax(0, 1fr);
+    column-gap: calc(1.4rem * var(--space-scale));
   }
 
   .issue-sidebar .issue-field > form {
@@ -2050,19 +2096,6 @@
     width: 100%;
   }
 
-  .issue-participants {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: calc(0.3rem * var(--space-scale));
-    min-width: 0;
-    width: 100%;
-  }
-
-  .issue-sidebar .issue-field:has(.issue-participants) > .field-value {
-    align-items: flex-start;
-  }
-
   .issue-participant-list {
     display: flex;
     flex-direction: column;
@@ -2070,16 +2103,10 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
     color: var(--color-ink);
     width: 100%;
-  }
-
-  .issue-participant-list > li:first-child,
-  .issue-participants > .text-steel {
-    display: flex;
-    align-items: center;
-    min-height: 1.5rem;
   }
 
   .issue-participant-row {
@@ -2087,7 +2114,6 @@
     align-items: center;
     gap: 0.35rem;
     min-width: 0;
-    min-height: 1.5rem;
   }
 
   .issue-participant-name {
@@ -3132,12 +3158,7 @@
   }
 
   .auth-stack {
-    --auth-brand-space: calc(
-      clamp(3.25rem, 2.6rem + 2vw, 4.75rem)
-      + 0.75rem
-      + (clamp(2rem, 1.6rem + 1.4vw, 2.5rem) * 1.05)
-      + 1.5rem
-    );
+    --auth-brand-space: calc(clamp(3.25rem, 2.6rem + 2vw, 4.75rem) + 0.75rem + (clamp(2rem, 1.6rem + 1.4vw, 2.5rem) * 1.05) + 1.5rem);
     position: relative;
     width: 100%;
     max-width: calc(24 * var(--layout-rem));

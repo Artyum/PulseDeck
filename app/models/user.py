@@ -91,6 +91,14 @@ class User(Base):
         return f"{self.first_name} {self.last_name}".strip()
 
     @property
+    def short_display_name(self) -> str:
+        fn = (self.first_name or "").strip()
+        ln = (self.last_name or "").strip()
+        if not ln:
+            return fn
+        return f"{fn} {ln[0]}.".strip()
+
+    @property
     def is_pending(self) -> bool:
         return self.activated_at is None
 

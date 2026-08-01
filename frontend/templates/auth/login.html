@@ -19,6 +19,7 @@
           <form method="post"
                 action="{{ url_for('login_submit') }}"
                 class="space-y-4">
+            <input type="hidden" name="next" value="{{ next_path }}">
             <div>
               <label class="label" for="email">{{ t("ui.auth.login.email") }}</label>
               <input id="email" name="email" type="email" required class="input mt-1.5">

@@ -8,6 +8,7 @@ from app.utils.urls import (
     admin_project_path,
     attachment_path,
     project_path,
+    safe_next_path,
     ticket_label,
     ticket_path,
 )
@@ -50,3 +51,17 @@ class TestAttachmentPath:
 
         att = cast(Attachment, type("Attachment", (), {"id": 7})())
         assert attachment_path(att) == "/files/7"
+
+
+class TestSafeNextPath:
+    def test_valid_relative(self):
+        assert safe_next_path("/t/DEMO-1") == "/t/DEMO-1"
+
+    def test_empty_uses_default(self):
+        assert safe_next_path("") == "/"
+        assert safe_next_path(None) == "/"
+
+    def test_rejects_open_redirect(self):
+        assert safe_next_path("//evil.test") == "/"
+        assert safe_next_path("https://evil.test") == "/"
+        assert safe_next_path("/\\evil") == "/"

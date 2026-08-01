@@ -28,3 +28,16 @@ def admin_project_path(project: Project) -> str:
 
 def attachment_path(attachment: Attachment) -> str:
     return f"/files/{attachment.id}"
+
+
+def safe_next_path(value: str | None, *, default: str = "/") -> str:
+    if not value:
+        return default
+    path = value.strip()
+    if not path.startswith("/") or path.startswith("//"):
+        return default
+    if any(c in path for c in ("\\", "\n", "\r", "\0")):
+        return default
+    if "://" in path:
+        return default
+    return path

@@ -6,10 +6,13 @@ from app.services import tickets as ticket_service
 from app.utils.urls import ticket_path
 
 
-def _login(client, email: str, password: str):
+def _login(client, email: str, password: str, *, next_path: str | None = None):
+    data = {"email": email, "password": password}
+    if next_path is not None:
+        data["next"] = next_path
     return client.post(
         "/auth/login",
-        data={"email": email, "password": password},
+        data=data,
         follow_redirects=False,
     )
 
@@ -26,11 +29,44 @@ class TestOpenReplyRoutes:
             description="Body",
             ticket_type=TicketType.BUG,
         )
+        ticket_service.add_comment(
+            db_session, ticket, client_user, "First note", is_internal=False
+        )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         r = client.get(f"/open/{raw}")
         assert r.status_code == 200
         assert "Open reply" in r.text
         assert 'name="content"' in r.text
+        assert "Klient T." in r.text
+        assert "Klient Test" not in r.text
+        assert "Zgłaszający" not in r.text and "Reporter" not in r.text
+        assert "Obsługujący" not in r.text and "Assignee" not in r.text
+        assert "data-attach-picker" not in r.text
+        assert 'name="attachments"' not in r.text
+        assert (
+            "To attach a file, sign in to the portal." in r.text
+            or "Aby dołączyć plik, zaloguj się w portalu." in r.text
+        )
+        assert f"/login?next={ticket_path(ticket)}" in r.text
+
+    def test_login_next_redirects_to_ticket(
+        self, client, db_session, project_with_members, client_user, staff_user
+    ):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=client_user,
+            title="Login next",
+            description="Body",
+            ticket_type=TicketType.BUG,
+        )
+        dest = ticket_path(ticket)
+        raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
+        r = client.get(f"/open/{raw}")
+        assert f"/login?next={dest}" in r.text
+        r = _login(client, "staff@test.local", "Staff123!", next_path=dest)
+        assert r.status_code == 303
+        assert r.headers["location"] == dest
 
     def test_get_used_status(
         self, client, db_session, project_with_members, client_user, staff_user

@@ -102,6 +102,7 @@ ui:
   reply:
     badge: "Szybka odpowiedź"
     login_cta: "Przejdź do logowania"
+    attach_login_hint: "Aby dołączyć plik, zaloguj się w portalu."
     used:
       title: "Link już wykorzystany"
       body: "Zaloguj się, aby otworzyć wątek w PulseDeck."

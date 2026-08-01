@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
@@ -18,13 +18,12 @@ from app.services import tickets as ticket_service
 from app.services.auth import hash_magic_token
 from app.services.email import notify_new_comment
 from app.services.reply_token import ReplyTokenStatus
-from app.services.uploads import file_response_for_attachment, save_upload
+from app.services.uploads import file_response_for_attachment
 from app.utils.i18n import resolve_lang, t
 from app.utils.urls import ticket_path
 
 router = APIRouter(tags=["reply-token"])
 
-_MAX_ATTACHMENTS = 3
 _REJECT_STATUSES = frozenset(
     {
         ReplyTokenStatus.INVALID,
@@ -116,36 +115,6 @@ def _conflict_page(request: Request, session_user: User, owner: User | None):
     )
 
 
-async def _attach_many(
-    db: Session,
-    attachments: list[UploadFile] | None,
-    *,
-    ticket_id: int,
-    comment_id: int,
-    lang: str,
-) -> None:
-    if not attachments:
-        return
-    count = 0
-    for attachment in attachments:
-        if count >= _MAX_ATTACHMENTS:
-            break
-        if not attachment or not attachment.filename:
-            continue
-        original, rel = await save_upload(
-            attachment, subdir=f"tickets/{ticket_id}", lang=lang
-        )
-        ticket_service.add_attachment(
-            db,
-            file_name=original,
-            file_path=rel,
-            ticket_id=None,
-            comment_id=comment_id,
-            commit=False,
-        )
-        count += 1
-
-
 @router.get("/open/{token}", response_class=HTMLResponse)
 @limiter.limit(_get_limit)
 def open_reply_get(request: Request, token: str, db: DbSession):
@@ -206,12 +175,11 @@ def open_reply_get(request: Request, token: str, db: DbSession):
 
 @router.post("/open/{token}", response_class=HTMLResponse)
 @limiter.limit(_post_limit)
-async def open_reply_post(
+def open_reply_post(
     request: Request,
     token: str,
     db: DbSession,
     content: Annotated[str, Form()] = "",
-    attachments: Annotated[list[UploadFile] | None, File()] = None,
 ):
     lang = resolve_lang(request)
     row = reply_token_service.lookup_reply_token(db, token)
@@ -266,15 +234,8 @@ async def open_reply_post(
         return _status_page(request, "used")
 
     try:
-        comment = ticket_service.add_comment(
+        ticket_service.add_comment(
             db, ticket, owner, text, is_internal=False, lang=lang, commit=False
-        )
-        await _attach_many(
-            db,
-            attachments,
-            ticket_id=ticket.id,
-            comment_id=comment.id,
-            lang=lang,
         )
         reply_token_service.consume_reply_token(locked)
         db.commit()

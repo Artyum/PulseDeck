@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo, icon with context %}
 {% from "partials/avatar.html" import user_avatar %}
-{% from "partials/ticket_macros.html" import attach_picker, status_chip, priority_chip with context %}
+{% from "partials/ticket_macros.html" import status_chip, priority_chip with context %}
 {% macro signed_attachments(items, extra_class='') -%}
   {% if items %}
     <div class="flex flex-wrap gap-2 {{ extra_class }}">
@@ -40,6 +40,8 @@
       </div>
       <div class="app-header-right">
         <span class="reply-mode-label">{{ t("ui.reply.badge") }}</span>
+        <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
+           class="btn btn-secondary">{{ t("ui.auth.login.submit") }}</a>
       </div>
     </div>
   </header>
@@ -80,7 +82,7 @@
                   <header class="comment-meta">
                     <span class="comment-head">
                       {{ user_avatar(c.author) }}
-                      <span class="comment-author">{{ c.author.display_name if c.author else '' }}</span>
+                      <span class="comment-author">{{ c.author.short_display_name if c.author else '' }}</span>
                       {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
                     </span>
                     <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
@@ -94,7 +96,6 @@
             {% if can_comment %}
               <form method="post"
                     action="{{ url_for('open_reply_post', token=token) }}"
-                    enctype="multipart/form-data"
                     class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
                 <textarea name="content"
                           required
@@ -102,7 +103,8 @@
                           placeholder="{{ t('ui.ticket.reply_placeholder') }}"
                           class="textarea"></textarea>
                 <div class="issue-composer-bar">
-                  {{ attach_picker('reply-open-attachments', 'zone') }}
+                  <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
+                     class="issue-composer-opt link-quiet">{{ t("ui.reply.attach_login_hint") }}</a>
                   <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
                 </div>
               </form>
@@ -133,14 +135,6 @@
             <div class="issue-field">
               <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
               <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
-            </div>
-            <div class="issue-field">
-              <span class="label-tight">{{ t("ui.ticket.reporter") }}</span>
-              <div class="field-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</div>
-            </div>
-            <div class="issue-field">
-              <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>
-              <div class="field-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.none") }}</div>
             </div>
           </div>
         </section>

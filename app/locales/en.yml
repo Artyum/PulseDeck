@@ -102,6 +102,7 @@ ui:
   reply:
     badge: "Quick reply"
     login_cta: "Go to sign in"
+    attach_login_hint: "To attach a file, sign in to the portal."
     used:
       title: "Link already used"
       body: "Sign in to open the thread in PulseDeck."
