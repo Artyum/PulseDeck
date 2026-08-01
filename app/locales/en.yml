@@ -269,7 +269,6 @@ ui:
     no_comment_permission: "You don't have permission to comment."
     attach:
       add_files: "Add files"
-      hint_zone: "Up to {count} {file_word} · JPG, PNG, WEBP, GIF, PDF — max 5 MB each"
       file_one: "file"
       file_many: "files"
       hint_icon: "Up to {count} {file_word} · max 5 MB"
@@ -580,6 +579,7 @@ js:
     confirm_label: "Confirm"
   attach:
     remove: "Remove {name}"
+    too_many: "You can attach up to {count} files."
   copy_ok: "OK"
   copy_err: "Error"
 

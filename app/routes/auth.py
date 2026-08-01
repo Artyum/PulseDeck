@@ -324,7 +324,6 @@ def update_notifications(
     notify_reply: Annotated[str, Form()] = "",
     notify_ticket_update: Annotated[str, Form()] = "",
 ):
-    lang = resolve_lang(request)
     auth_service.update_notification_prefs(
         db,
         user,

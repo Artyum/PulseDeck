@@ -563,6 +563,8 @@
     { opacity: 1, transform: "translateY(0) scale(1)" },
   ];
 
+  var lightboxFrames = [{ opacity: 0 }, { opacity: 1 }];
+
   function animateDialog(el, reverse, onDone) {
     if (!el.animate || prefersReducedMotion()) {
       if (onDone) onDone();
@@ -571,7 +573,9 @@
     el.getAnimations().forEach(function (a) {
       a.cancel();
     });
-    var frames = reverse ? [dialogFrames[1], dialogFrames[0]] : dialogFrames;
+    var lightbox = el.classList.contains("lightbox");
+    var base = lightbox ? lightboxFrames : dialogFrames;
+    var frames = reverse ? [base[1], base[0]] : base;
     var start = function () {
       var anim = el.animate(frames, {
         duration: reverse ? 220 : 320,
@@ -590,7 +594,7 @@
     };
     if (!reverse) {
       el.style.opacity = "0";
-      el.style.transform = dialogFrames[0].transform;
+      if (!lightbox) el.style.transform = dialogFrames[0].transform;
       requestAnimationFrame(start);
       return;
     }

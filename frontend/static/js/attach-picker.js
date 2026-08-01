@@ -113,7 +113,15 @@
 
     input.addEventListener("change", function () {
       const maxNew = newSlots();
-      Array.from(input.files || []).forEach(function (file) {
+      const picked = Array.from(input.files || []);
+      const room = Math.max(0, maxNew - files.length);
+      if (picked.length > room) {
+        var msg = (window.__i18n && window.__i18n["attach.too_many"]) || "You can attach up to {count} files.";
+        if (typeof window.showToast === "function") {
+          window.showToast(msg.replace("{count}", String(TOTAL_MAX)), "error");
+        }
+      }
+      picked.forEach(function (file) {
         if (files.length >= maxNew) return;
         files.push(file);
       });
