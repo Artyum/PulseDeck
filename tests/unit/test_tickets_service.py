@@ -262,6 +262,7 @@ class TestTicketMutations:
         t = _ticket(db_session, project_with_members, client_user)
         ticket_service.add_participant(db_session, t, client_user, peer.id)
         t = ticket_service.get_ticket(db_session, t.id)
+        assert t is not None
         updated = ticket_service.remove_self_participant(db_session, t, peer)
         assert all(p.user_id != peer.id for p in updated.participants)
 

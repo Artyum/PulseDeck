@@ -13,21 +13,41 @@
               class="btn btn-primary"
               onclick="document.getElementById('new-user').showModal()">{{ t("ui.admin.users.new") }}</button>
     </div>
-    <ul class="admin-list">
+    <form method="get"
+          action="{{ url_for('admin_users') }}"
+          class="admin-form-row admin-form-row-filters mb-4 gap-x-4"
+          hx-get="{{ url_for('admin_users') }}"
+          hx-target="#users-results"
+          hx-select="#users-results"
+          hx-swap="outerHTML"
+          hx-push-url="true">
+      <div class="admin-form-field">
+        <label class="label-tight">{{ t("ui.admin.users.filter_role") }}</label>
+        {{ form_select_menu('role', t('ui.admin.users.filter_role') , user_roles, filter_role, role_labels, submit_on_pick=true, empty_label=t('ui.admin.users.filter_all')) }}
+      </div>
+      <div class="admin-form-field">
+        <label class="label-tight">{{ t("ui.admin.users.filter_project") }}</label>
+        {{ form_select_menu('project', t('ui.admin.users.filter_project') , projects, filter_project, value_attr='id', submit_on_pick=true, empty_label=t('ui.admin.users.filter_all')) }}
+      </div>
+      <div class="admin-form-field">
+        <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
+        <button type="button" class="btn btn-ghost" data-feed-filter-clear>{{ t("ui.admin.users.filter_clear") }}</button>
+      </div>
+    </form>
+    <ul id="users-results" class="admin-list">
       {% for u in users %}
         <li class="admin-entity">
           <div class="admin-entity-main">
             <p class="admin-entity-title">
               <span class="admin-entity-name">{{ u.display_name }}</span>
-              {% if not u.is_active or u.is_pending %}
-                <span class="admin-entity-badges">
-                  {% if not u.is_active %}
-                    <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
-                  {% elif u.is_pending %}
-                    <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
-                  {% endif %}
-                </span>
-              {% endif %}
+              <span class="admin-entity-badges">
+                <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
+                {% if not u.is_active %}
+                  <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
+                {% elif u.is_pending %}
+                  <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
+                {% endif %}
+              </span>
             </p>
             <p class="admin-entity-meta">
               {{ u.email }}

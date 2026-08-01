@@ -1046,6 +1046,10 @@
     grid-template-columns: minmax(14rem, 1fr) max-content;
   }
 
+  .admin-form-row-filters {
+    grid-template-columns: max-content max-content max-content;
+  }
+
   .admin-form-field {
     display: grid;
     grid-template-rows: subgrid;

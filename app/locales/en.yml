@@ -312,6 +312,10 @@ ui:
       block: "Block"
       unblock: "Unblock"
       edit_aria: "Edit {name}"
+      filter_role: "Role"
+      filter_project: "Project"
+      filter_all: "All"
+      filter_clear: "Clear"
     user_new:
       title: "New user"
       role: "Role"

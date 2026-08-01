@@ -226,17 +226,46 @@ def _user_edit_ctx(db: Session, target: User, *, flash: str | None = None) -> di
 
 
 @router.get("/users", response_class=HTMLResponse)
-def admin_users(request: Request, user: AdminUser, db: DbSession):
+def admin_users(
+    request: Request,
+    user: AdminUser,
+    db: DbSession,
+    role: str | None = None,
+    project: str | None = None,
+):
     lang = resolve_lang(request)
     ok = request.query_params.get("ok") or ""
     flash_key = _USER_OK_FLASH.get(ok)
+
+    role_filter: UserRole | None = None
+    filter_role = ""
+    if role:
+        try:
+            role_filter = UserRole(role)
+            filter_role = role_filter.value
+        except ValueError:
+            pass
+
+    project_id: int | None = None
+    filter_project = ""
+    if project:
+        try:
+            pid = int(project)
+        except ValueError:
+            pid = None
+        if pid is not None and db.get(Project, pid) is not None:
+            project_id = pid
+            filter_project = str(pid)
+
     return render(
         request,
         "admin/users.html",
         user=user,
-        users=project_service.list_users(db),
+        users=project_service.list_users(db, role=role_filter, project_id=project_id),
         projects=project_service.list_projects(db),
         form_project_ids=[],
+        filter_role=filter_role,
+        filter_project=filter_project,
         flash=t(lang, flash_key) if flash_key else None,
     )
 

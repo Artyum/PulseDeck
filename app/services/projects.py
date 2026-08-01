@@ -38,14 +38,24 @@ def list_admins(db: Session) -> list[User]:
     )
 
 
-def list_users(db: Session) -> list[User]:
-    return list(
-        db.scalars(
-            select(User)
-            .options(selectinload(User.memberships))
-            .order_by(User.last_name, User.first_name)
-        ).all()
-    )
+def list_users(
+    db: Session,
+    *,
+    role: UserRole | None = None,
+    project_id: int | None = None,
+) -> list[User]:
+    stmt = select(User).options(selectinload(User.memberships))
+    if role is not None:
+        stmt = stmt.where(User.role == role)
+    if project_id is not None:
+        stmt = stmt.where(
+            User.id.in_(
+                select(ProjectMember.user_id).where(
+                    ProjectMember.project_id == project_id
+                )
+            )
+        )
+    return list(db.scalars(stmt.order_by(User.last_name, User.first_name)).all())
 
 
 def list_project_summaries(db: Session) -> list[ProjectSummary]:

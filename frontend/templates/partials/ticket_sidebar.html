@@ -231,7 +231,9 @@
                  placeholder="{{ t('ui.ticket.add_tag_placeholder') }}"
                  class="input input-compact">
           <datalist id="project-tag-list">
-            {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
+            {% for tag in project_tags %}
+              <option value="{{ tag.name }}"></option>
+            {% endfor %}
           </datalist>
           <button type="submit" class="btn btn-secondary">{{ t("ui.common.add") }}</button>
         </form>
