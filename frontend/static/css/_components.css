@@ -3520,9 +3520,9 @@
   }
 
   .theme-option.is-active {
-    border-color: color-mix(in oklab, var(--color-pulse) 55%, var(--color-frame));
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-pulse) 35%, transparent);
-    background: color-mix(in oklab, var(--color-surface) 82%, var(--color-soft-blue));
+    border-color: color-mix(in oklab, var(--color-pulse) 65%, var(--color-frame));
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-pulse) 45%, transparent);
+    background: color-mix(in oklab, var(--color-soft-blue) 78%, var(--color-pulse) 12%);
   }
 
   .theme-option-swatches {
@@ -3568,25 +3568,8 @@
 
   .theme-option-aside {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 0.45rem;
-    min-width: 6.5rem;
-  }
-
-  .theme-option-check {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--color-pulse);
-    line-height: 1;
-    visibility: hidden;
-  }
-
-  .theme-option.is-active .theme-option-check {
-    visibility: visible;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .theme-gradient-switch {
