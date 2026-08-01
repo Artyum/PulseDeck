@@ -91,6 +91,28 @@ ui:
       done: "Wypisano Cię z powiadomień: {type}."
       invalid: "Ten link wypisania jest nieprawidłowy lub wygasł."
       manage: "Preferencje powiadomień"
+  reply:
+    badge: "Szybka odpowiedź"
+    login_cta: "Przejdź do logowania"
+    used:
+      title: "Link już wykorzystany"
+      body: "Zaloguj się, aby otworzyć wątek w PulseDeck."
+    expired:
+      title: "Link wygasł"
+      body: "Ten link do odpowiedzi wygasł. Zaloguj się, aby otworzyć wątek."
+    invalid:
+      title: "Nieprawidłowy link"
+      body: "Ten link do odpowiedzi jest nieprawidłowy."
+    forbidden:
+      title: "Brak dostępu"
+      body: "Nie masz już dostępu do tego wątku albo konto jest niedostępne."
+    conflict:
+      title: "Inne konto"
+      body: "Jesteś zalogowany jako {session}. Ten link jest przeznaczony dla {owner}. Wyloguj się i otwórz link ponownie."
+      logout: "Wyloguj się"
+    thanks:
+      title: "Dziękujemy"
+      body: "Twoja odpowiedź została dodana do wątku. Zaloguj się, gdy chcesz kontynuować rozmowę."
   profile:
     aside_label: "Konto"
     nav_aria: "Profil"
@@ -483,6 +505,7 @@ messages:
       required: "wymaganego pola"
   http:
     not_found: "Nie znaleziono."
+    forbidden: "Brak uprawnień."
     server_error: "Coś poszło nie tak. Spróbuj ponownie później."
     login_required: "Wymagane logowanie."
     admin_required: "Wymagane uprawnienia administratora."
@@ -557,7 +580,10 @@ email:
     subject: "Nowa odpowiedź — {label}: {title}"
     body_before: "W zgłoszeniu "
     body_after: ", pojawiła się nowa odpowiedź. Otwórz wątek, aby przeczytać treść i ewentualnie zareagować."
-    cta: "Otwórz wątek"
+    dual_hint: "Użyj linku szybkiej odpowiedzi lub zaloguj się."
+    cta: "Szybka odpowiedź"
+    cta_login: "Zaloguj się"
+    cta_open: "Otwórz wątek"
   ticket_update:
     subject: "Aktualizacja — {label}: {title}"
     body_before: "W zgłoszeniu "

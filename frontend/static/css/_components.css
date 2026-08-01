@@ -17,28 +17,9 @@
 
   .brand-mark-logo {
     display: block;
+    flex-shrink: 0;
     height: 2.1rem;
     width: auto;
-  }
-
-  .brand-logo-tint {
-    position: relative;
-    display: inline-flex;
-    flex-shrink: 0;
-    isolation: isolate;
-    line-height: 0;
-  }
-
-  .brand-logo-tint::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--color-pulse);
-    mix-blend-mode: color;
-    opacity: 0.4;
-    pointer-events: none;
-    -webkit-mask: url("../images/pulsedeck-logo.png") center / 100% 100% no-repeat;
-    mask: url("../images/pulsedeck-logo.png") center / 100% 100% no-repeat;
   }
 
   .app-header {
@@ -214,6 +195,14 @@
   }
 
   .nav-chrome-label {
+    white-space: nowrap;
+  }
+
+  .reply-mode-label {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--color-steel);
     white-space: nowrap;
   }
 
@@ -1650,6 +1639,10 @@
     isolation: isolate;
   }
 
+  .issue-sidebar:has(.is-menu-open) {
+    z-index: 2;
+  }
+
   .issue-sidebar::before {
     content: "";
     position: absolute;
@@ -2375,6 +2368,42 @@
     margin-top: -0.1rem;
   }
 
+  .issue-composer-bar:has([data-attach-picker]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "zone send"
+      "preview preview";
+    align-items: start;
+  }
+
+  .issue-composer-bar:has([data-attach-picker]) [data-attach-picker] {
+    display: contents;
+  }
+
+  .issue-composer-bar:has([data-attach-picker]) .file-pick {
+    grid-area: zone;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .issue-composer-bar:has([data-attach-picker]) .attach-preview {
+    grid-area: preview;
+    width: 100%;
+    margin-top: 0.15rem;
+  }
+
+  .issue-composer-bar:has([data-attach-picker]) [data-attach-remove-box] {
+    display: none;
+  }
+
+  .issue-composer-bar:has([data-attach-picker]) .issue-composer-send {
+    grid-area: send;
+    margin-left: 0;
+    align-self: start;
+    margin-top: 0.15rem;
+  }
+
   .issue-composer [data-attach-picker] {
     width: fit-content;
     max-width: 100%;
@@ -3059,6 +3088,10 @@
     max-width: calc(24 * var(--layout-rem));
   }
 
+  .auth-stack-wide {
+    max-width: calc(32 * var(--layout-rem));
+  }
+
   .auth-stack-brand {
     margin-bottom: 1.5rem;
     text-align: center;
@@ -3074,6 +3107,10 @@
     box-shadow:
       0 1px 0 color-mix(in oklab, var(--color-surface) 80%, transparent) inset,
       0 10px 28px color-mix(in oklab, var(--color-ink) 10%, transparent);
+  }
+
+  .auth-stack-wide .auth-card {
+    max-width: none;
   }
 
   .auth-card .btn {

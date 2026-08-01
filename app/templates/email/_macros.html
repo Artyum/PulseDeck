@@ -19,6 +19,33 @@
   {% endif %}
   {{ cta(url, t('email.' ~ key ~ '.cta', app=app_name) ) }}
 {%- endmacro %}
+{% macro link_fallback(url) -%}
+  <table role="presentation"
+         width="100%"
+         cellspacing="0"
+         cellpadding="0"
+         style="width:100%">
+    <tr>
+      <td style="padding:12px 14px;
+                 background:#f8fafc;
+                 border:1px solid #e2e8f0;
+                 border-radius:8px;
+                 text-align:center">
+        <p style="margin:0 0 6px;
+                  font-size:11px;
+                  line-height:1.4;
+                  color:#94a3b8">{{ t("email.common.link_hint") }}</p>
+        <a href="{{ url }}"
+           style="font-size:12px;
+                  line-height:1.45;
+                  color:#3b82f6;
+                  word-break:break-all;
+                  overflow-wrap:anywhere;
+                  text-decoration:underline">{{ url }}</a>
+      </td>
+    </tr>
+  </table>
+{%- endmacro %}
 {% macro cta(url, label) -%}
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
     <tr>
@@ -34,32 +61,44 @@
       </td>
     </tr>
     <tr>
-      <td align="center">
-        <table role="presentation"
-               cellspacing="0"
-               cellpadding="0"
-               style="max-width:420px;
-                      width:100%">
-          <tr>
-            <td style="padding:12px 14px;
-                       background:#f8fafc;
-                       border:1px solid #e2e8f0;
-                       border-radius:8px;
-                       text-align:center">
-              <p style="margin:0 0 6px;
-                        font-size:11px;
-                        line-height:1.4;
-                        color:#94a3b8">{{ t("email.common.link_hint") }}</p>
-              <a href="{{ url }}"
-                 style="font-size:12px;
-                        line-height:1.45;
-                        color:#3b82f6;
-                        word-break:break-all;
-                        text-decoration:underline">{{ url }}</a>
-            </td>
-          </tr>
-        </table>
+      <td align="center">{{ link_fallback(url) }}</td>
+    </tr>
+  </table>
+{%- endmacro %}
+{% macro dual_cta(primary_url, primary_label, secondary_url, secondary_label, hint) -%}
+  <p style="margin:0 0 16px;
+            text-align:center;
+            font-size:14px;
+            line-height:1.45;
+            color:#64748b">{{ hint }}</p>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center" style="padding:0 0 12px;">
+        <a href="{{ primary_url }}"
+           style="display:inline-block;
+                  background:#2f72e8;
+                  color:#ffffff;
+                  text-decoration:none;
+                  padding:12px 24px;
+                  border-radius:6px;
+                  font-weight:600">{{ primary_label }}</a>
       </td>
+    </tr>
+    <tr>
+      <td align="center" style="padding:0 0 20px;">
+        <a href="{{ secondary_url }}"
+           style="display:inline-block;
+                  background:#ffffff;
+                  color:#2f72e8;
+                  text-decoration:none;
+                  padding:10px 22px;
+                  border-radius:6px;
+                  border:1px solid #2f72e8;
+                  font-weight:600">{{ secondary_label }}</a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">{{ link_fallback(primary_url) }}</td>
     </tr>
   </table>
 {%- endmacro %}

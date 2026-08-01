@@ -22,7 +22,7 @@ from app.middleware.csrf import CSRFProtectMiddleware
 from app.middleware.security_headers import apply_security_headers
 from app.middleware.session_sliding import SessionSlidingMiddleware
 from app.rate_limit import client_ip_key, limiter
-from app.routes import admin, auth, health, portal
+from app.routes import admin, auth, health, open_reply, portal
 from app.services.auth import ensure_admin_seed
 
 logger = logging.getLogger("pulsedeck.app")
@@ -103,6 +103,7 @@ def build_fastapi_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(admin.router)
     app.include_router(portal.router)
+    app.include_router(open_reply.router)
     return app
 
 

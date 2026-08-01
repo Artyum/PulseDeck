@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import brand_logo with context %}
+{% block title %}{{ t("ui.reply.conflict.title") }} — {{ app_name }}{% endblock title %}
+{% block body %}
+  <div class="auth-scene">
+    <div class="auth-stack auth-stack-wide">
+      <div class="auth-stack-brand">
+        {{ brand_logo(variant='auth', alt='') }}
+        <h1 class="auth-brand mt-3">{{ app_name }}</h1>
+      </div>
+      <div class="auth-card">
+        <h2 class="mb-2 text-xl font-semibold text-ink">{{ t("ui.reply.conflict.title") }}</h2>
+        <p class="mb-6 text-[1.05rem] leading-relaxed text-steel">{{ t("ui.reply.conflict.body", session=session_email, owner=owner_email) }}</p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <form method="post" action="{{ url_for('logout') }}">
+            <button type="submit" class="btn btn-primary">{{ t("ui.reply.conflict.logout") }}</button>
+          </form>
+          <a href="{{ url_for('login_page') }}" class="btn btn-secondary">{{ t("ui.reply.login_cta") }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body %}

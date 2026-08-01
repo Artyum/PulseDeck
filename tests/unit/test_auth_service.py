@@ -231,10 +231,12 @@ class TestProfileAndPrefs:
         assert staff_user.notify_new_ticket is False
 
     def test_peek_magic_token_used(self, db_session, client_user):
+        from datetime import datetime, timezone
+
         row, raw = auth_service.create_magic_token(
             db_session, client_user, purpose=MagicTokenPurpose.PASSWORD_SET
         )
-        row.used = True
+        row.used_at = datetime.now(timezone.utc)
         db_session.commit()
         assert (
             auth_service.peek_magic_token(

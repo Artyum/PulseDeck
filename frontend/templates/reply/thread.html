@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import brand_logo, icon with context %}
+{% from "partials/avatar.html" import user_avatar %}
+{% from "partials/ticket_macros.html" import attach_picker, status_chip, priority_chip with context %}
+{% macro signed_attachments(items, extra_class='') -%}
+  {% if items %}
+    <div class="flex flex-wrap gap-2 {{ extra_class }}">
+      {% for a in items %}
+        {% set url = file_urls.get(a.id) %}
+        {% if url %}
+          {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
+          {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+            <a href="{{ url }}"
+               target="_blank"
+               class="attach-thumb"
+               title="{{ a.file_name }}">
+              <img src="{{ url }}"
+                   alt="{{ a.file_name }}"
+                   width="80"
+                   height="80"
+                   loading="lazy">
+            </a>
+          {% else %}
+            <a href="{{ url }}" target="_blank" class="btn btn-secondary">{{ a.file_name }}</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{%- endmacro %}
+{% block title %}{{ ticket.title }} — {{ app_name }}{% endblock title %}
+{% block body %}
+  <header class="app-header">
+    <div class="app-shell app-header-bar">
+      <div class="app-header-left">
+        <span class="brand-mark shrink-0">
+          {{ brand_logo() }}
+          <span class="brand-mark-name">{{ app_name }}</span>
+        </span>
+      </div>
+      <div class="app-header-right">
+        <span class="reply-mode-label">{{ t("ui.reply.badge") }}</span>
+      </div>
+    </div>
+  </header>
+  <main class="app-main">
+    <div class="issue-page">
+      <div class="issue-page-body">
+        <nav class="issue-crumb">
+          <span class="link-quiet">{{ project.name }}</span>
+          <span aria-hidden="true">/</span>
+          <span class="issue-key" aria-current="page">{{ ticket|ticket_label }}</span>
+        </nav>
+        <div class="issue-head">
+          <h1 class="issue-title">{{ ticket.title }}</h1>
+        </div>
+        <section class="issue-section">
+          <div class="issue-section-bar">
+            <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
+          </div>
+          <p class="issue-description">{{ ticket.description }}</p>
+          {% if ticket.attachments %}
+            <div class="issue-attachments">
+              <h3 class="issue-subhead"><span class="section-icon" aria-hidden="true">{{ icon("attachments") }}</span>{{ t("ui.ticket.attachments") }}</h3>
+              {{ signed_attachments(ticket.attachments, 'mt-2') }}
+            </div>
+          {% endif %}
+        </section>
+        <section class="issue-section" id="thread">
+          <div class="issue-thread">
+            {% if user.is_staff %}
+              {% set comments = ticket.comments %}
+            {% else %}
+              {% set comments = ticket.comments|rejectattr('is_internal')|list %}
+            {% endif %}
+            {% if comments %}
+              <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
+              {% for c in comments %}
+                <article class="comment {% if c.author and c.author.is_staff %}comment-staff{% endif %}{% if c.is_internal %} comment-internal{% endif %}">
+                  <header class="comment-meta">
+                    <span class="comment-head">
+                      {{ user_avatar(c.author) }}
+                      <span class="comment-author">{{ c.author.display_name if c.author else '' }}</span>
+                      {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
+                    </span>
+                    <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
+                  </header>
+                  <p class="comment-body">{{ c.content }}</p>
+                  {{ signed_attachments(c.attachments, 'mt-3') }}
+                </article>
+              {% endfor %}
+            {% endif %}
+            {% if error %}<p class="alert alert-error">{{ error }}</p>{% endif %}
+            {% if can_comment %}
+              <form method="post"
+                    action="{{ url_for('open_reply_post', token=token) }}"
+                    enctype="multipart/form-data"
+                    class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
+                <textarea name="content"
+                          required
+                          rows="3"
+                          placeholder="{{ t('ui.ticket.reply_placeholder') }}"
+                          class="textarea"></textarea>
+                <div class="issue-composer-bar">
+                  {{ attach_picker('reply-open-attachments', 'zone') }}
+                  <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
+                </div>
+              </form>
+            {% else %}
+              <p class="alert alert-muted">{{ t("ui.ticket.closed_notice") }}</p>
+            {% endif %}
+          </div>
+        </section>
+      </div>
+      <aside class="issue-sidebar">
+        <section class="issue-side-block">
+          <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+          <div class="issue-side-fields">
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.ticket.created") }}</span>
+              <div class="field-value">{{ ticket.created_at|format_dt if ticket.created_at else t("ui.common.empty_dash") }}</div>
+            </div>
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.ticket.type") }}</span>
+              <div class="field-value">
+                <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
+              </div>
+            </div>
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.ticket.status") }}</span>
+              <div class="field-value">{{ status_chip(ticket.status) }}</div>
+            </div>
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
+              <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
+            </div>
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.ticket.reporter") }}</span>
+              <div class="field-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</div>
+            </div>
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>
+              <div class="field-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.none") }}</div>
+            </div>
+          </div>
+        </section>
+        {% if ticket.ticket_tags %}
+          <section class="issue-side-block">
+            <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.ticket.tags") }}</h2>
+            <div class="issue-tags">
+              {% for tt in ticket.ticket_tags %}<span class="chip chip-outline">{{ tt.tag.name }}</span>{% endfor %}
+            </div>
+          </section>
+        {% endif %}
+      </aside>
+    </div>
+  </main>
+{% endblock body %}

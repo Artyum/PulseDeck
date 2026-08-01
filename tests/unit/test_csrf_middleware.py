@@ -46,6 +46,10 @@ class TestIsExempt:
     def test_login_post(self):
         assert _is_exempt("/auth/login", "POST") is True
 
+    def test_open_reply_post_prefix(self):
+        assert _is_exempt("/open/abcToken", "POST") is True
+        assert _is_exempt("/open/abcToken", "GET") is False
+
     def test_other_path(self):
         assert _is_exempt("/profile", "POST") is False
 

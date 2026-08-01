@@ -87,6 +87,13 @@ def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:
         if ticket.project
         else []
     )
+    members = sorted(
+        members,
+        key=lambda u: (
+            (u.first_name or "").casefold(),
+            (u.last_name or "").casefold(),
+        ),
+    )
     return {
         "user": user,
         "ticket": ticket,

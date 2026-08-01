@@ -97,10 +97,12 @@
                    class="rounded border-line">
             {{ t("ui.ticket.internal_note") }}
           </label>
+        {% else %}
+          {{ attach_picker('comment-attachments', 'zone') }}
         {% endif %}
         <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
       </div>
-      {{ attach_picker('comment-attachments', 'zone') }}
+      {% if user.is_staff %}{{ attach_picker('comment-attachments', 'zone') }}{% endif %}
     </form>
   {% elif ticket.status.value == 'DONE' %}
     <p class="alert alert-muted">

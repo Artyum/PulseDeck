@@ -183,7 +183,10 @@ class TestNotify:
         email_service.notify_new_comment(db_session, ticket, client_user.id)
         from sqlalchemy import select
 
-        assert db_session.scalar(select(EmailOutbox)) is not None
+        row = db_session.scalar(select(EmailOutbox))
+        assert row is not None
+        assert "/open/" in row.html_body
+        assert "/login" in row.html_body
 
     def test_notify_new_comment_internal_skipped(
         self, db_session, project_with_members, staff_user

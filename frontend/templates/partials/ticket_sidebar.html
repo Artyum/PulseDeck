@@ -127,7 +127,7 @@
             <div x-data="{ open: false }"
                  @click.outside="open = false"
                  :class="{'is-menu-open': open}"
-                 class="issue-menu relative">
+                 class="issue-menu">
               <button type="button"
                       @click="open = !open"
                       :aria-expanded="open"
@@ -139,7 +139,7 @@
               <div x-show="open"
                    x-transition
                    x-cloak
-                   class="issue-menu-panel issue-menu-panel-end"
+                   class="issue-menu-panel"
                    role="menu">
                 <form hx-post="{{ url_for('add_participant', ticket_ref=tref) }}"
                       hx-target="#ticket-view"
@@ -170,7 +170,7 @@
         <div class="issue-participants">
           {% if ticket.participants %}
             <ul class="issue-participant-list">
-              {% for p in ticket.participants %}
+              {% for p in ticket.participants|sort(attribute='user.first_name', case_sensitive=False) %}
                 <li>{{ p.user.display_name if p.user else p.user_id }}</li>
               {% endfor %}
             </ul>

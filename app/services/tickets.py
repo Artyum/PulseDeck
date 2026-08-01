@@ -334,6 +334,7 @@ def add_comment(
     *,
     is_internal: bool = False,
     lang: str | None = None,
+    commit: bool = True,
 ) -> Comment:
     lang = lang or DEFAULT_LANG
     if not can_comment(db, author, ticket):
@@ -359,8 +360,11 @@ def add_comment(
                 ticket.assignee_id = author.id
         else:
             ticket.status = TicketStatus.IN_PROGRESS
-    db.commit()
-    db.refresh(comment)
+    if commit:
+        db.commit()
+        db.refresh(comment)
+    else:
+        db.flush()
     return comment
 
 
@@ -731,6 +735,7 @@ def add_attachment(
     file_path: str,
     ticket_id: int | None = None,
     comment_id: int | None = None,
+    commit: bool = True,
 ) -> Attachment:
     att = Attachment(
         ticket_id=ticket_id,
@@ -739,8 +744,11 @@ def add_attachment(
         file_path=file_path,
     )
     db.add(att)
-    db.commit()
-    db.refresh(att)
+    if commit:
+        db.commit()
+        db.refresh(att)
+    else:
+        db.flush()
     return att
 
 

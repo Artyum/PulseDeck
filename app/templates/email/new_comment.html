@@ -1,6 +1,16 @@
 {% extends "_base.html" %}
-{% from "_macros.html" import ticket_mail with context %}
+{% from "_macros.html" import ticket_ref, cta, dual_cta with context %}
 {% block title %}{{ t('email.new_comment.subject', label=label, title=ticket.title) }}{% endblock title %}
 {% block body %}
-  {{ ticket_mail('new_comment', user.first_name, label, ticket.title, url) }}
+  <p style="margin:0 0 12px;">{{ t('email.common.greeting', name=user.first_name) }}</p>
+  <p style="margin:0 0 20px;">
+    {{- t("email.new_comment.body_before") -}}
+    {{- ticket_ref(label, ticket.title) -}}
+    {{- t('email.new_comment.body_after', app=app_name) -}}
+  </p>
+  {% if reply_url %}
+    {{ dual_cta(reply_url, t('email.new_comment.cta') , login_url, t('email.new_comment.cta_login'), t('email.new_comment.dual_hint') ) }}
+  {% else %}
+    {{ cta(url, t('email.new_comment.cta_open', app=app_name) ) }}
+  {% endif %}
 {% endblock body %}

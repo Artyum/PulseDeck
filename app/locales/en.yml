@@ -91,6 +91,28 @@ ui:
       done: "You've been unsubscribed from: {type}."
       invalid: "This unsubscribe link is invalid or has expired."
       manage: "Notification preferences"
+  reply:
+    badge: "Quick reply"
+    login_cta: "Go to sign in"
+    used:
+      title: "Link already used"
+      body: "Sign in to open the thread in PulseDeck."
+    expired:
+      title: "Link expired"
+      body: "This reply link has expired. Sign in to open the thread."
+    invalid:
+      title: "Invalid link"
+      body: "This reply link is invalid."
+    forbidden:
+      title: "Access denied"
+      body: "You no longer have access to this thread, or the account is unavailable."
+    conflict:
+      title: "Different account"
+      body: "You are signed in as {session}. This link is for {owner}. Sign out and open the link again."
+      logout: "Sign out"
+    thanks:
+      title: "Thank you"
+      body: "Your reply has been added to the thread. Sign in anytime to continue the conversation."
   profile:
     aside_label: "Account"
     nav_aria: "Profile"
@@ -483,6 +505,7 @@ messages:
       required: "a required field"
   http:
     not_found: "Not found."
+    forbidden: "You don't have permission."
     server_error: "Something went wrong. Please try again later."
     login_required: "Login required."
     admin_required: "Administrator privileges required."
@@ -557,7 +580,10 @@ email:
     subject: "New reply — {label}: {title}"
     body_before: "A new reply was added to ticket "
     body_after: ". Open the thread to read it and respond if needed."
-    cta: "Open the thread"
+    dual_hint: "Use the quick reply link or sign in."
+    cta: "Quick reply"
+    cta_login: "Sign in"
+    cta_open: "Open the thread"
   ticket_update:
     subject: "Update — {label}: {title}"
     body_before: "The status, type, or priority of ticket "

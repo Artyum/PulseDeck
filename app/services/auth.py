@@ -99,18 +99,19 @@ def _require_names(first_name: str, last_name: str, *, lang: str) -> tuple[str, 
 
 
 def invalidate_magic_tokens(db: Session, user_id: int) -> None:
+    now = datetime.now(timezone.utc)
     rows = db.scalars(
         select(MagicToken).where(
             MagicToken.user_id == user_id,
-            MagicToken.used.is_(False),
+            MagicToken.used_at.is_(None),
         )
     ).all()
     for row in rows:
-        row.used = True
+        row.used_at = now
     db.flush()
 
 
-def _token_expires_at(row: MagicToken) -> datetime:
+def token_expires_at(row: MagicToken) -> datetime:
     if row.expires_at.tzinfo:
         return row.expires_at
     return row.expires_at.replace(tzinfo=timezone.utc)
@@ -124,9 +125,9 @@ def peek_magic_token(
 ) -> MagicToken | None:
     hashed = hash_magic_token(token)
     row = db.scalar(select(MagicToken).where(MagicToken.token == hashed))
-    if not row or row.used or row.purpose != purpose.value:
+    if not row or row.used_at is not None or row.purpose != purpose.value:
         return None
-    if _token_expires_at(row) <= datetime.now(timezone.utc):
+    if token_expires_at(row) <= datetime.now(timezone.utc):
         return None
     return row
 
@@ -136,11 +137,18 @@ def create_magic_token(
     user: User,
     *,
     purpose: MagicTokenPurpose,
+    ticket_id: int | None = None,
 ) -> tuple[MagicToken, str]:
     settings = get_settings()
     if purpose == MagicTokenPurpose.PASSWORD_SET:
         expires_at = datetime.now(timezone.utc) + timedelta(
             days=settings.auth_link_ttl_days
+        )
+    elif purpose == MagicTokenPurpose.TICKET_REPLY:
+        if ticket_id is None:
+            raise ValueError("ticket_id required for ticket_reply tokens")
+        expires_at = datetime.now(timezone.utc) + timedelta(
+            hours=settings.reply_token_ttl_hours
         )
     else:
         expires_at = datetime.now(timezone.utc) + timedelta(
@@ -149,10 +157,11 @@ def create_magic_token(
     raw = secrets.token_urlsafe(32)
     row = MagicToken(
         user_id=user.id,
+        ticket_id=ticket_id,
         token=hash_magic_token(raw),
         purpose=purpose.value,
         expires_at=expires_at,
-        used=False,
+        used_at=None,
     )
     db.add(row)
     db.commit()
@@ -311,13 +320,13 @@ def confirm_email_change(db: Session, token: str) -> User | None:
     if not user or not user.pending_email:
         return None
     if email_taken(db, user.pending_email, exclude_user_id=user.id):
-        row.used = True
+        row.used_at = datetime.now(timezone.utc)
         db.commit()
         return None
     user.email = user.pending_email
     user.pending_email = None
     bump_auth_epoch(user)
-    row.used = True
+    row.used_at = datetime.now(timezone.utc)
     invalidate_magic_tokens(db, user.id)
     db.commit()
     db.refresh(user)
@@ -405,7 +414,7 @@ def complete_password_set(
         user.phone = normalize_phone(phone, lang=lang)
     mark_activated(user)
     bump_auth_epoch(user)
-    row.used = True
+    row.used_at = datetime.now(timezone.utc)
     invalidate_magic_tokens(db, user.id)
     db.commit()
     db.refresh(user)

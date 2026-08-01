@@ -20,9 +20,13 @@ _EXEMPT: tuple[tuple[str, str], ...] = (
     ("/email/unsubscribe", "POST"),
 )
 
+_EXEMPT_PREFIX: tuple[tuple[str, str], ...] = (("/open/", "POST"),)
+
 
 def _is_exempt(path: str, method: str) -> bool:
-    return (path, method) in _EXEMPT
+    if (path, method) in _EXEMPT:
+        return True
+    return any(method == m and path.startswith(prefix) for prefix, m in _EXEMPT_PREFIX)
 
 
 def _csrf_reject(request: Request, detail_key: str):

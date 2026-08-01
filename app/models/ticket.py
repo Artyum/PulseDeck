@@ -91,7 +91,9 @@ class Ticket(Base):
         order_by="Comment.created_at",
     )
     participants: Mapped[list[TicketParticipant]] = relationship(
-        back_populates="ticket", cascade="all, delete-orphan"
+        back_populates="ticket",
+        cascade="all, delete-orphan",
+        order_by="TicketParticipant.created_at",
     )
     attachments: Mapped[list[Attachment]] = relationship(
         back_populates="ticket",
@@ -116,6 +118,9 @@ class TicketParticipant(Base):
     )
     user_id: Mapped[int] = mapped_column(
         BigInt, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     ticket: Mapped[Ticket] = relationship(back_populates="participants")
@@ -238,6 +243,12 @@ class MagicToken(Base):
         nullable=False,
         index=True,
     )
+    ticket_id: Mapped[int | None] = mapped_column(
+        BigInt,
+        ForeignKey("tickets.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     token: Mapped[str] = mapped_column(
         String(128), unique=True, index=True, nullable=False
     )
@@ -250,9 +261,12 @@ class MagicToken(Base):
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
-    used: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    used_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     user: Mapped[User] = relationship()
+    ticket: Mapped[Ticket | None] = relationship()

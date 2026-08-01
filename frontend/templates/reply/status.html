@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import brand_logo with context %}
+{% block title %}{{ t('ui.reply.' ~ status_key ~ '.title') }} — {{ app_name }}{% endblock title %}
+{% block body %}
+  <div class="auth-scene">
+    <div class="auth-stack auth-stack-wide">
+      <div class="auth-stack-brand">
+        {{ brand_logo(variant='auth', alt='') }}
+        <h1 class="auth-brand mt-3">{{ app_name }}</h1>
+      </div>
+      <div class="auth-card">
+        <h2 class="mb-2 text-xl font-semibold text-ink">{{ t('ui.reply.' ~ status_key ~ '.title') }}</h2>
+        <p class="mb-6 text-[1.05rem] leading-relaxed text-steel">{{ t('ui.reply.' ~ status_key ~ '.body') }}</p>
+        <div class="flex justify-center">
+          <a href="{{ url_for('login_page') }}" class="btn btn-primary">{{ t("ui.reply.login_cta") }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body %}

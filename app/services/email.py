@@ -22,6 +22,8 @@ from app.models.enums import EmailOutboxPriority, EmailOutboxStatus, UserRole
 from app.models.ticket import Ticket, TicketParticipant
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
+from app.services import reply_token as reply_token_service
+from app.services.auth import login_blocked_reason
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.unsubscribe import make_unsubscribe_url
 from app.utils.urls import ticket_label, ticket_path
@@ -454,13 +456,50 @@ def notify_new_comment(
         if author and author.is_staff
         else _staff_circle(db, loaded)
     )
-    _send_pref_mails(
-        db,
-        _pick(circle, exclude_id=author_id, pref="notify_reply"),
-        key="new_comment",
-        pref="notify_reply",
-        ctx=_ticket_mail_ctx(loaded),
-    )
+    recipients = _pick(circle, exclude_id=author_id, pref="notify_reply")
+    if not recipients:
+        return
+    base_ctx = _ticket_mail_ctx(loaded)
+    base = get_settings().app_base_url.rstrip("/")
+    seen: set[str] = set()
+    for user in recipients:
+        email = (user.email or "").strip().lower()
+        if not email or email in seen:
+            continue
+        seen.add(email)
+        lang = normalize_lang(user.ui_lang)
+        unsub = make_unsubscribe_url(user.id, "notify_reply")
+        if login_blocked_reason(user) is None:
+            raw = reply_token_service.create_reply_token(db, user, loaded)
+            reply_url = f"{base}/open/{raw}"
+        else:
+            reply_url = None
+        html = render_email_html(
+            "new_comment.html",
+            {
+                **base_ctx,
+                "url": reply_url or base_ctx["url"],
+                "reply_url": reply_url,
+                "login_url": f"{base}/login",
+                "user": user,
+                "unsubscribe_url": unsub,
+            },
+            lang=lang,
+        )
+        enqueue_email(
+            db,
+            to_email=email,
+            subject=t(
+                lang,
+                "email.new_comment.subject",
+                label=base_ctx["label"],
+                title=loaded.title,
+            ),
+            html_body=html,
+            list_unsubscribe_url=unsub,
+        )
+    if seen:
+        db.commit()
 
 
 def notify_ticket_update(
