@@ -166,24 +166,26 @@
         {% endif %}
       </span>
       <div class="field-value">
-        {% set participant_ids = ticket.participants|map(attribute='user_id')|list %}
         <div class="issue-participants">
           {% if ticket.participants %}
             <ul class="issue-participant-list">
               {% for p in ticket.participants|sort(attribute='user.first_name', case_sensitive=False) %}
+                {% set pname = p.user.display_name if p.user else p.user_id %}
+                {% set as_admin = user.is_admin %}
                 <li class="issue-participant-row">
-                  <span class="issue-participant-name">{{ p.user.display_name if p.user else p.user_id }}</span>
-                  {% if p.user_id == user.id and not user.is_staff %}
+                  <span class="issue-participant-name">{{ pname }}</span>
+                  {% if as_admin or (not user.is_staff and p.user_id == user.id) %}
                     <form method="post"
                           action="{{ url_for('stop_watching', ticket_ref=tref) }}"
                           class="issue-participant-unwatch"
-                          data-confirm-title="{{ t('ui.confirm.stop_watching.title') }}"
-                          data-confirm="{{ t('ui.confirm.stop_watching.message') }}"
-                          data-confirm-action="{{ t('ui.confirm.stop_watching.action') }}">
+                          data-confirm-title="{{ t('ui.confirm.remove_participant.title' if as_admin else 'ui.confirm.stop_watching.title') }}"
+                          data-confirm="{{ t('ui.confirm.remove_participant.message', name=pname) if as_admin else t('ui.confirm.stop_watching.message') }}"
+                          data-confirm-action="{{ t('ui.confirm.remove_participant.action' if as_admin else 'ui.confirm.stop_watching.action') }}">
+                      <input type="hidden" name="user_id" value="{{ p.user_id }}">
                       <button type="submit"
                               class="issue-unwatch-btn"
-                              title="{{ t('ui.ticket.stop_watching') }}"
-                              aria-label="{{ t('ui.ticket.stop_watching') }}">{{ icon("bell-off") }}</button>
+                              title="{{ t('ui.ticket.remove_participant' if as_admin else 'ui.ticket.stop_watching') }}"
+                              aria-label="{{ t('ui.ticket.remove_participant_aria', name=pname) if as_admin else t('ui.ticket.stop_watching') }}">{{ icon("bell-off") }}</button>
                     </form>
                   {% endif %}
                 </li>

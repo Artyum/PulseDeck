@@ -671,6 +671,7 @@ def stop_watching(
     ticket_ref: str,
     user: CurrentUser,
     db: DbSession,
+    user_id: Annotated[int | None, Form()] = None,
 ):
     lang = resolve_lang(request)
     return _mutate_ticket(
@@ -678,7 +679,7 @@ def stop_watching(
         db,
         user,
         ticket_ref,
-        lambda ticket: ticket_service.remove_self_participant(
-            db, ticket, user, lang=lang
+        lambda ticket: ticket_service.remove_participant(
+            db, ticket, user, user_id, lang=lang
         ),
     )

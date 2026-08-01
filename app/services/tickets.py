@@ -728,22 +728,33 @@ def add_participant(
     return get_ticket(db, ticket.id) or ticket
 
 
-def remove_self_participant(
+def remove_participant(
     db: Session,
     ticket: Ticket,
     actor: User,
+    user_id: int | None = None,
     *,
     lang: str | None = None,
 ) -> Ticket:
+    """Participant removes self; admin may remove any participant by user_id."""
     lang = lang or DEFAULT_LANG
-    if actor.is_staff:
+    if actor.is_admin:
+        if user_id is None:
+            raise HTTPException(
+                status_code=400, detail=t(lang, "messages.tickets.select_user")
+            )
+        target_id = user_id
+    elif not actor.is_staff and (user_id is None or user_id == actor.id):
+        target_id = actor.id
+    else:
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_stop_watching")
         )
+
     row = db.scalar(
         select(TicketParticipant).where(
             TicketParticipant.ticket_id == ticket.id,
-            TicketParticipant.user_id == actor.id,
+            TicketParticipant.user_id == target_id,
         )
     )
     if not row:

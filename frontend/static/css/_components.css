@@ -3132,8 +3132,16 @@
   }
 
   .auth-stack {
+    --auth-brand-space: calc(
+      clamp(3.25rem, 2.6rem + 2vw, 4.75rem)
+      + 0.75rem
+      + (clamp(2rem, 1.6rem + 1.4vw, 2.5rem) * 1.05)
+      + 1.5rem
+    );
+    position: relative;
     width: 100%;
     max-width: calc(24 * var(--layout-rem));
+    margin-block: var(--auth-brand-space);
   }
 
   .auth-stack-wide {
@@ -3141,6 +3149,9 @@
   }
 
   .auth-stack-brand {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 100%;
     margin-bottom: 1.5rem;
     text-align: center;
   }

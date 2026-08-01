@@ -156,6 +156,31 @@ class TestListTicketsFilters:
             assert isinstance(rows, list)
 
 
+def _peer_participant(db, project, author):
+    from app.models.enums import UserRole
+    from app.models.user import User
+    from app.services import projects as project_service
+    from app.services.auth import set_password
+
+    peer = User(
+        email=f"peer-{author.id}@test.local",
+        first_name="Peer",
+        last_name="Client",
+        role=UserRole.USER,
+        activated_at=datetime.now(timezone.utc),
+    )
+    set_password(peer, "Peer1234!")
+    db.add(peer)
+    db.commit()
+    db.refresh(peer)
+    project_service.add_project_member(db, project.id, peer.id)
+    t = _ticket(db, project, author)
+    ticket_service.add_participant(db, t, author, peer.id)
+    t = ticket_service.get_ticket(db, t.id)
+    assert t is not None
+    return t, peer
+
+
 class TestTicketMutations:
     def test_reopen(self, db_session, project_with_members, staff_user):
         t = _ticket(db_session, project_with_members, staff_user)
@@ -238,37 +263,27 @@ class TestTicketMutations:
         )
         assert any(p.user_id == staff_user.id for p in updated.participants)
 
-    def test_stop_watching(
-        self, db_session, project_with_members, client_user, staff_user
+    def test_remove_participant_permissions(
+        self, db_session, project_with_members, client_user, staff_user, admin_user
     ):
-        from app.models.enums import UserRole
-        from app.models.user import User
-        from app.services import projects as project_service
-        from app.services.auth import set_password
-
-        peer = User(
-            email="peer@test.local",
-            first_name="Peer",
-            last_name="Client",
-            role=UserRole.USER,
-            activated_at=datetime.now(timezone.utc),
-        )
-        set_password(peer, "Peer1234!")
-        db_session.add(peer)
-        db_session.commit()
-        db_session.refresh(peer)
-        project_service.add_project_member(db_session, project_with_members.id, peer.id)
-
-        t = _ticket(db_session, project_with_members, client_user)
-        ticket_service.add_participant(db_session, t, client_user, peer.id)
-        t = ticket_service.get_ticket(db_session, t.id)
-        assert t is not None
-        updated = ticket_service.remove_self_participant(db_session, t, peer)
-        assert all(p.user_id != peer.id for p in updated.participants)
+        t, peer = _peer_participant(db_session, project_with_members, client_user)
 
         with pytest.raises(HTTPException) as exc:
-            ticket_service.remove_self_participant(db_session, updated, staff_user)
+            ticket_service.remove_participant(db_session, t, client_user, peer.id)
         assert exc.value.status_code == 403
+
+        with pytest.raises(HTTPException) as exc:
+            ticket_service.remove_participant(db_session, t, staff_user, peer.id)
+        assert exc.value.status_code == 403
+
+        updated = ticket_service.remove_participant(db_session, t, peer, peer.id)
+        assert all(p.user_id != peer.id for p in updated.participants)
+
+        ticket_service.add_participant(db_session, updated, client_user, peer.id)
+        t = ticket_service.get_ticket(db_session, updated.id)
+        assert t is not None
+        cleared = ticket_service.remove_participant(db_session, t, admin_user, peer.id)
+        assert all(p.user_id != peer.id for p in cleared.participants)
 
     def test_add_attachment_and_remove(
         self, db_session, project_with_members, client_user

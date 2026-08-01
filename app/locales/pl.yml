@@ -54,6 +54,10 @@ ui:
       title: "Zaprzestać obserwacji?"
       message: "Zostaniesz usunięty z uczestników tego zgłoszenia i nie będziesz już otrzymywać powiadomień e-mail na jego temat."
       action: "Zaprzestań"
+    remove_participant:
+      title: "Odpiąć uczestnika?"
+      message: "Usunąć {name} z uczestników tego zgłoszenia? Nie będzie już otrzymywać powiadomień e-mail."
+      action: "Odepnij"
   nav:
     aria: "Nawigacja"
     select_project: "Wybierz projekt"
@@ -210,7 +214,7 @@ ui:
         mine_open: "Moje otwarte"
         needs_us: "Do obsługi"
         unassigned: "Nieprzypisane"
-        waiting_on_client: "Oczekuje na odpowiedź"
+        waiting_on_client: "Czeka na odpowiedź"
         done: "Zakończone"
       client:
         all: "Wszystkie"
@@ -245,6 +249,8 @@ ui:
     add_participant: "Dodaj uczestnika"
     no_participants_to_add: "Brak osób do dodania"
     stop_watching: "Zaprzestań obserwacji"
+    remove_participant: "Odepnij z obserwacji"
+    remove_participant_aria: "Odepnij {name} z obserwacji"
     tags: "Tagi"
     add_tag_placeholder: "Dodaj tag…"
     activity: "Aktywność"
@@ -363,7 +369,7 @@ enums:
   ticket_status:
     NEW: "Nowe"
     IN_PROGRESS: "W obsłudze"
-    WAITING_ON_CLIENT: "Oczekuje na odpowiedź"
+    WAITING_ON_CLIENT: "Czeka na odpowiedź"
     DONE: "Zakończone"
   ticket_priority:
     LOW: "Niski"

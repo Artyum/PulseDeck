@@ -54,6 +54,10 @@ ui:
       title: "Stop watching?"
       message: "You will be removed from this ticket’s participants and stop receiving email notifications about it."
       action: "Stop watching"
+    remove_participant:
+      title: "Remove participant?"
+      message: "Remove {name} from this ticket’s participants? They will no longer receive email notifications about it."
+      action: "Remove"
   nav:
     aria: "Navigation"
     select_project: "Select project"
@@ -245,6 +249,8 @@ ui:
     add_participant: "Add participant"
     no_participants_to_add: "No people to add"
     stop_watching: "Stop watching"
+    remove_participant: "Remove from watching"
+    remove_participant_aria: "Remove {name} from watching"
     tags: "Tags"
     add_tag_placeholder: "Add tag…"
     activity: "Activity"

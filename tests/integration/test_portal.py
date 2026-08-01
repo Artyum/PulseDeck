@@ -279,6 +279,55 @@ class TestParticipantsAndReporter:
         )
         assert r.status_code in (200, 303)
 
+    def test_admin_remove_participant(
+        self, client, db_session, client_user, admin_user, project_with_members
+    ):
+        from datetime import datetime, timezone
+
+        from app.models.enums import UserRole
+        from app.models.user import User
+        from app.services import projects as project_service
+        from app.services.auth import set_password
+
+        project_service.add_project_member(
+            db_session, project_with_members.id, admin_user.id
+        )
+        peer = User(
+            email="peer-portal@test.local",
+            first_name="Peer",
+            last_name="Portal",
+            role=UserRole.USER,
+            activated_at=datetime.now(timezone.utc),
+        )
+        set_password(peer, "Peer1234!")
+        db_session.add(peer)
+        db_session.commit()
+        db_session.refresh(peer)
+        project_service.add_project_member(db_session, project_with_members.id, peer.id)
+
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=client_user,
+            title="Remove participant",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        ticket_service.add_participant(db_session, ticket, client_user, peer.id)
+
+        _login(client, "admin@test.local", "Admin123!")
+        r = client.post(
+            f"/t/{project_with_members.key}-{ticket.number}/unwatch",
+            data={"user_id": str(peer.id)},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+        db_session.commit()
+        db_session.expire_all()
+        refreshed = ticket_service.get_ticket(db_session, ticket.id)
+        assert refreshed is not None
+        assert all(p.user_id != peer.id for p in refreshed.participants)
+
     def test_change_reporter(
         self, client, db_session, client_user, staff_user, project_with_members
     ):
