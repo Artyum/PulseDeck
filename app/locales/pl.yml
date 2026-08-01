@@ -335,7 +335,7 @@ ui:
       resend: "Wyślij ponownie link aktywacyjny"
     projects_fieldset: "Projekty"
     projects_empty: "Brak projektów."
-    projects_required: "Wymagany co najmniej jeden projekt."
+    projects_required: "Wymagany co najmniej jeden projekt"
   dev:
     aria: "Tryb developerski"
     copy: "Kopiuj"
@@ -454,13 +454,13 @@ flash:
 messages:
   auth:
     passwords_mismatch: "Hasła nie są zgodne."
-    name_required: "Imię i nazwisko są wymagane."
+    name_required: "Imię i nazwisko są wymagane"
     cannot_demote_last_admin: "Nie można usunąć roli ostatniego administratora."
     cannot_block_self: "Nie możesz zablokować własnego konta."
-    email_required: "E-mail jest wymagany."
+    email_required: "E-mail jest wymagany"
     email_unchanged: "Nowy e-mail jest taki sam jak obecny."
-    email_taken: "Ten e-mail jest już zajęty."
-    user_exists_resend: "Użytkownik z tym adresem e-mail już istnieje — otwórz kartę użytkownika i wyślij ponownie link aktywacyjny."
+    email_taken: "Ten e-mail jest już zajęty"
+    user_exists_resend: "Użytkownik z tym adresem e-mail już istnieje — otwórz kartę użytkownika i wyślij ponownie link aktywacyjny"
   admin:
     invalid_role: "Nieprawidłowa rola."
     unknown_action: "Nieznana akcja."
@@ -476,7 +476,7 @@ messages:
     no_comment: "Brak uprawnień do komentowania."
     no_edit_comment: "Brak uprawnień do edycji komentarzy."
     no_delete_comment: "Brak uprawnień do usuwania komentarzy."
-    comment_empty: "Treść komentarza nie może być pusta."
+    comment_empty: "Treść komentarza nie może być pusta"
     comment_not_found: "Nie znaleziono komentarza."
     internal_staff_only: "Notatki wewnętrzne tylko dla obsługi."
     no_assign: "Brak uprawnień do przypisania."
@@ -508,14 +508,16 @@ messages:
     invalid_pdf: "Nieprawidłowy plik PDF."
     formats: "Dozwolone formaty: JPG, PNG, WEBP, GIF, PDF."
   validation:
-    missing_user: "Wybierz użytkownika."
-    missing_field: "Brakuje {label}."
+    missing_user: "Wybierz użytkownika"
+    missing_field: "Brakuje {label}"
     invalid_int: "Nieprawidłowa wartość liczbowa."
     invalid_form: "Nieprawidłowe dane formularza."
     field:
       user_id: "użytkownika"
       content: "treści wiadomości"
       title: "tytułu"
+      name: "nazwy"
+      key: "klucza"
       description: "opisu"
       email: "adresu e-mail"
       password: "hasła"
@@ -541,30 +543,35 @@ messages:
   phone:
     e164: "Podaj numer w formacie +48123456789."
   project_key:
-    invalid: "Klucz musi mieć {min}–{max} znaków A–Z / 0–9 (bez myślników)."
+    invalid: "Klucz musi mieć {min}–{max} znaków A–Z / 0–9 (bez myślników)"
 
 js:
   errors:
     forbidden: "Brak uprawnień."
     not_found: "Nie znaleziono."
-    validation: "Nieprawidłowe dane formularza."
+    validation: "Nieprawidłowe dane formularza"
     rate_limit: "Zbyt wiele prób. Spróbuj za chwilę."
     server: "Błąd serwera. Spróbuj ponownie."
     generic: "Wystąpił błąd. Spróbuj ponownie."
     submit_failed: "Nie udało się wysłać formularza."
     network: "Nie udało się połączyć z serwerem."
-    comment_empty: "Treść komentarza nie może być pusta."
+    comment_empty: "Treść komentarza nie może być pusta"
   validation:
-    missing_user: "Wybierz użytkownika."
-    missing_field: "Brakuje {label}."
+    missing_user: "Wybierz użytkownika"
+    missing_field: "Brakuje {label}"
     field:
       user_id: "użytkownika"
       content: "treści wiadomości"
       title: "tytułu"
+      name: "nazwy"
+      key: "klucza"
+      first_name: "imienia"
+      last_name: "nazwiska"
       description: "opisu"
       email: "adresu e-mail"
       password: "hasła"
       tag: "tagu"
+      project_ids: "projektu"
       required: "wymaganego pola"
   confirm:
     title: "Potwierdzenie"

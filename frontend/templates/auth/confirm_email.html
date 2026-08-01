@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo with context %}
+{% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ t("ui.auth.confirm_email.title") }} — {{ app_name }}{% endblock title %}
 {% block body %}
+  {{ app_flash(error=error) }}
   <div class="auth-scene">
     <div class="auth-stack">
       <div class="auth-stack-brand">
@@ -9,9 +11,6 @@
         <h1 class="auth-brand mt-3">{{ app_name }}</h1>
       </div>
       <div class="auth-card">
-        {% if error %}
-          <p class="alert alert-error mb-4">{{ error }}</p>
-        {% endif %}
         <p class="mb-4 text-[1.1rem] text-steel">{{ t("ui.auth.confirm_email.subtitle") }}</p>
         <form method="post"
               action="{{ url_for('confirm_email_submit') }}"

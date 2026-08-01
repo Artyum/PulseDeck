@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo with context %}
+{% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ t('ui.auth.login.title', app=app_name) }}{% endblock title %}
 {% block body %}
+  {% set blocked_msg = t('flash.auth.account_blocked') %}
+  {% set not_activated_msg = t('flash.auth.account_not_activated') %}
+  {% set is_blocking = error and (error == blocked_msg or error == not_activated_msg) %}
+  {{ app_flash(error=none if is_blocking else error, success=success, flash=t("ui.auth.login.forgot_sent") if forgot_sent else none) }}
   <div class="auth-scene">
     <div class="auth-stack">
       <div class="auth-stack-brand">
@@ -9,11 +14,8 @@
         <h1 class="auth-brand mt-3">{{ app_name }}</h1>
       </div>
       <div class="auth-card">
-        {% if error %}
+        {% if is_blocking %}
           <p class="alert alert-error mb-4">{{ error }}</p>
-        {% endif %}
-        {% if success %}
-          <p class="alert alert-success mb-4">{{ success }}</p>
         {% endif %}
         <div data-auth-panel="login"{% if forgot_sent %} hidden{% endif %}>
           <form method="post"
@@ -37,7 +39,6 @@
           <button type="button" class="auth-switch" data-auth-show="forgot">{{ t("ui.auth.login.forgot_label") }}</button>
         </div>
         <div data-auth-panel="forgot"{% if not forgot_sent %} hidden{% endif %}>
-          {% if forgot_sent %}<p class="alert alert-success mb-4">{{ t("ui.auth.login.forgot_sent") }}</p>{% endif %}
           <form method="post"
                 action="{{ url_for('forgot_password') }}"
                 class="space-y-4">

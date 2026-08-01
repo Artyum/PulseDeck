@@ -17,8 +17,97 @@
     return i18n("validation.field." + field, i18n("validation.field.required", "a required field"));
   }
 
+  var TOAST_MAX = 2;
+  var feedbackSeq = 0;
+  var FIELD_WRAP_SEL = ".admin-form-field, .admin-field, [data-field-wrap]";
+
+  function cssEscape(value) {
+    var s = String(value);
+    if (window.CSS && typeof CSS.escape === "function") return CSS.escape(s);
+    return s.replace(/([\\"#.:[\]])/g, "\\$1");
+  }
+
+  function feedbackLevel(level) {
+    if (level === "success" || level === "warning") return level;
+    return "error";
+  }
+
+  function fieldFromLoc(loc) {
+    if (!Array.isArray(loc)) return null;
+    for (var i = loc.length - 1; i >= 0; i--) {
+      if (loc[i] !== "body" && loc[i] !== "query" && loc[i] !== "path") return String(loc[i]);
+    }
+    return null;
+  }
+
+  function messageForValidationErr(err, field) {
+    if (err && err.type === "missing") {
+      if (field === "user_id") return i18n("validation.missing_user", "Select a user");
+      return i18nFormat("validation.missing_field", "Missing {label}", { label: fieldLabel(field) });
+    }
+    if (err && err.msg) return String(err.msg);
+    return i18n("errors.validation", "Invalid form data");
+  }
+
+  function statusFallbackMessage(status) {
+    if (status === 403) return i18n("errors.forbidden", "No permission.");
+    if (status === 404) return i18n("errors.not_found", "Not found.");
+    if (status === 422) return i18n("errors.validation", "Invalid form data");
+    if (status === 429) return i18n("errors.rate_limit", "Too many attempts. Try again shortly.");
+    if (status >= 500) return i18n("errors.server", "Server error. Please try again.");
+    return i18n("errors.generic", "Something went wrong. Please try again.");
+  }
+
+  function parseDetailItem(err) {
+    if (!err) return null;
+    if (typeof err === "string") return { field: null, message: err, level: "error" };
+    if (err.field != null && err.message != null) {
+      return { field: String(err.field), message: String(err.message), level: feedbackLevel(err.level) };
+    }
+    var field = fieldFromLoc(err.loc);
+    return { field: field, message: messageForValidationErr(err, field), level: "error" };
+  }
+
+  function findFieldControl(root, field) {
+    if (!field) return null;
+    var scope = root && root.querySelector ? root : document;
+    var key = cssEscape(field);
+    return scope.querySelector('[name="' + key + '"]') || scope.querySelector("#" + key) || scope.querySelector('[data-field="' + key + '"]');
+  }
+
+  function parseFeedback(status, body, root) {
+    var fieldErrors = [];
+    var globalErrors = [];
+    var scope = root && root.querySelector ? root : document;
+    function pushItem(item) {
+      if (!item || !item.message) return;
+      var field = item.field ? String(item.field) : null;
+      if (field && findFieldControl(scope, field)) {
+        fieldErrors.push({ field: field, message: item.message, level: feedbackLevel(item.level) });
+      } else {
+        globalErrors.push({ message: item.message, level: feedbackLevel(item.level) });
+      }
+    }
+    try {
+      var data = typeof body === "string" ? JSON.parse(body) : body;
+      var detail = data && data.detail;
+      if (detail != null) {
+        if (typeof detail === "string") pushItem({ field: null, message: detail, level: "error" });
+        else if (Array.isArray(detail))
+          detail.forEach(function (err) {
+            pushItem(parseDetailItem(err));
+          });
+        else if (typeof detail === "object") pushItem(parseDetailItem(detail));
+      }
+    } catch (e) {}
+    if (!fieldErrors.length && !globalErrors.length) {
+      globalErrors.push({ message: statusFallbackMessage(status), level: "error" });
+    }
+    return { fieldErrors: fieldErrors, globalErrors: globalErrors };
+  }
+
   function ensureToastStack() {
-    let stack = document.getElementById("toast-stack");
+    var stack = document.getElementById("toast-stack");
     if (stack) return stack;
     stack = document.createElement("div");
     stack.id = "toast-stack";
@@ -28,61 +117,280 @@
     return stack;
   }
 
-  window.showToast = function (message, type) {
-    const text = (message || "").toString().trim();
+  function feedbackDisplayText(message) {
+    return (message || "").toString().trim().replace(/\.+$/, "");
+  }
+
+  function renderToast(message, type) {
+    var text = feedbackDisplayText(message);
     if (!text) return;
-    const stack = ensureToastStack();
-    const el = document.createElement("div");
-    el.className = "toast toast-" + (type === "success" ? "success" : "error");
+    var level = type === "success" ? "success" : "error";
+    var stack = ensureToastStack();
+    while (stack.children.length >= TOAST_MAX) stack.removeChild(stack.firstChild);
+    var el = document.createElement("div");
+    el.className = "toast toast-" + level;
     el.setAttribute("role", "status");
+    stack.setAttribute("aria-live", level === "error" ? "assertive" : "polite");
     el.textContent = text;
     stack.appendChild(el);
-    const hide = function () {
+    var hide = function () {
       el.classList.add("toast-out");
       setTimeout(function () {
-        el.remove();
+        if (el.parentNode) el.remove();
       }, 200);
     };
     el.addEventListener("click", hide);
-    setTimeout(hide, 4500);
-  };
-
-  function messageFromDetail(detail) {
-    if (!detail) return null;
-    if (typeof detail === "string") return detail;
-    if (!Array.isArray(detail) || !detail.length) return null;
-    const err = detail[0];
-    const loc = err.loc || [];
-    let field = null;
-    for (let i = loc.length - 1; i >= 0; i--) {
-      if (loc[i] !== "body" && loc[i] !== "query" && loc[i] !== "path") {
-        field = String(loc[i]);
-        break;
-      }
-    }
-    if (err.type === "missing") {
-      if (field === "user_id") return i18n("validation.missing_user", "Select a user.");
-      return i18nFormat("validation.missing_field", "Missing {label}.", {
-        label: fieldLabel(field),
-      });
-    }
-    if (err.msg) return String(err.msg);
-    return i18n("errors.validation", "Invalid form data.");
+    setTimeout(hide, text.length > 100 ? 6500 : 4500);
   }
 
-  window.parseApiError = function (status, body) {
-    try {
-      const data = JSON.parse(body);
-      const msg = messageFromDetail(data.detail);
-      if (msg) return msg;
-    } catch (e) {}
-    if (status === 403) return i18n("errors.forbidden", "No permission.");
-    if (status === 404) return i18n("errors.not_found", "Not found.");
-    if (status === 422) return i18n("errors.validation", "Invalid form data.");
-    if (status === 429) return i18n("errors.rate_limit", "Too many attempts. Try again shortly.");
-    if (status >= 500) return i18n("errors.server", "Server error. Please try again.");
-    return i18n("errors.generic", "Something went wrong. Please try again.");
+  window.showToast = renderToast;
+
+  function existingFeedbackHost(control) {
+    if (!control) return null;
+    var wrap = control.closest(FIELD_WRAP_SEL);
+    if (wrap) {
+      for (var i = 0; i < wrap.children.length; i++) {
+        if (wrap.children[i].classList && wrap.children[i].classList.contains("field-feedback")) {
+          return wrap.children[i];
+        }
+      }
+    }
+    var existing = control.nextElementSibling;
+    return existing && existing.classList && existing.classList.contains("field-feedback") ? existing : null;
+  }
+
+  function feedbackHostFor(control) {
+    var host = existingFeedbackHost(control);
+    if (host) return host;
+    host = document.createElement("p");
+    host.className = "field-feedback";
+    host.hidden = true;
+    var wrap = control.closest(FIELD_WRAP_SEL);
+    if (wrap) wrap.appendChild(host);
+    else control.insertAdjacentElement("afterend", host);
+    return host;
+  }
+
+  function clientValidityMessage(el) {
+    if (el.validity.valueMissing) {
+      return i18nFormat("validation.missing_field", "Missing {label}", {
+        label: fieldLabel(el.getAttribute("name") || el.id || "required"),
+      });
+    }
+    if (el.validity.patternMismatch && el.title) return el.title;
+    return el.validationMessage || i18n("errors.validation", "Invalid form data");
+  }
+
+  function collectProjectsFieldError(form) {
+    var wrap = form && form.querySelector ? form.querySelector("[data-projects-field]") : null;
+    if (!wrap || wrap.hidden) return null;
+    var boxes = wrap.querySelectorAll("input[name=project_ids]:not(:disabled)");
+    if (!boxes.length) return null;
+    var ok = Array.prototype.some.call(boxes, function (el) {
+      return el.checked;
+    });
+    if (ok) return null;
+    var msg = wrap.getAttribute("data-required-msg") || i18nFormat("validation.missing_field", "Missing {label}", { label: fieldLabel("project_ids") });
+    return { field: "project_ids", message: msg, level: "error" };
+  }
+
+  function collectClientFieldErrors(form) {
+    var errors = [];
+    if (!form || !form.elements) return errors;
+    var projectsErr = collectProjectsFieldError(form);
+    if (projectsErr) errors.push(projectsErr);
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (!(el instanceof HTMLElement)) return;
+      if (el.disabled || el.type === "hidden" || el.type === "submit" || el.type === "button") return;
+      if (el.name === "project_ids") return;
+      if (typeof el.checkValidity !== "function" || el.checkValidity()) return;
+      var field = el.getAttribute("name") || el.id;
+      if (!field) return;
+      errors.push({ field: field, message: clientValidityMessage(el), level: "error" });
+    });
+    return errors;
+  }
+
+  function applyClientFormValidation(form) {
+    var fieldErrors = collectClientFieldErrors(form);
+    if (!fieldErrors.length) return true;
+    applyFeedback({ root: form, fieldErrors: fieldErrors, globalErrors: [] });
+    return false;
+  }
+
+  function armFormValidation(root) {
+    (root || document).querySelectorAll("form").forEach(function (form) {
+      form.setAttribute("novalidate", "");
+    });
+  }
+
+  armFormValidation(document);
+  document.body.addEventListener("htmx:afterSwap", function (ev) {
+    armFormValidation(ev.detail && ev.detail.target ? ev.detail.target : document);
+  });
+
+  function clearFieldFeedback(control) {
+    if (!control) return;
+    control.removeAttribute("aria-invalid");
+    var host = existingFeedbackHost(control);
+    if (!host) return;
+    var describedby = control.getAttribute("aria-describedby") || "";
+    if (host.id && describedby) {
+      var ids = describedby.split(/\s+/).filter(function (id) {
+        return id && id !== host.id;
+      });
+      if (ids.length) control.setAttribute("aria-describedby", ids.join(" "));
+      else control.removeAttribute("aria-describedby");
+    }
+    host.textContent = "";
+    host.className = "field-feedback";
+    host.hidden = true;
+    host.removeAttribute("role");
+  }
+
+  function clearRootFieldFeedback(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    scope.querySelectorAll('[aria-invalid="true"]').forEach(clearFieldFeedback);
+  }
+
+  function showFieldFeedbackOn(control, message, level) {
+    var text = feedbackDisplayText(message);
+    if (!control || !text) return;
+    var host = feedbackHostFor(control);
+    feedbackSeq += 1;
+    if (!host.id) host.id = "field-feedback-" + feedbackSeq;
+    host.hidden = false;
+    host.className = "field-feedback" + (level === "warning" ? " field-feedback-warning" : "");
+    host.setAttribute("role", "alert");
+    host.textContent = text;
+    control.setAttribute("aria-invalid", "true");
+    var ids = (control.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+    if (ids.indexOf(host.id) === -1) ids.push(host.id);
+    control.setAttribute("aria-describedby", ids.join(" "));
+    if (!control._pdFieldClearBound) {
+      control._pdFieldClearBound = true;
+      var clear = function () {
+        clearFieldFeedback(control);
+      };
+      control.addEventListener("input", clear);
+      control.addEventListener("change", clear);
+    }
+  }
+
+  function applyFeedback(detail) {
+    detail = detail || {};
+    var root = detail.root || document;
+    var fieldErrors = detail.fieldErrors || [];
+    var globalErrors = (detail.globalErrors || []).slice();
+    if (fieldErrors.length) clearRootFieldFeedback(root);
+    var firstControl = null;
+    fieldErrors.forEach(function (item) {
+      if (!item) return;
+      var control = findFieldControl(root, item.field);
+      if (!control) {
+        globalErrors.push({ message: item.message, level: item.level || "error" });
+        return;
+      }
+      showFieldFeedbackOn(control, item.message, item.level || "error");
+      if (!firstControl) firstControl = control;
+    });
+    if (firstControl) {
+      try {
+        firstControl.scrollIntoView({ behavior: "smooth", block: "center" });
+      } catch (e) {}
+      try {
+        firstControl.focus({ preventScroll: true });
+      } catch (e2) {
+        try {
+          firstControl.focus();
+        } catch (e3) {}
+      }
+    }
+    globalErrors.forEach(function (item) {
+      if (item && item.message) renderToast(item.message, item.level);
+    });
+  }
+
+  window.showFieldError = function (formOrRoot, field, message, level) {
+    applyFeedback({
+      root: formOrRoot || document,
+      fieldErrors: [{ field: field, message: message, level: level || "error" }],
+      globalErrors: [],
+    });
   };
+
+  function publishHttpFeedback(status, body, root) {
+    var parsed = parseFeedback(status, body, root);
+    applyFeedback({
+      root: root || document,
+      fieldErrors: parsed.fieldErrors,
+      globalErrors: parsed.globalErrors,
+    });
+  }
+
+  function readFlashItems(el) {
+    if (!el) return [];
+    try {
+      return JSON.parse(el.textContent || "[]") || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function applyFlashItems(items) {
+    if (!Array.isArray(items) || !items.length) return;
+    var fieldErrors = [];
+    var globalErrors = [];
+    items.forEach(function (item) {
+      if (!item) return;
+      var message = item.message != null ? String(item.message) : "";
+      if (!message) return;
+      var level = feedbackLevel(item.type || item.level || "error");
+      if (item.field) fieldErrors.push({ field: String(item.field), message: message, level: level });
+      else globalErrors.push({ message: message, level: level });
+    });
+    if (fieldErrors.length || globalErrors.length) {
+      applyFeedback({ fieldErrors: fieldErrors, globalErrors: globalErrors });
+    }
+  }
+
+  function softApplyHtml(body, nextUrl) {
+    var doc;
+    try {
+      doc = new DOMParser().parseFromString(body, "text/html");
+    } catch (e) {
+      return false;
+    }
+    if (!doc || !doc.body) return false;
+    var swapped = false;
+    [".admin-narrow", ".admin-prefs", ".admin-page-head"].forEach(function (sel) {
+      var incoming = doc.querySelector(sel);
+      var current = document.querySelector(sel);
+      if (incoming && current) {
+        current.replaceWith(document.importNode(incoming, true));
+        swapped = true;
+      }
+    });
+    var items = readFlashItems(doc.getElementById("app-flash"));
+    applyFlashItems(items);
+    if (nextUrl) {
+      try {
+        var u = new URL(nextUrl, window.location.origin);
+        history.replaceState(null, "", u.pathname);
+      } catch (e3) {}
+    }
+    return swapped || items.length > 0;
+  }
+
+  function consumeAppFlash() {
+    var el = document.getElementById("app-flash");
+    if (!el) return;
+    applyFlashItems(readFlashItems(el));
+    el.remove();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", consumeAppFlash);
+  else consumeAppFlash();
 
   window.showConfirm = function (opts) {
     opts = opts || {};
@@ -157,6 +465,8 @@
     if (!token) return;
     if (ev.defaultPrevented) return;
     ev.preventDefault();
+    clearRootFieldFeedback(form);
+    if (!applyClientFormValidation(form)) return;
     confirmForForm(form)
       .then(function (ok) {
         if (!ok) return;
@@ -169,12 +479,23 @@
           redirect: "follow",
         }).then(function (r) {
           if (r.redirected) {
-            window.location.href = r.url;
-            return;
+            return r.text().then(function (body) {
+              var next;
+              try {
+                next = new URL(r.url, window.location.origin);
+              } catch (e) {
+                window.location.href = r.url;
+                return;
+              }
+              if (next.pathname === window.location.pathname && softApplyHtml(body, next.href)) {
+                return;
+              }
+              window.location.href = next.href;
+            });
           }
           return r.text().then(function (body) {
             if (!r.ok) {
-              window.showToast(window.parseApiError(r.status, body), "error");
+              publishHttpFeedback(r.status, body, form);
               return;
             }
             const ctype = (r.headers.get("content-type") || "").toLowerCase();
@@ -182,11 +503,16 @@
               try {
                 const data = JSON.parse(body);
                 if (data.detail) {
-                  window.showToast(String(data.detail), "error");
+                  publishHttpFeedback(r.status || 400, body, form);
+                  return;
+                }
+                if (data.message) {
+                  window.showToast(String(data.message), "success");
                   return;
                 }
               } catch (e) {}
             }
+            if (softApplyHtml(body, window.location.href)) return;
             document.open();
             document.write(body);
             document.close();
@@ -204,8 +530,20 @@
     }
   });
 
+  document.addEventListener("htmx:beforeRequest", function (ev) {
+    var src = ev.detail && ev.detail.elt;
+    var form = src && src.closest ? src.closest("form") : null;
+    if (!form) return;
+    clearRootFieldFeedback(form);
+    if (!applyClientFormValidation(form)) {
+      ev.preventDefault();
+    }
+  });
+
   document.addEventListener("htmx:responseError", function (ev) {
-    window.showToast(window.parseApiError(ev.detail.xhr.status, ev.detail.xhr.responseText || ""), "error");
+    var src = ev.detail && ev.detail.elt;
+    var root = src && src.closest ? src.closest("form") || src : document;
+    publishHttpFeedback(ev.detail.xhr.status, ev.detail.xhr.responseText || "", root);
   });
 
   document.addEventListener("htmx:sendError", function () {

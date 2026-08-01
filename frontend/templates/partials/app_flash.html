@@ -1,0 +1,19 @@
+{% macro app_flash(error=None, success=None, flash=None, field=None, items=None) -%}
+  {%- set bag = namespace(list=[]) -%}
+  {%- if items -%}
+    {%- for item in items -%}{%- set _ = bag.list.append(item) -%}{%- endfor -%}
+  {%- else -%}
+    {%- if error -%}
+      {%- if field -%}
+        {%- set _ = bag.list.append({"type": "error", "message": error, "field": field}) -%}
+      {%- else -%}
+        {%- set _ = bag.list.append({"type": "error", "message": error}) -%}
+      {%- endif -%}
+    {%- endif -%}
+    {%- if success -%}{%- set _ = bag.list.append({"type": "success", "message": success}) -%}{%- endif -%}
+    {%- if flash -%}{%- set _ = bag.list.append({"type": "success", "message": flash}) -%}{%- endif -%}
+  {%- endif -%}
+  {%- if bag.list -%}
+    <script type="application/json" id="app-flash">{{ bag.list|tojson }}</script>
+  {%- endif -%}
+{%- endmacro %}

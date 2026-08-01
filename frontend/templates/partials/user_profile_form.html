@@ -83,7 +83,9 @@
             <label class="label" for="edit-user-role">{{ t("ui.admin.user_new.role") }}</label>
             {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, edit_user.role.value, role_labels, id='edit-user-role', input_attrs='data-role-select', disabled=(edit_user.id == user.id)) }}
           </div>
-          <div data-projects-field {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
+          <div data-projects-field
+               data-required-msg="{{ t('ui.admin.projects_required') }}"
+               {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
           <p class="admin-field-hint"
              data-admin-projects-hint
              {% if not edit_user.is_admin %}hidden{% endif %}>{{ t("ui.profile.admin_all_projects_hint") }}</p>

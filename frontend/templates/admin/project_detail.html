@@ -1,8 +1,10 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import form_select_menu with context %}
+{% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ project.name }} — {{ app_name }}{% endblock title %}
 {% block content %}
+  {{ app_flash(error=error) }}
   <nav class="issue-crumb">
     <a href="{{ url_for('admin_projects') }}" class="link-quiet">{{ t("ui.admin.projects.title") }}</a>
     <span aria-hidden="true">/</span>
@@ -16,7 +18,6 @@
     <a href="{{ url_for('project_feed', key=project.key) }}"
        class="btn btn-secondary">{{ t("ui.admin.project.open_portal") }}</a>
   </div>
-  {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
   <section class="admin-section">
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.admin.project.settings") }}</h2>
     <form method="post"

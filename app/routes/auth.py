@@ -4,7 +4,12 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+    RedirectResponse,
+)
 from starlette.responses import Response
 
 from app.config import get_settings
@@ -79,6 +84,22 @@ def _render_login(
     )
 
 
+_PROFILE_OK_FLASH = {
+    "updated": "flash.auth.profile_updated",
+    "email_confirm": "flash.auth.email_confirm_sent",
+    "password": "flash.auth.password_changed",
+    "notifications": "flash.auth.notifications_updated",
+}
+
+_PROFILE_PATHS = {
+    "profile": "/profile",
+    "data": "/profile/data",
+    "password": "/profile/password",
+    "notifications": "/profile/notifications",
+    "appearance": "/profile/appearance",
+}
+
+
 def _render_profile(
     request: Request,
     user: User,
@@ -89,6 +110,11 @@ def _render_profile(
 ):
     if section not in ("profile", "data", "password", "notifications", "appearance"):
         section = "profile"
+    if success is None:
+        ok = (request.query_params.get("ok") or "").strip()
+        flash_key = _PROFILE_OK_FLASH.get(ok)
+        if flash_key:
+            success = t(resolve_lang(request), flash_key)
     return render(
         request,
         "auth/profile.html",
@@ -99,6 +125,15 @@ def _render_profile(
         error=error,
         success=success,
     )
+
+
+def _profile_redirect(section: str, *, ok: str) -> RedirectResponse:
+    path = _PROFILE_PATHS.get(section, "/profile")
+    return RedirectResponse(f"{path}?ok={ok}", status_code=303)
+
+
+def _profile_error(detail: str) -> JSONResponse:
+    return JSONResponse({"detail": detail}, status_code=400)
 
 
 def _render_activate(
@@ -245,8 +280,11 @@ def update_profile(
         db.refresh(user)
     except ValueError as exc:
         db.rollback()
-        return _render_profile(request, user, section="data", error=str(exc))
-    return _render_profile(request, user, section="data", success=t(lang, success_key))
+        return _profile_error(str(exc))
+    ok = (
+        "email_confirm" if success_key == "flash.auth.email_confirm_sent" else "updated"
+    )
+    return _profile_redirect("data", ok=ok)
 
 
 @router.post("/profile/password")
@@ -273,13 +311,8 @@ def change_password(
         db.refresh(user)
         set_user_session(request, user)
     except ValueError as exc:
-        return _render_profile(request, user, section="password", error=str(exc))
-    return _render_profile(
-        request,
-        user,
-        section="password",
-        success=t(lang, "flash.auth.password_changed"),
-    )
+        return _profile_error(str(exc))
+    return _profile_redirect("password", ok="password")
 
 
 @router.post("/profile/notifications")
@@ -299,12 +332,7 @@ def update_notifications(
         notify_reply=bool(notify_reply),
         notify_ticket_update=bool(notify_ticket_update),
     )
-    return _render_profile(
-        request,
-        user,
-        section="notifications",
-        success=t(lang, "flash.auth.notifications_updated"),
-    )
+    return _profile_redirect("notifications", ok="notifications")
 
 
 @router.post("/profile/language")

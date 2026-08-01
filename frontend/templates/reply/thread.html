@@ -2,6 +2,7 @@
 {% from "partials/icons.html" import brand_logo, icon with context %}
 {% from "partials/avatar.html" import user_avatar %}
 {% from "partials/ticket_macros.html" import status_chip, priority_chip with context %}
+{% from "partials/app_flash.html" import app_flash %}
 {% macro signed_attachments(items, extra_class='') -%}
   {% if items %}
     <div class="flex flex-wrap gap-2 {{ extra_class }}">
@@ -30,6 +31,7 @@
 {%- endmacro %}
 {% block title %}{{ ticket.title }} — {{ app_name }}{% endblock title %}
 {% block body %}
+  {{ app_flash(error=error, field="content" if error == t("messages.tickets.comment_empty") else none) }}
   <header class="app-header">
     <div class="app-shell app-header-bar">
       <div class="app-header-left">
@@ -92,7 +94,6 @@
                 </article>
               {% endfor %}
             {% endif %}
-            {% if error %}<p class="alert alert-error">{{ error }}</p>{% endif %}
             {% if can_comment %}
               <form method="post"
                     action="{{ url_for('open_reply_post', token=token) }}"

@@ -107,7 +107,9 @@
           <label class="label" for="new-user-role">{{ t("ui.admin.user_new.role") }}</label>
           {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, 'USER', role_labels, id='new-user-role', input_attrs='data-role-select') }}
         </div>
-        <div class="admin-field" data-projects-field>{{ project_checkboxes(projects, form_project_ids) }}</div>
+        <div class="admin-field"
+             data-projects-field
+             data-required-msg="{{ t('ui.admin.projects_required') }}">{{ project_checkboxes(projects, form_project_ids) }}</div>
         <p class="admin-field-hint" data-admin-projects-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
       </div>
       <div class="modal-footer">
@@ -116,6 +118,7 @@
       </div>
     </form>
   </dialog>
-  <script type="application/json" id="admin-users-boot">{{ {"flash": flash}|tojson }}</script>
+  {% from "partials/app_flash.html" import app_flash %}
+  {{ app_flash(flash=flash) }}
   <script src="{{ url_for('static', path='js/admin-user-form.js') }}" defer></script>
 {% endblock content %}

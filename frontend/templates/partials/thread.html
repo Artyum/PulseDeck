@@ -60,7 +60,7 @@
                 class="comment-edit-form"
                 x-show="editing"
                 x-cloak
-                @submit="if (!$refs.editBody.value.trim()) { $event.preventDefault(); window.showToast(window.__i18n['errors.comment_empty'] || '', 'error'); } else { editing = false; }">
+                @submit="if (!$refs.editBody.value.trim()) { $event.preventDefault(); window.showFieldError($event.target, 'content', window.__i18n['errors.comment_empty'] || ''); } else { editing = false; }">
             <textarea name="content" required rows="3" class="textarea" x-ref="editBody">{{ c.content }}</textarea>
             <div class="comment-edit-actions">
               <button type="submit"

@@ -1,11 +1,12 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
+{% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ t("ui.admin.projects.title") }} — {{ app_name }}{% endblock title %}
 {% block content %}
+  {{ app_flash(error=error) }}
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
   </div>
-  {% if error %}<p class="alert alert-error admin-alert">{{ error }}</p>{% endif %}
   <section class="admin-section">
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
     <form method="post"
@@ -26,6 +27,7 @@
                required
                pattern="[A-Za-z0-9]{1,5}"
                maxlength="5"
+               title="{{ t('messages.project_key.invalid', min=1, max=5) }}"
                value="{{ form_key or '' }}"
                class="input min-w-[8rem] uppercase">
       </div>

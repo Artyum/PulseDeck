@@ -335,7 +335,7 @@ ui:
       resend: "Resend activation link"
     projects_fieldset: "Projects"
     projects_empty: "No projects."
-    projects_required: "At least one project is required."
+    projects_required: "At least one project is required"
   dev:
     aria: "Developer mode"
     copy: "Copy"
@@ -454,13 +454,13 @@ flash:
 messages:
   auth:
     passwords_mismatch: "Passwords don't match."
-    name_required: "First and last name are required."
+    name_required: "First and last name are required"
     cannot_demote_last_admin: "You can't remove the role of the last administrator."
     cannot_block_self: "You can't block your own account."
-    email_required: "Email is required."
+    email_required: "Email is required"
     email_unchanged: "The new email is the same as the current one."
-    email_taken: "This email is already taken."
-    user_exists_resend: "A user with this email already exists — open the user's page and resend the activation link."
+    email_taken: "This email is already taken"
+    user_exists_resend: "A user with this email already exists — open the user's page and resend the activation link"
   admin:
     invalid_role: "Invalid role."
     unknown_action: "Unknown action."
@@ -476,7 +476,7 @@ messages:
     no_comment: "You don't have permission to comment."
     no_edit_comment: "You don't have permission to edit comments."
     no_delete_comment: "You don't have permission to delete comments."
-    comment_empty: "Comment content cannot be empty."
+    comment_empty: "Comment content cannot be empty"
     comment_not_found: "Comment not found."
     internal_staff_only: "Internal notes are for staff only."
     no_assign: "You don't have permission to assign."
@@ -508,14 +508,16 @@ messages:
     invalid_pdf: "Invalid PDF file."
     formats: "Allowed formats: JPG, PNG, WEBP, GIF, PDF."
   validation:
-    missing_user: "Select a user."
-    missing_field: "Missing {label}."
+    missing_user: "Select a user"
+    missing_field: "Missing {label}"
     invalid_int: "Invalid numeric value."
     invalid_form: "Invalid form data."
     field:
       user_id: "user"
       content: "message content"
       title: "title"
+      name: "name"
+      key: "key"
       description: "description"
       email: "email address"
       password: "password"
@@ -541,30 +543,35 @@ messages:
   phone:
     e164: "Enter the number in the format +48123456789."
   project_key:
-    invalid: "The key must be {min}–{max} characters A–Z / 0–9 (no hyphens)."
+    invalid: "The key must be {min}–{max} characters A–Z / 0–9 (no hyphens)"
 
 js:
   errors:
     forbidden: "You don't have permission."
     not_found: "Not found."
-    validation: "Invalid form data."
+    validation: "Invalid form data"
     rate_limit: "Too many attempts. Try again in a moment."
     server: "Server error. Please try again."
     generic: "Something went wrong. Please try again."
     submit_failed: "Failed to submit the form."
     network: "Failed to connect to the server."
-    comment_empty: "Comment content cannot be empty."
+    comment_empty: "Comment content cannot be empty"
   validation:
-    missing_user: "Select a user."
-    missing_field: "Missing {label}."
+    missing_user: "Select a user"
+    missing_field: "Missing {label}"
     field:
       user_id: "user"
       content: "message content"
       title: "title"
+      name: "name"
+      key: "key"
+      first_name: "first name"
+      last_name: "last name"
       description: "description"
       email: "email address"
       password: "password"
       tag: "tag"
+      project_ids: "project"
       required: "a required field"
   confirm:
     title: "Confirmation"

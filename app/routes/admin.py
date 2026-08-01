@@ -33,6 +33,24 @@ def _form_truthy(value: str) -> bool:
     return value in ("1", "true", "on")
 
 
+def _field_json_error(lang: str, exc: Exception) -> JSONResponse:
+    msg = str(exc)
+    field = None
+    if msg in {
+        t(lang, "messages.auth.email_required"),
+        t(lang, "messages.auth.user_exists_resend"),
+        t(lang, "messages.auth.email_taken"),
+    }:
+        field = "email"
+    elif msg == t(lang, "messages.auth.name_required"):
+        field = "first_name"
+    if field:
+        return JSONResponse(
+            {"detail": {"field": field, "message": msg}}, status_code=400
+        )
+    return JSONResponse({"detail": msg}, status_code=400)
+
+
 def _get_user_or_404(db: Session, user_id: int, *, lang: str | None = None) -> User:
     target = db.get(User, user_id)
     if not target:
@@ -305,7 +323,7 @@ async def admin_user_create(
         auth_service.send_password_link(db, target, lang=lang)
     except ValueError as exc:
         db.rollback()
-        return JSONResponse({"detail": str(exc)}, status_code=400)
+        return _field_json_error(lang, exc)
     return _user_edit_redirect(target.id, ok="created")
 
 
@@ -361,7 +379,7 @@ async def admin_user_update(
         db.refresh(target)
     except ValueError as exc:
         db.rollback()
-        return JSONResponse({"detail": str(exc)}, status_code=400)
+        return _field_json_error(lang, exc)
     return _user_edit_redirect(user_id, ok="updated")
 
 

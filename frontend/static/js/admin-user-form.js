@@ -1,20 +1,9 @@
 (function () {
-  function setProjectsRequiredVisible(wrap, visible) {
-    if (!wrap) return;
-    const hint = wrap.querySelector("[data-projects-required]");
-    if (hint) hint.hidden = !visible;
-  }
-
-  function requireProjects(form) {
-    const wrap = form.querySelector("[data-projects-field]");
-    if (!wrap || wrap.hidden) return true;
-    const boxes = wrap.querySelectorAll("input[name=project_ids]:not(:disabled)");
-    if (!boxes.length) return true;
-    const ok = Array.prototype.some.call(boxes, function (el) {
-      return el.checked;
+  function clearInvalid(root) {
+    if (!root) return;
+    root.querySelectorAll('[aria-invalid="true"]').forEach(function (el) {
+      el.dispatchEvent(new Event("input", { bubbles: true }));
     });
-    setProjectsRequiredVisible(wrap, !ok);
-    return ok;
   }
 
   function syncRoleProjects(root) {
@@ -30,24 +19,11 @@
       field.querySelectorAll("input[name=project_ids]").forEach(function (el) {
         el.disabled = isAdmin;
       });
-      if (isAdmin) setProjectsRequiredVisible(field, false);
+      if (isAdmin) clearInvalid(field);
     };
     role.addEventListener("change", sync);
     sync();
   }
-
-  document.addEventListener(
-    "submit",
-    function (ev) {
-      const form = ev.target;
-      if (!(form instanceof HTMLFormElement)) return;
-      if (!requireProjects(form)) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation();
-      }
-    },
-    true
-  );
 
   document.addEventListener("change", function (ev) {
     const input = ev.target;
@@ -58,28 +34,17 @@
     const ok = Array.prototype.some.call(boxes, function (el) {
       return el.checked;
     });
-    if (ok) setProjectsRequiredVisible(wrap, false);
+    if (ok) clearInvalid(wrap);
   });
 
   document.querySelectorAll("[data-role-select]").forEach(function (el) {
     syncRoleProjects(el.closest("form, dialog") || el.parentElement);
   });
 
-  const bootEl = document.getElementById("admin-users-boot");
-  let boot = {};
-  if (bootEl) {
-    try {
-      boot = JSON.parse(bootEl.textContent || "{}") || {};
-    } catch (e) {
-      boot = {};
-    }
-  }
-  if (boot.flash && typeof window.showToast === "function") {
-    window.showToast(String(boot.flash), "success");
-  }
-  if (boot.flash) {
+  const params = new URLSearchParams(location.search);
+  if (params.get("ok")) {
     history.replaceState(null, "", location.pathname);
-  } else if (new URLSearchParams(location.search).get("new") === "1") {
+  } else if (params.get("new") === "1") {
     const dlg = document.getElementById("new-user");
     if (dlg) dlg.showModal();
     history.replaceState(null, "", location.pathname);
