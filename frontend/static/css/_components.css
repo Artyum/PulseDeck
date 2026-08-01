@@ -2078,6 +2078,50 @@
     min-height: 1.5rem;
   }
 
+  .issue-participant-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+    min-height: 1.5rem;
+  }
+
+  .issue-participant-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .issue-participant-unwatch {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .issue-unwatch-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.3rem;
+    background: transparent;
+    color: var(--color-steel);
+    cursor: pointer;
+  }
+
+  .issue-unwatch-btn:hover {
+    color: var(--color-ink);
+    background: color-mix(in oklab, var(--color-soft-blue) 45%, var(--color-surface));
+  }
+
+  .issue-unwatch-btn .icon {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
   .issue-add-btn {
     display: inline-flex;
     align-items: center;

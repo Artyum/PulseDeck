@@ -50,6 +50,10 @@ ui:
       title: "Usunąć komentarz?"
       message: "Komentarz zostanie trwale usunięty wraz z załącznikami."
       action: "Usuń"
+    stop_watching:
+      title: "Zaprzestać obserwacji?"
+      message: "Zostaniesz usunięty z uczestników tego zgłoszenia i nie będziesz już otrzymywać powiadomień e-mail na jego temat."
+      action: "Zaprzestań"
   nav:
     aria: "Nawigacja"
     select_project: "Wybierz projekt"
@@ -240,6 +244,7 @@ ui:
     participants: "Uczestnicy"
     add_participant: "Dodaj uczestnika"
     no_participants_to_add: "Brak osób do dodania"
+    stop_watching: "Zaprzestań obserwacji"
     tags: "Tagi"
     add_tag_placeholder: "Dodaj tag…"
     activity: "Aktywność"
@@ -477,6 +482,8 @@ messages:
     tag_too_long: "Tag jest zbyt długi."
     tags_staff_only: "Tylko obsługa może zarządzać tagami."
     no_add_participant: "Brak uprawnień do dodawania uczestników."
+    no_stop_watching: "Brak uprawnień do zaprzestania obserwacji."
+    not_participant: "Nie jesteś uczestnikiem tego zgłoszenia."
     user_must_be_member: "Użytkownik musi być członkiem projektu."
     invalid_status: "Nieprawidłowy status."
     invalid_type: "Nieprawidłowy typ."

@@ -171,7 +171,22 @@
           {% if ticket.participants %}
             <ul class="issue-participant-list">
               {% for p in ticket.participants|sort(attribute='user.first_name', case_sensitive=False) %}
-                <li>{{ p.user.display_name if p.user else p.user_id }}</li>
+                <li class="issue-participant-row">
+                  <span class="issue-participant-name">{{ p.user.display_name if p.user else p.user_id }}</span>
+                  {% if p.user_id == user.id and not user.is_staff %}
+                    <form method="post"
+                          action="{{ url_for('stop_watching', ticket_ref=tref) }}"
+                          class="issue-participant-unwatch"
+                          data-confirm-title="{{ t('ui.confirm.stop_watching.title') }}"
+                          data-confirm="{{ t('ui.confirm.stop_watching.message') }}"
+                          data-confirm-action="{{ t('ui.confirm.stop_watching.action') }}">
+                      <button type="submit"
+                              class="issue-unwatch-btn"
+                              title="{{ t('ui.ticket.stop_watching') }}"
+                              aria-label="{{ t('ui.ticket.stop_watching') }}">{{ icon("bell-off") }}</button>
+                    </form>
+                  {% endif %}
+                </li>
               {% endfor %}
             </ul>
           {% else %}

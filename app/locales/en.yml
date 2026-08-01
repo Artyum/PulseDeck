@@ -50,6 +50,10 @@ ui:
       title: "Delete comment?"
       message: "The comment will be permanently deleted along with its attachments."
       action: "Delete"
+    stop_watching:
+      title: "Stop watching?"
+      message: "You will be removed from this ticket’s participants and stop receiving email notifications about it."
+      action: "Stop watching"
   nav:
     aria: "Navigation"
     select_project: "Select project"
@@ -240,6 +244,7 @@ ui:
     participants: "Participants"
     add_participant: "Add participant"
     no_participants_to_add: "No people to add"
+    stop_watching: "Stop watching"
     tags: "Tags"
     add_tag_placeholder: "Add tag…"
     activity: "Activity"
@@ -477,6 +482,8 @@ messages:
     tag_too_long: "The tag is too long."
     tags_staff_only: "Only staff can manage tags."
     no_add_participant: "You don't have permission to add participants."
+    no_stop_watching: "You don't have permission to stop watching."
+    not_participant: "You are not a participant of this ticket."
     user_must_be_member: "The user must be a project member."
     invalid_status: "Invalid status."
     invalid_type: "Invalid type."

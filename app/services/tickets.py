@@ -728,6 +728,33 @@ def add_participant(
     return get_ticket(db, ticket.id) or ticket
 
 
+def remove_self_participant(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    *,
+    lang: str | None = None,
+) -> Ticket:
+    lang = lang or DEFAULT_LANG
+    if actor.is_staff:
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_stop_watching")
+        )
+    row = db.scalar(
+        select(TicketParticipant).where(
+            TicketParticipant.ticket_id == ticket.id,
+            TicketParticipant.user_id == actor.id,
+        )
+    )
+    if not row:
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.not_participant")
+        )
+    db.delete(row)
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
 def add_attachment(
     db: Session,
     *,

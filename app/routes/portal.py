@@ -663,3 +663,22 @@ def add_participant(
             db, ticket, user, user_id, lang=lang
         ),
     )
+
+
+@router.post("/t/{ticket_ref}/unwatch", response_class=HTMLResponse)
+def stop_watching(
+    request: Request,
+    ticket_ref: str,
+    user: CurrentUser,
+    db: DbSession,
+):
+    lang = resolve_lang(request)
+    return _mutate_ticket(
+        request,
+        db,
+        user,
+        ticket_ref,
+        lambda ticket: ticket_service.remove_self_participant(
+            db, ticket, user, lang=lang
+        ),
+    )

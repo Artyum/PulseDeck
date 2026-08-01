@@ -238,6 +238,37 @@ class TestTicketMutations:
         )
         assert any(p.user_id == staff_user.id for p in updated.participants)
 
+    def test_stop_watching(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        from app.models.enums import UserRole
+        from app.models.user import User
+        from app.services import projects as project_service
+        from app.services.auth import set_password
+
+        peer = User(
+            email="peer@test.local",
+            first_name="Peer",
+            last_name="Client",
+            role=UserRole.USER,
+            activated_at=datetime.now(timezone.utc),
+        )
+        set_password(peer, "Peer1234!")
+        db_session.add(peer)
+        db_session.commit()
+        db_session.refresh(peer)
+        project_service.add_project_member(db_session, project_with_members.id, peer.id)
+
+        t = _ticket(db_session, project_with_members, client_user)
+        ticket_service.add_participant(db_session, t, client_user, peer.id)
+        t = ticket_service.get_ticket(db_session, t.id)
+        updated = ticket_service.remove_self_participant(db_session, t, peer)
+        assert all(p.user_id != peer.id for p in updated.participants)
+
+        with pytest.raises(HTTPException) as exc:
+            ticket_service.remove_self_participant(db_session, updated, staff_user)
+        assert exc.value.status_code == 403
+
     def test_add_attachment_and_remove(
         self, db_session, project_with_members, client_user
     ):
