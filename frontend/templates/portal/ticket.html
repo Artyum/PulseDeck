@@ -15,7 +15,7 @@
             <label class="label" for="edit-ticket-title">{{ t("ui.portal.feed.field.title") }}</label>
             <input id="edit-ticket-title"
                    name="title"
-                   required
+                   {{ field_attrs("ticket.title") }}
                    value="{{ ticket.title }}"
                    class="input mt-1">
           </div>
@@ -23,7 +23,7 @@
             <label class="label" for="edit-ticket-description">{{ t("ui.portal.feed.field.description") }}</label>
             <textarea id="edit-ticket-description"
                       name="description"
-                      required
+                      {{ field_attrs('ticket.description') }}
                       rows="10"
                       class="textarea mt-1">{{ ticket.description }}</textarea>
           </div>

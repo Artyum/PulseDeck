@@ -352,6 +352,7 @@ def update_language(
 
 @router.post("/profile/datetime-prefs")
 def update_datetime_prefs(
+    request: Request,
     user: CurrentUser,
     db: DbSession,
     datetime_format: Annotated[str, Form()],
@@ -362,6 +363,7 @@ def update_datetime_prefs(
         user,
         datetime_format=datetime_format,
         timezone=timezone,
+        lang=resolve_lang(request),
     )
     return PlainTextResponse("ok")
 

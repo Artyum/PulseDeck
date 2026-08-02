@@ -16,7 +16,7 @@
         <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
         <input id="project-name"
                name="name"
-               required
+               {{ field_attrs("project.name") }}
                value="{{ form_name or '' }}"
                class="input min-w-[12rem]">
       </div>
@@ -24,9 +24,7 @@
         <label class="label-tight" for="project-key">{{ t("ui.admin.projects.key") }}</label>
         <input id="project-key"
                name="key"
-               required
-               pattern="[A-Za-z0-9]{1,5}"
-               maxlength="5"
+               {{ field_attrs("project.key") }}
                title="{{ t('messages.project_key.invalid', min=1, max=5) }}"
                value="{{ form_key or '' }}"
                class="input min-w-[8rem] uppercase">
@@ -35,6 +33,7 @@
         <label class="label-tight" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
         <input id="project-desc"
                name="description"
+               {{ field_attrs("project.description") }}
                value="{{ form_description or '' }}"
                class="input">
       </div>

@@ -16,11 +16,10 @@ from app.services import projects as project_service
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.password import (
     hash_password,
-    validate_password_strength,
     verify_password,
 )
-from app.utils.phone import normalize_phone
 from app.utils.timefmt import normalize_datetime_format, normalize_timezone
+from app.validation import clean, clean_many
 
 logger = logging.getLogger("pulsedeck.auth")
 
@@ -30,7 +29,7 @@ def hash_magic_token(raw: str) -> str:
 
 
 def normalize_email(email: str) -> str:
-    return email.strip().lower()
+    return (email or "").strip().lower()
 
 
 def get_user_by_email(db: Session, email: str) -> User | None:
@@ -76,7 +75,7 @@ def mark_activated(user: User) -> None:
 
 def set_password(user: User, password: str, *, lang: str | None = None) -> None:
     lang = lang or DEFAULT_LANG
-    validate_password_strength(password, lang=lang)
+    password = clean("user.password", password, lang=lang)
     user.password_hash = hash_password(password, lang=lang)
 
 
@@ -92,11 +91,14 @@ def require_matching_passwords(
 
 
 def _require_names(first_name: str, last_name: str, *, lang: str) -> tuple[str, str]:
-    fn = first_name.strip()
-    ln = last_name.strip()
-    if not fn or not ln:
-        raise ValueError(t(lang, "messages.auth.name_required"))
-    return fn, ln
+    data = clean_many(
+        {
+            "user.first_name": first_name,
+            "user.last_name": last_name,
+        },
+        lang=lang,
+    )
+    return data["user.first_name"], data["user.last_name"]
 
 
 def invalidate_magic_tokens(db: Session, user_id: int) -> None:
@@ -223,10 +225,17 @@ def update_profile_fields(
     lang: str | None = None,
 ) -> User:
     lang = lang or DEFAULT_LANG
-    fn, ln = _require_names(first_name, last_name, lang=lang)
-    user.first_name = fn
-    user.last_name = ln
-    user.phone = normalize_phone(phone, lang=lang)
+    data = clean_many(
+        {
+            "user.first_name": first_name,
+            "user.last_name": last_name,
+            "user.phone": phone or "",
+        },
+        lang=lang,
+    )
+    user.first_name = data["user.first_name"]
+    user.last_name = data["user.last_name"]
+    user.phone = data["user.phone"]
     db.flush()
     return user
 
@@ -249,7 +258,7 @@ def update_notification_prefs(
 
 
 def update_ui_lang(db: Session, user: User, lang: str) -> User:
-    user.ui_lang = normalize_lang(lang)
+    user.ui_lang = clean("user.ui_lang", lang, lang=normalize_lang(None))
     db.commit()
     db.refresh(user)
     return user
@@ -261,9 +270,18 @@ def update_datetime_prefs(
     *,
     datetime_format: str,
     timezone: str,
+    lang: str | None = None,
 ) -> User:
-    user.datetime_format = normalize_datetime_format(datetime_format)
-    user.timezone = normalize_timezone(timezone)
+    lang = lang or DEFAULT_LANG
+    data = clean_many(
+        {
+            "user.datetime_format": datetime_format,
+            "user.timezone": timezone,
+        },
+        lang=lang,
+    )
+    user.datetime_format = data["user.datetime_format"]
+    user.timezone = data["user.timezone"]
     user.datetime_prefs_locked = True
     db.commit()
     db.refresh(user)
@@ -300,9 +318,7 @@ def request_email_change(
     db: Session, user: User, new_email: str, *, lang: str | None = None
 ) -> tuple[MagicToken, str]:
     lang = lang or DEFAULT_LANG
-    normalized = normalize_email(new_email)
-    if not normalized:
-        raise ValueError(t(lang, "messages.auth.email_required"))
+    normalized = clean("user.email", new_email, lang=lang)
     if normalized == user.email:
         raise ValueError(t(lang, "messages.auth.email_unchanged"))
     if email_taken(db, normalized, exclude_user_id=user.id):
@@ -338,9 +354,7 @@ def admin_set_email(
     db: Session, user: User, new_email: str, *, lang: str | None = None
 ) -> User:
     lang = lang or DEFAULT_LANG
-    normalized = normalize_email(new_email)
-    if not normalized:
-        raise ValueError(t(lang, "messages.auth.email_required"))
+    normalized = clean("user.email", new_email, lang=lang)
     if normalized != user.email and email_taken(
         db, normalized, exclude_user_id=user.id
     ):
@@ -412,7 +426,7 @@ def complete_password_set(
     row, user = resolved
     set_password(user, password, lang=lang)
     if user.activated_at is None and phone is not None:
-        user.phone = normalize_phone(phone, lang=lang)
+        user.phone = clean("user.phone", phone, lang=lang)
     mark_activated(user)
     bump_auth_epoch(user)
     row.used_at = datetime.now(timezone.utc)
@@ -434,11 +448,15 @@ def create_pending_user(
 ) -> User:
     lang = normalize_lang(lang)
     fn, ln = _require_names(first_name, last_name, lang=lang)
-    normalized = normalize_email(email)
-    if not normalized:
-        raise ValueError(t(lang, "messages.auth.email_required"))
+    normalized = clean("user.email", email, lang=lang)
     if email_taken(db, normalized):
         raise ValueError(t(lang, "messages.auth.user_exists_resend"))
+    role_value = clean(
+        "user.role",
+        role.value if isinstance(role, UserRole) else role,
+        lang=lang,
+    )
+    role = UserRole(role_value)
     if role != UserRole.ADMIN:
         resolved_ids = project_service.resolve_project_ids(db, project_ids, lang=lang)
     else:

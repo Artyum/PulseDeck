@@ -36,7 +36,7 @@
                       {% if can_edit_comments %}
                         <button type="button"
                                 class="btn btn-ghost comment-action"
-                                @click="editing = true"
+                                @click="editing = true; $nextTick(() => window.autoResizeTextarea($refs.editBody))"
                                 aria-label="{{ t('ui.ticket.edit_comment') }}">{{ icon("edit") }}</button>
                       {% endif %}
                       {% if can_delete_comments %}
@@ -68,7 +68,12 @@
                     x-show="editing"
                     x-cloak
                     @submit="if (!$refs.editBody.value.trim()) { $event.preventDefault(); window.showFieldError($event.target, 'content', window.__i18n['errors.comment_empty'] || ''); } else { editing = false; }">
-                <textarea name="content" required rows="3" class="textarea" x-ref="editBody">{{ c.content }}</textarea>
+                <textarea name="content"
+                          {{ field_attrs('comment.content') }}
+                          rows="3"
+                          class="textarea"
+                          x-ref="editBody"
+                          data-auto-resize>{{ c.content }}</textarea>
                 <div class="comment-edit-actions">
                   <button type="submit"
                           class="btn btn-ghost comment-action"
@@ -93,10 +98,11 @@
           enctype="multipart/form-data"
           class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
       <textarea name="content"
-                required
+                {{ field_attrs('comment.content') }}
                 rows="3"
                 placeholder="{{ t('ui.ticket.reply_placeholder') }}"
-                class="textarea"></textarea>
+                class="textarea"
+                data-auto-resize></textarea>
       <div class="issue-composer-bar">
         {{ attach_picker('comment-attachments', 'zone') }}
         {% if user.is_staff %}

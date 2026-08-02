@@ -31,7 +31,7 @@
 {%- endmacro %}
 {% block title %}{{ ticket.title }} — {{ app_name }}{% endblock title %}
 {% block body %}
-  {{ app_flash(error=error, field="content" if error == t("messages.tickets.comment_empty") else none) }}
+  {{ app_flash(error=error, field="content" if error else none) }}
   <header class="app-header">
     <div class="app-shell app-header-bar">
       <div class="app-header-left">
@@ -106,10 +106,11 @@
                     action="{{ url_for('open_reply_post', token=token) }}"
                     class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
                 <textarea name="content"
-                          required
+                          {{ field_attrs('comment.content') }}
                           rows="3"
                           placeholder="{{ t('ui.ticket.reply_placeholder') }}"
-                          class="textarea"></textarea>
+                          class="textarea"
+                          data-auto-resize></textarea>
                 <div class="issue-composer-bar">
                   <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
                      class="issue-composer-opt link-quiet">{{ t("ui.reply.attach_login_hint") }}</a>

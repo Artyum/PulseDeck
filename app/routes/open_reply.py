@@ -21,6 +21,7 @@ from app.services.reply_token import ReplyTokenStatus
 from app.services.uploads import file_response_for_attachment
 from app.utils.i18n import resolve_lang, t
 from app.utils.urls import ticket_path
+from app.validation import clean
 
 router = APIRouter(tags=["reply-token"])
 
@@ -206,15 +207,16 @@ def open_reply_post(
         return _status_page(request, "forbidden")
 
     owner, ticket = ctx
-    text = (content or "").strip()
-    if not text:
+    try:
+        text = clean("comment.content", content or "", lang=lang)
+    except ValueError as exc:
         return _thread_page(
             request,
             db,
             token=token,
             user=owner,
             ticket=ticket,
-            error=t(lang, "messages.tickets.comment_empty"),
+            error=str(exc),
         )
 
     locked = reply_token_service.lock_reply_token(db, row.id)

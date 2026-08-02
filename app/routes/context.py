@@ -55,6 +55,7 @@ from app.utils.urls import (
     ticket_label,
     ticket_path,
 )
+from app.validation import field_attrs
 
 logger = logging.getLogger("pulsedeck.app")
 
@@ -94,6 +95,7 @@ _templates.env.filters["admin_project_path"] = admin_project_path
 _templates.env.filters["attachment_path"] = attachment_path
 _templates.env.filters["user_initials"] = user_initials
 _templates.env.filters["avatar_tone"] = avatar_tone
+_templates.env.globals["field_attrs"] = field_attrs
 
 
 def _enum_label_map(lang: str, group: str, enum_cls: type[Enum]) -> dict:

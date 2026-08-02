@@ -257,7 +257,7 @@
               class="issue-tag-add">
           <input list="project-tag-list"
                  name="name"
-                 required
+                 {{ field_attrs("tag.name") }}
                  placeholder="{{ t('ui.ticket.add_tag_placeholder') }}"
                  class="input input-compact">
           <datalist id="project-tag-list">

@@ -304,6 +304,7 @@ async def create_ticket(
         description=description,
         ticket_type=TicketType(ticket_type),
         priority=prio,
+        lang=lang,
     )
     await _attach_many(db, attachments, ticket_id=ticket.id, lang=lang)
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket

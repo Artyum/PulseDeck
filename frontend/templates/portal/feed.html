@@ -67,6 +67,7 @@
             <label class="label-tight" for="feed-q">{{ t("ui.portal.feed.search") }}</label>
             <input id="feed-q"
                    name="q"
+                   {{ field_attrs("search.q") }}
                    value="{{ filter_q }}"
                    placeholder="{{ t('ui.portal.feed.search_placeholder') }}"
                    class="input input-compact">
@@ -88,6 +89,7 @@
             <input id="feed-tag"
                    list="feed-tag-list"
                    name="tag"
+                   {{ field_attrs("filter.tag") }}
                    value="{{ filter_tag }}"
                    class="input input-compact">
           </div>
@@ -119,7 +121,10 @@
       <div class="modal-body">
         <div>
           <label class="label" for="new-ticket-title">{{ t("ui.portal.feed.field.title") }}</label>
-          <input id="new-ticket-title" name="title" required class="input mt-1">
+          <input id="new-ticket-title"
+                 name="title"
+                 {{ field_attrs("ticket.title") }}
+                 class="input mt-1">
         </div>
         <div class="modal-grid">
           <div>
@@ -135,7 +140,7 @@
           <label class="label" for="new-ticket-description">{{ t("ui.portal.feed.field.description") }}</label>
           <textarea id="new-ticket-description"
                     name="description"
-                    required
+                    {{ field_attrs('ticket.description') }}
                     rows="8"
                     class="textarea mt-1"></textarea>
         </div>

@@ -33,8 +33,7 @@
             <label class="label" for="new_password">{{ t("ui.auth.activate.password") }}</label>
             <input id="new_password"
                    name="new_password"
-                   type="password"
-                   required
+                   {{ field_attrs("user.password") }}
                    class="input mt-1.5"
                    autocomplete="new-password">
           </div>
@@ -42,8 +41,7 @@
             <label class="label" for="confirm_password">{{ t("ui.auth.activate.password_confirm") }}</label>
             <input id="confirm_password"
                    name="confirm_password"
-                   type="password"
-                   required
+                   {{ field_attrs("user.password") }}
                    class="input mt-1.5"
                    autocomplete="new-password">
           </div>
@@ -52,7 +50,7 @@
               <label class="label" for="phone">{{ t("ui.auth.activate.phone") }}</label>
               <input id="phone"
                      name="phone"
-                     type="tel"
+                     {{ field_attrs("user.phone") }}
                      placeholder="{{ t('ui.auth.activate.phone_placeholder') }}"
                      class="input mt-1.5">
             </div>

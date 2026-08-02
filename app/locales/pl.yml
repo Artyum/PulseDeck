@@ -471,10 +471,8 @@ flash:
 messages:
   auth:
     passwords_mismatch: "Hasła muszą być takie same."
-    name_required: "Podaj imię i nazwisko"
     cannot_demote_last_admin: "To ostatni administrator — nie można usunąć tej roli."
     cannot_block_self: "Nie możesz zablokować własnego konta."
-    email_required: "Podaj adres e-mail"
     email_unchanged: "Nowy e-mail jest taki sam jak obecny."
     email_taken: "Ten e-mail jest już zajęty"
     user_exists_resend: "Konto z tym e-mailem już istnieje — otwórz kartę użytkownika i wyślij link aktywacyjny ponownie"
@@ -483,7 +481,6 @@ messages:
     unknown_action: "Tej akcji nie da się wykonać."
     already_activated: "To konto jest już aktywne."
   projects:
-    name_required: "Podaj nazwę projektu."
     name_exists: "Projekt o tej nazwie już istnieje."
     key_exists: "Ten klucz projektu jest już zajęty."
     at_least_one: "Wybierz co najmniej jeden projekt."
@@ -493,7 +490,6 @@ messages:
     no_comment: "Nie możesz dodać komentarza."
     no_edit_comment: "Nie możesz edytować komentarzy."
     no_delete_comment: "Nie możesz usuwać komentarzy."
-    comment_empty: "Napisz coś w komentarzu"
     comment_not_found: "Ten komentarz już nie istnieje."
     internal_staff_only: "Notatki wewnętrzne są tylko dla obsługi."
     no_assign: "Nie możesz przypisać zgłoszenia."
@@ -506,8 +502,6 @@ messages:
     no_edit: "Nie możesz tego edytować."
     no_priority: "Nie możesz zmienić priorytetu."
     no_type: "Nie możesz zmienić typu."
-    tag_empty: "Podaj nazwę tagu."
-    tag_too_long: "Tag jest za długi."
     tags_staff_only: "Tagami zarządza tylko obsługa."
     no_add_participant: "Nie możesz dodawać uczestników."
     no_stop_watching: "Nie możesz zaprzestać obserwacji."
@@ -540,6 +534,41 @@ messages:
       password: "hasło"
       tag: "tag"
       required: "wymagane pole"
+  fields:
+    required: "Pole {field} jest wymagane."
+    invalid: "Pole {field} jest nieprawidłowe."
+    too_short: "Pole {field} jest za krótkie (min. {min})."
+    too_long: "Pole {field} jest za długie (maks. {max})."
+    pattern: "Pole {field} ma nieprawidłowy format."
+    labels:
+      user:
+        email: "E-mail"
+        password: "Hasło"
+        first_name: "Imię"
+        last_name: "Nazwisko"
+        phone: "Telefon"
+        role: "Rola"
+        ui_lang: "Język"
+        datetime_format: "Format daty i czasu"
+        timezone: "Strefa czasowa"
+      project:
+        name: "Nazwa projektu"
+        key: "Klucz projektu"
+        description: "Opis projektu"
+      ticket:
+        title: "Tytuł"
+        description: "Opis"
+        type: "Typ"
+        status: "Status"
+        priority: "Priorytet"
+      comment:
+        content: "Komentarz"
+      tag:
+        name: "Tag"
+      search:
+        q: "Szukaj"
+      filter:
+        tag: "Filtr tagu"
   http:
     not_found: "Nie znaleźliśmy tego, czego szukasz."
     forbidden: "Nie masz do tego dostępu."

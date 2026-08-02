@@ -22,8 +22,24 @@ from app.models.ticket import (
 from app.models.user import Project, ProjectMember, User
 from app.services.projects import is_project_member
 from app.utils.i18n import DEFAULT_LANG, t
+from app.validation import clean, clean_many
 
 logger = logging.getLogger("pulsedeck.app.tickets")
+
+
+def _clean_or_400(field_id: str, value, *, lang: str):
+    try:
+        return clean(field_id, value, lang=lang)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+def _clean_many_or_400(values: dict, *, lang: str) -> dict:
+    try:
+        return clean_many(values, lang=lang)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
 
 _OPEN_STATUSES = (
     TicketStatus.NEW,
@@ -226,13 +242,15 @@ def list_tickets(
         except ValueError:
             pass
     if tag:
+        tag = _clean_or_400("filter.tag", tag, lang=DEFAULT_LANG)
+    if tag:
         stmt = (
             stmt.join(TicketTag, TicketTag.ticket_id == Ticket.id)
             .join(Tag, Tag.id == TicketTag.tag_id)
-            .where(func.lower(Tag.name) == tag.strip().lower())
+            .where(func.lower(Tag.name) == tag.lower())
         )
     if q:
-        raw = q.strip()
+        raw = _clean_or_400("search.q", q, lang=DEFAULT_LANG)
         if raw:
             title_match = Ticket.title.ilike(f"%{raw}%")
             ref = re.fullmatch(r"(?:[A-Za-z0-9]{1,5}-)?(\d+)", raw, flags=re.IGNORECASE)
@@ -275,14 +293,23 @@ def create_ticket(
     description: str,
     ticket_type: TicketType,
     priority: TicketPriority = TicketPriority.NORMAL,
+    lang: str | None = None,
 ) -> Ticket:
+    lang = lang or DEFAULT_LANG
+    data = _clean_many_or_400(
+        {
+            "ticket.title": title,
+            "ticket.description": description,
+        },
+        lang=lang,
+    )
     project = db.scalar(
         select(Project).where(Project.id == project_id).with_for_update()
     )
     if project is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=t(DEFAULT_LANG, "messages.http.not_found"),
+            detail=t(lang, "messages.http.not_found"),
         )
     next_number = (
         db.scalar(
@@ -296,8 +323,8 @@ def create_ticket(
         project_id=project_id,
         number=next_number,
         author_id=author.id,
-        title=title.strip(),
-        description=description.strip(),
+        title=data["ticket.title"],
+        description=data["ticket.description"],
         type=ticket_type,
         priority=priority,
         status=TicketStatus.NEW,
@@ -341,10 +368,11 @@ def add_comment(
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.internal_staff_only")
         )
+    text = _clean_or_400("comment.content", content, lang=lang)
     comment = Comment(
         ticket_id=ticket.id,
         author_id=author.id,
-        content=content.strip(),
+        content=text,
         is_internal=bool(is_internal),
     )
     db.add(comment)
@@ -393,11 +421,7 @@ def update_comment(
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
         )
-    text = content.strip()
-    if not text:
-        raise HTTPException(
-            status_code=400, detail=t(lang, "messages.tickets.comment_empty")
-        )
+    text = _clean_or_400("comment.content", content, lang=lang)
     comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
     comment.content = text
     comment.edited_at = datetime.now(timezone.utc)
@@ -577,8 +601,16 @@ def update_ticket(
             status_code=403,
             detail=t(lang or DEFAULT_LANG, "messages.tickets.no_edit"),
         )
-    ticket.title = title.strip()
-    ticket.description = description.strip()
+    lang = lang or DEFAULT_LANG
+    data = _clean_many_or_400(
+        {
+            "ticket.title": title,
+            "ticket.description": description,
+        },
+        lang=lang,
+    )
+    ticket.title = data["ticket.title"]
+    ticket.description = data["ticket.description"]
     return _commit_reload(db, ticket)
 
 
@@ -630,15 +662,7 @@ def _get_or_create_tag(
     db: Session, project_id: int, name: str, *, lang: str | None = None
 ) -> Tag:
     lang = lang or DEFAULT_LANG
-    cleaned = " ".join(name.strip().split())
-    if not cleaned:
-        raise HTTPException(
-            status_code=400, detail=t(lang, "messages.tickets.tag_empty")
-        )
-    if len(cleaned) > 80:
-        raise HTTPException(
-            status_code=400, detail=t(lang, "messages.tickets.tag_too_long")
-        )
+    cleaned = _clean_or_400("tag.name", name, lang=lang)
     existing = db.scalar(
         select(Tag).where(
             Tag.project_id == project_id,

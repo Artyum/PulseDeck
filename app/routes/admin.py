@@ -80,16 +80,17 @@ def _form_truthy(value: str) -> bool:
 
 
 def _field_json_error(lang: str, exc: Exception) -> JSONResponse:
+    from app.validation import ValidationValueError
+
     msg = str(exc)
     field = None
-    if msg in {
-        t(lang, "messages.auth.email_required"),
+    if isinstance(exc, ValidationValueError):
+        field = exc.field.rsplit(".", 1)[-1]
+    elif msg in {
         t(lang, "messages.auth.user_exists_resend"),
         t(lang, "messages.auth.email_taken"),
     }:
         field = "email"
-    elif msg == t(lang, "messages.auth.name_required"):
-        field = "first_name"
     if field:
         return JSONResponse(
             {"detail": {"field": field, "message": msg}}, status_code=400
@@ -329,18 +330,26 @@ def admin_users(
     filter_q = (q or "").strip()
     sort_col, sort_dir = _parse_user_sort(sort, order)
 
-    return render(
-        request,
-        "admin/users.html",
-        user=user,
-        users=project_service.list_users(
+    error = None
+    try:
+        users = project_service.list_users(
             db,
             role=role_filter,
             project_id=project_id,
             q=filter_q or None,
             sort=sort_col,
             sort_dir=sort_dir,
-        ),
+            lang=lang,
+        )
+    except ValueError as exc:
+        users = []
+        error = str(exc)
+
+    return render(
+        request,
+        "admin/users.html",
+        user=user,
+        users=users,
         projects=project_service.list_projects(db),
         form_project_ids=[],
         filter_role=filter_role,
@@ -355,6 +364,7 @@ def admin_users(
             role=filter_role,
             project=filter_project,
         ),
+        error=error,
         flash=t(lang, flash_key) if flash_key else None,
     )
 

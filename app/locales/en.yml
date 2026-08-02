@@ -471,10 +471,8 @@ flash:
 messages:
   auth:
     passwords_mismatch: "The passwords need to match."
-    name_required: "Enter a first and last name"
     cannot_demote_last_admin: "That's the last administrator — this role can't be removed."
     cannot_block_self: "You can't block your own account."
-    email_required: "Enter an email address"
     email_unchanged: "The new email is the same as the current one."
     email_taken: "This email is already taken"
     user_exists_resend: "An account with this email already exists — open the user page and resend the activation link"
@@ -483,7 +481,6 @@ messages:
     unknown_action: "That action can't be done."
     already_activated: "This account is already active."
   projects:
-    name_required: "Enter a project name."
     name_exists: "A project with this name already exists."
     key_exists: "This project key is already taken."
     at_least_one: "Pick at least one project."
@@ -493,7 +490,6 @@ messages:
     no_comment: "You can't add a comment here."
     no_edit_comment: "You can't edit comments."
     no_delete_comment: "You can't delete comments."
-    comment_empty: "Write something in the comment"
     comment_not_found: "That comment is no longer here."
     internal_staff_only: "Internal notes are for staff only."
     no_assign: "You can't assign this ticket."
@@ -506,8 +502,6 @@ messages:
     no_edit: "You can't edit this."
     no_priority: "You can't change the priority."
     no_type: "You can't change the type."
-    tag_empty: "Enter a tag name."
-    tag_too_long: "That tag is too long."
     tags_staff_only: "Only staff can manage tags."
     no_add_participant: "You can't add participants."
     no_stop_watching: "You can't stop watching this ticket."
@@ -540,6 +534,41 @@ messages:
       password: "a password"
       tag: "a tag"
       required: "a required field"
+  fields:
+    required: "{field} is required."
+    invalid: "{field} is not valid."
+    too_short: "{field} is too short (min {min})."
+    too_long: "{field} is too long (max {max})."
+    pattern: "{field} has an invalid format."
+    labels:
+      user:
+        email: "Email"
+        password: "Password"
+        first_name: "First name"
+        last_name: "Last name"
+        phone: "Phone"
+        role: "Role"
+        ui_lang: "Language"
+        datetime_format: "Date and time format"
+        timezone: "Timezone"
+      project:
+        name: "Project name"
+        key: "Project key"
+        description: "Project description"
+      ticket:
+        title: "Title"
+        description: "Description"
+        type: "Type"
+        status: "Status"
+        priority: "Priority"
+      comment:
+        content: "Comment"
+      tag:
+        name: "Tag"
+      search:
+        q: "Search"
+      filter:
+        tag: "Tag filter"
   http:
     not_found: "We couldn't find what you're looking for."
     forbidden: "You don't have access to this."

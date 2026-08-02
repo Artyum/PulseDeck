@@ -12,7 +12,7 @@ from app.models.enums import EmailOutboxStatus, TicketStatus, TicketType, UserRo
 from app.models.ticket import Comment, Tag, Ticket, TicketTag
 from app.models.user import Project, ProjectMember, User
 from app.utils.i18n import DEFAULT_LANG, t
-from app.utils.project_key import validate_project_key
+from app.validation import clean, clean_many
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,7 +132,9 @@ def list_users(
     q: str | None = None,
     sort: str | None = None,
     sort_dir: str | None = None,
+    lang: str | None = None,
 ) -> list[User]:
+    lang = lang or DEFAULT_LANG
     stmt = select(User).options(selectinload(User.memberships))
     if role is not None:
         stmt = stmt.where(User.role == role)
@@ -144,7 +146,7 @@ def list_users(
                 )
             )
         )
-    raw = (q or "").strip()
+    raw = clean("search.q", q or "", lang=lang)
     if raw:
         pattern = f"%{raw}%"
         full_name = func.concat(User.first_name, " ", User.last_name)
@@ -323,15 +325,21 @@ def _normalize_project_fields(
     exclude_id: int | None = None,
     lang: str,
 ) -> tuple[str, str, str | None]:
-    clean_name = name.strip()
-    if not clean_name:
-        raise ValueError(t(lang, "messages.projects.name_required"))
+    data = clean_many(
+        {
+            "project.name": name,
+            "project.key": key,
+            "project.description": description or "",
+        },
+        lang=lang,
+    )
+    clean_name = data["project.name"]
+    clean_key = data["project.key"]
+    clean_description = data["project.description"]
     if _name_taken(db, clean_name, exclude_id=exclude_id):
         raise ValueError(t(lang, "messages.projects.name_exists"))
-    clean_key = validate_project_key(key, lang=lang)
     if _key_taken(db, clean_key, exclude_id=exclude_id):
         raise ValueError(t(lang, "messages.projects.key_exists"))
-    clean_description = (description or "").strip() or None
     return clean_name, clean_key, clean_description
 
 

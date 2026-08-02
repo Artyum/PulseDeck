@@ -34,6 +34,7 @@
         <label class="label-tight" for="users-q">{{ t("ui.admin.users.filter_search") }}</label>
         <input id="users-q"
                name="q"
+               {{ field_attrs("search.q") }}
                value="{{ filter_q }}"
                placeholder="{{ t('ui.admin.users.filter_search_placeholder') }}"
                class="input"
@@ -129,16 +130,25 @@
         <div class="modal-grid">
           <div class="admin-field">
             <label class="label" for="new-user-first-name">{{ t("ui.profile.field.first_name") }}</label>
-            <input id="new-user-first-name" name="first_name" required class="input">
+            <input id="new-user-first-name"
+                   name="first_name"
+                   {{ field_attrs("user.first_name") }}
+                   class="input">
           </div>
           <div class="admin-field">
             <label class="label" for="new-user-last-name">{{ t("ui.profile.field.last_name") }}</label>
-            <input id="new-user-last-name" name="last_name" required class="input">
+            <input id="new-user-last-name"
+                   name="last_name"
+                   {{ field_attrs("user.last_name") }}
+                   class="input">
           </div>
         </div>
         <div class="admin-field">
           <label class="label" for="new-user-email">{{ t("ui.profile.field.email") }}</label>
-          <input id="new-user-email" name="email" type="email" required class="input">
+          <input id="new-user-email"
+                 name="email"
+                 {{ field_attrs("user.email") }}
+                 class="input">
         </div>
         <div class="admin-field">
           <label class="label" for="new-user-role">{{ t("ui.admin.user_new.role") }}</label>
@@ -156,6 +166,6 @@
     </form>
   </dialog>
   {% from "partials/app_flash.html" import app_flash %}
-  {{ app_flash(flash=flash) }}
+  {{ app_flash(error=error, flash=flash) }}
   <script src="{{ url_for('static', path='js/admin-user-form.js') }}" defer></script>
 {% endblock content %}

@@ -42,7 +42,7 @@
           <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
           <input id="first_name"
                  name="first_name"
-                 required
+                 {{ field_attrs("user.first_name") }}
                  value="{{ edit_user.first_name }}"
                  class="input">
         </div>
@@ -50,7 +50,7 @@
           <label class="label" for="last_name">{{ t("ui.profile.field.last_name") }}</label>
           <input id="last_name"
                  name="last_name"
-                 required
+                 {{ field_attrs("user.last_name") }}
                  value="{{ edit_user.last_name }}"
                  class="input">
         </div>
@@ -58,8 +58,7 @@
           <label class="label" for="email">{{ t("ui.profile.field.email") }}</label>
           <input id="email"
                  name="email"
-                 type="email"
-                 required
+                 {{ field_attrs("user.email") }}
                  value="{{ edit_user.email }}"
                  class="input">
           {% if not is_admin_edit %}
@@ -73,7 +72,7 @@
           <label class="label" for="phone">{{ t("ui.profile.field.phone") }}</label>
           <input id="phone"
                  name="phone"
-                 type="tel"
+                 {{ field_attrs("user.phone") }}
                  value="{{ edit_user.phone or '' }}"
                  placeholder="+48123456789"
                  class="input">
@@ -105,13 +104,13 @@
         <form method="post"
               action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
               class="admin-form-stack">
-          <input type="password"
-                 name="new_password"
+          <input name="new_password"
+                 {{ field_attrs('user.password', required=False) }}
                  placeholder="{{ t('ui.profile.password.new') }}"
                  class="input"
                  autocomplete="new-password">
-          <input type="password"
-                 name="confirm_password"
+          <input name="confirm_password"
+                 {{ field_attrs('user.password', required=False) }}
                  placeholder="{{ t('ui.profile.password.confirm') }}"
                  class="input"
                  autocomplete="new-password">
@@ -135,21 +134,18 @@
     <form method="post"
           action="{{ url_for('change_password') }}"
           class="admin-form-stack">
-      <input type="password"
+      <input {{ field_attrs("user.password") }}
              name="current_password"
-             required
              placeholder="{{ t('ui.profile.password.current') }}"
              class="input"
              autocomplete="current-password">
-      <input type="password"
+      <input {{ field_attrs("user.password") }}
              name="new_password"
-             required
              placeholder="{{ t('ui.profile.password.new') }}"
              class="input"
              autocomplete="new-password">
-      <input type="password"
+      <input {{ field_attrs("user.password") }}
              name="confirm_password"
-             required
              placeholder="{{ t('ui.profile.password.confirm') }}"
              class="input"
              autocomplete="new-password">

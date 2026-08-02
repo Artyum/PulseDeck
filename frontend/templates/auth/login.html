@@ -24,14 +24,16 @@
             <input type="hidden" name="next" value="{{ next_path }}">
             <div>
               <label class="label" for="email">{{ t("ui.auth.login.email") }}</label>
-              <input id="email" name="email" type="email" required class="input mt-1.5">
+              <input id="email"
+                     name="email"
+                     {{ field_attrs("user.email") }}
+                     class="input mt-1.5">
             </div>
             <div>
               <label class="label" for="password">{{ t("ui.auth.login.password") }}</label>
               <input id="password"
                      name="password"
-                     type="password"
-                     required
+                     {{ field_attrs("user.password") }}
                      class="input mt-1.5">
             </div>
             <button type="submit" class="btn btn-primary w-full">{{ t("ui.auth.login.submit") }}</button>
@@ -46,8 +48,7 @@
               <label class="label" for="forgot_email">{{ t("ui.auth.login.email") }}</label>
               <input id="forgot_email"
                      name="email"
-                     type="email"
-                     required
+                     {{ field_attrs("user.email") }}
                      placeholder="{{ t('ui.auth.login.forgot_placeholder') }}"
                      class="input mt-1.5">
             </div>

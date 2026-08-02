@@ -2838,6 +2838,12 @@
     min-height: 5.5rem;
   }
 
+  textarea[data-auto-resize] {
+    max-height: min(50vh, 24rem);
+    resize: none;
+    overflow-y: auto;
+  }
+
   .issue-composer-bar {
     display: flex;
     flex-wrap: wrap;

@@ -224,9 +224,30 @@
     });
   }
 
-  armFormValidation(document);
+  function autoResizeTextarea(el) {
+    if (!(el instanceof HTMLTextAreaElement)) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+  window.autoResizeTextarea = autoResizeTextarea;
+
+  function armAutoResize(root) {
+    (root || document).querySelectorAll("textarea[data-auto-resize]").forEach(autoResizeTextarea);
+  }
+
+  function armDomEnhancements(root) {
+    armFormValidation(root);
+    armAutoResize(root);
+  }
+
+  armDomEnhancements(document);
   document.body.addEventListener("htmx:afterSwap", function (ev) {
-    armFormValidation(ev.detail && ev.detail.target ? ev.detail.target : document);
+    armDomEnhancements(ev.detail && ev.detail.target ? ev.detail.target : document);
+  });
+  document.addEventListener("input", function (ev) {
+    var el = ev.target;
+    if (!(el instanceof HTMLTextAreaElement) || !el.hasAttribute("data-auto-resize")) return;
+    autoResizeTextarea(el);
   });
 
   function clearFieldFeedback(control) {
