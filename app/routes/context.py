@@ -136,7 +136,7 @@ def common_context(request: Request, **extra) -> dict:
         "app_name": "PulseDeck",
         "csrf_token": ensure_csrf_token(request),
         "app_base_url": settings.app_base_url,
-        "is_dev": settings.environment == "development",
+        "is_dev": settings.environment == "dev",
         "ui_lang": lang,
         "lang_choices": list_languages(),
         "lang_storage_key": LANG_STORAGE_KEY,

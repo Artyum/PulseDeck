@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     database_url: str
     storage_secret: str = _DEV_STORAGE_SECRET
-    environment: str = "development"
+    environment: str = "dev"
     app_base_url: str = Field(
         default="http://localhost:8000", validation_alias="APP_BASE_URL"
     )
@@ -110,10 +110,10 @@ class Settings(BaseSettings):
             msg = f"DATABASE_URL is not a valid SQLAlchemy URL: {exc}"
             raise ValueError(msg) from exc
 
-        if self.environment == "production" and (
+        if self.environment == "prod" and (
             not self.storage_secret or self.storage_secret == _DEV_STORAGE_SECRET
         ):
-            msg = "STORAGE_SECRET must be set to a strong value when ENVIRONMENT=production"
+            msg = "STORAGE_SECRET must be set to a strong value when ENVIRONMENT=prod"
             raise ValueError(msg)
 
         self.app_base_url = self.app_base_url.strip().rstrip("/")

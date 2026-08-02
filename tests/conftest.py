@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 # Must set before importing app — override any inherited env vars (e.g. from .env.dev)
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 os.environ["STORAGE_SECRET"] = "test-secret"
-os.environ["ENVIRONMENT"] = "development"
+os.environ["ENVIRONMENT"] = "dev"
 os.environ["APP_BASE_URL"] = "http://testserver"
 os.environ["ALLOWED_HOSTS"] = "testserver,localhost,127.0.0.1"
 os.environ.pop("ADMIN_EMAIL", None)

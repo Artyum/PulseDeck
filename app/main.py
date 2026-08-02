@@ -68,7 +68,7 @@ def build_fastapi_app() -> FastAPI:
         return apply_security_headers(request, response)
 
     hosts = settings.trusted_hosts_list()
-    if settings.environment == "development":
+    if settings.environment == "dev":
         hosts = list({*hosts, "testserver", "localhost", "127.0.0.1", "pulsedeck.lan"})
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts)
     app.add_middleware(SlowAPIMiddleware)
@@ -80,7 +80,7 @@ def build_fastapi_app() -> FastAPI:
         session_cookie="pulsedeck_session",
         max_age=settings.session_max_age_seconds,
         same_site="lax",
-        https_only=settings.environment == "production",
+        https_only=settings.environment == "prod",
     )
 
     mimetypes.add_type("application/manifest+json", ".webmanifest")

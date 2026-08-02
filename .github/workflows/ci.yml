@@ -43,7 +43,7 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: sqlite://
-          ENVIRONMENT: development
+          ENVIRONMENT: dev
           STORAGE_SECRET: test-storage-secret
           SECURITY_CSRF_ENABLED: "false"
           APP_BASE_URL: http://testserver
@@ -97,7 +97,7 @@ jobs:
             --network pulsedeck-ci \
             -e DATABASE_URL=postgresql+psycopg://pulsedeck:pulsedeck@pulsedeck-ci-db:5432/pulsedeck \
             -e STORAGE_SECRET=ci-only-secret \
-            -e ENVIRONMENT=staging \
+            -e ENVIRONMENT=preprod \
             -e APP_BASE_URL=https://example.com \
             -e ALLOWED_HOSTS=example.com,localhost,127.0.0.1 \
             -e UVICORN_WORKERS=1 \
