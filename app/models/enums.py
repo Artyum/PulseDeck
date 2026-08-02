@@ -12,8 +12,8 @@ class UserRole(str, enum.Enum):
 class TicketType(str, enum.Enum):
     BUG = "BUG"
     QUESTION = "QUESTION"
-    SUGGESTION = "SUGGESTION"
-    OTHER = "OTHER"
+    CHANGE = "CHANGE"
+    TASK = "TASK"
 
 
 class TicketStatus(str, enum.Enum):

@@ -383,8 +383,8 @@ enums:
   ticket_type:
     BUG: "Bug"
     QUESTION: "Question"
-    SUGGESTION: "Suggestion"
-    OTHER: "Other"
+    CHANGE: "Change"
+    TASK: "Task"
   ticket_status:
     NEW: "New"
     IN_PROGRESS: "In progress"

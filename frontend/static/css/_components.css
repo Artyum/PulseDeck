@@ -1747,7 +1747,6 @@
     font-size: 0.68rem;
     font-weight: 650;
     letter-spacing: 0.03em;
-    text-transform: uppercase;
     color: color-mix(in oklab, var(--color-steel) 80%, var(--color-line));
   }
 

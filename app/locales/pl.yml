@@ -200,7 +200,7 @@ ui:
         updated: "Ostatnia aktywność"
         created: "Data utworzenia"
         priority: "Priorytet"
-      updated: "Zmiana"
+      updated: "Aktualizacja"
       filter_submit: "Filtruj"
       filter_clear: "Wyczyść"
       modal_title: "Utwórz zgłoszenie"
@@ -383,8 +383,8 @@ enums:
   ticket_type:
     BUG: "Błąd"
     QUESTION: "Pytanie"
-    SUGGESTION: "Sugestia"
-    OTHER: "Inne"
+    CHANGE: "Zmiana"
+    TASK: "Zadanie"
   ticket_status:
     NEW: "Nowe"
     IN_PROGRESS: "W obsłudze"
