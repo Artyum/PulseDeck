@@ -1,6 +1,51 @@
 (function () {
   const IMAGE_RE = /\.(jpe?g|png|webp|gif)$/i;
+  const ALLOWED_RE = /\.(jpe?g|png|webp|gif|pdf)$/i;
+  const MIME_EXT = {
+    "image/jpeg": ".jpg",
+    "image/jpg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+    "application/pdf": ".pdf",
+  };
   const inited = new WeakSet();
+
+  function normalizeFile(file) {
+    if (!file) return null;
+    if (file.name && ALLOWED_RE.test(file.name)) return file;
+    const ext = MIME_EXT[(file.type || "").toLowerCase()];
+    if (!ext) return null;
+    return new File([file], "paste-" + Date.now() + ext, {
+      type: file.type || "application/octet-stream",
+      lastModified: Date.now(),
+    });
+  }
+
+  function filesFromClipboard(cd) {
+    if (!cd) return [];
+    const out = [];
+    const seen = new Set();
+
+    function push(file) {
+      const normalized = normalizeFile(file);
+      if (!normalized) return;
+      const key = normalized.name + ":" + normalized.size + ":" + normalized.type;
+      if (seen.has(key)) return;
+      seen.add(key);
+      out.push(normalized);
+    }
+
+    if (cd.items && cd.items.length) {
+      for (var i = 0; i < cd.items.length; i++) {
+        var item = cd.items[i];
+        if (item.kind === "file") push(item.getAsFile());
+      }
+    } else if (cd.files && cd.files.length) {
+      for (var j = 0; j < cd.files.length; j++) push(cd.files[j]);
+    }
+    return out;
+  }
 
   function initPicker(root) {
     if (!root || inited.has(root)) return;
@@ -95,6 +140,24 @@
       input.value = "";
     }
 
+    function addFiles(picked) {
+      if (!picked || !picked.length) return;
+      const maxNew = newSlots();
+      const room = Math.max(0, maxNew - files.length);
+      if (picked.length > room) {
+        var msg = (window.__i18n && window.__i18n["attach.too_many"]) || "You can attach up to {count} files.";
+        if (typeof window.showToast === "function") {
+          window.showToast(msg.replace("{count}", String(TOTAL_MAX)), "error");
+        }
+      }
+      picked.forEach(function (file) {
+        if (files.length >= maxNew) return;
+        files.push(file);
+      });
+      files = files.slice(0, maxNew);
+      syncInput();
+    }
+
     preview.querySelectorAll("[data-remove-existing]").forEach(function (btnEl) {
       btnEl.addEventListener("click", function () {
         const item = btnEl.closest("[data-existing-id]");
@@ -112,33 +175,27 @@
     });
 
     input.addEventListener("change", function () {
-      const maxNew = newSlots();
-      const picked = Array.from(input.files || []);
-      const room = Math.max(0, maxNew - files.length);
-      if (picked.length > room) {
-        var msg = (window.__i18n && window.__i18n["attach.too_many"]) || "You can attach up to {count} files.";
-        if (typeof window.showToast === "function") {
-          window.showToast(msg.replace("{count}", String(TOTAL_MAX)), "error");
-        }
-      }
-      picked.forEach(function (file) {
-        if (files.length >= maxNew) return;
-        files.push(file);
-      });
-      files = files.slice(0, maxNew);
-      syncInput();
+      addFiles(Array.from(input.files || []));
     });
+
+    const form = root.closest("form");
+    if (form) {
+      form.addEventListener("paste", function (ev) {
+        const pasted = filesFromClipboard(ev.clipboardData);
+        if (!pasted.length) return;
+        ev.preventDefault();
+        addFiles(pasted);
+      });
+      if (form.hasAttribute("hx-post")) {
+        form.addEventListener("htmx:afterRequest", function (ev) {
+          if (ev.detail && ev.detail.successful) reset();
+        });
+      }
+    }
 
     const dlg = root.closest("dialog");
     if (dlg) {
       dlg.addEventListener("close", reset);
-    }
-
-    const form = root.closest("form");
-    if (form && form.hasAttribute("hx-post")) {
-      form.addEventListener("htmx:afterRequest", function (ev) {
-        if (ev.detail && ev.detail.successful) reset();
-      });
     }
 
     syncInput();

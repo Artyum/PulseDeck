@@ -187,33 +187,7 @@
 {%- endmacro %}
 {% macro attach_picker(input_id, variant='zone', max_files=3, existing=none) -%}
   {% set file_word = t('ui.ticket.attach.file_one') if max_files == 1 else t('ui.ticket.attach.file_many') %}
-  <div data-attach-picker data-attach-max="{{ max_files }}">
-    <div class="file-pick">
-      <input data-attach-input
-             id="{{ input_id }}"
-             type="file"
-             name="attachments"
-             accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
-             multiple
-             class="file-pick-input">
-      {% if variant == 'zone' %}
-        <label for="{{ input_id }}" class="file-pick-zone file-pick-btn">
-          <span class="file-pick-zone-title">
-            <span class="section-icon" aria-hidden="true">{{ icon("attach") }}</span>
-            {{ t("ui.ticket.attach.add_files") }}
-          </span>
-        </label>
-      {% else %}
-        <label for="{{ input_id }}"
-               class="btn btn-secondary file-pick-btn file-pick-btn-icon"
-               title="{{ t('ui.ticket.attach.button') }}"
-               aria-label="{{ t('ui.ticket.attach.button') }}">{{ icon("attach") }}</label>
-      {% endif %}
-    </div>
-    {% if variant != 'zone' %}
-      <p class="modal-hint">{{ t('ui.ticket.attach.hint_icon', count=max_files, file_word=file_word) }}</p>
-    {% endif %}
-    <div data-attach-remove-box hidden></div>
+  {% set preview -%}
     <div data-attach-preview
          class="attach-preview"
          {% if not existing %}hidden{% endif %}>
@@ -237,6 +211,36 @@
         {% endfor %}
       {% endif %}
     </div>
+  {%- endset %}
+  <div data-attach-picker data-attach-max="{{ max_files }}">
+    <div class="file-pick">
+      <input data-attach-input
+             id="{{ input_id }}"
+             type="file"
+             name="attachments"
+             accept=".jpg,.jpeg,.png,.webp,.gif,.pdf"
+             multiple
+             class="file-pick-input">
+      {% if variant == 'zone' %}
+        <div class="file-pick-zone">
+          <label for="{{ input_id }}" class="file-pick-zone-title file-pick-btn">
+            <span class="section-icon" aria-hidden="true">{{ icon("attach") }}</span>
+            {{ t("ui.ticket.attach.add_files") }}
+          </label>
+          {{ preview }}
+        </div>
+      {% else %}
+        <label for="{{ input_id }}"
+               class="btn btn-secondary file-pick-btn file-pick-btn-icon"
+               title="{{ t('ui.ticket.attach.button') }}"
+               aria-label="{{ t('ui.ticket.attach.button') }}">{{ icon("attach") }}</label>
+      {% endif %}
+    </div>
+    {% if variant != 'zone' %}
+      <p class="modal-hint">{{ t('ui.ticket.attach.hint_icon', count=max_files, file_word=file_word) }}</p>
+      {{ preview }}
+    {% endif %}
+    <div data-attach-remove-box hidden></div>
   </div>
 {%- endmacro %}
 {% macro project_checkboxes(projects, form_project_ids) -%}

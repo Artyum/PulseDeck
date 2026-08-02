@@ -267,7 +267,7 @@ ui:
     reopen_hint_client: "Reopening is possible within {days} days of closing."
     no_comment_permission: "You don't have permission to comment."
     attach:
-      add_files: "Add files"
+      add_files: "Add, paste or drop files"
       file_one: "file"
       file_many: "files"
       hint_icon: "Up to {count} {file_word} · max 5 MB"

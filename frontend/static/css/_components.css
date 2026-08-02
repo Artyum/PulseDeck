@@ -2851,24 +2851,18 @@
     display: contents;
   }
 
-  .issue-composer-bar .attach-preview {
-    flex: 1 1 100%;
-    order: 10;
-    width: 100%;
-    margin-top: 0.15rem;
-  }
-
   .issue-composer-bar [data-attach-remove-box] {
     display: none;
   }
 
-  .issue-composer .file-pick,
-  .issue-composer .file-pick-zone {
-    width: fit-content;
+  .issue-composer-bar .file-pick {
+    flex: 1 1 12rem;
+    min-width: 0;
     max-width: 100%;
   }
 
   .issue-composer .file-pick-zone {
+    width: 100%;
     padding: 0.55rem 0.75rem;
   }
 
@@ -3324,7 +3318,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
+    gap: 0.55rem;
     width: 100%;
     padding: 0.85rem 1rem;
     border: 1px dashed color-mix(in oklab, var(--color-frame) 88%, var(--color-steel));
@@ -3348,6 +3342,11 @@
     font-size: 0.9rem;
     font-weight: 600;
     line-height: 1.3;
+    cursor: pointer;
+  }
+
+  .file-pick-zone .attach-preview {
+    margin-top: 0;
   }
 
   .file-pick-btn.is-disabled {
