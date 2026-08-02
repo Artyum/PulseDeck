@@ -2787,6 +2787,16 @@
     margin-top: calc(0.55rem * var(--space-scale));
   }
 
+  .comment-edit-form .file-pick,
+  .comment-edit-form .file-pick-zone {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .comment-edit-form .file-pick-zone {
+    padding: 0.55rem 0.75rem;
+  }
+
   .comment-edit-actions {
     display: flex;
     align-items: center;

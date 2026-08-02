@@ -142,7 +142,9 @@ def _save_image(
     elif img.mode != "RGB":
         img = img.convert("RGB")
     stored_name = f"{file_id}_{digest}.jpg"
-    img.save(target_dir / stored_name, format="JPEG", quality=JPEG_QUALITY, optimize=True)
+    img.save(
+        target_dir / stored_name, format="JPEG", quality=JPEG_QUALITY, optimize=True
+    )
     return f"{subdir}/{stored_name}"
 
 

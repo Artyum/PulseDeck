@@ -1,7 +1,6 @@
 (function () {
   const IMAGE_RE = /\.(jpe?g|png|webp|gif)$/i;
-  const ALLOWED_RE =
-    /\.(jpe?g|png|webp|gif|pdf|docx|xlsx|pptx|txt|csv|log|json|xml|zip|rar|7z)$/i;
+  const ALLOWED_RE = /\.(jpe?g|png|webp|gif|pdf|docx|xlsx|pptx|txt|csv|log|json|xml|zip|rar|7z)$/i;
   const MIME_EXT = {
     "image/jpeg": ".jpg",
     "image/png": ".png",

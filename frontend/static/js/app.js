@@ -438,8 +438,7 @@
     okBtn.textContent = opts.confirmLabel || i18n("confirm.confirm_label", "Confirm");
     okBtn.className = opts.danger ? "btn btn-danger" : "btn btn-primary";
     if (cancelBtn) {
-      cancelBtn.textContent =
-        opts.cancelLabel || cancelBtn.getAttribute("data-default-label") || "Cancel";
+      cancelBtn.textContent = opts.cancelLabel || cancelBtn.getAttribute("data-default-label") || "Cancel";
     }
     return new Promise(function (resolve) {
       let settled = false;
@@ -678,11 +677,7 @@
       requestCloseDialog(document.getElementById(dismiss.getAttribute("data-modal-dismiss")));
       return;
     }
-    if (
-      isAnimatedDialog(ev.target) &&
-      ev.target.open &&
-      !ev.target.hasAttribute("data-confirm-close")
-    ) {
+    if (isAnimatedDialog(ev.target) && ev.target.open && !ev.target.hasAttribute("data-confirm-close")) {
       ev.target.close();
     }
   });
@@ -713,10 +708,7 @@
       window
         .showConfirm({
           title: i18n("confirm.discard_ticket.title", "Discard ticket?"),
-          message: i18n(
-            "confirm.discard_ticket.message",
-            "The form has filled-in data. Cancel and discard changes?"
-          ),
+          message: i18n("confirm.discard_ticket.message", "The form has filled-in data. Cancel and discard changes?"),
           confirmLabel: i18n("confirm.discard_ticket.action", "Cancel creation"),
           cancelLabel: i18n("confirm.discard_ticket.cancel", "Back to editing"),
           danger: true,

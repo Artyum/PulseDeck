@@ -64,6 +64,7 @@
               <form hx-post="{{ url_for('edit_comment', ticket_ref=ticket|ticket_label, comment_id=c.id) }}"
                     hx-target="#ticket-view"
                     hx-swap="innerHTML"
+                    enctype="multipart/form-data"
                     class="comment-edit-form"
                     x-show="editing"
                     x-cloak
@@ -74,18 +75,19 @@
                           class="textarea"
                           x-ref="editBody"
                           data-auto-resize>{{ c.content }}</textarea>
+                {{ attach_picker('comment-edit-attachments-' ~ c.id, 'zone', max_files=upload_max_files, existing=c.attachments) }}
                 <div class="comment-edit-actions">
                   <button type="submit"
                           class="btn btn-ghost comment-action"
                           aria-label="{{ t('ui.ticket.save_comment') }}">{{ icon("check") }}</button>
                   <button type="button"
                           class="btn btn-ghost comment-action"
-                          @click="editing = false; $refs.editBody.value = $refs.editBody.defaultValue"
+                          @click="editing = false; $refs.editBody.value = $refs.editBody.defaultValue; const p = $el.closest('form').querySelector('[data-attach-picker]'); if (p && p._attachReset) p._attachReset();"
                           aria-label="{{ t('ui.ticket.cancel_edit') }}">{{ icon("close") }}</button>
                 </div>
               </form>
             {% endif %}
-            {{ attachment_list(c.attachments, 'mt-3') }}
+            <div {% if can_edit_comments %}x-show="!editing"{% endif %}>{{ attachment_list(c.attachments, 'mt-3') }}</div>
           </div>
         {% endfor %}
       </article>

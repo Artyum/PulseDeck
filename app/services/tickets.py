@@ -830,3 +830,29 @@ def remove_ticket_attachments(
         if att.id in wanted:
             db.delete(att)
     return _commit_reload(db, ticket)
+
+
+def remove_comment_attachments(
+    db: Session,
+    ticket: Ticket,
+    comment_id: int,
+    actor: User,
+    attachment_ids: list[int],
+    *,
+    lang: str | None = None,
+) -> Comment:
+    lang = lang or DEFAULT_LANG
+    if not can_edit_comments(actor):
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
+        )
+    comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
+    wanted = {int(x) for x in attachment_ids}
+    if not wanted:
+        return comment
+    for att in list(comment.attachments):
+        if att.id in wanted:
+            db.delete(att)
+    db.commit()
+    db.refresh(comment)
+    return comment

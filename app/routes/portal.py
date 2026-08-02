@@ -342,17 +342,35 @@ async def add_comment(
 
 
 @router.post("/t/{ticket_ref}/comments/{comment_id}/edit", response_class=HTMLResponse)
-def edit_comment(
+@limiter.limit(_upload_limit)
+async def edit_comment(
     request: Request,
     ticket_ref: str,
     comment_id: int,
     user: CurrentUser,
     db: DbSession,
     content: Annotated[str, Form()],
+    attachments: Annotated[list[UploadFile] | None, File()] = None,
+    remove_attachment_ids: Annotated[list[int] | None, Form()] = None,
 ):
     lang = resolve_lang(request)
     _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
-    ticket_service.update_comment(db, ticket, comment_id, user, content, lang=lang)
+    comment = ticket_service.update_comment(
+        db, ticket, comment_id, user, content, lang=lang
+    )
+    if remove_attachment_ids:
+        comment = ticket_service.remove_comment_attachments(
+            db, ticket, comment_id, user, remove_attachment_ids, lang=lang
+        )
+    remaining = max(0, _upload_max_files() - len(comment.attachments or []))
+    await _attach_many(
+        db,
+        attachments,
+        ticket_id=ticket.id,
+        comment_id=comment.id,
+        max_files=remaining,
+        lang=lang,
+    )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     return _ticket_mutation_response(request, db, user, ticket)
 
