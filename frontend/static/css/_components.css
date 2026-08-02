@@ -1945,12 +1945,37 @@
     margin: 0;
   }
 
-  .issue-actions {
+  .issue-assignee-value {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.4rem;
-    margin: calc(-0.35rem * var(--space-scale)) 0 calc(0.85rem * var(--space-scale));
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .issue-assignee-value > form {
+    margin-left: auto;
+  }
+
+  .issue-self-assign-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.35rem;
+    padding: 0 0.4rem;
+    border: 1px solid color-mix(in oklab, var(--color-pulse) 38%, var(--color-line));
+    border-radius: 0.3rem;
+    background: color-mix(in oklab, var(--color-soft-blue) 48%, var(--color-surface));
+    color: var(--color-pulse-deep);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .issue-self-assign-btn:hover {
+    border-color: color-mix(in oklab, var(--color-pulse) 55%, var(--color-line));
+    background: color-mix(in oklab, var(--color-soft-blue) 68%, var(--color-surface));
+    color: var(--color-pulse);
   }
 
   .issue-section-bar {

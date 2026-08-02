@@ -111,9 +111,18 @@
     <div class="issue-field">
       <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>
       {% if can_assign %}
-        {% call issue_field_menu(t('ui.ticket.change_assignee'), url_for('assign', ticket_ref=tref), 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label=t('ui.ticket.assignee_none')) %}
-          <span class="issue-menu-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</span>
-        {% endcall %}
+        <div class="issue-assignee-value">
+          {% call issue_field_menu(t('ui.ticket.change_assignee'), url_for('assign', ticket_ref=tref), 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label=t('ui.ticket.assignee_none')) %}
+            <span class="issue-menu-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</span>
+          {% endcall %}
+          {% if not ticket.assignee_id %}
+            <form hx-post="{{ url_for('self_assign', ticket_ref=tref) }}"
+                  hx-target="#ticket-view"
+                  hx-swap="innerHTML">
+              <button type="submit" class="issue-self-assign-btn">{{ t("ui.ticket.self_assign") }}</button>
+            </form>
+          {% endif %}
+        </div>
       {% else %}
         <div class="field-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</div>
       {% endif %}

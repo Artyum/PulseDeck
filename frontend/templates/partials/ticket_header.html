@@ -1,12 +1,3 @@
 <div class="issue-head">
   <h1 class="issue-title">{{ ticket.title }}</h1>
 </div>
-{% if can_assign and not ticket.assignee_id %}
-  <div class="issue-actions">
-    <form hx-post="{{ url_for('self_assign', ticket_ref=ticket|ticket_label) }}"
-          hx-target="#ticket-view"
-          hx-swap="innerHTML">
-      <button type="submit" class="btn btn-primary">{{ t("ui.ticket.self_assign") }}</button>
-    </form>
-  </div>
-{% endif %}
