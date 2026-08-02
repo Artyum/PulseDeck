@@ -22,7 +22,7 @@ class TestFeed:
 
     def test_project_feed_with_filters(self, client, client_user, project_with_members):
         _login(client, "client@test.local", "Client123!")
-        r = client.get(f"/p/{project_with_members.key}?view=open")
+        r = client.get(f"/p/{project_with_members.key}?view=waiting_on_me")
         assert r.status_code == 200
 
     def test_project_not_found(self, client, client_user):

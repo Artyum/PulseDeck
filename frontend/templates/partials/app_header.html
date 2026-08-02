@@ -1,5 +1,6 @@
 {% from "partials/icons.html" import icon, brand_logo with context %}
 {% set show_project_picker = (not hide_project_picker|default(false)) and projects is defined and projects and (projects|length > 1 or not (project is defined and project.key is defined and project.key)) %}
+{% set show_project_section = (not hide_project_picker|default(false)) and project is defined and project and project.key is defined and project.key %}
 {% macro nav_project_links() -%}
   {% for p in projects %}
     <a href="{{ url_for('project_feed', key=p.key) }}"
@@ -12,14 +13,14 @@
   {% endfor %}
 {%- endmacro %}
 {% macro nav_account_links() -%}
+  <a href="{{ url_for('profile_page') }}"
+     class="issue-menu-item"
+     role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.nav.profile") }}</a>
   {% if user.is_admin %}
     <a href="{{ url_for('admin_home') }}"
        class="issue-menu-item"
        role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.nav.admin") }}</a>
   {% endif %}
-  <a href="{{ url_for('profile_page') }}"
-     class="issue-menu-item"
-     role="menuitem"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.nav.profile") }}</a>
   <hr class="issue-menu-sep">
   <form method="post"
         action="{{ url_for('logout') }}"
@@ -29,6 +30,37 @@
     </button>
   </form>
 {%- endmacro %}
+{% macro nav_project_trigger(label) -%}
+  <div x-data="{ open: false }"
+       @click.outside="open = false"
+       :class="{'is-menu-open': open}"
+       class="issue-menu app-header-project">
+    <button type="button"
+            @click="open = !open"
+            :aria-expanded="open"
+            class="app-header-project-btn"
+            aria-label="{{ t('ui.nav.select_project') }}"
+            title="{{ t('ui.nav.select_project') }}">
+      <span class="app-header-section-label">{{ label }}</span>
+      {{ icon('chevron', 'nav-user-caret') }}
+    </button>
+    <div x-show="open"
+         x-transition
+         x-cloak
+         class="issue-menu-panel nav-project-panel"
+         role="menu">{{ nav_project_links() }}</div>
+  </div>
+{%- endmacro %}
+{% macro nav_project_block(label, picker) -%}
+  <div class="app-header-section app-header-project-group">
+    <span class="app-header-project-prefix">{{ t("ui.nav.project") }}</span>
+    {% if picker %}
+      {{ nav_project_trigger(label) }}
+    {% else %}
+      <span class="app-header-section-label">{{ label }}</span>
+    {% endif %}
+  </div>
+{%- endmacro %}
 <header class="app-header">
   <div class="app-shell app-header-bar">
     <div class="app-header-left">
@@ -37,7 +69,13 @@
         {{ brand_logo() }}
         <span class="brand-mark-name">{{ app_name }}</span>
       </a>
-      {% if header_section_label|default('') %}<span class="app-header-section">{{ header_section_label }}</span>{% endif %}
+      {% if header_section_label|default('') %}
+        <span class="app-header-section">{{ header_section_label }}</span>
+      {% elif show_project_section %}
+        {{ nav_project_block(project.name, show_project_picker) }}
+      {% elif show_project_picker %}
+        {{ nav_project_block(t("ui.nav.select_project") , true) }}
+      {% endif %}
     </div>
     <nav class="app-header-right app-header-nav-desktop"
          aria-label="{{ t('ui.nav.aria') }}">
@@ -46,33 +84,6 @@
           <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
           {{ t("ui.common.back_to_portal") }}
         </a>
-      {% endif %}
-      {% if show_project_picker %}
-        <div x-data="{ open: false }"
-             @click.outside="open = false"
-             :class="{'is-menu-open': open}"
-             class="issue-menu">
-          <button type="button"
-                  @click="open = !open"
-                  :aria-expanded="open"
-                  class="nav-chrome"
-                  aria-label="{{ t('ui.nav.select_project') }}"
-                  title="{{ t('ui.nav.select_project') }}">
-            <span class="nav-chrome-label">
-              {% if project is defined and project %}
-                {{ project.name }}
-              {% else %}
-                {{ t("ui.nav.select_project") }}
-              {% endif %}
-            </span>
-            {{ icon('chevron', 'nav-user-caret') }}
-          </button>
-          <div x-show="open"
-               x-transition
-               x-cloak
-               class="issue-menu-panel nav-project-panel"
-               role="menu">{{ nav_project_links() }}</div>
-        </div>
       {% endif %}
       <div x-data="{ open: false }"
            @click.outside="open = false"
@@ -118,11 +129,6 @@
           <a href="{{ url_for('home') }}" class="issue-menu-item" role="menuitem">
             <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>{{ t("ui.common.back_to_portal") }}
           </a>
-          <hr class="issue-menu-sep">
-        {% endif %}
-        {% if show_project_picker %}
-          <p class="nav-mobile-label">{{ t("ui.nav.select_project") }}</p>
-          {{ nav_project_links() }}
           <hr class="issue-menu-sep">
         {% endif %}
         <p class="nav-mobile-user">{{ user.display_name }}</p>

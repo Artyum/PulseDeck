@@ -129,6 +129,8 @@
     text-transform: uppercase;
     color: var(--color-steel);
     white-space: nowrap;
+    min-width: 0;
+    max-width: min(22rem, 48vw);
   }
 
   .app-header-section::before {
@@ -140,6 +142,50 @@
     height: 0.9rem;
     transform: translateY(-50%);
     background: var(--color-line);
+  }
+
+  .app-header-project-group {
+    gap: 0.55rem;
+  }
+
+  .app-header-project-prefix {
+    flex-shrink: 0;
+  }
+
+  .app-header-project-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .app-header-project-btn:hover,
+  .is-menu-open > .app-header-project-btn {
+    color: var(--color-pulse);
+  }
+
+  .is-menu-open > .app-header-project-btn .nav-user-caret {
+    transform: rotate(180deg);
+  }
+
+  .app-header-section-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-header-project {
+    min-width: 0;
   }
 
   .app-header-right {
@@ -169,7 +215,15 @@
     font-size: 0.875rem;
     font-weight: 550;
     line-height: 1.2;
+    text-decoration: none;
     cursor: pointer;
+  }
+
+  .nav-chrome .section-icon,
+  .nav-chrome .icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
   }
 
   .nav-chrome:hover,
@@ -221,10 +275,6 @@
     color: var(--color-ink);
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .nav-chrome-label {
     white-space: nowrap;
   }
 
@@ -1719,6 +1769,23 @@
     line-height: 1;
   }
 
+  .ticket-row-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem 0.4rem;
+    margin-left: 0.15rem;
+    padding-left: 0.65rem;
+    border-left: 1px solid var(--color-line);
+  }
+
+  .ticket-row-tags-label {
+    font-size: 0.68rem;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    color: color-mix(in oklab, var(--color-steel) 80%, var(--color-line));
+  }
+
   .ticket-row-side {
     display: flex;
     flex-direction: column;
@@ -1765,11 +1832,34 @@
     border: 1px solid var(--color-chip-neutral-border);
   }
 
-  .chip-type,
   .chip-new {
     background: var(--color-soft-blue);
     border-color: var(--color-chip-blue-border);
     color: var(--color-chip-blue-fg);
+  }
+
+  .chip-type-bug {
+    background: var(--color-soft-red);
+    border-color: var(--color-chip-red-border);
+    color: var(--color-chip-red-fg);
+  }
+
+  .chip-type-question {
+    background: var(--color-soft-blue);
+    border-color: var(--color-chip-blue-border);
+    color: var(--color-chip-blue-fg);
+  }
+
+  .chip-type-change {
+    background: var(--color-soft-purple);
+    border-color: var(--color-chip-purple-border);
+    color: var(--color-chip-purple-fg);
+  }
+
+  .chip-type-task {
+    background: var(--color-soft-teal);
+    border-color: var(--color-chip-teal-border);
+    color: var(--color-chip-teal-fg);
   }
 
   .chip-progress {
@@ -1802,11 +1892,16 @@
     color: var(--color-chip-red-fg);
   }
 
-  .chip-normal,
+  .chip-normal {
+    background: var(--color-soft-orange);
+    border-color: var(--color-chip-orange-border);
+    color: var(--color-chip-orange-fg);
+  }
+
   .chip-low {
-    background: var(--color-chip-neutral);
-    border-color: var(--color-chip-neutral-border);
-    color: var(--color-steel);
+    background: var(--color-soft-green);
+    border-color: var(--color-chip-green-border);
+    color: var(--color-chip-green-fg);
   }
 
   .chip-outline {
@@ -4101,15 +4196,6 @@
     outline-offset: 2px;
   }
 
-  html[data-theme-gradient="off"] {
-    --shadow-lift-sm: none;
-    --shadow-lift-md: none;
-    --shadow-float: none;
-    --shadow-menu: none;
-    --surface-gradient: var(--color-surface);
-    --surface-gradient-soft: var(--color-surface);
-  }
-
   html[data-theme-gradient="off"] body,
   html[data-theme-gradient="off"] .auth-scene,
   html[data-theme-gradient="off"] .admin-aside,
@@ -4142,6 +4228,10 @@
   html[data-theme-gradient="off"] .modal-header,
   html[data-theme-gradient="off"] .modal-footer {
     background: var(--color-surface);
+  }
+
+  html[data-theme-gradient="off"] .modal-form {
+    box-shadow: none;
   }
 
   @media (max-width: 48rem) {

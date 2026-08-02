@@ -9,14 +9,12 @@
           ('mine_open', t('ui.portal.view.staff.mine_open')),
           ('needs_us', t('ui.portal.view.staff.needs_us')),
           ('unassigned', t('ui.portal.view.staff.unassigned')),
-          ('waiting_on_client', t('ui.portal.view.staff.waiting_on_client')),
           ('done', t('ui.portal.view.staff.done'))
         ] %}
   {% else %}
     {% set views = [
           ('all', t('ui.portal.view.client.all')),
           ('mine', t('ui.portal.view.client.mine')),
-          ('open', t('ui.portal.view.client.open')),
           ('waiting_on_me', t('ui.portal.view.client.waiting_on_me')),
           ('done', t('ui.portal.view.client.done'))
         ] %}

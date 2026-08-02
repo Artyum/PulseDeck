@@ -227,7 +227,7 @@ def project_feed(
     project = _load_project(db, key, user, lang=lang)
     set_last_project_key(request, project.key)
     projects = project_service.list_user_projects(db, user)
-    current_view = view or "all"
+    current_view = view or ("all" if user.is_staff else "mine")
     tickets = ticket_service.list_tickets(
         db,
         project.id,

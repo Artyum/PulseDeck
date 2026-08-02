@@ -5,6 +5,9 @@
 {% macro priority_chip(priority) -%}
   <span class="chip {% if priority.value == 'HIGH' %}chip-high{% elif priority.value == 'NORMAL' %}chip-normal{% else %}chip-low{% endif %}">{{ priority_labels[priority] }}</span>
 {%- endmacro %}
+{% macro type_chip(ticket_type) -%}
+  <span class="chip {% if ticket_type.value == 'BUG' %}chip-type-bug{% elif ticket_type.value == 'QUESTION' %}chip-type-question{% elif ticket_type.value == 'CHANGE' %}chip-type-change{% else %}chip-type-task{% endif %}">{{ type_labels[ticket_type] }}</span>
+{%- endmacro %}
 {% macro attachment_list(attachments, extra_class='') -%}
   {% if attachments %}
     <div class="flex flex-wrap gap-2 {{ extra_class }}">
@@ -39,11 +42,14 @@
       <span class="ticket-row-title">{{ tkt.title }}</span>
       <div class="ticket-row-meta">
         <span class="issue-key">{{ tkt|ticket_label }}</span>
-        <span class="chip chip-type">{{ type_labels[tkt.type] }}</span>
+        {{ type_chip(tkt.type) }}
         {% if show_tags and tkt.ticket_tags %}
-          {% for tt in tkt.ticket_tags %}
-            <span class="chip chip-outline">{{ tt.tag.name }}</span>
-          {% endfor %}
+          <span class="ticket-row-tags">
+            <span class="ticket-row-tags-label">{{ t("ui.ticket.tags") }}</span>
+            {% for tt in tkt.ticket_tags %}
+              <span class="chip chip-outline">{{ tt.tag.name }}</span>
+            {% endfor %}
+          </span>
         {% endif %}
       </div>
     </div>

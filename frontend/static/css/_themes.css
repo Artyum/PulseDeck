@@ -60,11 +60,9 @@ html[data-theme="morning-mist"] {
   --shadow-lift-sm: 0 1px 0 var(--surface-highlight) inset, 0 1px 0 var(--surface-highlight-soft), 0 3px 12px var(--shadow-ambient), 0 14px 32px -16px var(--shadow-ambient-strong);
   --shadow-lift-md: 0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 16px -6px color-mix(in oklab, var(--color-ink) 10%, transparent);
   --shadow-float:
-    0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 2px 10px color-mix(in oklab, var(--color-ink) 8%, transparent),
-    0 14px 36px color-mix(in oklab, var(--color-ink) 14%, transparent), 0 24px 48px -18px color-mix(in oklab, var(--color-ink) 12%, transparent);
-  --shadow-menu:
-    0 2px 8px -2px color-mix(in oklab, var(--color-ink) 10%, transparent),
-    0 8px 18px -8px color-mix(in oklab, var(--color-ink) 12%, transparent);
+    0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 14px color-mix(in oklab, var(--color-ink) 7%, transparent),
+    0 12px 28px -14px color-mix(in oklab, var(--color-ink) 10%, transparent);
+  --shadow-menu: 0 2px 8px -2px color-mix(in oklab, var(--color-ink) 10%, transparent), 0 8px 18px -8px color-mix(in oklab, var(--color-ink) 12%, transparent);
   --btn-shadow-rest:
     inset 0 1px 0 color-mix(in oklab, var(--color-surface) 52%, transparent), 0 1px 0 color-mix(in oklab, var(--color-surface) 14%, transparent),
     0 4px 10px -8px color-mix(in oklab, var(--color-ink) 22%, transparent);
@@ -317,10 +315,8 @@ html[data-theme="deep-ocean"] {
   --shadow-lift-md:
     0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 8px 20px -14px color-mix(in oklab, black 34%, transparent), 0 18px 38px -28px color-mix(in oklab, black 52%, transparent);
   --shadow-float:
-    0 1px 0 color-mix(in oklab, white 16%, transparent) inset, 0 10px 24px -14px color-mix(in oklab, black 34%, transparent), 0 24px 54px -28px color-mix(in oklab, black 58%, transparent);
-  --shadow-menu:
-    0 4px 12px -4px color-mix(in oklab, black 36%, transparent),
-    0 12px 24px -12px color-mix(in oklab, black 40%, transparent);
+    0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 6px 18px -12px color-mix(in oklab, black 28%, transparent), 0 14px 32px -18px color-mix(in oklab, black 40%, transparent);
+  --shadow-menu: 0 4px 12px -4px color-mix(in oklab, black 36%, transparent), 0 12px 24px -12px color-mix(in oklab, black 40%, transparent);
   --btn-shadow-rest: inset 0 1px 0 color-mix(in oklab, white 16%, transparent), 0 1px 0 color-mix(in oklab, white 6%, transparent), 0 8px 16px -14px color-mix(in oklab, black 46%, transparent);
   --btn-shadow-hover: inset 0 1px 0 color-mix(in oklab, white 14%, transparent), 0 1px 0 color-mix(in oklab, white 5%, transparent), 0 12px 22px -14px color-mix(in oklab, black 54%, transparent);
   --btn-shadow-primary:
@@ -560,4 +556,13 @@ html[data-theme="northern-spruce"],
 html[data-theme="charcoal-dusk"],
 html[data-theme="amber-night"] {
   --comment-bg: var(--color-surface-3);
+}
+
+html[data-theme-gradient="off"] {
+  --shadow-lift-sm: none;
+  --shadow-lift-md: none;
+  --shadow-float: none;
+  --shadow-menu: none;
+  --surface-gradient: var(--color-surface);
+  --surface-gradient-soft: var(--color-surface);
 }

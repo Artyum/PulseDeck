@@ -60,6 +60,7 @@ ui:
       action: "Odepnij"
   nav:
     aria: "Nawigacja"
+    project: "Projekt"
     select_project: "Wybierz projekt"
     user_menu: "Menu użytkownika"
     menu: "Menu"
@@ -215,12 +216,10 @@ ui:
         mine_open: "Moje otwarte"
         needs_us: "Do obsługi"
         unassigned: "Nieprzypisane"
-        waiting_on_client: "Czeka na odpowiedź"
         done: "Zakończone"
       client:
         all: "Wszystkie"
         mine: "Moje"
-        open: "Otwarte"
         waiting_on_me: "Oczekuje na mnie"
         done: "Zakończone"
   ticket:

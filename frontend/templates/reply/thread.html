@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo, icon with context %}
 {% from "partials/avatar.html" import user_avatar %}
-{% from "partials/ticket_macros.html" import status_chip, priority_chip with context %}
+{% from "partials/ticket_macros.html" import status_chip, priority_chip, type_chip with context %}
 {% from "partials/app_flash.html" import app_flash %}
 {% macro signed_attachments(items, extra_class='') -%}
   {% if items %}
@@ -132,9 +132,7 @@
             </div>
             <div class="issue-field">
               <span class="label-tight">{{ t("ui.ticket.type") }}</span>
-              <div class="field-value">
-                <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
-              </div>
+              <div class="field-value">{{ type_chip(ticket.type) }}</div>
             </div>
             <div class="issue-field">
               <span class="label-tight">{{ t("ui.ticket.status") }}</span>

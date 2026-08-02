@@ -168,8 +168,6 @@ def _apply_view_filter(stmt, *, view: str | None, user: User, staff: bool):
             return stmt.where(
                 Ticket.assignee_id == user.id, Ticket.status.in_(_OPEN_STATUSES)
             )
-        if view == "waiting_on_client":
-            return stmt.where(Ticket.status == TicketStatus.WAITING_ON_CLIENT)
         if view == "needs_us":
             return stmt.where(Ticket.status.in_(_NEEDS_US_STATUSES))
         if view == "done":
@@ -177,8 +175,6 @@ def _apply_view_filter(stmt, *, view: str | None, user: User, staff: bool):
     else:
         if view == "mine":
             return stmt.where(Ticket.author_id == user.id)
-        if view == "open":
-            return stmt.where(Ticket.status.in_(_OPEN_STATUSES))
         if view == "waiting_on_me":
             return stmt.where(Ticket.status == TicketStatus.WAITING_ON_CLIENT)
         if view == "done":

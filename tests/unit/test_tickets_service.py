@@ -20,20 +20,6 @@ def _ticket(db, project, author, **kwargs):
 
 
 class TestListTicketsFilters:
-    def test_view_open_client(self, db_session, project_with_members, client_user):
-        open_t = _ticket(db_session, project_with_members, client_user, title="Open")
-        done = _ticket(db_session, project_with_members, client_user, title="Done")
-        ticket_service.set_status(db_session, done, client_user, TicketStatus.DONE)
-        rows = ticket_service.list_tickets(
-            db_session,
-            project_with_members.id,
-            user=client_user,
-            view="open",
-        )
-        ids = {t.id for t in rows}
-        assert open_t.id in ids
-        assert done.id not in ids
-
     def test_view_mine(self, db_session, project_with_members, client_user, staff_user):
         mine = _ticket(db_session, project_with_members, client_user, title="Mine")
         other = _ticket(db_session, project_with_members, staff_user, title="Other")
@@ -128,7 +114,6 @@ class TestListTicketsFilters:
         ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
         for view in (
             "mine_open",
-            "waiting_on_client",
             "needs_us",
             "done",
             "all",

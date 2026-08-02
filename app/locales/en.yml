@@ -60,6 +60,7 @@ ui:
       action: "Remove"
   nav:
     aria: "Navigation"
+    project: "Project"
     select_project: "Select project"
     user_menu: "User menu"
     menu: "Menu"
@@ -215,12 +216,10 @@ ui:
         mine_open: "My open"
         needs_us: "To handle"
         unassigned: "Unassigned"
-        waiting_on_client: "Waiting for a reply"
         done: "Closed"
       client:
         all: "All"
         mine: "Mine"
-        open: "Open"
         waiting_on_me: "Waiting on me"
         done: "Closed"
   ticket:

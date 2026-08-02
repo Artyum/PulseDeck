@@ -1,4 +1,4 @@
-{% from "partials/ticket_macros.html" import priority_chip, status_chip, issue_field_menu with context %}
+{% from "partials/ticket_macros.html" import priority_chip, status_chip, type_chip, issue_field_menu with context %}
 {% from "partials/icons.html" import icon %}
 {% set tref = ticket|ticket_label %}
 <section class="issue-side-block">
@@ -18,12 +18,20 @@
       <span class="label-tight">{{ t("ui.ticket.type") }}</span>
       {% if user.is_staff or can_edit %}
         {% call issue_field_menu(t('ui.ticket.change_type'), url_for('change_type', ticket_ref=tref), 'ticket_type', ticket_types, ticket.type.value, labels=type_labels) %}
-          <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
+          {{ type_chip(ticket.type) }}
         {% endcall %}
       {% else %}
-        <div class="field-value">
-          <span class="chip chip-type">{{ type_labels[ticket.type] }}</span>
-        </div>
+        <div class="field-value">{{ type_chip(ticket.type) }}</div>
+      {% endif %}
+    </div>
+    <div class="issue-field">
+      <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
+      {% if user.is_staff %}
+        {% call issue_field_menu(t('ui.ticket.change_priority'), url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
+          {{ priority_chip(ticket.priority) }}
+        {% endcall %}
+      {% else %}
+        <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
       {% endif %}
     </div>
     <div class="issue-field">
@@ -81,16 +89,6 @@
         </div>
       {% else %}
         <div class="field-value">{{ status_chip(ticket.status) }}</div>
-      {% endif %}
-    </div>
-    <div class="issue-field">
-      <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
-      {% if user.is_staff %}
-        {% call issue_field_menu(t('ui.ticket.change_priority'), url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
-          {{ priority_chip(ticket.priority) }}
-        {% endcall %}
-      {% else %}
-        <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
       {% endif %}
     </div>
   </div>
