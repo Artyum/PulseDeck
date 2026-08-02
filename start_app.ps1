@@ -70,4 +70,5 @@ if ($cssRunning -eq "1") {
 
 Write-Host "[API] Serwer: http://${hostAddr}:${port}"
 python -m alembic upgrade head
+python -m app.bootstrap
 python -m uvicorn app.main:fastapi_app --host $hostAddr --port $port --reload

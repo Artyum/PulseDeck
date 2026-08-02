@@ -15,7 +15,6 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.types import ExceptionHandler
 
 from app.config import get_settings, project_root, resolve_upload_dir
-from app.db.session import SessionLocal
 from app.error_handlers import register_exception_handlers
 from app.logging_setup import setup_logging
 from app.middleware.csrf import CSRFProtectMiddleware
@@ -23,25 +22,15 @@ from app.middleware.security_headers import apply_security_headers
 from app.middleware.session_sliding import SessionSlidingMiddleware
 from app.rate_limit import client_ip_key, limiter
 from app.routes import admin, auth, health, open_reply, portal
-from app.services.auth import ensure_admin_seed
 
 logger = logging.getLogger("pulsedeck.app")
 security_logger = logging.getLogger("pulsedeck.security")
-db_logger = logging.getLogger("pulsedeck.db")
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     setup_logging()
     resolve_upload_dir()
-    db_logger.info("Database engine ready")
-    db = SessionLocal()
-    try:
-        ensure_admin_seed(db)
-    except Exception:
-        logger.exception("Admin seed skipped due to error (DB may not be migrated yet)")
-    finally:
-        db.close()
     logger.info("PulseDeck started")
     yield
     logger.info("PulseDeck stopping")

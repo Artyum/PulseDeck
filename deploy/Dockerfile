@@ -13,6 +13,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 COPY --from=frontend /build/frontend/static/css/app.css frontend/static/css/app.css
-RUN chmod +x deploy/entrypoint.sh deploy/entrypoint_worker.sh
+RUN chmod +x deploy/entrypoint.sh deploy/entrypoint_worker.sh deploy/entrypoint_migrate.sh
 EXPOSE 8000
 ENTRYPOINT ["/app/deploy/entrypoint.sh"]

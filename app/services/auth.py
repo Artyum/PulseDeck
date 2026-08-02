@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import func, or_, select, update
 from sqlalchemy.engine import CursorResult
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
@@ -483,5 +484,10 @@ def ensure_admin_seed(db: Session) -> None:
         logger.error("Admin seed password invalid: %s", exc)
         return
     db.add(admin)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        logger.info("Admin seed skipped — %s already exists", email)
+        return
     logger.info("Seeded admin user %s", email)
