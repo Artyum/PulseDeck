@@ -1721,11 +1721,6 @@
     border-left-color: #5aa882;
   }
 
-  .ticket-row[data-status="DONE"] .ticket-row-title {
-    color: var(--color-steel);
-    font-weight: 550;
-  }
-
   .ticket-row:hover {
     background: var(--color-surface-2);
   }
