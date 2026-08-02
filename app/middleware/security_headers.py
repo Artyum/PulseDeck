@@ -63,4 +63,9 @@ def apply_security_headers(request: Request, response: Response) -> Response:
             "Strict-Transport-Security",
             "max-age=31536000; includeSubDomains",
         )
+    path = request.url.path
+    if path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    elif (response.headers.get("content-type") or "").lower().startswith("text/html"):
+        response.headers["Cache-Control"] = "no-store"
     return response

@@ -35,5 +35,5 @@
   {% include "partials/user_profile_form.html" %}
   {% from "partials/app_flash.html" import app_flash %}
   {{ app_flash(flash=flash) }}
-  <script src="{{ url_for('static', path='js/admin-user-form.js') }}" defer></script>
+  <script src="{{ static_url('js/admin-user-form.js') }}" defer></script>
 {% endblock content %}

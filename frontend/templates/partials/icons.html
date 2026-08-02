@@ -48,7 +48,7 @@
   {%- endif -%}
 {%- endmacro %}
 {% macro brand_logo(variant='mark', alt='') -%}
-  <img src="{{ url_for('static', path='images/pulsedeck-logo.png') }}"
+  <img src="{{ static_url('images/pulsedeck-logo.png') }}"
        alt="{{ alt }}"
        class="{% if variant == 'auth' %}auth-brand-logo{% else %}brand-mark-logo{% endif %}"
        width="268"

@@ -47,31 +47,28 @@
     </script>
     <title>{% block title %}{{ app_name }}{% endblock title %}</title>
     <meta name="theme-color" content="#2f72e8">
-    <link rel="icon"
-          href="{{ url_for('static', path='images/favicon.ico') }}"
-          sizes="any">
+    <link rel="icon" href="{{ static_url('images/favicon.ico') }}" sizes="any">
     <link rel="icon"
           type="image/png"
           sizes="32x32"
-          href="{{ url_for('static', path='images/favicon-32x32.png') }}">
+          href="{{ static_url('images/favicon-32x32.png') }}">
     <link rel="icon"
           type="image/png"
           sizes="16x16"
-          href="{{ url_for('static', path='images/favicon-16x16.png') }}">
+          href="{{ static_url('images/favicon-16x16.png') }}">
     <link rel="apple-touch-icon"
-          href="{{ url_for('static', path='images/apple-touch-icon.png') }}">
-    <link rel="manifest"
-          href="{{ url_for('static', path='site.webmanifest') }}">
+          href="{{ static_url('images/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ static_url('site.webmanifest') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap"
           rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/app.css') }}">
     <script>window.__i18n = {{ js_i18n|tojson }};</script>
-    <script src="{{ url_for('static', path='vendor/htmx.min.js') }}"></script>
-    <script src="{{ url_for('static', path='vendor/alpine.min.js') }}" defer></script>
-    <script src="{{ url_for('static', path='js/app.js') }}" defer></script>
-    <script src="{{ url_for('static', path='js/attach-picker.js') }}" defer></script>
+    <script src="{{ static_url('vendor/htmx.min.js') }}"></script>
+    <script src="{{ static_url('vendor/alpine.min.js') }}" defer></script>
+    <script src="{{ static_url('js/app.js') }}" defer></script>
+    <script src="{{ static_url('js/attach-picker.js') }}" defer></script>
     <meta name="csrf-token" content="{{ csrf_token }}">
   </head>
   <body class="min-h-screen antialiased"
@@ -119,7 +116,7 @@
                 data-dev-page-info="{{ dev_page_info | tojson | forceescape }}"
                 aria-label="{{ t('ui.dev.copy_aria') }}">{{ t("ui.dev.copy") }}</button>
       </div>
-      <script src="{{ url_for('static', path='js/dev-page-copy.js') }}" defer></script>
+      <script src="{{ static_url('js/dev-page-copy.js') }}" defer></script>
     {% endif %}
   </body>
 </html>
