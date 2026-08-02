@@ -399,6 +399,7 @@
         }
       });
     }
+    if (swapped) armDomEnhancements(document);
     var items = readFlashItems(doc.getElementById("app-flash"));
     applyFlashItems(items);
     var liveFlash = document.getElementById("app-flash");
