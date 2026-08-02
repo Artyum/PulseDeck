@@ -2842,7 +2842,7 @@
   .issue-composer-bar {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.75rem;
     margin-top: -0.1rem;
   }
@@ -2856,19 +2856,27 @@
   }
 
   .issue-composer-bar .file-pick {
-    flex: 1 1 12rem;
-    min-width: 0;
+    flex: 0 1 auto;
+    width: fit-content;
     max-width: 100%;
   }
 
   .issue-composer .file-pick-zone {
-    width: 100%;
+    width: fit-content;
+    max-width: 100%;
     padding: 0.55rem 0.75rem;
+  }
+
+  .issue-composer-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
   }
 
   .issue-composer-send {
     min-width: 8rem;
-    margin-left: auto;
   }
 
   .issue-composer-opt {
@@ -3146,7 +3154,8 @@
     font-family: var(--font-display);
     font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
+    word-spacing: 0.12em;
     line-height: 1.3;
     color: var(--color-ink);
   }
@@ -3286,6 +3295,8 @@
     position: relative;
     display: flex;
     align-items: center;
+    width: fit-content;
+    max-width: 100%;
   }
 
   .file-pick-input {
@@ -3319,7 +3330,9 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.55rem;
-    width: 100%;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 0.85rem 1rem;
     border: 1px dashed color-mix(in oklab, var(--color-frame) 88%, var(--color-steel));
     border-radius: 0.75rem;

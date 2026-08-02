@@ -432,10 +432,15 @@
     const titleEl = document.getElementById("app-confirm-title");
     const msgEl = document.getElementById("app-confirm-message");
     const okBtn = document.getElementById("app-confirm-ok");
+    const cancelBtn = document.getElementById("app-confirm-cancel");
     titleEl.textContent = opts.title || i18n("confirm.title", "Confirmation");
     msgEl.textContent = opts.message || i18n("confirm.message_default", "Are you sure you want to continue?");
     okBtn.textContent = opts.confirmLabel || i18n("confirm.confirm_label", "Confirm");
     okBtn.className = opts.danger ? "btn btn-danger" : "btn btn-primary";
+    if (cancelBtn) {
+      cancelBtn.textContent =
+        opts.cancelLabel || cancelBtn.getAttribute("data-default-label") || "Cancel";
+    }
     return new Promise(function (resolve) {
       let settled = false;
       function finish(result) {
@@ -659,16 +664,70 @@
     "cancel",
     function (ev) {
       var dlg = ev.target;
-      if (!isAnimatedDialog(dlg) || !dlg.open || prefersReducedMotion()) return;
+      if (!(dlg instanceof HTMLDialogElement) || !dlg.open || dlg.id === "app-confirm") return;
+      if (!isAnimatedDialog(dlg)) return;
       ev.preventDefault();
-      dlg.close();
+      requestCloseDialog(dlg);
     },
     true
   );
 
   document.addEventListener("click", function (ev) {
-    if (isAnimatedDialog(ev.target) && ev.target.open) ev.target.close();
+    var dismiss = ev.target.closest("[data-modal-dismiss]");
+    if (dismiss) {
+      requestCloseDialog(document.getElementById(dismiss.getAttribute("data-modal-dismiss")));
+      return;
+    }
+    if (
+      isAnimatedDialog(ev.target) &&
+      ev.target.open &&
+      !ev.target.hasAttribute("data-confirm-close")
+    ) {
+      ev.target.close();
+    }
   });
+
+  function formIsDirty(form) {
+    if (!(form instanceof HTMLFormElement)) return false;
+    for (var i = 0; i < form.elements.length; i++) {
+      var el = form.elements[i];
+      if (!el.name || el.disabled) continue;
+      var type = (el.type || "").toLowerCase();
+      if (type === "button" || type === "submit" || type === "reset") continue;
+      if (type === "file") {
+        if (el.files && el.files.length) return true;
+      } else if (type === "checkbox" || type === "radio") {
+        if (el.checked !== el.defaultChecked) return true;
+      } else if (String(el.value || "") !== String(el.defaultValue || "")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function requestCloseDialog(dlg) {
+    if (!(dlg instanceof HTMLDialogElement) || !dlg.open) return;
+    var confirmDlg = document.getElementById("app-confirm");
+    if (confirmDlg && confirmDlg.open) return;
+    if (dlg.hasAttribute("data-confirm-close") && formIsDirty(dlg.querySelector("form"))) {
+      window
+        .showConfirm({
+          title: i18n("confirm.discard_ticket.title", "Discard ticket?"),
+          message: i18n(
+            "confirm.discard_ticket.message",
+            "The form has filled-in data. Cancel and discard changes?"
+          ),
+          confirmLabel: i18n("confirm.discard_ticket.action", "Cancel creation"),
+          cancelLabel: i18n("confirm.discard_ticket.cancel", "Back to editing"),
+          danger: true,
+        })
+        .then(function (ok) {
+          if (ok) dlg.close();
+        });
+      return;
+    }
+    dlg.close();
+  }
 
   function resolveFormSelect(el) {
     return el.closest("[data-form-select]");

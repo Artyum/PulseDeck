@@ -267,12 +267,12 @@
     <h2 class="modal-title">{{ title }}</h2>
     <button type="button"
             class="modal-close"
-            aria-label="{{ t('ui.common.close') }}"
-            onclick="document.getElementById('{{ dialog_id }}').close()">×</button>
+            data-modal-dismiss="{{ dialog_id }}"
+            aria-label="{{ t('ui.common.close') }}">×</button>
   </div>
 {%- endmacro %}
 {% macro modal_cancel(dialog_id, label=none) -%}
   <button type="button"
-          onclick="document.getElementById('{{ dialog_id }}').close()"
+          data-modal-dismiss="{{ dialog_id }}"
           class="btn btn-secondary">{{ label if label is not none else t("ui.common.cancel") }}</button>
 {%- endmacro %}

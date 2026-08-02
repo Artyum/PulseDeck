@@ -625,6 +625,11 @@ js:
     message_default: "Na pewno chcesz kontynuować?"
     continue: "Kontynuować?"
     confirm_label: "Potwierdź"
+    discard_ticket:
+      title: "Anulować tworzenie?"
+      message: "Formularz ma wypełnione dane. Anulować i odrzucić zmiany?"
+      action: "Anuluj tworzenie"
+      cancel: "Wróć do edycji"
   attach:
     remove: "Usuń {name}"
     too_many: "Możesz dodać maksymalnie {count} plików."

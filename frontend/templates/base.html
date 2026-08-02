@@ -96,7 +96,9 @@
         <div class="modal-footer">
           <button type="button"
                   class="btn btn-secondary"
+                  id="app-confirm-cancel"
                   data-confirm-cancel
+                  data-default-label="{{ t('ui.common.cancel') }}"
                   onclick="this.closest('dialog').close()">{{ t("ui.common.cancel") }}</button>
           <button type="button" class="btn btn-primary" id="app-confirm-ok">{{ t("ui.common.confirm") }}</button>
         </div>

@@ -112,7 +112,7 @@
       </section>
     </aside>
   </div>
-  <dialog id="new-ticket" class="modal">
+  <dialog id="new-ticket" class="modal" data-confirm-close>
     <form method="post"
           action="{{ url_for('create_ticket', key=project.key) }}"
           enctype="multipart/form-data"

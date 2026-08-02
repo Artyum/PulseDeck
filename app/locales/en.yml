@@ -625,6 +625,11 @@ js:
     message_default: "Are you sure you want to continue?"
     continue: "Continue?"
     confirm_label: "Confirm"
+    discard_ticket:
+      title: "Discard ticket?"
+      message: "The form has filled-in data. Cancel and discard changes?"
+      action: "Cancel creation"
+      cancel: "Back to editing"
   attach:
     remove: "Remove {name}"
     too_many: "You can attach up to {count} files."
