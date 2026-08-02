@@ -37,9 +37,7 @@
         {{ brand_logo() }}
         <span class="brand-mark-name">{{ app_name }}</span>
       </a>
-      {% if header_section_label|default('') %}
-        <span class="app-header-section">{{ header_section_label }}</span>
-      {% endif %}
+      {% if header_section_label|default('') %}<span class="app-header-section">{{ header_section_label }}</span>{% endif %}
     </div>
     <nav class="app-header-right app-header-nav-desktop"
          aria-label="{{ t('ui.nav.aria') }}">

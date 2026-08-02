@@ -26,18 +26,18 @@
          cellpadding="0"
          style="width:100%">
     <tr>
-      <td style="padding:12px 14px;
+      <td style="padding:8px 12px;
                  background:#f8fafc;
                  border:1px solid #e2e8f0;
                  border-radius:8px;
                  text-align:center">
-        <p style="margin:0 0 6px;
-                  font-size:11px;
+        <p style="margin:0 0 4px;
+                  font-size:12px;
                   line-height:1.4;
                   color:#94a3b8">{{ t("email.common.link_hint") }}</p>
         <a href="{{ url }}"
            style="font-size:12px;
-                  line-height:1.45;
+                  line-height:1.4;
                   color:#3b82f6;
                   word-break:break-all;
                   overflow-wrap:anywhere;
@@ -49,15 +49,17 @@
 {% macro cta(url, label) -%}
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
     <tr>
-      <td align="center" style="padding:0 0 20px;">
+      <td align="center" style="padding:0 0 16px;">
         <a href="{{ url }}"
            style="display:inline-block;
                   background:#2f72e8;
                   color:#ffffff;
                   text-decoration:none;
-                  padding:12px 24px;
+                  padding:11px 22px;
                   border-radius:6px;
-                  font-weight:600">{{ label }}</a>
+                  font-size:15px;
+                  font-weight:600;
+                  line-height:1.35">{{ label }}</a>
       </td>
     </tr>
     <tr>
@@ -66,35 +68,39 @@
   </table>
 {%- endmacro %}
 {% macro dual_cta(primary_url, primary_label, secondary_url, secondary_label, hint) -%}
-  <p style="margin:0 0 16px;
+  <p style="margin:0 0 14px;
             text-align:center;
-            font-size:14px;
+            font-size:13px;
             line-height:1.45;
             color:#64748b">{{ hint }}</p>
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
     <tr>
-      <td align="center" style="padding:0 0 12px;">
+      <td align="center" style="padding:0 0 10px;">
         <a href="{{ primary_url }}"
            style="display:inline-block;
                   background:#2f72e8;
                   color:#ffffff;
                   text-decoration:none;
-                  padding:12px 24px;
+                  padding:11px 22px;
                   border-radius:6px;
-                  font-weight:600">{{ primary_label }}</a>
+                  font-size:15px;
+                  font-weight:600;
+                  line-height:1.35">{{ primary_label }}</a>
       </td>
     </tr>
     <tr>
-      <td align="center" style="padding:0 0 20px;">
+      <td align="center" style="padding:0 0 16px;">
         <a href="{{ secondary_url }}"
            style="display:inline-block;
                   background:#ffffff;
                   color:#2f72e8;
                   text-decoration:none;
-                  padding:10px 22px;
+                  padding:10px 20px;
                   border-radius:6px;
                   border:1px solid #2f72e8;
-                  font-weight:600">{{ secondary_label }}</a>
+                  font-size:15px;
+                  font-weight:600;
+                  line-height:1.35">{{ secondary_label }}</a>
       </td>
     </tr>
     <tr>
