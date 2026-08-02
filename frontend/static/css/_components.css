@@ -3330,9 +3330,15 @@
       background-color 0.15s ease;
   }
 
-  .file-pick-zone:hover {
+  .file-pick-zone:hover,
+  .file-pick-zone.is-dragover {
     border-color: color-mix(in oklab, var(--color-primary) 45%, var(--color-frame));
     background: color-mix(in oklab, var(--color-surface) 55%, var(--color-mist));
+  }
+
+  .file-pick-zone.is-dragover {
+    border-color: color-mix(in oklab, var(--color-primary) 70%, var(--color-frame));
+    background: color-mix(in oklab, var(--color-primary) 8%, var(--color-surface));
   }
 
   .file-pick-zone-title {

@@ -60,15 +60,66 @@ class TestSaveUpload:
         assert rel.endswith(".pdf")
         assert (resolve_upload_dir() / rel).read_bytes() == data
 
+    def test_save_zip(self, upload_tmp):
+        data = b"PK\x03\x04" + b"zip-payload"
+        original, rel = _save(_upload("pack.zip", data))
+        assert original == "pack.zip"
+        assert rel.endswith(".zip")
+        assert (resolve_upload_dir() / rel).read_bytes() == data
+
+    def test_save_docx(self, upload_tmp):
+        data = b"PK\x03\x04" + b"docx-payload"
+        original, rel = _save(_upload("note.docx", data))
+        assert original == "note.docx"
+        assert rel.endswith(".docx")
+
+    def test_save_rar(self, upload_tmp):
+        data = b"Rar!\x1a\x07\x00" + b"rar-payload"
+        original, rel = _save(_upload("pack.rar", data))
+        assert original == "pack.rar"
+        assert rel.endswith(".rar")
+
+    def test_save_7z(self, upload_tmp):
+        data = b"7z\xbc\xaf\x27\x1c" + b"seven-payload"
+        original, rel = _save(_upload("pack.7z", data))
+        assert original == "pack.7z"
+        assert rel.endswith(".7z")
+
+    def test_save_txt(self, upload_tmp):
+        data = "hello łódź\n".encode()
+        original, rel = _save(_upload("note.txt", data))
+        assert original == "note.txt"
+        assert (resolve_upload_dir() / rel).read_bytes() == data
+
+    def test_save_json(self, upload_tmp):
+        data = b'{"ok": true, "n": 1}'
+        original, rel = _save(_upload("data.json", data))
+        assert original == "data.json"
+        assert (resolve_upload_dir() / rel).read_bytes() == data
+
+    def test_save_xml(self, upload_tmp):
+        data = b'<?xml version="1.0"?><root/>'
+        original, rel = _save(_upload("data.xml", data))
+        assert original == "data.xml"
+        assert (resolve_upload_dir() / rel).read_bytes() == data
+
     def test_empty_file_rejected(self, upload_tmp):
         with pytest.raises(HTTPException) as exc:
             _save(_upload("empty.png", b""))
         assert exc.value.status_code == 400
 
-    def test_too_large_rejected(self, upload_tmp, monkeypatch):
-        monkeypatch.setattr("app.services.uploads.MAX_BYTES", 10)
+    def test_too_large_image_rejected(self, upload_tmp, monkeypatch):
+        monkeypatch.setenv("UPLOAD_MAX_IMAGE_BYTES", "10")
+        get_settings.cache_clear()
         with pytest.raises(HTTPException) as exc:
             _save(_upload("big.png", _png_bytes()))
+        assert exc.value.status_code == 400
+
+    def test_too_large_file_rejected(self, upload_tmp, monkeypatch):
+        monkeypatch.setenv("UPLOAD_MAX_FILE_BYTES", "10")
+        get_settings.cache_clear()
+        with pytest.raises(HTTPException) as exc:
+            _save(_upload("big.txt", b"hello world text"))
         assert exc.value.status_code == 400
 
     def test_invalid_image_rejected(self, upload_tmp):
@@ -81,9 +132,19 @@ class TestSaveUpload:
             _save(_upload("bad.pdf", b"not-a-pdf"))
         assert exc.value.status_code == 400
 
+    def test_fake_zip_rejected(self, upload_tmp):
+        with pytest.raises(HTTPException) as exc:
+            _save(_upload("evil.zip", b"MZ\x90\x00fake-exe"))
+        assert exc.value.status_code == 400
+
+    def test_invalid_json_rejected(self, upload_tmp):
+        with pytest.raises(HTTPException) as exc:
+            _save(_upload("bad.json", b"{not-json"))
+        assert exc.value.status_code == 400
+
     def test_unsupported_format(self, upload_tmp):
         with pytest.raises(HTTPException) as exc:
-            _save(_upload("note.txt", b"hello"))
+            _save(_upload("note.exe", b"MZ\x90\x00"))
         assert exc.value.status_code == 400
 
     def test_image_too_large_dimensions(self, upload_tmp, monkeypatch):
@@ -140,6 +201,31 @@ class TestAttachmentDownload:
         response = file_response_for_attachment(loaded)
         assert response.status_code == 200
         assert response.filename == "att.jpg"
+        assert "inline" in response.headers.get("content-disposition", "").lower()
+
+    def test_non_image_attachment_disposition(
+        self, db_session, project_with_members, client_user, upload_tmp
+    ):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=client_user,
+            title="With json",
+            description="Desc",
+            ticket_type=TicketType.BUG,
+        )
+        root = resolve_upload_dir()
+        rel = Path("tickets") / "data.json"
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        (root / rel).write_bytes(b'{"a":1}')
+        att = ticket_service.add_attachment(
+            db_session,
+            file_name="data.json",
+            file_path=str(rel).replace("\\", "/"),
+            ticket_id=ticket.id,
+        )
+        response = file_response_for_attachment(att)
+        assert "attachment" in response.headers.get("content-disposition", "").lower()
 
     def test_attachment_not_found(self, db_session, client_user, upload_tmp):
         with pytest.raises(HTTPException) as exc:

@@ -513,11 +513,12 @@ messages:
     select_user: "Select a user."
   uploads:
     empty: "That file is empty."
-    too_large: "That file is too large (max 5 MB)."
+    too_large_image: "That image is too large (max {mb} MB)."
+    too_large_file: "That file is too large (max {mb} MB)."
     invalid_image: "That image doesn't work."
     image_too_large: "That image is too large."
-    invalid_pdf: "That PDF doesn't work."
-    formats: "Use JPG, PNG, WEBP, GIF, or PDF."
+    invalid_file: "That file doesn't work."
+    formats: "Use JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, or 7Z."
   validation:
     missing_user: "Select a user"
     missing_field: "Fill in {label}"

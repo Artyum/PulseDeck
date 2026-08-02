@@ -27,7 +27,7 @@
                       rows="10"
                       class="textarea mt-1">{{ ticket.description }}</textarea>
           </div>
-          {{ attach_picker('edit-ticket-attachments', 'zone', max_files=3, existing=ticket.attachments) }}
+          {{ attach_picker('edit-ticket-attachments', 'zone', max_files=upload_max_files, existing=ticket.attachments) }}
         </div>
         <div class="modal-footer">
           {{ modal_cancel("edit-ticket") }}

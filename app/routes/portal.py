@@ -47,7 +47,10 @@ from app.utils.urls import project_path, ticket_path
 router = APIRouter(tags=["portal"])
 
 _TICKET_REF_RE = re.compile(r"^([A-Z0-9]{1,5})-(\d+)$")
-_MAX_TICKET_ATTACHMENTS = 3
+
+
+def _upload_max_files() -> int:
+    return max(1, get_settings().upload_max_files)
 
 
 def _upload_limit() -> str:
@@ -167,14 +170,15 @@ async def _attach_many(
     *,
     ticket_id: int,
     comment_id: int | None = None,
-    max_files: int = _MAX_TICKET_ATTACHMENTS,
+    max_files: int | None = None,
     lang: str,
 ) -> None:
     if not attachments:
         return
+    limit = max_files if max_files is not None else _upload_max_files()
     count = 0
     for attachment in attachments:
-        if count >= max_files:
+        if count >= limit:
             break
         if not attachment or not attachment.filename:
             continue
@@ -453,7 +457,7 @@ async def edit_ticket(
         ticket = ticket_service.remove_ticket_attachments(
             db, ticket, user, remove_attachment_ids, lang=lang
         )
-    remaining = max(0, _MAX_TICKET_ATTACHMENTS - len(ticket.attachments or []))
+    remaining = max(0, _upload_max_files() - len(ticket.attachments or []))
     await _attach_many(
         db, attachments, ticket_id=ticket.id, max_files=remaining, lang=lang
     )

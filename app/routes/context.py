@@ -169,6 +169,7 @@ def common_context(request: Request, **extra) -> dict:
         "priority_labels": _enum_label_map(lang, "ticket_priority", TicketPriority),
         "role_labels": _enum_label_map(lang, "user_role", UserRole),
         "ticket_reopen_days": settings.ticket_reopen_days,
+        "upload_max_files": max(1, settings.upload_max_files),
         "js_i18n": translations_prefix(lang, "js"),
     }
 

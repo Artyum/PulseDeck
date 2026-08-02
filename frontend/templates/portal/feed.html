@@ -144,7 +144,7 @@
                     rows="8"
                     class="textarea mt-1"></textarea>
         </div>
-        {{ attach_picker('new-ticket-attachments', 'zone') }}
+        {{ attach_picker('new-ticket-attachments', 'zone', max_files=upload_max_files) }}
       </div>
       <div class="modal-footer">
         {{ modal_cancel("new-ticket") }}

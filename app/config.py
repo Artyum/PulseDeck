@@ -25,6 +25,13 @@ class Settings(BaseSettings):
     log_dir: str = "logs"
     log_level: str = "DEBUG"
     upload_dir: str = "data/uploads"
+    upload_max_image_bytes: int = Field(
+        default=5 * 1024 * 1024, validation_alias="UPLOAD_MAX_IMAGE_BYTES"
+    )
+    upload_max_file_bytes: int = Field(
+        default=20 * 1024 * 1024, validation_alias="UPLOAD_MAX_FILE_BYTES"
+    )
+    upload_max_files: int = Field(default=3, validation_alias="UPLOAD_MAX_FILES")
 
     uvicorn_host: str = "127.0.0.1"
     uvicorn_port: int = 8000

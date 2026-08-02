@@ -104,7 +104,7 @@
                 class="textarea"
                 data-auto-resize></textarea>
       <div class="issue-composer-bar">
-        {{ attach_picker('comment-attachments', 'zone') }}
+        {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files) }}
         {% if user.is_staff %}
           <label class="issue-composer-opt">
             <input type="checkbox"

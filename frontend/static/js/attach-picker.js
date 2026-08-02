@@ -1,9 +1,9 @@
 (function () {
   const IMAGE_RE = /\.(jpe?g|png|webp|gif)$/i;
-  const ALLOWED_RE = /\.(jpe?g|png|webp|gif|pdf)$/i;
+  const ALLOWED_RE =
+    /\.(jpe?g|png|webp|gif|pdf|docx|xlsx|pptx|txt|csv|log|json|xml|zip|rar|7z)$/i;
   const MIME_EXT = {
     "image/jpeg": ".jpg",
-    "image/jpg": ".jpg",
     "image/png": ".png",
     "image/webp": ".webp",
     "image/gif": ".gif",
@@ -22,29 +22,37 @@
     });
   }
 
+  function collectFiles(list) {
+    const out = [];
+    if (!list || !list.length) return out;
+    for (var i = 0; i < list.length; i++) {
+      var normalized = normalizeFile(list[i]);
+      if (normalized) out.push(normalized);
+    }
+    return out;
+  }
+
   function filesFromClipboard(cd) {
     if (!cd) return [];
-    const out = [];
-    const seen = new Set();
-
-    function push(file) {
-      const normalized = normalizeFile(file);
-      if (!normalized) return;
-      const key = normalized.name + ":" + normalized.size + ":" + normalized.type;
-      if (seen.has(key)) return;
-      seen.add(key);
-      out.push(normalized);
-    }
-
+    const raw = [];
     if (cd.items && cd.items.length) {
       for (var i = 0; i < cd.items.length; i++) {
         var item = cd.items[i];
-        if (item.kind === "file") push(item.getAsFile());
+        if (item.kind === "file") {
+          var f = item.getAsFile();
+          if (f) raw.push(f);
+        }
       }
     } else if (cd.files && cd.files.length) {
-      for (var j = 0; j < cd.files.length; j++) push(cd.files[j]);
+      for (var j = 0; j < cd.files.length; j++) raw.push(cd.files[j]);
     }
-    return out;
+    return collectFiles(raw);
+  }
+
+  function hasFileDrag(ev) {
+    const types = ev.dataTransfer && ev.dataTransfer.types;
+    if (!types) return false;
+    return Array.prototype.indexOf.call(types, "Files") !== -1;
   }
 
   function initPicker(root) {
@@ -53,6 +61,7 @@
     const preview = root.querySelector("[data-attach-preview]");
     const removeBox = root.querySelector("[data-attach-remove-box]");
     const btn = root.querySelector(".file-pick-btn");
+    const zone = root.querySelector(".file-pick-zone");
     if (!input || !preview) return;
     inited.add(root);
 
@@ -175,8 +184,38 @@
     });
 
     input.addEventListener("change", function () {
-      addFiles(Array.from(input.files || []));
+      addFiles(collectFiles(input.files));
     });
+
+    if (zone) {
+      let dragDepth = 0;
+
+      zone.addEventListener("dragenter", function (ev) {
+        if (!hasFileDrag(ev)) return;
+        ev.preventDefault();
+        dragDepth += 1;
+        zone.classList.add("is-dragover");
+      });
+
+      zone.addEventListener("dragover", function (ev) {
+        if (!hasFileDrag(ev)) return;
+        ev.preventDefault();
+        if (ev.dataTransfer) ev.dataTransfer.dropEffect = "copy";
+      });
+
+      zone.addEventListener("dragleave", function () {
+        dragDepth = Math.max(0, dragDepth - 1);
+        if (!dragDepth) zone.classList.remove("is-dragover");
+      });
+
+      zone.addEventListener("drop", function (ev) {
+        if (!hasFileDrag(ev)) return;
+        ev.preventDefault();
+        dragDepth = 0;
+        zone.classList.remove("is-dragover");
+        addFiles(collectFiles(ev.dataTransfer && ev.dataTransfer.files));
+      });
+    }
 
     const form = root.closest("form");
     if (form) {
