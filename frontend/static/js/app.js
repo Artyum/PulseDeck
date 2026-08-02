@@ -363,16 +363,25 @@
     }
     if (!doc || !doc.body) return false;
     var swapped = false;
-    [".admin-narrow", ".admin-prefs", ".admin-page-head"].forEach(function (sel) {
-      var incoming = doc.querySelector(sel);
-      var current = document.querySelector(sel);
-      if (incoming && current) {
-        current.replaceWith(document.importNode(incoming, true));
-        swapped = true;
-      }
-    });
+    var mainIncoming = doc.querySelector(".admin-main");
+    var mainCurrent = document.querySelector(".admin-main");
+    if (mainIncoming && mainCurrent) {
+      mainCurrent.replaceWith(document.importNode(mainIncoming, true));
+      swapped = true;
+    } else {
+      [".admin-narrow", ".admin-prefs", ".admin-page-head"].forEach(function (sel) {
+        var incoming = doc.querySelector(sel);
+        var current = document.querySelector(sel);
+        if (incoming && current) {
+          current.replaceWith(document.importNode(incoming, true));
+          swapped = true;
+        }
+      });
+    }
     var items = readFlashItems(doc.getElementById("app-flash"));
     applyFlashItems(items);
+    var liveFlash = document.getElementById("app-flash");
+    if (liveFlash) liveFlash.remove();
     if (nextUrl) {
       try {
         var u = new URL(nextUrl, window.location.origin);

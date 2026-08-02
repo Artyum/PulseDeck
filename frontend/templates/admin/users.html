@@ -1,6 +1,12 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import project_checkboxes, modal_header, modal_cancel, form_select_menu with context %}
+{% macro users_sort_th(col, label) -%}
+  {% set next = 'desc' if sort == col and sort_dir == 'asc' else 'asc' %}
+  <a href="{{ sort_links[col] }}"
+     class="admin-users-sort{% if sort == col %} is-active is-{{ sort_dir }}{% endif %}"
+     aria-label="{{ t('ui.admin.users.sort_' ~ col ~ '_' ~ next) }}">{{ label }}</a>
+{%- endmacro %}
 {% block title %}{{ t("ui.admin.users.title") }} — {{ app_name }}{% endblock title %}
 {% block content %}
   <div class="admin-page-head">
@@ -15,12 +21,24 @@
     </div>
     <form method="get"
           action="{{ url_for('admin_users') }}"
-          class="admin-form-row admin-form-row-filters mb-4 gap-x-4"
+          class="admin-form-row admin-form-row-filters"
           hx-get="{{ url_for('admin_users') }}"
           hx-target="#users-results"
           hx-select="#users-results"
           hx-swap="outerHTML"
-          hx-push-url="true">
+          hx-push-url="true"
+          hx-trigger="submit, input changed delay:300ms from:input[name='q']">
+      <input type="hidden" name="sort" value="{{ sort }}">
+      <input type="hidden" name="order" value="{{ sort_dir }}">
+      <div class="admin-form-field">
+        <label class="label-tight" for="users-q">{{ t("ui.admin.users.filter_search") }}</label>
+        <input id="users-q"
+               name="q"
+               value="{{ filter_q }}"
+               placeholder="{{ t('ui.admin.users.filter_search_placeholder') }}"
+               class="input"
+               autocomplete="off">
+      </div>
       <div class="admin-form-field">
         <label class="label-tight">{{ t("ui.admin.users.filter_role") }}</label>
         {{ form_select_menu('role', t('ui.admin.users.filter_role') , user_roles, filter_role, role_labels, submit_on_pick=true, empty_label=t('ui.admin.users.filter_all')) }}
@@ -34,45 +52,64 @@
         <button type="button" class="btn btn-ghost" data-feed-filter-clear>{{ t("ui.admin.users.filter_clear") }}</button>
       </div>
     </form>
-    <ul id="users-results" class="admin-list">
+    <ul id="users-results" class="admin-list admin-users-table">
+      {% if users %}
+        <li class="admin-users-head">
+          {{ users_sort_th('name', t('ui.admin.users.col_name') ) }}
+          {{ users_sort_th('email', t('ui.profile.field.email') ) }}
+          {{ users_sort_th('phone', t('ui.profile.field.phone') ) }}
+          {{ users_sort_th('role', t('ui.admin.users.filter_role') ) }}
+          <span class="admin-users-actions-head" aria-hidden="true">{{ t("ui.admin.users.col_actions") }}</span>
+        </li>
+      {% endif %}
       {% for u in users %}
-        <li class="admin-entity">
-          <div class="admin-entity-main">
-            <p class="admin-entity-title">
-              <span class="admin-entity-name">{{ u.display_name }}</span>
-              <span class="admin-entity-badges">
-                <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
-                {% if not u.is_active %}
-                  <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
-                {% elif u.is_pending %}
-                  <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
-                {% endif %}
-              </span>
-            </p>
-            <p class="admin-entity-meta">
-              {{ u.email }}
-              {% if u.phone %}· {{ u.phone }}{% endif %}
-            </p>
-          </div>
+        <li class="admin-entity admin-users-row">
+          <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
+             class="admin-users-cell admin-users-name"
+             title="{{ u.display_name }}">{{ u.display_name }}</a>
+          <span class="admin-users-cell admin-users-meta" title="{{ u.email }}">{{ u.email }}</span>
+          <span class="admin-users-cell admin-users-meta"
+                {% if u.phone %}title="{{ u.phone }}"{% endif %}>
+            {% if u.phone %}
+              {{ u.phone }}
+            {% else %}
+              {{ t("ui.common.empty_dash") }}
+            {% endif %}
+          </span>
+          <span class="admin-entity-badges">
+            <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
+            {% if not u.is_active %}
+              <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
+            {% elif u.is_pending %}
+              <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
+            {% endif %}
+          </span>
           <div class="admin-entity-actions">
             <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
-               class="btn btn-secondary"
+               class="btn btn-secondary btn-sm"
                aria-label="{{ t('ui.admin.users.edit_aria', name=u.display_name) }}">{{ t("ui.common.edit") }}</a>
             {% if u.is_pending and u.is_active %}
               <form method="post"
                     action="{{ url_for('admin_user_resend_activation', user_id=u.id) }}">
-                <button type="submit" class="btn btn-secondary">{{ t("ui.admin.users.resend") }}</button>
+                <button type="submit" class="btn btn-secondary btn-sm">{{ t("ui.admin.users.resend") }}</button>
               </form>
+            {% else %}
+              <button type="button" class="btn btn-secondary btn-sm" disabled>{{ t("ui.admin.users.resend") }}</button>
             {% endif %}
-            {% if u.id != user.id %}
+            {% if u.id == user.id %}
+              <button type="button"
+                      class="btn btn-danger btn-sm"
+                      disabled
+                      title="{{ t('messages.auth.cannot_block_self') }}">{{ t("ui.admin.users.block") }}</button>
+            {% else %}
               <form method="post"
                     action="{{ url_for('admin_user_active', user_id=u.id) }}">
                 {% if u.is_active %}
                   <input type="hidden" name="active" value="0">
-                  <button type="submit" class="btn btn-danger">{{ t("ui.admin.users.block") }}</button>
+                  <button type="submit" class="btn btn-danger btn-sm">{{ t("ui.admin.users.block") }}</button>
                 {% else %}
                   <input type="hidden" name="active" value="1">
-                  <button type="submit" class="btn btn-primary">{{ t("ui.admin.users.unblock") }}</button>
+                  <button type="submit" class="btn btn-primary btn-sm">{{ t("ui.admin.users.unblock") }}</button>
                 {% endif %}
               </form>
             {% endif %}

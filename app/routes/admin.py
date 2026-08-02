@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Annotated
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -23,6 +24,51 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 def _admin_user_create_limit() -> str:
     return get_settings().auth_admin_user_create_rate_limit
+
+
+def _admin_users_path(**params: str) -> str:
+    clean: dict[str, str] = {}
+    for key, value in params.items():
+        if not value:
+            continue
+        if key == "sort" and value == "name":
+            continue
+        if key == "order" and value == "asc":
+            continue
+        clean[key] = value
+    qs = urlencode(clean)
+    return f"/admin/users?{qs}" if qs else "/admin/users"
+
+
+_USER_SORT_COLS = ("name", "email", "phone", "role")
+
+
+def _parse_user_sort(sort: str | None, order: str | None) -> tuple[str, str]:
+    col = (sort or "").strip().lower()
+    if col not in _USER_SORT_COLS:
+        col = "name"
+    direction = "desc" if (order or "").strip().lower() == "desc" else "asc"
+    return col, direction
+
+
+def _user_sort_links(
+    *,
+    sort: str,
+    order: str,
+    q: str,
+    role: str,
+    project: str,
+) -> dict[str, str]:
+    return {
+        col: _admin_users_path(
+            sort=col,
+            order=("desc" if col == sort and order == "asc" else "asc"),
+            q=q,
+            role=role,
+            project=project,
+        )
+        for col in _USER_SORT_COLS
+    }
 
 
 def _admin_project(db: Session, key: str, *, lang: str | None = None) -> Project:
@@ -62,12 +108,14 @@ def _get_user_or_404(db: Session, user_id: int, *, lang: str | None = None) -> U
 
 @router.get("", response_class=HTMLResponse)
 def admin_home(request: Request, user: AdminUser, db: DbSession):
+    by_status, by_type = project_service.admin_project_ticket_breakdowns(db)
     return render(
         request,
         "admin/dashboard.html",
         user=user,
-        projects=project_service.list_projects(db),
-        users=project_service.list_users(db),
+        stats=project_service.admin_dashboard_stats(db),
+        project_ticket_stats=by_status,
+        project_ticket_type_stats=by_type,
     )
 
 
@@ -250,6 +298,9 @@ def admin_users(
     db: DbSession,
     role: str | None = None,
     project: str | None = None,
+    q: str | None = None,
+    sort: str | None = None,
+    order: str | None = None,
 ):
     lang = resolve_lang(request)
     ok = request.query_params.get("ok") or ""
@@ -275,15 +326,35 @@ def admin_users(
             project_id = pid
             filter_project = str(pid)
 
+    filter_q = (q or "").strip()
+    sort_col, sort_dir = _parse_user_sort(sort, order)
+
     return render(
         request,
         "admin/users.html",
         user=user,
-        users=project_service.list_users(db, role=role_filter, project_id=project_id),
+        users=project_service.list_users(
+            db,
+            role=role_filter,
+            project_id=project_id,
+            q=filter_q or None,
+            sort=sort_col,
+            sort_dir=sort_dir,
+        ),
         projects=project_service.list_projects(db),
         form_project_ids=[],
         filter_role=filter_role,
         filter_project=filter_project,
+        filter_q=filter_q,
+        sort=sort_col,
+        sort_dir=sort_dir,
+        sort_links=_user_sort_links(
+            sort=sort_col,
+            order=sort_dir,
+            q=filter_q,
+            role=filter_role,
+            project=filter_project,
+        ),
         flash=t(lang, flash_key) if flash_key else None,
     )
 

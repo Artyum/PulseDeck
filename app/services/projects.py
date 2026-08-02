@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 
 from fastapi import HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
-from app.models.enums import UserRole
-from app.models.ticket import Tag, Ticket, TicketTag
+from app.models.email_outbox import EmailOutbox
+from app.models.enums import EmailOutboxStatus, TicketStatus, TicketType, UserRole
+from app.models.ticket import Comment, Tag, Ticket, TicketTag
 from app.models.user import Project, ProjectMember, User
 from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.project_key import validate_project_key
@@ -21,11 +23,95 @@ class ProjectSummary:
     tags: tuple[Tag, ...] = ()
 
 
+@dataclass(frozen=True, slots=True)
+class AdminDashboardStats:
+    projects: int
+    users: int
+    open_tickets: int
+    messages: int
+    pending_users: int
+    emails_sent: int
+
+
+@dataclass(frozen=True, slots=True)
+class ProjectTicketStats:
+    project: Project
+    counts: dict[Enum, int]
+
+    @property
+    def total(self) -> int:
+        return sum(self.counts.values())
+
+
 def list_projects(db: Session, *, active_only: bool = False) -> list[Project]:
     stmt = select(Project)
     if active_only:
         stmt = stmt.where(Project.is_active.is_(True))
     return list(db.scalars(stmt.order_by(Project.name)).all())
+
+
+def admin_dashboard_stats(db: Session) -> AdminDashboardStats:
+    def _count(stmt) -> int:
+        return int(db.scalar(stmt) or 0)
+
+    return AdminDashboardStats(
+        projects=_count(select(func.count()).select_from(Project)),
+        users=_count(select(func.count()).select_from(User)),
+        open_tickets=_count(
+            select(func.count())
+            .select_from(Ticket)
+            .where(Ticket.status != TicketStatus.DONE)
+        ),
+        messages=_count(select(func.count()).select_from(Comment)),
+        pending_users=_count(
+            select(func.count())
+            .select_from(User)
+            .where(User.activated_at.is_(None), User.is_active.is_(True))
+        ),
+        emails_sent=_count(
+            select(func.count())
+            .select_from(EmailOutbox)
+            .where(EmailOutbox.status == EmailOutboxStatus.SENT)
+        ),
+    )
+
+
+def _admin_project_ticket_breakdown(
+    db: Session,
+    projects: list[Project],
+    column,
+    enum_cls: type[Enum],
+) -> list[ProjectTicketStats]:
+    tallies: dict[int, dict[Enum, int]] = {
+        p.id: {member: 0 for member in enum_cls} for p in projects
+    }
+    for project_id, raw, count in db.execute(
+        select(Ticket.project_id, column, func.count())
+        .where(Ticket.project_id.in_(tuple(tallies)))
+        .group_by(Ticket.project_id, column)
+    ):
+        bucket = tallies.get(int(project_id))
+        if bucket is None:
+            continue
+        key = raw if isinstance(raw, enum_cls) else enum_cls(raw)
+        bucket[key] = int(count)
+
+    return [
+        ProjectTicketStats(project=project, counts=tallies[project.id])
+        for project in projects
+    ]
+
+
+def admin_project_ticket_breakdowns(
+    db: Session,
+) -> tuple[list[ProjectTicketStats], list[ProjectTicketStats]]:
+    projects = list_projects(db, active_only=True)
+    if not projects:
+        return [], []
+    return (
+        _admin_project_ticket_breakdown(db, projects, Ticket.status, TicketStatus),
+        _admin_project_ticket_breakdown(db, projects, Ticket.type, TicketType),
+    )
 
 
 def list_admins(db: Session) -> list[User]:
@@ -43,6 +129,9 @@ def list_users(
     *,
     role: UserRole | None = None,
     project_id: int | None = None,
+    q: str | None = None,
+    sort: str | None = None,
+    sort_dir: str | None = None,
 ) -> list[User]:
     stmt = select(User).options(selectinload(User.memberships))
     if role is not None:
@@ -55,7 +144,37 @@ def list_users(
                 )
             )
         )
-    return list(db.scalars(stmt.order_by(User.last_name, User.first_name)).all())
+    raw = (q or "").strip()
+    if raw:
+        pattern = f"%{raw}%"
+        full_name = func.concat(User.first_name, " ", User.last_name)
+        stmt = stmt.where(
+            or_(
+                User.first_name.ilike(pattern),
+                User.last_name.ilike(pattern),
+                full_name.ilike(pattern),
+                User.email.ilike(pattern),
+                User.phone.ilike(pattern),
+            )
+        )
+    descending = (sort_dir or "").strip().lower() == "desc"
+    col = (sort or "").strip().lower()
+    if col == "email":
+        primary = User.email.desc() if descending else User.email.asc()
+        stmt = stmt.order_by(primary, User.id)
+    elif col == "phone":
+        primary = User.phone.desc() if descending else User.phone.asc()
+        stmt = stmt.order_by(primary.nulls_last(), User.id)
+    elif col == "role":
+        primary = User.role.desc() if descending else User.role.asc()
+        stmt = stmt.order_by(
+            primary, User.first_name.asc(), User.last_name.asc(), User.id
+        )
+    else:
+        first = User.first_name.desc() if descending else User.first_name.asc()
+        last = User.last_name.desc() if descending else User.last_name.asc()
+        stmt = stmt.order_by(first, last, User.id)
+    return list(db.scalars(stmt).all())
 
 
 def list_project_summaries(db: Session) -> list[ProjectSummary]:

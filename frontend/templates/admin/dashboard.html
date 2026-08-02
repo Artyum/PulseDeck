@@ -1,5 +1,44 @@
 {% extends "admin/base_admin.html" %}
-{% block title %}Admin — {{ app_name }}{% endblock title %}
+{% from "partials/icons.html" import icon %}
+{% macro project_breakdown_table(rows, members, labels, filter_key) -%}
+  <ul class="admin-list admin-status-table">
+    {% if rows %}
+      <li class="admin-status-head" aria-hidden="true">
+        <span>{{ t("ui.admin.projects.name") }}</span>
+        {% for member in members %}
+          <span class="admin-status-num">{{ labels[member] }}</span>
+        {% endfor %}
+        <span class="admin-status-num">{{ t("ui.admin.dashboard.col_total") }}</span>
+      </li>
+      {% for row in rows %}
+        {% set feed = url_for('project_feed', key=row.project.key) %}
+        <li class="admin-status-row">
+          <a href="{{ url_for('project_detail', key=row.project.key) }}"
+             class="admin-status-project"
+             title="{{ row.project.name }}">
+            <span class="admin-status-project-name">{{ row.project.name }}</span>
+          </a>
+          {% for member in members %}
+            {% if row.counts[member] %}
+              <a href="{{ feed }}?{{ filter_key }}={{ member.value }}"
+                 class="admin-status-num is-filled">{{ row.counts[member] }}</a>
+            {% else %}
+              <span class="admin-status-num">0</span>
+            {% endif %}
+          {% endfor %}
+          {% if row.total %}
+            <a href="{{ feed }}" class="admin-status-num admin-status-total">{{ row.total }}</a>
+          {% else %}
+            <span class="admin-status-num admin-status-total">0</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="empty">{{ t("ui.admin.dashboard.empty_projects") }}</li>
+    {% endif %}
+  </ul>
+{%- endmacro %}
+{% block title %}{{ t("ui.admin.dashboard.title") }} — {{ app_name }}{% endblock title %}
 {% block content %}
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.dashboard.title") }}</h1>
@@ -8,16 +47,36 @@
     <div class="admin-stats">
       <a href="{{ url_for('admin_projects') }}" class="admin-stat">
         <p class="label-tight">{{ t("ui.admin.dashboard.stat_projects") }}</p>
-        <p class="stat-value">{{ projects|length }}</p>
+        <p class="stat-value">{{ stats.projects }}</p>
       </a>
       <a href="{{ url_for('admin_users') }}" class="admin-stat">
         <p class="label-tight">{{ t("ui.admin.dashboard.stat_users") }}</p>
-        <p class="stat-value">{{ users|length }}</p>
+        <p class="stat-value">{{ stats.users }}</p>
       </a>
-      <a href="{{ url_for('admin_users') }}?new=1" class="admin-stat">
-        <p class="label-tight">{{ t("ui.admin.dashboard.stat_new_user") }}</p>
-        <p class="stat-value">+</p>
+      <div class="admin-stat">
+        <p class="label-tight">{{ t("ui.admin.dashboard.stat_open_tickets") }}</p>
+        <p class="stat-value">{{ stats.open_tickets }}</p>
+      </div>
+      <div class="admin-stat">
+        <p class="label-tight">{{ t("ui.admin.dashboard.stat_messages") }}</p>
+        <p class="stat-value">{{ stats.messages }}</p>
+      </div>
+      <a href="{{ url_for('admin_users') }}" class="admin-stat">
+        <p class="label-tight">{{ t("ui.admin.dashboard.stat_pending_users") }}</p>
+        <p class="stat-value">{{ stats.pending_users }}</p>
       </a>
+      <div class="admin-stat">
+        <p class="label-tight">{{ t("ui.admin.dashboard.stat_emails_sent") }}</p>
+        <p class="stat-value">{{ stats.emails_sent }}</p>
+      </div>
     </div>
+  </section>
+  <section class="admin-section">
+    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.dashboard.by_project") }}</h2>
+    {{ project_breakdown_table(project_ticket_stats, ticket_statuses, status_labels, 'status') }}
+  </section>
+  <section class="admin-section">
+    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.admin.dashboard.by_type") }}</h2>
+    {{ project_breakdown_table(project_ticket_type_stats, ticket_types, type_labels, 'type') }}
   </section>
 {% endblock content %}
