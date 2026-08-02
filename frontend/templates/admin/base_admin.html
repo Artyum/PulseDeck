@@ -1,56 +1,38 @@
 {% extends "base.html" %}
-{% from "partials/icons.html" import icon, brand_logo with context %}
+{% from "partials/icons.html" import icon with context %}
 {% block body %}
   {% set path = request.url.path %}
-  <div class="admin-shell">
-    <aside class="admin-aside">
-      <div class="admin-aside-brand">
-        <a href="{{ url_for('admin_home') }}" class="brand-mark">
-          {{ brand_logo() }}
-          {{ app_name }}
-        </a>
-        <p class="admin-aside-label">{{ t("ui.admin.aside_label") }}</p>
-      </div>
-      <nav class="admin-nav" aria-label="{{ t('ui.admin.nav_aria') }}">
-        <a href="{{ url_for('admin_home') }}"
-           class="admin-nav-item{% if path == '/admin' or path == '/admin/' %} is-active{% endif %}">
-          <span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>
-          {{ t("ui.admin.nav.overview") }}
-        </a>
-        <a href="{{ url_for('admin_projects') }}"
-           class="admin-nav-item{% if path.startswith('/admin/projects') %} is-active{% endif %}">
-          <span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>
-          {{ t("ui.admin.nav.projects") }}
-        </a>
-        <a href="{{ url_for('admin_users') }}"
-           class="admin-nav-item{% if path.startswith('/admin/users') %} is-active{% endif %}">
-          <span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>
-          {{ t("ui.admin.nav.users") }}
-        </a>
-      </nav>
-      <div class="admin-aside-foot">
-        <div class="admin-aside-user">
-          <div class="admin-aside-user-meta">
-            <strong>{{ user.display_name }}</strong>
-            <span>{{ user.email }}</span>
-          </div>
-          <form method="post" action="{{ url_for('logout') }}">
-            <button type="submit"
-                    class="btn btn-ghost admin-logout-btn"
-                    aria-label="{{ t('ui.common.logout') }}"
-                    title="{{ t('ui.common.logout') }}">{{ icon("logout") }}</button>
-          </form>
+  {% set hide_project_picker = true %}
+  {% set show_portal_back = true %}
+  <div class="admin-layout">
+    {% include "partials/app_header.html" %}
+    <div class="admin-shell">
+      <aside class="admin-aside">
+        <div class="admin-aside-brand">
+          <p class="admin-aside-label">{{ t("ui.admin.aside_label") }}</p>
         </div>
-        <a href="{{ url_for('home') }}"
-           class="btn btn-secondary admin-aside-back">
-          <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
-          {{ t("ui.common.back_to_portal") }}
-        </a>
-      </div>
-    </aside>
-    <main class="admin-main">
-      {% block content %}
-      {% endblock content %}
-    </main>
+        <nav class="admin-nav" aria-label="{{ t('ui.admin.nav_aria') }}">
+          <a href="{{ url_for('admin_home') }}"
+             class="admin-nav-item{% if path == '/admin' or path == '/admin/' %} is-active{% endif %}">
+            <span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>
+            {{ t("ui.admin.nav.overview") }}
+          </a>
+          <a href="{{ url_for('admin_projects') }}"
+             class="admin-nav-item{% if path.startswith('/admin/projects') %} is-active{% endif %}">
+            <span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>
+            {{ t("ui.admin.nav.projects") }}
+          </a>
+          <a href="{{ url_for('admin_users') }}"
+             class="admin-nav-item{% if path.startswith('/admin/users') %} is-active{% endif %}">
+            <span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>
+            {{ t("ui.admin.nav.users") }}
+          </a>
+        </nav>
+      </aside>
+      <main class="admin-main">
+        {% block content %}
+        {% endblock content %}
+      </main>
+    </div>
   </div>
 {% endblock body %}
