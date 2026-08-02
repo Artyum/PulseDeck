@@ -1888,19 +1888,31 @@
 
   .issue-page {
     --app-header-h: calc(2.1rem + 1.4rem * var(--space-scale) + 1px);
+    --issue-sidebar-w: calc(22 * var(--layout-rem));
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) calc(22 * var(--layout-rem));
+    grid-template-columns: minmax(0, 1fr) var(--issue-sidebar-w);
     align-items: start;
     min-height: calc(100vh - var(--app-header-h));
     margin: calc(-1.75rem * var(--space-scale)) calc(-1.5rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
     background-color: color-mix(in oklab, var(--color-aside) 14%, var(--color-surface));
   }
 
+  .issue-page::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: var(--issue-sidebar-w);
+    bottom: 0;
+    width: 1px;
+    background: var(--color-line);
+    pointer-events: none;
+  }
+
   .issue-page-body {
     min-width: 0;
     padding: calc(1.5rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
     background: var(--color-surface);
-    border-right: 1px solid var(--color-line);
   }
 
   .issue-sidebar {
@@ -2150,7 +2162,7 @@
     border: 1px solid var(--color-line);
     border-radius: 0.5rem;
     background: var(--surface-gradient-soft);
-    box-shadow: var(--shadow-float);
+    box-shadow: var(--shadow-menu);
   }
 
   .issue-menu-trigger {
@@ -3775,10 +3787,13 @@
       background-color: transparent;
     }
 
+    .issue-page::after {
+      display: none;
+    }
+
     .issue-page-body {
       padding: 1.5rem 1rem 1.25rem;
       order: 0;
-      border-right: none;
     }
 
     .issue-sidebar {
@@ -4087,19 +4102,13 @@
     outline-offset: 2px;
   }
 
-  html[data-theme-gradient="on"] .panel {
-    box-shadow: var(--shadow-lift-sm);
-  }
-
-  html[data-theme-gradient="on"] .issue-list {
-    box-shadow: var(--shadow-lift-md);
-  }
-
-  html[data-theme-gradient="on"] .modal-form {
-    box-shadow:
-      0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset,
-      0 4px 18px color-mix(in oklab, var(--color-ink) 10%, transparent),
-      0 24px 56px -14px color-mix(in oklab, var(--color-ink) 20%, transparent);
+  html[data-theme-gradient="off"] {
+    --shadow-lift-sm: none;
+    --shadow-lift-md: none;
+    --shadow-float: none;
+    --shadow-menu: none;
+    --surface-gradient: var(--color-surface);
+    --surface-gradient-soft: var(--color-surface);
   }
 
   html[data-theme-gradient="off"] body,
@@ -4108,11 +4117,6 @@
   html[data-theme-gradient="off"] .issue-page,
   html[data-theme-gradient="off"] .issue-sidebar {
     background-image: none;
-  }
-
-  html[data-theme-gradient="off"] .auth-card {
-    background: var(--color-surface);
-    box-shadow: none;
   }
 
   html[data-theme-gradient="off"] .app-header {
@@ -4131,19 +4135,14 @@
     display: none;
   }
 
-  html[data-theme-gradient="off"] .issue-page-body {
-    background: var(--color-surface);
-    box-shadow: none;
-  }
-
   html[data-theme-gradient="off"] .admin-nav-item.is-active {
     background: var(--color-surface);
-    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-ink) 6%, transparent);
+    box-shadow: none;
   }
 
-  html[data-theme-gradient="off"] .issue-menu-panel {
+  html[data-theme-gradient="off"] .modal-header,
+  html[data-theme-gradient="off"] .modal-footer {
     background: var(--color-surface);
-    box-shadow: none;
   }
 
   @media (max-width: 48rem) {
