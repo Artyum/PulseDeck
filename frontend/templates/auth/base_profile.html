@@ -4,13 +4,11 @@
   {% set section = profile_section|default('profile') %}
   {% set hide_project_picker = true %}
   {% set show_portal_back = true %}
+  {% set header_section_label = t("ui.profile.aside_label") %}
   <div class="admin-layout">
     {% include "partials/app_header.html" %}
     <div class="admin-shell profile-shell">
       <aside class="admin-aside">
-        <div class="admin-aside-brand">
-          <p class="admin-aside-label">{{ t("ui.profile.aside_label") }}</p>
-        </div>
         <nav class="admin-nav" aria-label="{{ t('ui.profile.nav_aria') }}">
           <a href="{{ url_for('profile_page') }}"
              class="admin-nav-item{% if section == 'profile' %} is-active{% endif %}">

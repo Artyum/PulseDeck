@@ -9,71 +9,80 @@
   {% endif %}
   {% if comments %}
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
-    {% for c in comments %}
-      <article class="comment {% if c.author and c.author.is_staff %}comment-staff{% endif %}{% if c.is_internal %} comment-internal{% endif %}"
+    {% for group in comments|group_comments %}
+      {% set lead = group[0] %}
+      <article class="comment {% if lead.author and lead.author.is_staff %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
+        {% for c in group %}
+          <div class="comment-segment"
                {% if can_edit_comments %}x-data="{ editing: false }"{% endif %}>
-        <header class="comment-meta">
-          <span class="comment-head">
-            {{ user_avatar(c.author) }}
-            <span class="comment-author">{{ c.author.display_name if c.author else '' }}</span>
-            {% if c.edited_by %}
-              <span class="comment-edited">({{ t("ui.ticket.edited_by", name=c.edited_by.display_name) }})</span>
-            {% endif %}
-            {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
-          </span>
-          <span class="comment-meta-aside">
-            <span class="comment-meta-row">
-              {% if can_edit_comments or can_delete_comments %}
-                <span class="comment-actions"
-                      {% if can_edit_comments %}x-show="!editing"{% endif %}>
-                  {% if can_edit_comments %}
-                    <button type="button"
-                            class="btn btn-ghost comment-action"
-                            @click="editing = true"
-                            aria-label="{{ t('ui.ticket.edit_comment') }}">{{ icon("edit") }}</button>
+            <header class="comment-meta">
+              {% if loop.first %}
+                <span class="comment-head">
+                  {{ user_avatar(c.author) }}
+                  <span class="comment-author">{{ c.author.display_name if c.author else '' }}</span>
+                  {% if c.edited_by %}
+                    <span class="comment-edited">({{ t("ui.ticket.edited_by", name=c.edited_by.display_name) }})</span>
                   {% endif %}
-                  {% if can_delete_comments %}
-                    <form method="post"
-                          action="{{ url_for('delete_comment', ticket_ref=ticket|ticket_label, comment_id=c.id) }}"
-                          class="comment-delete-form"
-                          data-confirm-title="{{ t('ui.confirm.delete_comment.title') }}"
-                          data-confirm="{{ t('ui.confirm.delete_comment.message') }}"
-                          data-confirm-action="{{ t('ui.confirm.delete_comment.action') }}"
-                          data-confirm-danger>
-                      <button type="submit"
-                              class="btn btn-ghost comment-action"
-                              aria-label="{{ t('ui.ticket.delete_comment') }}">{{ icon("trash") }}</button>
-                    </form>
-                  {% endif %}
+                  {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
                 </span>
+              {% elif c.edited_by %}
+                <span class="comment-edited">({{ t("ui.ticket.edited_by", name=c.edited_by.display_name) }})</span>
               {% endif %}
-              <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
-            </span>
-          </span>
-        </header>
-        <p class="comment-body"
-           {% if can_edit_comments %}x-show="!editing"{% endif %}>{{ c.content }}</p>
-        {% if can_edit_comments %}
-          <form hx-post="{{ url_for('edit_comment', ticket_ref=ticket|ticket_label, comment_id=c.id) }}"
-                hx-target="#ticket-view"
-                hx-swap="innerHTML"
-                class="comment-edit-form"
-                x-show="editing"
-                x-cloak
-                @submit="if (!$refs.editBody.value.trim()) { $event.preventDefault(); window.showFieldError($event.target, 'content', window.__i18n['errors.comment_empty'] || ''); } else { editing = false; }">
-            <textarea name="content" required rows="3" class="textarea" x-ref="editBody">{{ c.content }}</textarea>
-            <div class="comment-edit-actions">
-              <button type="submit"
-                      class="btn btn-ghost comment-action"
-                      aria-label="{{ t('ui.ticket.save_comment') }}">{{ icon("check") }}</button>
-              <button type="button"
-                      class="btn btn-ghost comment-action"
-                      @click="editing = false; $refs.editBody.value = $refs.editBody.defaultValue"
-                      aria-label="{{ t('ui.ticket.cancel_edit') }}">{{ icon("close") }}</button>
-            </div>
-          </form>
-        {% endif %}
-        {{ attachment_list(c.attachments, 'mt-3') }}
+              <span class="comment-meta-aside">
+                <span class="comment-meta-row">
+                  {% if can_edit_comments or can_delete_comments %}
+                    <span class="comment-actions"
+                          {% if can_edit_comments %}x-show="!editing"{% endif %}>
+                      {% if can_edit_comments %}
+                        <button type="button"
+                                class="btn btn-ghost comment-action"
+                                @click="editing = true"
+                                aria-label="{{ t('ui.ticket.edit_comment') }}">{{ icon("edit") }}</button>
+                      {% endif %}
+                      {% if can_delete_comments %}
+                        <form method="post"
+                              action="{{ url_for('delete_comment', ticket_ref=ticket|ticket_label, comment_id=c.id) }}"
+                              class="comment-delete-form"
+                              data-confirm-title="{{ t('ui.confirm.delete_comment.title') }}"
+                              data-confirm="{{ t('ui.confirm.delete_comment.message') }}"
+                              data-confirm-action="{{ t('ui.confirm.delete_comment.action') }}"
+                              data-confirm-danger>
+                          <button type="submit"
+                                  class="btn btn-ghost comment-action"
+                                  aria-label="{{ t('ui.ticket.delete_comment') }}">{{ icon("trash") }}</button>
+                        </form>
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                  <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
+                </span>
+              </span>
+            </header>
+            <p class="comment-body"
+               {% if can_edit_comments %}x-show="!editing"{% endif %}>{{ c.content }}</p>
+            {% if can_edit_comments %}
+              <form hx-post="{{ url_for('edit_comment', ticket_ref=ticket|ticket_label, comment_id=c.id) }}"
+                    hx-target="#ticket-view"
+                    hx-swap="innerHTML"
+                    class="comment-edit-form"
+                    x-show="editing"
+                    x-cloak
+                    @submit="if (!$refs.editBody.value.trim()) { $event.preventDefault(); window.showFieldError($event.target, 'content', window.__i18n['errors.comment_empty'] || ''); } else { editing = false; }">
+                <textarea name="content" required rows="3" class="textarea" x-ref="editBody">{{ c.content }}</textarea>
+                <div class="comment-edit-actions">
+                  <button type="submit"
+                          class="btn btn-ghost comment-action"
+                          aria-label="{{ t('ui.ticket.save_comment') }}">{{ icon("check") }}</button>
+                  <button type="button"
+                          class="btn btn-ghost comment-action"
+                          @click="editing = false; $refs.editBody.value = $refs.editBody.defaultValue"
+                          aria-label="{{ t('ui.ticket.cancel_edit') }}">{{ icon("close") }}</button>
+                </div>
+              </form>
+            {% endif %}
+            {{ attachment_list(c.attachments, 'mt-3') }}
+          </div>
+        {% endfor %}
       </article>
     {% endfor %}
   {% endif %}
@@ -89,6 +98,7 @@
                 placeholder="{{ t('ui.ticket.reply_placeholder') }}"
                 class="textarea"></textarea>
       <div class="issue-composer-bar">
+        {{ attach_picker('comment-attachments', 'zone') }}
         {% if user.is_staff %}
           <label class="issue-composer-opt">
             <input type="checkbox"
@@ -97,12 +107,9 @@
                    class="rounded border-line">
             {{ t("ui.ticket.internal_note") }}
           </label>
-        {% else %}
-          {{ attach_picker('comment-attachments', 'zone') }}
         {% endif %}
         <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
       </div>
-      {% if user.is_staff %}{{ attach_picker('comment-attachments', 'zone') }}{% endif %}
     </form>
   {% elif ticket.status.value == 'DONE' %}
     <p class="alert alert-muted">

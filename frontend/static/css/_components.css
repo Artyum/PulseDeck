@@ -109,8 +109,36 @@
   .app-header-left {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 1.25rem;
     min-width: 0;
+  }
+
+  .app-header-section {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 2.1rem;
+    margin: 0;
+    padding-left: 1.25rem;
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--color-steel);
+    white-space: nowrap;
+  }
+
+  .app-header-section::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1px;
+    height: 0.9rem;
+    transform: translateY(-50%);
+    background: var(--color-line);
   }
 
   .app-header-right {
@@ -330,19 +358,6 @@
     background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--color-pulse) 16%, transparent) 16%, color-mix(in oklab, var(--color-pulse) 7%, transparent) 52%, transparent 100%);
     pointer-events: none;
     z-index: 1;
-  }
-
-  .admin-aside-brand {
-    padding: 0.1rem 0.4rem 0;
-  }
-
-  .admin-aside-label {
-    margin: 0;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-steel);
   }
 
   .admin-nav {
@@ -2685,6 +2700,10 @@
     white-space: nowrap;
   }
 
+  .comment-meta > .comment-when {
+    margin-left: auto;
+  }
+
   .comment-body {
     margin: calc(0.55rem * var(--space-scale)) 0 0;
     white-space: pre-wrap;
@@ -2716,60 +2735,32 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: 0.75rem;
     margin-top: -0.1rem;
   }
 
-  .issue-composer-bar:has([data-attach-picker]) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "zone send"
-      "preview preview";
-    align-items: start;
-  }
-
-  .issue-composer-bar:has([data-attach-picker]) [data-attach-picker] {
+  .issue-composer-bar [data-attach-picker] {
     display: contents;
   }
 
-  .issue-composer-bar:has([data-attach-picker]) .file-pick {
-    grid-area: zone;
-    width: fit-content;
-    max-width: 100%;
-  }
-
-  .issue-composer-bar:has([data-attach-picker]) .attach-preview {
-    grid-area: preview;
+  .issue-composer-bar .attach-preview {
+    flex: 1 1 100%;
+    order: 10;
     width: 100%;
     margin-top: 0.15rem;
   }
 
-  .issue-composer-bar:has([data-attach-picker]) [data-attach-remove-box] {
+  .issue-composer-bar [data-attach-remove-box] {
     display: none;
   }
 
-  .issue-composer-bar:has([data-attach-picker]) .issue-composer-send {
-    grid-area: send;
-    margin-left: 0;
-    align-self: start;
-    margin-top: 0.15rem;
-  }
-
-  .issue-composer [data-attach-picker] {
-    width: fit-content;
-    max-width: 100%;
-  }
-
-  .issue-composer .file-pick {
+  .issue-composer .file-pick,
+  .issue-composer .file-pick-zone {
     width: fit-content;
     max-width: 100%;
   }
 
   .issue-composer .file-pick-zone {
-    width: fit-content;
-    max-width: 100%;
     padding: 0.55rem 0.75rem;
   }
 
@@ -3535,6 +3526,12 @@
     border-left: 3px solid var(--color-frame-strong);
     background: var(--comment-bg);
     padding: calc(0.9rem * var(--space-scale)) calc(1rem * var(--space-scale));
+  }
+
+  .comment-segment + .comment-segment {
+    margin-top: calc(0.75rem * var(--space-scale));
+    padding-top: calc(0.75rem * var(--space-scale));
+    border-top: 1px solid color-mix(in oklab, var(--color-line) 70%, transparent);
   }
 
   .comment-staff {

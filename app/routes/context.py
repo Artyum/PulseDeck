@@ -71,7 +71,22 @@ def _format_dt_filter(ctx, value):
     )
 
 
+def group_comments(comments) -> list[list]:
+    groups: list[list] = []
+    for comment in comments or []:
+        if (
+            groups
+            and groups[-1][-1].author_id == comment.author_id
+            and groups[-1][-1].is_internal == comment.is_internal
+        ):
+            groups[-1].append(comment)
+        else:
+            groups.append([comment])
+    return groups
+
+
 _templates.env.filters["format_dt"] = _format_dt_filter
+_templates.env.filters["group_comments"] = group_comments
 _templates.env.filters["project_path"] = project_path
 _templates.env.filters["ticket_path"] = ticket_path
 _templates.env.filters["ticket_label"] = ticket_label

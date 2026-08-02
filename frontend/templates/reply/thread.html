@@ -79,18 +79,25 @@
             {% endif %}
             {% if comments %}
               <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
-              {% for c in comments %}
-                <article class="comment {% if c.author and c.author.is_staff %}comment-staff{% endif %}{% if c.is_internal %} comment-internal{% endif %}">
-                  <header class="comment-meta">
-                    <span class="comment-head">
-                      {{ user_avatar(c.author) }}
-                      <span class="comment-author">{{ c.author.short_display_name if c.author else '' }}</span>
-                      {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
-                    </span>
-                    <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
-                  </header>
-                  <p class="comment-body">{{ c.content }}</p>
-                  {{ signed_attachments(c.attachments, 'mt-3') }}
+              {% for group in comments|group_comments %}
+                {% set lead = group[0] %}
+                <article class="comment {% if lead.author and lead.author.is_staff %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
+                  {% for c in group %}
+                    <div class="comment-segment">
+                      <header class="comment-meta">
+                        {% if loop.first %}
+                          <span class="comment-head">
+                            {{ user_avatar(c.author) }}
+                            <span class="comment-author">{{ c.author.short_display_name if c.author else '' }}</span>
+                            {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
+                          </span>
+                        {% endif %}
+                        <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
+                      </header>
+                      <p class="comment-body">{{ c.content }}</p>
+                      {{ signed_attachments(c.attachments, 'mt-3') }}
+                    </div>
+                  {% endfor %}
                 </article>
               {% endfor %}
             {% endif %}
