@@ -21,7 +21,7 @@ ui:
     active: "Aktywny"
   errors:
     not_found:
-      title: "Nie znaleziono — {app}"
+      title: "Nie znaleziono"
       heading: "Nie znaleziono strony"
       body: "Ten adres nie istnieje lub został usunięty."
   settings:
@@ -69,7 +69,7 @@ ui:
     logout: "Wyloguj"
   auth:
     login:
-      title: "Logowanie — {app}"
+      title: "Logowanie"
       email: "E-mail"
       password: "Hasło"
       submit: "Zaloguj się"
@@ -94,7 +94,7 @@ ui:
       subtitle: "Potwierdź zmianę adresu e-mail"
       submit: "Potwierdź e-mail"
     unsubscribe:
-      title: "Wypisanie — {app}"
+      title: "Wypisanie"
       heading: "Wypisano"
       heading_invalid: "Link nieprawidłowy"
       done: "Wypisano Cię z powiadomień: {type}."
@@ -138,12 +138,6 @@ ui:
       password: "Zmiana hasła"
       notifications: "Powiadomienia"
       appearance: "Wygląd"
-    title_doc:
-      profile: "Profil — {app}"
-      data: "Dane konta — {app}"
-      password: "Zmiana hasła — {app}"
-      notifications: "Powiadomienia — {app}"
-      appearance: "Wygląd — {app}"
     field:
       first_name: "Imię"
       last_name: "Nazwisko"
@@ -181,7 +175,7 @@ ui:
     admin_all_projects_hint: "Administratorzy mają automatyczny dostęp do wszystkich projektów."
   portal:
     empty:
-      title_doc: "Brak projektów — {app}"
+      title: "Brak projektów"
       heading: "Nie masz jeszcze projektów"
       body: "Poproś administratora o zaproszenie lub dodanie do projektu."
     feed:
@@ -223,6 +217,7 @@ ui:
         waiting_on_me: "Oczekuje na mnie"
         done: "Zakończone"
   ticket:
+    doc_title: "Zgłoszenie {label}"
     description: "Opis"
     edit: "Edytuj"
     attachments: "Załączniki"
@@ -345,7 +340,7 @@ ui:
       role: "Rola"
       submit: "Utwórz i wyślij link aktywacyjny"
     user_edit:
-      title_doc: "Edycja użytkownika — {app}"
+      title: "Edycja użytkownika"
       heading: "Edycja konta"
       activation: "Aktywacja"
       activation_hint: "Konto oczekuje na aktywację. Możesz ponownie wysłać link na e-mail."

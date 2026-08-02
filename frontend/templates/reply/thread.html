@@ -29,7 +29,7 @@
     </div>
   {% endif %}
 {%- endmacro %}
-{% block title %}{{ ticket.title }} — {{ app_name }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.ticket.doc_title", label=ticket|ticket_label) }}{% endblock title %}
 {% block body %}
   {{ app_flash(error=error, field="content" if error else none) }}
   <header class="app-header">

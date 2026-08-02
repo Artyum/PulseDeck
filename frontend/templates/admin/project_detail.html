@@ -2,7 +2,7 @@
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import form_select_menu with context %}
 {% from "partials/app_flash.html" import app_flash %}
-{% block title %}{{ project.name }} — {{ app_name }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ project.key }}{% endblock title %}
 {% block content %}
   {{ app_flash(error=error) }}
   <nav class="issue-crumb">

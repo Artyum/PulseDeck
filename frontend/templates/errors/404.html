@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo with context %}
-{% block title %}{{ t('ui.errors.not_found.title', app=app_name) }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.errors.not_found.title") }}{% endblock title %}
 {% block body %}
   <div class="auth-scene">
     <div class="auth-card !shadow-none text-center">
       <a href="{{ url_for('home') }}" class="inline-block">{{ brand_logo(variant='auth', alt=app_name) }}</a>
-      <p class="mt-6 text-5xl font-semibold tracking-tight text-ink">404</p>
+      <p class="mt-6 text-5xl font-semibold text-ink">404</p>
       <h1 class="mt-3 page-title">{{ t("ui.errors.not_found.heading") }}</h1>
       <p class="mt-2 text-sm text-steel">{{ t("ui.errors.not_found.body") }}</p>
       <a href="{{ url_for('home') }}" class="btn btn-primary mt-8">{{ t("ui.common.back_home") }}</a>

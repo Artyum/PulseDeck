@@ -21,7 +21,7 @@ ui:
     active: "Active"
   errors:
     not_found:
-      title: "Not found — {app}"
+      title: "Not found"
       heading: "Page not found"
       body: "This address does not exist or has been removed."
   settings:
@@ -69,7 +69,7 @@ ui:
     logout: "Log out"
   auth:
     login:
-      title: "Sign in — {app}"
+      title: "Sign in"
       email: "E-mail"
       password: "Password"
       submit: "Sign in"
@@ -94,7 +94,7 @@ ui:
       subtitle: "Confirm your email address change"
       submit: "Confirm email"
     unsubscribe:
-      title: "Unsubscribe — {app}"
+      title: "Unsubscribe"
       heading: "Unsubscribed"
       heading_invalid: "Invalid link"
       done: "You've been unsubscribed from: {type}."
@@ -138,12 +138,6 @@ ui:
       password: "Change password"
       notifications: "Notifications"
       appearance: "Appearance"
-    title_doc:
-      profile: "Profile — {app}"
-      data: "Account data — {app}"
-      password: "Change password — {app}"
-      notifications: "Notifications — {app}"
-      appearance: "Appearance — {app}"
     field:
       first_name: "First name"
       last_name: "Last name"
@@ -181,7 +175,7 @@ ui:
     admin_all_projects_hint: "Administrators automatically have access to all projects."
   portal:
     empty:
-      title_doc: "No projects — {app}"
+      title: "No projects"
       heading: "You don't have any projects yet"
       body: "Ask an administrator to invite you or add you to a project."
     feed:
@@ -223,6 +217,7 @@ ui:
         waiting_on_me: "Waiting on me"
         done: "Closed"
   ticket:
+    doc_title: "Ticket {label}"
     description: "Description"
     edit: "Edit"
     attachments: "Attachments"
@@ -345,7 +340,7 @@ ui:
       role: "Role"
       submit: "Create and send activation link"
     user_edit:
-      title_doc: "Edit user — {app}"
+      title: "Edit user"
       heading: "Edit account"
       activation: "Activation"
       activation_hint: "The account is pending activation. You can resend the link by email."

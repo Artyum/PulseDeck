@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% block title %}{{ t("ui.admin.user_edit.title_doc", app=app_name) }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.admin.user_edit.title") }}{% endblock title %}
 {% block content %}
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.user_edit.heading") }}</h1>

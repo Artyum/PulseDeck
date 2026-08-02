@@ -1,5 +1,5 @@
 {% extends "base_app.html" %}
-{% block title %}{{ t('ui.portal.empty.title_doc', app=app_name) }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.portal.empty.title") }}{% endblock title %}
 {% block content %}
   <div class="empty py-10">
     <h1 class="page-title text-ink">{{ t("ui.portal.empty.heading") }}</h1>

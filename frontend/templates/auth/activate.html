@@ -2,12 +2,12 @@
 {% from "partials/icons.html" import brand_logo with context %}
 {% from "partials/app_flash.html" import app_flash %}
 {% block title %}
+  {{ app_name }} -
   {% if pending %}
     {{ t("ui.auth.activate.title_pending") }}
   {% else %}
     {{ t("ui.auth.activate.title_reset") }}
   {% endif %}
-  — {{ app_name }}
 {% endblock title %}
 {% block body %}
   {{ app_flash(error=error) }}

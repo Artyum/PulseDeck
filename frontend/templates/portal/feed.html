@@ -1,7 +1,7 @@
 {% extends "base_app.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import ticket_row, attach_picker, modal_header, modal_cancel, filter_field_menu, form_select_menu with context %}
-{% block title %}{{ project.name }} — {{ app_name }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.portal.feed.tickets") }}{% endblock title %}
 {% block content %}
   {% if user.is_staff %}
     {% set views = [

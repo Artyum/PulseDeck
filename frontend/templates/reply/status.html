@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo with context %}
-{% block title %}{{ t('ui.reply.' ~ status_key ~ '.title') }} — {{ app_name }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t('ui.reply.' ~ status_key ~ '.title') }}{% endblock title %}
 {% block body %}
   <div class="auth-scene">
     <div class="auth-stack auth-stack-wide">

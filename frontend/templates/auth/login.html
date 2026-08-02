@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo with context %}
 {% from "partials/app_flash.html" import app_flash %}
-{% block title %}{{ t('ui.auth.login.title', app=app_name) }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.auth.login.title") }}{% endblock title %}
 {% block body %}
   {% set blocked_msg = t('flash.auth.account_blocked') %}
   {% set not_activated_msg = t('flash.auth.account_not_activated') %}

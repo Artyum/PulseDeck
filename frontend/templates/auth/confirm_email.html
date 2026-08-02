@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "partials/icons.html" import brand_logo with context %}
 {% from "partials/app_flash.html" import app_flash %}
-{% block title %}{{ t("ui.auth.confirm_email.title") }} — {{ app_name }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.auth.confirm_email.title") }}{% endblock title %}
 {% block body %}
   {{ app_flash(error=error) }}
   <div class="auth-scene">

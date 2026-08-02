@@ -28,6 +28,8 @@
     font-family: var(--font-sans);
     font-size: 0.9375rem;
     line-height: 1.5;
+    letter-spacing: 0.02em;
+    word-spacing: 0.1em;
     color: var(--color-ink);
     background-color: var(--color-page);
     background-image: var(--page-gradient);

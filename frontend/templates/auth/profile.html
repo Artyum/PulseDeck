@@ -1,7 +1,7 @@
 {% extends "auth/base_profile.html" %}
 {% from "partials/app_flash.html" import app_flash %}
 {% set section_key = profile_section if profile_section in ('data', 'password', 'notifications', 'appearance') else 'profile' %}
-{% block title %}{{ t('ui.profile.title_doc.' ~ section_key, app=app_name) }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t('ui.profile.title.' ~ section_key) }}{% endblock title %}
 {% block content %}
   {{ app_flash(error=error, success=success) }}
   <div class="admin-page-head">
