@@ -8,6 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
 from app.config import get_settings
+from app.rate_limit import client_ip_key
 from app.utils.csrf import CSRF_HEADER, CSRF_SESSION_KEY, ensure_csrf_token
 from app.utils.i18n import resolve_lang, t
 
@@ -61,7 +62,12 @@ class CSRFProtectMiddleware(BaseHTTPMiddleware):
         token = request.headers.get(CSRF_HEADER)
 
         if not session_token or not token:
-            logger.warning("CSRF: brak tokenu (path=%s method=%s)", path, method)
+            logger.warning(
+                "CSRF: brak tokenu path=%s method=%s ip=%s",
+                path,
+                method,
+                client_ip_key(request),
+            )
             return _csrf_reject(request, "messages.csrf.missing")
 
         try:
@@ -70,7 +76,12 @@ class CSRFProtectMiddleware(BaseHTTPMiddleware):
             ok = False
 
         if not ok:
-            logger.warning("CSRF: niezgodny token (path=%s method=%s)", path, method)
+            logger.warning(
+                "CSRF: niezgodny token path=%s method=%s ip=%s",
+                path,
+                method,
+                client_ip_key(request),
+            )
             return _csrf_reject(request, "messages.csrf.invalid")
 
         return await call_next(request)

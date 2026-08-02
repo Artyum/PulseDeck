@@ -40,6 +40,7 @@ from app.utils.urls import safe_next_path
 
 router = APIRouter(tags=["auth"])
 logger = logging.getLogger("pulsedeck.auth")
+security_logger = logging.getLogger("pulsedeck.security")
 
 _LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 5
 
@@ -177,6 +178,7 @@ def login_submit(
     user = auth_service.authenticate_password(db, email, password)
     if not user:
         logger.warning("Login failed email=%s ip=%s", email_norm, ip)
+        security_logger.warning("Login failed email=%s ip=%s", email_norm, ip)
         return _render_login(
             request,
             error=t(lang, "flash.auth.invalid_credentials"),
@@ -185,6 +187,7 @@ def login_submit(
     blocked = auth_service.login_blocked_reason(user, lang=lang)
     if blocked:
         logger.warning("Login blocked email=%s ip=%s", email_norm, ip)
+        security_logger.warning("Login blocked email=%s ip=%s", email_norm, ip)
         return _render_login(request, error=blocked, next_path=dest)
     clear_user_session(request, preserve_last_project=True)
     set_user_session(request, user)
