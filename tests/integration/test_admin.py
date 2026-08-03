@@ -1,5 +1,7 @@
 """Admin panel integration tests."""
 
+from unittest.mock import patch
+
 
 def _login_admin(client):
     r = client.post(
@@ -119,20 +121,82 @@ class TestAdminUsers:
         assert r.status_code == 200
         assert "admin" in r.text.lower() or "Admin" in r.text
 
-    def test_create_user(self, client, admin_user, project_with_members):
+    def test_create_user(self, client, db_session, admin_user, project_with_members):
+        _login_admin(client)
+        with patch("app.services.auth.send_password_link") as send_link:
+            r = client.post(
+                "/admin/users/new",
+                data={
+                    "first_name": "Nowy",
+                    "last_name": "User",
+                    "email": "nowy@test.local",
+                    "phone": "+48123456789",
+                    "role": "USER",
+                    "ui_lang": "pl",
+                    "project_ids": [str(project_with_members.id)],
+                },
+                follow_redirects=False,
+            )
+            assert r.status_code == 303
+            send_link.assert_called_once()
+        db_session.expire_all()
+        from app.services import auth as auth_service
+
+        user = auth_service.get_user_by_email(db_session, "nowy@test.local")
+        assert user is not None
+        assert user.is_pending
+        assert user.phone == "+48123456789"
+        assert user.ui_lang == "pl"
+        assert r.headers["location"].startswith(f"/admin/users/{user.id}")
+
+    def test_create_user_active(self, client, db_session, admin_user, project_with_members):
+        _login_admin(client)
+        with patch("app.services.auth.send_password_link") as send_link:
+            r = client.post(
+                "/admin/users/new",
+                data={
+                    "first_name": "Aktywny",
+                    "last_name": "User",
+                    "email": "aktywny@test.local",
+                    "role": "USER",
+                    "ui_lang": "en",
+                    "mode": "active",
+                    "project_ids": [str(project_with_members.id)],
+                },
+                follow_redirects=False,
+            )
+            assert r.status_code == 303
+            send_link.assert_not_called()
+        db_session.expire_all()
+        from app.services import auth as auth_service
+
+        user = auth_service.get_user_by_email(db_session, "aktywny@test.local")
+        assert user is not None
+        assert not user.is_pending
+        assert user.ui_lang == "en"
+        assert "created_active" in r.headers["location"]
+
+    def test_update_user_ui_lang(
+        self, client, db_session, admin_user, client_user, project_with_members
+    ):
         _login_admin(client)
         r = client.post(
-            "/admin/users/new",
+            f"/admin/users/{client_user.id}",
             data={
-                "first_name": "Nowy",
-                "last_name": "User",
-                "email": "nowy@test.local",
-                "role": "USER",
+                "first_name": client_user.first_name,
+                "last_name": client_user.last_name,
+                "email": client_user.email,
+                "phone": "",
+                "role": client_user.role.value,
+                "ui_lang": "pl",
                 "project_ids": [str(project_with_members.id)],
             },
             follow_redirects=False,
         )
         assert r.status_code == 303
+        db_session.expire_all()
+        db_session.refresh(client_user)
+        assert client_user.ui_lang == "pl"
 
     def test_edit_user(self, client, admin_user, client_user):
         _login_admin(client)

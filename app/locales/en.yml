@@ -339,6 +339,7 @@ ui:
       title: "New user"
       role: "Role"
       submit: "Create and send activation link"
+      submit_active: "Create without activation"
     user_edit:
       title: "Edit user"
       heading: "Edit account"
@@ -457,6 +458,7 @@ flash:
     activation_link_invalid: "That activation link has expired or isn't valid."
   admin:
     user_created: "Account created — we've sent an activation link."
+    user_created_active: "Account created and active — set a password below."
     user_updated: "User details saved."
     password_link_sent: "We've sent an email with a password link."
     password_set: "Password set."

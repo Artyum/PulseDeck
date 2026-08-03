@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% from "partials/ticket_macros.html" import project_checkboxes, modal_header, modal_cancel, form_select_menu with context %}
+{% from "partials/ticket_macros.html" import project_checkboxes, modal_header, form_select_menu with context %}
 {% macro users_sort_th(col, label) -%}
   {% set next = 'desc' if sort == col and sort_dir == 'asc' else 'asc' %}
   <a href="{{ sort_links[col] }}"
@@ -127,7 +127,7 @@
           class="modal-form">
       {{ modal_header('new-user', t('ui.admin.user_new.title') ) }}
       <div class="modal-body">
-        <div class="modal-grid">
+        <div class="form-grid">
           <div class="admin-field">
             <label class="label" for="new-user-first-name">{{ t("ui.profile.field.first_name") }}</label>
             <input id="new-user-first-name"
@@ -143,16 +143,32 @@
                    class="input">
           </div>
         </div>
-        <div class="admin-field">
-          <label class="label" for="new-user-email">{{ t("ui.profile.field.email") }}</label>
-          <input id="new-user-email"
-                 name="email"
-                 {{ field_attrs("user.email") }}
-                 class="input">
+        <div class="form-grid">
+          <div class="admin-field">
+            <label class="label" for="new-user-email">{{ t("ui.profile.field.email") }}</label>
+            <input id="new-user-email"
+                   name="email"
+                   {{ field_attrs("user.email") }}
+                   class="input">
+          </div>
+          <div class="admin-field">
+            <label class="label" for="new-user-phone">{{ t("ui.profile.field.phone") }}</label>
+            <input id="new-user-phone"
+                   name="phone"
+                   {{ field_attrs("user.phone") }}
+                   placeholder="+48123456789"
+                   class="input">
+          </div>
         </div>
-        <div class="admin-field">
-          <label class="label" for="new-user-role">{{ t("ui.admin.user_new.role") }}</label>
-          {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, 'USER', role_labels, id='new-user-role', input_attrs='data-role-select') }}
+        <div class="form-grid">
+          <div class="admin-field">
+            <label class="label" for="new-user-role">{{ t("ui.admin.user_new.role") }}</label>
+            {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, 'USER', role_labels, id='new-user-role', input_attrs='data-role-select') }}
+          </div>
+          <div class="admin-field">
+            <label class="label" for="new-user-lang">{{ t("ui.settings.language") }}</label>
+            {{ form_select_menu('ui_lang', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='new-user-lang') }}
+          </div>
         </div>
         <div class="admin-field"
              data-projects-field
@@ -160,7 +176,8 @@
         <p class="admin-field-hint" data-admin-projects-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
       </div>
       <div class="modal-footer">
-        {{ modal_cancel("new-user") }}
+        <button type="button" data-modal-dismiss="new-user" class="btn btn-ghost">{{ t("ui.common.cancel") }}</button>
+        <button type="submit" name="mode" value="active" class="btn btn-secondary">{{ t("ui.admin.user_new.submit_active") }}</button>
         <button type="submit" class="btn btn-primary">{{ t("ui.admin.user_new.submit") }}</button>
       </div>
     </form>

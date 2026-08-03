@@ -16,7 +16,7 @@ from app.rate_limit import limiter
 from app.routes.context import render
 from app.services import auth as auth_service
 from app.services import projects as project_service
-from app.utils.i18n import DEFAULT_LANG, resolve_lang, t
+from app.utils.i18n import DEFAULT_LANG, normalize_lang, resolve_lang, t
 from app.utils.urls import admin_project_path
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -77,6 +77,17 @@ def _admin_project(db: Session, key: str, *, lang: str | None = None) -> Project
 
 def _form_truthy(value: str) -> bool:
     return value in ("1", "true", "on")
+
+
+def _form_text(form, key: str) -> str:
+    return str(form.get(key) or "")
+
+
+def _parse_role(raw: str, *, lang: str) -> UserRole:
+    try:
+        return UserRole(raw)
+    except ValueError:
+        raise ValueError(t(lang, "messages.admin.invalid_role")) from None
 
 
 def _field_json_error(lang: str, exc: Exception) -> JSONResponse:
@@ -264,6 +275,7 @@ def delete_project_tag(
 
 _USER_OK_FLASH = {
     "created": "flash.admin.user_created",
+    "created_active": "flash.admin.user_created_active",
     "updated": "flash.admin.user_updated",
     "password_link": "flash.admin.password_link_sent",
     "password_set": "flash.admin.password_set",
@@ -378,34 +390,30 @@ async def admin_user_create(
 ):
     lang = resolve_lang(request)
     form = await request.form()
-    first_name = str(form.get("first_name") or "")
-    last_name = str(form.get("last_name") or "")
-    email = str(form.get("email") or "")
-    role_raw = str(form.get("role") or UserRole.USER.value)
-    raw_ids = form.getlist("project_ids")
-    project_ids = [int(str(x)) for x in raw_ids if x]
-
+    activate = _form_text(form, "mode") == "active"
     try:
-        role = UserRole(role_raw)
-    except ValueError:
-        return JSONResponse(
-            {"detail": t(lang, "messages.admin.invalid_role")}, status_code=400
-        )
-    try:
-        target = auth_service.create_pending_user(
+        target = auth_service.create_user(
             db,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            role=role,
-            project_ids=project_ids,
+            first_name=_form_text(form, "first_name"),
+            last_name=_form_text(form, "last_name"),
+            email=_form_text(form, "email"),
+            phone=_form_text(form, "phone"),
+            role=_parse_role(
+                _form_text(form, "role") or UserRole.USER.value, lang=lang
+            ),
+            project_ids=[int(str(x)) for x in form.getlist("project_ids") if x],
             lang=lang,
+            ui_lang=normalize_lang(_form_text(form, "ui_lang")),
+            activate=activate,
         )
-        auth_service.send_password_link(db, target, lang=lang)
+        if not activate:
+            auth_service.send_password_link(db, target, lang=lang)
     except ValueError as exc:
         db.rollback()
         return _field_json_error(lang, exc)
-    return _user_edit_redirect(target.id, ok="created")
+    return _user_edit_redirect(
+        target.id, ok="created_active" if activate else "created"
+    )
 
 
 @router.get("/users/{user_id}", response_class=HTMLResponse)
@@ -432,30 +440,30 @@ async def admin_user_update(
     lang = resolve_lang(request)
     target = _get_user_or_404(db, user_id, lang=lang)
     form = await request.form()
-    first_name = str(form.get("first_name") or "")
-    last_name = str(form.get("last_name") or "")
-    email = str(form.get("email") or "")
-    phone = str(form.get("phone") or "")
-    role_raw = str(form.get("role") or "")
-    project_ids = [int(str(x)) for x in form.getlist("project_ids") if x]
     try:
         auth_service.update_profile_fields(
             db,
             target,
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
+            first_name=_form_text(form, "first_name"),
+            last_name=_form_text(form, "last_name"),
+            phone=_form_text(form, "phone"),
             lang=lang,
         )
-        auth_service.admin_set_email(db, target, email, lang=lang)
+        auth_service.admin_set_email(
+            db, target, _form_text(form, "email"), lang=lang
+        )
+        target.ui_lang = normalize_lang(_form_text(form, "ui_lang"))
+        role_raw = _form_text(form, "role")
         if role_raw and target.id != user.id:
-            try:
-                new_role = UserRole(role_raw)
-            except ValueError:
-                raise ValueError(t(lang, "messages.admin.invalid_role")) from None
+            new_role = _parse_role(role_raw, lang=lang)
             if new_role != target.role:
                 auth_service.set_user_role(db, target, new_role, lang=lang)
-        project_service.set_user_projects(db, target.id, project_ids, lang=lang)
+        project_service.set_user_projects(
+            db,
+            target.id,
+            [int(str(x)) for x in form.getlist("project_ids") if x],
+            lang=lang,
+        )
         db.commit()
         db.refresh(target)
     except ValueError as exc:

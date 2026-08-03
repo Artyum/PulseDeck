@@ -107,7 +107,7 @@ def test_user_activation(client, db_session, admin_user, project_with_members):
     from app.models.enums import MagicTokenPurpose, UserRole
     from app.services import auth as auth_service
 
-    user = auth_service.create_pending_user(
+    user = auth_service.create_user(
         db_session,
         first_name="Nowy",
         last_name="User",

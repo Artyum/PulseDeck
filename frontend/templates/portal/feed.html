@@ -126,7 +126,7 @@
                  {{ field_attrs("ticket.title") }}
                  class="input mt-1">
         </div>
-        <div class="modal-grid">
+        <div class="form-grid">
           <div>
             <label class="label" for="new-ticket-type">{{ t("ui.portal.feed.field.type") }}</label>
             {{ form_select_menu('ticket_type', t('ui.portal.feed.field.type') , ticket_types, 'BUG', type_labels, id='new-ticket-type', class_name='mt-1') }}

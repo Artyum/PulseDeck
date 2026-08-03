@@ -149,23 +149,68 @@ class TestPasswordLinkAndComplete:
 
 
 class TestPendingUserAndSeed:
-    def test_create_pending_user(self, db_session, project_with_members):
-        user = auth_service.create_pending_user(
+    def test_create_user(self, db_session, project_with_members):
+        user = auth_service.create_user(
             db_session,
             first_name="Nowy",
             last_name="Klient",
             email="nowy@test.local",
             role=UserRole.USER,
             project_ids=[project_with_members.id],
+            phone="+48111222333",
+            ui_lang="pl",
         )
         assert user.activated_at is None
+        assert user.is_pending
+        assert user.phone == "+48111222333"
+        assert user.ui_lang == "pl"
+        assert user.password_hash is None
         assert project_service.is_project_member(
             db_session, project_with_members.id, user.id
         )
 
-    def test_create_pending_duplicate_email(self, db_session, client_user):
+    def test_create_user_active(self, db_session, project_with_members):
+        user = auth_service.create_user(
+            db_session,
+            first_name="Aktywny",
+            last_name="Klient",
+            email="aktywny@test.local",
+            role=UserRole.USER,
+            project_ids=[project_with_members.id],
+            activate=True,
+        )
+        assert user.activated_at is not None
+        assert not user.is_pending
+        assert user.password_hash is None
+
+    def test_create_admin_without_projects(self, db_session):
+        user = auth_service.create_user(
+            db_session,
+            first_name="Nowy",
+            last_name="Admin",
+            email="nowy-admin@test.local",
+            role=UserRole.ADMIN,
+            project_ids=[],
+            activate=True,
+        )
+        assert user.role == UserRole.ADMIN
+        assert not user.is_pending
+        assert user.memberships == []
+
+    def test_create_user_requires_project(self, db_session):
         with pytest.raises(ValueError):
-            auth_service.create_pending_user(
+            auth_service.create_user(
+                db_session,
+                first_name="X",
+                last_name="Y",
+                email="noproject@test.local",
+                role=UserRole.USER,
+                project_ids=[],
+            )
+
+    def test_create_duplicate_email(self, db_session, client_user):
+        with pytest.raises(ValueError):
+            auth_service.create_user(
                 db_session,
                 first_name="X",
                 last_name="Y",

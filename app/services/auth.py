@@ -436,7 +436,7 @@ def complete_password_set(
     return user
 
 
-def create_pending_user(
+def create_user(
     db: Session,
     *,
     first_name: str,
@@ -444,18 +444,19 @@ def create_pending_user(
     email: str,
     role: UserRole,
     project_ids: list[int],
+    phone: str | None = None,
     lang: str | None = None,
+    ui_lang: str | None = None,
+    activate: bool = False,
 ) -> User:
     lang = normalize_lang(lang)
+    user_lang = normalize_lang(ui_lang or lang)
     fn, ln = _require_names(first_name, last_name, lang=lang)
     normalized = clean("user.email", email, lang=lang)
+    phone_val = clean("user.phone", phone or "", lang=lang)
     if email_taken(db, normalized):
         raise ValueError(t(lang, "messages.auth.user_exists_resend"))
-    role_value = clean(
-        "user.role",
-        role.value if isinstance(role, UserRole) else role,
-        lang=lang,
-    )
+    role_value = clean("user.role", role.value, lang=lang)
     role = UserRole(role_value)
     if role != UserRole.ADMIN:
         resolved_ids = project_service.resolve_project_ids(db, project_ids, lang=lang)
@@ -465,16 +466,19 @@ def create_pending_user(
         email=normalized,
         first_name=fn,
         last_name=ln,
+        phone=phone_val,
         role=role,
         is_active=True,
         activated_at=None,
         password_hash=None,
-        ui_lang=lang,
+        ui_lang=user_lang,
     )
     db.add(user)
     db.flush()
     for pid in resolved_ids:
         db.add(ProjectMember(project_id=pid, user_id=user.id))
+    if activate:
+        mark_activated(user)
     db.commit()
     db.refresh(user)
     return user

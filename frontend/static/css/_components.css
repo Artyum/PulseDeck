@@ -540,7 +540,7 @@
   }
 
   .admin-narrow {
-    max-width: calc(26 * var(--layout-rem));
+    max-width: calc(36 * var(--layout-rem));
   }
 
   .admin-prefs {
@@ -3268,7 +3268,7 @@
     font-size: 0.875rem;
   }
 
-  .modal-grid {
+  .form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
@@ -3533,7 +3533,7 @@
   }
 
   @media (max-width: 480px) {
-    .modal-grid {
+    .form-grid {
       grid-template-columns: 1fr;
     }
   }

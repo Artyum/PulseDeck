@@ -339,6 +339,7 @@ ui:
       title: "Nowy użytkownik"
       role: "Rola"
       submit: "Utwórz i wyślij link aktywacyjny"
+      submit_active: "Utwórz bez aktywacji"
     user_edit:
       title: "Edycja użytkownika"
       heading: "Edycja konta"
@@ -457,6 +458,7 @@ flash:
     activation_link_invalid: "Link aktywacyjny wygasł lub jest nieprawidłowy."
   admin:
     user_created: "Konto utworzone — wysłaliśmy link aktywacyjny."
+    user_created_active: "Konto utworzone i aktywne — ustaw hasło poniżej."
     user_updated: "Dane użytkownika zapisane."
     password_link_sent: "Wysłaliśmy e-mail z linkiem do hasła."
     password_set: "Hasło ustawione."
