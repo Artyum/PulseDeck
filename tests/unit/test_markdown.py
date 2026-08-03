@@ -25,6 +25,12 @@ class TestRenderMarkdownSafe:
         assert "<ol>" in html
         assert "<li>one</li>" in html
 
+    def test_nested_ordered_list(self):
+        html = render_markdown_safe("1. parent\n    1. child\n    2. child2\n2. other")
+        assert html.count("<ol>") >= 2
+        assert "<li>child</li>" in html
+        assert "<li>other</li>" in html
+
     def test_inline_code(self):
         html = render_markdown_safe("use `x` here")
         assert "<code>x</code>" in html

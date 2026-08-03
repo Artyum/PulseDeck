@@ -80,7 +80,9 @@ function initEditor(root) {
         link: false,
         underline: false,
       }),
-      Markdown,
+      Markdown.configure({
+        indentation: { style: "space", size: 4 },
+      }),
     ],
     content: initial,
     contentType: "markdown",
