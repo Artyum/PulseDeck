@@ -4251,6 +4251,11 @@
     box-shadow: none;
   }
 
+  html[data-theme-gradient="off"] .admin-shell .btn-primary,
+  html[data-theme-gradient="off"] .admin-shell .btn-primary:hover {
+    box-shadow: none;
+  }
+
   @media (max-width: 48rem) {
     .auth-scene,
     .admin-aside {

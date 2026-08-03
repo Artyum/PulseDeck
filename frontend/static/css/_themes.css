@@ -563,6 +563,10 @@ html[data-theme-gradient="off"] {
   --shadow-lift-md: none;
   --shadow-float: none;
   --shadow-menu: none;
+  --btn-shadow-rest: none;
+  --btn-shadow-hover: none;
+  --btn-shadow-primary: none;
+  --btn-shadow-primary-hover: none;
   --surface-gradient: var(--color-surface);
   --surface-gradient-soft: var(--color-surface);
 }
