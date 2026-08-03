@@ -16,9 +16,19 @@ DEFAULT_FONT_SIZE = "natural"
 
 
 @dataclass(frozen=True, slots=True)
+class ThemePreview:
+    page: str
+    aside: str
+    surface: str
+    soft: str
+    pulse: str
+    ink: str
+
+
+@dataclass(frozen=True, slots=True)
 class ThemeChoice:
     id: str
-    swatches: tuple[str, str, str]
+    preview: ThemePreview
 
 
 @dataclass(frozen=True, slots=True)
@@ -38,98 +48,134 @@ THEME_PAIRS: tuple[tuple[str, str], ...] = (
 _THEMES: dict[str, ThemeChoice] = {
     "morning-mist": ThemeChoice(
         id="morning-mist",
-        swatches=(
-            "linear-gradient(135deg, #f7fafd 0%, #d8e6f7 48%, #2f72e8 100%)",
-            "#2f72e8",
-            "#1a2b3d",
+        preview=ThemePreview(
+            page="#f5f8fc",
+            aside="#eef3fa",
+            surface="#ffffff",
+            soft="#d8e6f7",
+            pulse="#2f72e8",
+            ink="#1a2b3d",
         ),
     ),
     "deep-ocean": ThemeChoice(
         id="deep-ocean",
-        swatches=(
-            "linear-gradient(135deg, #0c1726 0%, #1a3452 48%, #5aa8ff 100%)",
-            "#5aa8ff",
-            "#15263c",
+        preview=ThemePreview(
+            page="#0c1726",
+            aside="#101c2e",
+            surface="#15263c",
+            soft="#1a3452",
+            pulse="#5aa8ff",
+            ink="#d8e4f2",
         ),
     ),
     "sandy-dawn": ThemeChoice(
         id="sandy-dawn",
-        swatches=(
-            "linear-gradient(135deg, #fbf7f0 0%, #ecc694 48%, #c9923a 100%)",
-            "#c9923a",
-            "#352e26",
+        preview=ThemePreview(
+            page="#faf5ee",
+            aside="#f3ebe0",
+            surface="#fffdfb",
+            soft="#ebe5dc",
+            pulse="#c9923a",
+            ink="#352e26",
         ),
     ),
     "amber-night": ThemeChoice(
         id="amber-night",
-        swatches=(
-            "linear-gradient(135deg, #13100c 0%, #3a3222 48%, #dbab55 100%)",
-            "#dbab55",
-            "#1f1a15",
+        preview=ThemePreview(
+            page="#13100c",
+            aside="#181410",
+            surface="#1f1a15",
+            soft="#2a2622",
+            pulse="#dbab55",
+            ink="#ebe2d6",
         ),
     ),
     "green-meadow": ThemeChoice(
         id="green-meadow",
-        swatches=(
-            "linear-gradient(135deg, #f6faf6 0%, #a8d6ba 48%, #3d9470 100%)",
-            "#3d9470",
-            "#1f3228",
+        preview=ThemePreview(
+            page="#f4f8f4",
+            aside="#e8f0ea",
+            surface="#ffffff",
+            soft="#dae7e3",
+            pulse="#3d9470",
+            ink="#1f3228",
         ),
     ),
     "northern-spruce": ThemeChoice(
         id="northern-spruce",
-        swatches=(
-            "linear-gradient(135deg, #0e1612 0%, #1e3830 48%, #52c295 100%)",
-            "#52c295",
-            "#18231e",
+        preview=ThemePreview(
+            page="#0e1612",
+            aside="#121b16",
+            surface="#18231e",
+            soft="#1e322c",
+            pulse="#52c295",
+            ink="#d8e8de",
         ),
     ),
     "graphite-day": ThemeChoice(
         id="graphite-day",
-        swatches=(
-            "linear-gradient(135deg, #f7f8fa 0%, #b0c4e4 48%, #3d6fd9 100%)",
-            "#3d6fd9",
-            "#1e222a",
+        preview=ThemePreview(
+            page="#f5f6f8",
+            aside="#eceef3",
+            surface="#ffffff",
+            soft="#dde5f3",
+            pulse="#3d6fd9",
+            ink="#1e222a",
         ),
     ),
     "charcoal-dusk": ThemeChoice(
         id="charcoal-dusk",
-        swatches=(
-            "linear-gradient(135deg, #0e1012 0%, #1e2e36 48%, #4ec4de 100%)",
-            "#4ec4de",
-            "#181c20",
+        preview=ThemePreview(
+            page="#0e1012",
+            aside="#13161a",
+            surface="#181c20",
+            soft="#1e2e36",
+            pulse="#4ec4de",
+            ink="#dce1e8",
         ),
     ),
     "berry-dawn": ThemeChoice(
         id="berry-dawn",
-        swatches=(
-            "linear-gradient(135deg, #faf7fd 0%, #e0d4f0 48%, #9458c8 100%)",
-            "#9458c8",
-            "#2e2438",
+        preview=ThemePreview(
+            page="#f8f5fb",
+            aside="#f1ecf6",
+            surface="#ffffff",
+            soft="#e4e0ec",
+            pulse="#9458c8",
+            ink="#2e2438",
         ),
     ),
     "midnight-berry": ThemeChoice(
         id="midnight-berry",
-        swatches=(
-            "linear-gradient(135deg, #120e16 0%, #322846 48%, #b07ddc 100%)",
-            "#b07ddc",
-            "#1e1826",
+        preview=ThemePreview(
+            page="#120e16",
+            aside="#17131c",
+            surface="#1e1826",
+            soft="#282238",
+            pulse="#b07ddc",
+            ink="#ebe3f2",
         ),
     ),
     "rose-dawn": ThemeChoice(
         id="rose-dawn",
-        swatches=(
-            "linear-gradient(135deg, #fdf7f9 0%, #f0c8d4 48%, #d45a82 100%)",
-            "#d45a82",
-            "#3a2430",
+        preview=ThemePreview(
+            page="#fbf5f7",
+            aside="#f6eef1",
+            surface="#ffffff",
+            soft="#eee4ea",
+            pulse="#d45a82",
+            ink="#3a2430",
         ),
     ),
     "rose-night": ThemeChoice(
         id="rose-night",
-        swatches=(
-            "linear-gradient(135deg, #160e12 0%, #3a2430 48%, #e88aa8 100%)",
-            "#e88aa8",
-            "#1f151a",
+        preview=ThemePreview(
+            page="#160e12",
+            aside="#1c1218",
+            surface="#1f151a",
+            soft="#32242c",
+            pulse="#e88aa8",
+            ink="#f0e4ea",
         ),
     ),
 }

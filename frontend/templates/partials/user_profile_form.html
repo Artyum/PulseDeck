@@ -266,10 +266,16 @@
              data-ui-value="{{ theme.id }}"
              aria-checked="false"
              aria-label="{{ theme.label }}">
-          <span class="theme-option-swatches" aria-hidden="true">
-            {% for swatch in theme.swatches %}
-              <span class="theme-option-swatch" style="background: {{ swatch }}"></span>
-            {% endfor %}
+          <span class="theme-option-preview"
+                aria-hidden="true"
+                style="--tp-page: {{ theme.preview.page }}; --tp-aside: {{ theme.preview.aside }}; --tp-surface: {{ theme.preview.surface }}; --tp-soft: {{ theme.preview.soft }}; --tp-pulse: {{ theme.preview.pulse }}; --tp-ink: {{ theme.preview.ink }}">
+            <span class="theme-option-preview-rail"></span>
+            <span class="theme-option-preview-body">
+              <span class="theme-option-preview-chip"></span>
+              <span class="theme-option-preview-line"></span>
+              <span class="theme-option-preview-line is-short"></span>
+              <span class="theme-option-preview-accent"></span>
+            </span>
           </span>
           <span class="theme-option-meta">
             <span class="theme-option-label">{{ theme.label }}</span>

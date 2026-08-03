@@ -112,7 +112,7 @@ def _theme_choices(lang: str):
     return [
         SimpleNamespace(
             id=theme.id,
-            swatches=theme.swatches,
+            preview=theme.preview,
             label=t(lang, f"themes.{theme.id}.label"),
             description=t(lang, f"themes.{theme.id}.description"),
         )
