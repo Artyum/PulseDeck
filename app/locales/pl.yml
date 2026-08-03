@@ -166,6 +166,7 @@ ui:
       gradient_off: "Płaski"
       density_title: "Odstępy"
       font_title: "Wielkość czcionki"
+      notify_intro: "Konfiguracja powiadomień e-mail o zmianach w zgłoszeniach."
       notify_new_ticket: "Nowe zgłoszenia"
       notify_new_ticket_hint: "E-mail, gdy ktoś założy nowe zgłoszenie w projekcie, w którym uczestniczysz."
       notify_reply: "Odpowiedzi"

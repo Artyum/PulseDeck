@@ -390,7 +390,7 @@
       mainCurrent.replaceWith(document.importNode(mainIncoming, true));
       swapped = true;
     } else {
-      [".admin-narrow", ".admin-prefs", ".admin-page-head"].forEach(function (sel) {
+      [".profile-content", ".admin-narrow", ".admin-prefs", ".admin-page-head"].forEach(function (sel) {
         var incoming = doc.querySelector(sel);
         var current = document.querySelector(sel);
         if (incoming && current) {

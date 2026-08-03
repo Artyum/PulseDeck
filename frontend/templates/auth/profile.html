@@ -9,9 +9,5 @@
       <h1 class="issue-title">{{ t("ui.profile.title." ~ section_key) }}</h1>
     </div>
   </div>
-  {% if profile_section in ('appearance', 'notifications') %}
-    <div class="admin-prefs">{% include "partials/user_profile_form.html" %}</div>
-  {% else %}
-    <div class="admin-narrow">{% include "partials/user_profile_form.html" %}</div>
-  {% endif %}
+  <div class="profile-content">{% include "partials/user_profile_form.html" %}</div>
 {% endblock content %}

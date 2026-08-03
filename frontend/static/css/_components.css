@@ -497,11 +497,12 @@
     padding-top: 0;
   }
 
-  .profile-shell .admin-narrow,
-  .profile-shell .admin-prefs {
+  .profile-shell .profile-content {
     display: flex;
     flex-direction: column;
     gap: calc(2.15rem * var(--space-scale));
+    width: 100%;
+    max-width: none;
   }
 
   .profile-shell .admin-section {
@@ -517,6 +518,13 @@
   .profile-shell .admin-section > .issue-section-title,
   .profile-shell .admin-section > .issue-section-bar {
     margin-bottom: calc(0.85rem * var(--space-scale));
+  }
+
+  .profile-shell .admin-form-stack > .admin-field > .input,
+  .profile-shell .admin-form-stack > .admin-field > .form-select-menu,
+  .profile-shell .form-grid > .admin-field > .input,
+  .profile-shell .form-grid > .admin-field > .form-select-menu {
+    width: 100%;
   }
 
   .admin-section > .admin-form-row {
@@ -560,15 +568,76 @@
 
   .profile-shell .admin-form-stack {
     gap: calc(1rem * var(--space-scale));
+    max-width: calc(24 * var(--layout-rem));
   }
 
-  .profile-shell [data-notif-prefs],
+  .profile-shell .admin-form-stack:has(.form-grid) {
+    max-width: calc(36 * var(--layout-rem));
+  }
+
   .profile-shell [data-datetime-prefs] {
-    gap: calc(1.65rem * var(--space-scale));
+    gap: calc(1rem * var(--space-scale));
   }
 
   .profile-shell .admin-field {
     gap: 0.45rem;
+  }
+
+  .pref-toggle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .pref-toggle {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.85rem 1.25rem;
+    align-items: center;
+    margin: 0;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--color-frame);
+    border-radius: 0.7rem;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .pref-toggle:hover {
+    border-color: color-mix(in oklab, var(--color-pulse) 40%, var(--color-frame));
+    background: color-mix(in oklab, var(--color-surface) 88%, var(--color-soft-blue));
+  }
+
+  .pref-toggle:has(input:checked) {
+    border-color: color-mix(in oklab, var(--color-pulse) 45%, var(--color-frame));
+    background: color-mix(in oklab, var(--color-surface) 82%, var(--color-soft-blue));
+  }
+
+  .pref-toggle-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .pref-toggle-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .pref-toggle-desc {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--color-steel);
+  }
+
+  .pref-toggle .theme-gradient-switch {
+    flex-shrink: 0;
   }
 
   .admin-shell .label {

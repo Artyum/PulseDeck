@@ -10,7 +10,9 @@
   <section class="admin-section" id="language-settings">
     <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
     <div class="admin-form-stack">
-      {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', class_name='max-w-xs', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
+      <div class="admin-field">
+        {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
+      </div>
     </div>
   </section>
   <section class="admin-section" id="datetime-settings">
@@ -20,11 +22,11 @@
          data-datetime-prefs-url="{{ url_for('update_datetime_prefs') }}">
       <div class="admin-field">
         <span class="label">{{ t("ui.profile.settings.datetime_format") }}</span>
-        {{ form_select_menu('datetime_format', t('ui.profile.settings.datetime_format') , datetime_format_choices, ui_datetime_format, value_attr='id', id='ui-datetime-format', class_name='max-w-md', input_attrs='data-datetime-pref="format"') }}
+        {{ form_select_menu('datetime_format', t('ui.profile.settings.datetime_format') , datetime_format_choices, ui_datetime_format, value_attr='id', id='ui-datetime-format', input_attrs='data-datetime-pref="format"') }}
       </div>
       <div class="admin-field">
         <span class="label">{{ t("ui.profile.settings.timezone") }}</span>
-        {{ form_select_menu('timezone', t('ui.profile.settings.timezone') , timezone_choices, ui_timezone, value_attr='id', id='ui-timezone', class_name='max-w-md', input_attrs='data-datetime-pref="timezone"') }}
+        {{ form_select_menu('timezone', t('ui.profile.settings.timezone') , timezone_choices, ui_timezone, value_attr='id', id='ui-timezone', input_attrs='data-datetime-pref="timezone"') }}
       </div>
     </div>
   </section>
@@ -55,8 +57,6 @@
                    value="{{ edit_user.last_name }}"
                    class="input">
           </div>
-        </div>
-        <div class="form-grid">
           <div class="admin-field">
             <label class="label" for="email">{{ t("ui.profile.field.email") }}</label>
             <input id="email"
@@ -80,9 +80,7 @@
                    placeholder="+48123456789"
                    class="input">
           </div>
-        </div>
-        {% if is_admin_edit %}
-          <div class="form-grid">
+          {% if is_admin_edit %}
             <div class="admin-field">
               <label class="label" for="edit-user-role">{{ t("ui.admin.user_new.role") }}</label>
               {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, edit_user.role.value, role_labels, id='edit-user-role', input_attrs='data-role-select', disabled=(edit_user.id == user.id)) }}
@@ -91,7 +89,9 @@
               <label class="label" for="edit-user-lang">{{ t("ui.settings.language") }}</label>
               {{ form_select_menu('ui_lang', t('ui.settings.language') , lang_choices, edit_user.ui_lang, value_attr='id', id='edit-user-lang') }}
             </div>
-          </div>
+          {% endif %}
+        </div>
+        {% if is_admin_edit %}
           <div data-projects-field
                data-required-msg="{{ t('ui.admin.projects_required') }}"
                {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
@@ -115,16 +115,22 @@
               action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
               class="admin-form-stack">
           <div class="form-grid">
-            <input name="new_password"
-                   {{ field_attrs('user.password', required=False) }}
-                   placeholder="{{ t('ui.profile.password.new') }}"
-                   class="input"
-                   autocomplete="new-password">
-            <input name="confirm_password"
-                   {{ field_attrs('user.password', required=False) }}
-                   placeholder="{{ t('ui.profile.password.confirm') }}"
-                   class="input"
-                   autocomplete="new-password">
+            <div class="admin-field">
+              <label class="label" for="admin-new-password">{{ t("ui.profile.password.new") }}</label>
+              <input id="admin-new-password"
+                     name="new_password"
+                     {{ field_attrs('user.password', required=False) }}
+                     class="input"
+                     autocomplete="new-password">
+            </div>
+            <div class="admin-field">
+              <label class="label" for="admin-confirm-password">{{ t("ui.profile.password.confirm") }}</label>
+              <input id="admin-confirm-password"
+                     name="confirm_password"
+                     {{ field_attrs('user.password', required=False) }}
+                     class="input"
+                     autocomplete="new-password">
+            </div>
           </div>
           <div class="admin-form-actions">
             <button type="submit" name="action" value="set" class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
@@ -146,21 +152,30 @@
     <form method="post"
           action="{{ url_for('change_password') }}"
           class="admin-form-stack">
-      <input {{ field_attrs("user.password") }}
-             name="current_password"
-             placeholder="{{ t('ui.profile.password.current') }}"
-             class="input"
-             autocomplete="current-password">
-      <input {{ field_attrs("user.password") }}
-             name="new_password"
-             placeholder="{{ t('ui.profile.password.new') }}"
-             class="input"
-             autocomplete="new-password">
-      <input {{ field_attrs("user.password") }}
-             name="confirm_password"
-             placeholder="{{ t('ui.profile.password.confirm') }}"
-             class="input"
-             autocomplete="new-password">
+      <div class="admin-field">
+        <label class="label" for="current_password">{{ t("ui.profile.password.current") }}</label>
+        <input id="current_password"
+               {{ field_attrs("user.password") }}
+               name="current_password"
+               class="input"
+               autocomplete="current-password">
+      </div>
+      <div class="admin-field">
+        <label class="label" for="new_password">{{ t("ui.profile.password.new") }}</label>
+        <input id="new_password"
+               {{ field_attrs("user.password") }}
+               name="new_password"
+               class="input"
+               autocomplete="new-password">
+      </div>
+      <div class="admin-field">
+        <label class="label" for="confirm_password">{{ t("ui.profile.password.confirm") }}</label>
+        <input id="confirm_password"
+               {{ field_attrs("user.password") }}
+               name="confirm_password"
+               class="input"
+               autocomplete="new-password">
+      </div>
       <button type="submit" class="btn btn-primary">{{ t("ui.profile.password.save") }}</button>
     </form>
   {% endif %}
@@ -172,16 +187,19 @@
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
       <div class="admin-prefs">
       {% endif %}
+      <p class="admin-section-note">{{ t("ui.profile.settings.notify_intro") }}</p>
       <form method="post"
             action="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}"
-            class="admin-form-stack"
+            class="pref-toggle-list"
             data-notif-prefs
             data-notif-prefs-url="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}">
         {% if edit_user.is_staff %}
-          <div class="admin-field">
-            <span class="label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
-            <p class="admin-field-hint">{{ t("ui.profile.settings.notify_new_ticket_hint") }}</p>
-            <label class="theme-gradient-switch mt-2">
+          <label class="pref-toggle">
+            <span class="pref-toggle-meta">
+              <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
+              <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_new_ticket_hint") }}</span>
+            </span>
+            <span class="theme-gradient-switch">
               <input type="checkbox"
                      name="notify_new_ticket"
                      value="1"
@@ -190,13 +208,15 @@
               <span class="theme-gradient-track" aria-hidden="true">
                 <span class="theme-gradient-thumb"></span>
               </span>
-            </label>
-          </div>
+            </span>
+          </label>
         {% endif %}
-        <div class="admin-field">
-          <span class="label">{{ t("ui.profile.settings.notify_reply") }}</span>
-          <p class="admin-field-hint">{{ t("ui.profile.settings.notify_reply_hint") }}</p>
-          <label class="theme-gradient-switch mt-2">
+        <label class="pref-toggle">
+          <span class="pref-toggle-meta">
+            <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_reply") }}</span>
+            <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_reply_hint") }}</span>
+          </span>
+          <span class="theme-gradient-switch">
             <input type="checkbox"
                    name="notify_reply"
                    value="1"
@@ -205,12 +225,14 @@
             <span class="theme-gradient-track" aria-hidden="true">
               <span class="theme-gradient-thumb"></span>
             </span>
-          </label>
-        </div>
-        <div class="admin-field">
-          <span class="label">{{ t("ui.profile.settings.notify_ticket_update") }}</span>
-          <p class="admin-field-hint">{{ t("ui.profile.settings.notify_ticket_update_hint") }}</p>
-          <label class="theme-gradient-switch mt-2">
+          </span>
+        </label>
+        <label class="pref-toggle">
+          <span class="pref-toggle-meta">
+            <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_ticket_update") }}</span>
+            <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_ticket_update_hint") }}</span>
+          </span>
+          <span class="theme-gradient-switch">
             <input type="checkbox"
                    name="notify_ticket_update"
                    value="1"
@@ -219,8 +241,8 @@
             <span class="theme-gradient-track" aria-hidden="true">
               <span class="theme-gradient-thumb"></span>
             </span>
-          </label>
-        </div>
+          </span>
+        </label>
       </form>
       {% if is_admin_edit %}
       </div>
