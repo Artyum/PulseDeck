@@ -32,7 +32,7 @@ class TestLogin:
         assert r.status_code in (200, 303)
 
     def test_logout(self, client, client_user):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post("/auth/logout", follow_redirects=False)
         assert r.status_code in (302, 303)
 
@@ -43,8 +43,8 @@ class TestActivationErrors:
             "/auth/activate",
             data={
                 "token": "invalid-token",
-                "new_password": "NowyUser1!",
-                "confirm_password": "NowyUser1!",
+                "new_password": "NowyUser1!ab",
+                "confirm_password": "NowyUser1!ab",
                 "phone": "",
             },
             follow_redirects=False,
@@ -60,8 +60,8 @@ class TestActivationErrors:
             "/auth/activate",
             data={
                 "token": raw_token,
-                "new_password": "NowyUser1!",
-                "confirm_password": "Mismatch1!",
+                "new_password": "NowyUser1!ab",
+                "confirm_password": "Mismatch1!ab",
                 "phone": "",
             },
             follow_redirects=False,
@@ -102,12 +102,12 @@ class TestActivationErrors:
 
 class TestProfile:
     def test_profile_page(self, client, client_user):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get("/profile", follow_redirects=False)
         assert r.status_code in (200, 303)
 
     def test_profile_subpages(self, client, client_user):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         for path in (
             "/profile",
             "/profile/data",
@@ -119,7 +119,7 @@ class TestProfile:
             assert r.status_code in (200, 303)
 
     def test_profile_update(self, client, client_user):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             "/profile/data",
             data={
@@ -133,20 +133,20 @@ class TestProfile:
         assert r.status_code in (200, 303, 422)
 
     def test_profile_password_change(self, client, client_user):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             "/profile/password",
             data={
-                "current_password": "Client123!",
-                "new_password": "NewPass123!",
-                "confirm_password": "NewPass123!",
+                "current_password": "Client123!ab",
+                "new_password": "NewPass123!a",
+                "confirm_password": "NewPass123!a",
             },
             follow_redirects=False,
         )
         assert r.status_code in (200, 303, 422)
 
     def test_profile_notifications(self, client, client_user):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             "/profile/notifications",
             data={

@@ -10,9 +10,10 @@
       </div>
       <div class="auth-card">
         <h2 class="mb-2 text-xl font-semibold text-ink">{{ t("ui.reply.conflict.title") }}</h2>
-        <p class="mb-6 text-[1.05rem] leading-relaxed text-steel">{{ t("ui.reply.conflict.body", session=session_email, owner=owner_email) }}</p>
+        <p class="mb-6 text-[1.05rem] leading-relaxed text-steel">{{ t("ui.reply.conflict.body") }}</p>
         <div class="flex flex-wrap justify-center gap-3">
           <form method="post" action="{{ url_for('logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <button type="submit" class="btn btn-primary">{{ t("ui.reply.conflict.logout") }}</button>
           </form>
           <a href="{{ url_for('login_page') }}" class="btn btn-secondary">{{ t("ui.reply.login_cta") }}</a>

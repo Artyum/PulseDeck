@@ -36,7 +36,7 @@ class TestAuthBasics:
 
     def test_authenticate_ok(self, db_session, client_user):
         user = auth_service.authenticate_password(
-            db_session, "client@test.local", "Client123!"
+            db_session, "client@test.local", "Client123!ab"
         )
         assert user is not None
         assert user.id == client_user.id
@@ -123,7 +123,7 @@ class TestPasswordLinkAndComplete:
         user = _pending(db_session)
         _row, raw = auth_service.create_password_link(db_session, user)
         completed = auth_service.complete_password_set(
-            db_session, raw, "NowyUser1!", phone=""
+            db_session, raw, "NowyUser1!ab", phone=""
         )
         assert completed is not None
         assert completed.activated_at is not None
@@ -136,9 +136,9 @@ class TestPasswordLinkAndComplete:
             auth_service.create_password_link(db_session, client_user)
 
     def test_admin_set_password(self, db_session, client_user):
-        auth_service.admin_set_password(db_session, client_user, "ResetPass1!")
+        auth_service.admin_set_password(db_session, client_user, "ResetPass1!ab")
         user = auth_service.authenticate_password(
-            db_session, client_user.email, "ResetPass1!"
+            db_session, client_user.email, "ResetPass1!ab"
         )
         assert user is not None
 
@@ -221,7 +221,7 @@ class TestPendingUserAndSeed:
 
     def test_ensure_admin_seed_creates(self, db_session, monkeypatch):
         monkeypatch.setenv("ADMIN_EMAIL", "seed@test.local")
-        monkeypatch.setenv("ADMIN_PASSWORD", "SeedPass1!")
+        monkeypatch.setenv("ADMIN_PASSWORD", "SeedPass1!ab")
         get_settings.cache_clear()
         try:
             auth_service.ensure_admin_seed(db_session)

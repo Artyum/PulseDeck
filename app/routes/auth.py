@@ -497,18 +497,53 @@ def _unsubscribe(db, token: str):
 
 
 @router.get("/email/unsubscribe", response_class=HTMLResponse)
-def email_unsubscribe_get(request: Request, db: DbSession, token: str = ""):
+def email_unsubscribe_get(request: Request, token: str = ""):
     lang = resolve_lang(request)
-    result = _unsubscribe(db, token)
-    if result is None:
+    parsed = parse_unsubscribe_token(token)
+    if parsed is None:
         logger.warning("Unsubscribe invalid token ip=%s", client_ip_key(request))
         return render(
             request,
             "auth/unsubscribed.html",
             error=t(lang, "ui.auth.unsubscribe.invalid"),
         )
+    _user_id, pref = parsed
+    return render(
+        request,
+        "auth/unsubscribed.html",
+        confirm_token=token,
+        confirm_pref_label=t(lang, f"ui.profile.settings.{pref}"),
+    )
+
+
+@router.post("/email/unsubscribe")
+async def email_unsubscribe_post(request: Request, db: DbSession):
+    lang = resolve_lang(request)
+    form = await request.form()
+    form_token = str(form.get("token") or "").strip()
+    token = form_token or str(request.query_params.get("token") or "").strip()
+    one_click = (
+        str(form.get("List-Unsubscribe") or "").strip() == "One-Click" or not form_token
+    )
+    result = _unsubscribe(db, token)
+    if result is None:
+        logger.warning("Unsubscribe POST invalid token ip=%s", client_ip_key(request))
+        if one_click:
+            return PlainTextResponse("Invalid token", status_code=400)
+        return render(
+            request,
+            "auth/unsubscribed.html",
+            error=t(lang, "ui.auth.unsubscribe.invalid"),
+        )
     user, pref = result
-    logger.info("Unsubscribe ok user_id=%s pref=%s", user.id, pref)
+    logger.info(
+        "Unsubscribe ok user_id=%s pref=%s one_click=%s",
+        user.id,
+        pref,
+        one_click,
+    )
+    if one_click:
+        return PlainTextResponse("OK", status_code=200)
     return render(
         request,
         "auth/unsubscribed.html",
@@ -518,14 +553,3 @@ def email_unsubscribe_get(request: Request, db: DbSession, token: str = ""):
             type=t(lang, f"ui.profile.settings.{pref}"),
         ),
     )
-
-
-@router.post("/email/unsubscribe")
-def email_unsubscribe_post(request: Request, db: DbSession, token: str = ""):
-    result = _unsubscribe(db, token)
-    if result is None:
-        logger.warning("Unsubscribe POST invalid token ip=%s", client_ip_key(request))
-        return PlainTextResponse("Invalid token", status_code=400)
-    user, pref = result
-    logger.info("Unsubscribe one-click user_id=%s pref=%s", user.id, pref)
-    return PlainTextResponse("OK", status_code=200)

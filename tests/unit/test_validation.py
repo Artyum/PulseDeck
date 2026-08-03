@@ -207,10 +207,10 @@ class TestProjectKey:
 
 class TestPassword:
     def test_valid(self):
-        assert clean("user.password", "Admin123!") == "Admin123!"
+        assert clean("user.password", "Admin123!abcd") == "Admin123!abcd"
 
     def test_does_not_strip(self):
-        assert clean("user.password", " Admin123! ") == " Admin123! "
+        assert clean("user.password", " Admin123!abcd ") == " Admin123!abcd "
 
     def test_too_short(self):
         with pytest.raises(ValidationValueError) as exc:
@@ -226,10 +226,10 @@ class TestPassword:
     @pytest.mark.parametrize(
         ("raw", "needle"),
         [
-            ("ADMIN123!", "lower"),
-            ("admin123!", "upper"),
-            ("Admin!!!!", "digit"),
-            ("Admin1234", "special"),
+            ("ADMIN123!XXXX", "lower"),
+            ("admin123!xxxx", "upper"),
+            ("Admin!!!!!!!!", "digit"),
+            ("Admin1234xxxx", "special"),
         ],
     )
     def test_strength_rules(self, raw, needle):
@@ -316,9 +316,9 @@ class TestCleanManyAndErrors:
         err = FieldValidationError(
             "too_short",
             "user.password",
-            params={"min": 8, "reason": "min_length"},
+            params={"min": 12, "reason": "min_length"},
         )
-        assert "8" in format_error("en", err)
+        assert "12" in format_error("en", err)
 
     def test_format_error_phone_and_key(self):
         phone_err = FieldValidationError("pattern", "user.phone")
@@ -344,7 +344,7 @@ class TestFieldAttrs:
         attrs = str(field_attrs("user.password", required=False))
         assert "required" not in attrs.split()
         assert 'maxlength="72"' in attrs
-        assert 'minlength="8"' in attrs
+        assert 'minlength="12"' in attrs
         assert 'type="password"' in attrs
 
     def test_optional_field_no_required(self):

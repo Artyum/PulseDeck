@@ -86,7 +86,7 @@ def password(*, required: bool = True) -> FieldSpec:
     return FieldSpec(
         field_type="password",
         required=required,
-        min_len=8,
+        min_len=12,
         max_len=72,
         max_bytes=72,
         strip=False,

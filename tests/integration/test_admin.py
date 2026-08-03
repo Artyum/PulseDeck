@@ -6,7 +6,7 @@ from unittest.mock import patch
 def _login_admin(client):
     r = client.post(
         "/auth/login",
-        data={"email": "admin@test.local", "password": "Admin123!"},
+        data={"email": "admin@test.local", "password": "Admin123!abcd"},
         follow_redirects=False,
     )
     assert r.status_code in (303, 200)
@@ -21,7 +21,7 @@ class TestAdminAccess:
     def test_non_admin_blocked(self, client, client_user):
         r = client.post(
             "/auth/login",
-            data={"email": "client@test.local", "password": "Client123!"},
+            data={"email": "client@test.local", "password": "Client123!ab"},
             follow_redirects=False,
         )
         r = client.get("/admin", follow_redirects=False)
@@ -291,8 +291,8 @@ class TestAdminUsers:
             f"/admin/users/{client_user.id}/password",
             data={
                 "action": "set",
-                "new_password": "AdminSet1!",
-                "confirm_password": "AdminSet1!",
+                "new_password": "AdminSet1!ab",
+                "confirm_password": "AdminSet1!ab",
             },
             follow_redirects=False,
         )
@@ -308,7 +308,7 @@ class TestAdminUsers:
 def _login_client(client):
     r = client.post(
         "/auth/login",
-        data={"email": "client@test.local", "password": "Client123!"},
+        data={"email": "client@test.local", "password": "Client123!ab"},
         follow_redirects=False,
     )
     assert r.status_code in (303, 200)

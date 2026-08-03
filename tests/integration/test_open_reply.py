@@ -1,8 +1,16 @@
+import re
 from datetime import datetime, timezone
 
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session, sessionmaker
+
+from app.config import get_settings
+from app.db.session import get_db
+from app.main import build_fastapi_app
 from app.models.enums import TicketType
 from app.services import reply_token as reply_token_service
 from app.services import tickets as ticket_service
+from app.services.portal_settings import invalidate_cache
 from app.utils.urls import ticket_path
 
 
@@ -64,7 +72,7 @@ class TestOpenReplyRoutes:
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         r = client.get(f"/open/{raw}")
         assert f"/login?next={dest}" in r.text
-        r = _login(client, "staff@test.local", "Staff123!", next_path=dest)
+        r = _login(client, "staff@test.local", "Staff123!abcd", next_path=dest)
         assert r.status_code == 303
         assert r.headers["location"] == dest
 
@@ -113,6 +121,62 @@ class TestOpenReplyRoutes:
         assert r2.status_code == 200
         assert "Link already used" in r2.text or "Link już wykorzystany" in r2.text
 
+    def test_post_with_form_csrf_token(
+        self,
+        monkeypatch,
+        db_engine,
+        db_session,
+        project_with_members,
+        client_user,
+        staff_user,
+    ):
+        monkeypatch.setenv("SECURITY_CSRF_ENABLED", "true")
+        get_settings.cache_clear()
+        invalidate_cache()
+        SessionLocal = sessionmaker(
+            bind=db_engine, autoflush=False, autocommit=False, class_=Session
+        )
+
+        def _get_db():
+            db = SessionLocal()
+            try:
+                yield db
+            finally:
+                db.close()
+
+        app = build_fastapi_app()
+        app.dependency_overrides[get_db] = _get_db
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=client_user,
+            title="CSRF form reply",
+            description="Body",
+            ticket_type=TicketType.BUG,
+        )
+        raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
+        try:
+            with TestClient(app) as csrf_client:
+                page = csrf_client.get(f"/open/{raw}")
+                assert page.status_code == 200
+                match = re.search(
+                    r'name="csrf_token" value="([^"]+)"',
+                    page.text,
+                )
+                assert match is not None
+                reply = csrf_client.post(
+                    f"/open/{raw}",
+                    data={
+                        "csrf_token": match.group(1),
+                        "content": "Reply protected by form CSRF",
+                    },
+                )
+                assert reply.status_code == 200
+                assert "Thank you" in reply.text or "Dziękujemy" in reply.text
+        finally:
+            app.dependency_overrides.clear()
+            get_settings.cache_clear()
+
     def test_owner_session_redirects_without_consume(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
@@ -125,7 +189,7 @@ class TestOpenReplyRoutes:
             ticket_type=TicketType.BUG,
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.get(f"/open/{raw}", follow_redirects=False)
         assert r.status_code == 303
         assert r.headers["location"] == ticket_path(ticket)
@@ -145,8 +209,44 @@ class TestOpenReplyRoutes:
             ticket_type=TicketType.BUG,
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get(f"/open/{raw}")
         assert r.status_code == 200
-        assert "client@test.local" in r.text
-        assert "staff@test.local" in r.text
+        assert "client@test.local" not in r.text
+        assert "staff@test.local" not in r.text
+        assert (
+            "This link belongs to a different account" in r.text
+            or "Ten odnośnik jest przypisany do innego konta" in r.text
+        )
+
+    def test_shows_only_last_comment_group(
+        self, client, db_session, project_with_members, client_user, staff_user
+    ):
+        ticket = ticket_service.create_ticket(
+            db_session,
+            project_id=project_with_members.id,
+            author=client_user,
+            title="Trim thread",
+            description="Ticket body stays",
+            ticket_type=TicketType.BUG,
+        )
+        ticket_service.add_comment(
+            db_session, ticket, client_user, "OLD_CLIENT_NOTE", is_internal=False
+        )
+        ticket_service.add_comment(
+            db_session, ticket, staff_user, "STAFF_LAST_A", is_internal=False
+        )
+        ticket_service.add_comment(
+            db_session, ticket, staff_user, "STAFF_LAST_B", is_internal=False
+        )
+        raw = reply_token_service.create_reply_token(db_session, client_user, ticket)
+        r = client.get(f"/open/{raw}")
+        assert r.status_code == 200
+        assert "Ticket body stays" in r.text
+        assert "OLD_CLIENT_NOTE" not in r.text
+        assert "STAFF_LAST_A" in r.text
+        assert "STAFF_LAST_B" in r.text
+        assert (
+            "Earlier messages are hidden" in r.text
+            or "Wcześniejsza korespondencja jest ukryta" in r.text
+        )

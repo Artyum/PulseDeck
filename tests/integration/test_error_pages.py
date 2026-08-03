@@ -4,7 +4,7 @@
 def _login_admin(client):
     r = client.post(
         "/auth/login",
-        data={"email": "admin@test.local", "password": "Admin123!"},
+        data={"email": "admin@test.local", "password": "Admin123!abcd"},
         follow_redirects=False,
     )
     assert r.status_code in (303, 200)

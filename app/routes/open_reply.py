@@ -4,22 +4,20 @@ from typing import Annotated
 
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy import select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.deps.auth import DbSession, get_optional_user
-from app.models.ticket import Attachment, Comment, Ticket
+from app.models.ticket import Ticket
 from app.models.user import User
 from app.rate_limit import client_ip_key, limiter
-from app.routes.context import render
+from app.routes.context import group_comments, render
 from app.services import reply_token as reply_token_service
 from app.services import tickets as ticket_service
 from app.services.auth import hash_magic_token
 from app.services.email import notify_new_comment
 from app.services.reply_token import ReplyTokenStatus
-from app.services.uploads import file_response_for_attachment
-from app.utils.i18n import resolve_lang, t
+from app.utils.i18n import resolve_lang
 from app.utils.urls import ticket_path
 from app.validation import clean
 
@@ -40,6 +38,13 @@ def _get_limit() -> str:
 
 def _post_limit() -> str:
     return get_settings().reply_token_post_rate_limit
+
+
+def _visible_comment_groups(user: User, ticket: Ticket) -> list[list]:
+    comments = list(ticket.comments or [])
+    if not user.is_staff:
+        comments = [c for c in comments if not c.is_internal]
+    return group_comments(comments)
 
 
 def _log(
@@ -75,6 +80,8 @@ def _thread_page(
     ticket: Ticket,
     error: str | None = None,
 ):
+    groups = _visible_comment_groups(user, ticket)
+    visible_group = groups[-1] if groups else []
     return render(
         request,
         "reply/thread.html",
@@ -82,7 +89,8 @@ def _thread_page(
         user=user,
         ticket=ticket,
         project=ticket.project,
-        file_urls=reply_token_service.attachment_file_urls(ticket, user),
+        comment_groups=[visible_group] if visible_group else [],
+        has_earlier_messages=len(groups) > 1,
         can_comment=ticket_service.can_comment(db, user, ticket),
         error=error,
     )
@@ -107,13 +115,8 @@ def _reject_unusable(
     return _status_page(request, status.value)
 
 
-def _conflict_page(request: Request, session_user: User, owner: User | None):
-    return render(
-        request,
-        "reply/conflict.html",
-        session_email=session_user.email,
-        owner_email=owner.email if owner else "",
-    )
+def _conflict_page(request: Request):
+    return render(request, "reply/conflict.html")
 
 
 @router.get("/open/{token}", response_class=HTMLResponse)
@@ -161,7 +164,7 @@ def open_reply_get(request: Request, token: str, db: DbSession):
             raw=token,
             ticket_id=ticket.id,
         )
-        return _conflict_page(request, session_user, owner)
+        return _conflict_page(request)
 
     _log(
         request,
@@ -192,7 +195,7 @@ def open_reply_post(
     assert row is not None
     session_user = get_optional_user(request, db)
     if session_user and session_user.id != row.user_id:
-        return _conflict_page(request, session_user, db.get(User, row.user_id))
+        return _conflict_page(request)
 
     ctx = reply_token_service.load_reply_context(db, row)
     if not ctx:
@@ -272,35 +275,3 @@ def open_reply_post(
         ticket_id=ticket.id,
     )
     return _status_page(request, "thanks")
-
-
-@router.get("/reply-file/{attachment_id}")
-@limiter.limit(_get_limit)
-def reply_file_download(
-    request: Request,
-    attachment_id: int,
-    db: DbSession,
-    exp: int = 0,
-    sig: str = "",
-    ticket_id: int = 0,
-):
-    lang = resolve_lang(request)
-    if not reply_token_service.verify_reply_file_sig(
-        attachment_id, ticket_id=ticket_id, exp=exp, sig=sig
-    ):
-        raise HTTPException(status_code=403, detail=t(lang, "messages.http.forbidden"))
-
-    att = db.scalar(
-        select(Attachment)
-        .where(Attachment.id == attachment_id)
-        .options(
-            joinedload(Attachment.ticket),
-            joinedload(Attachment.comment).joinedload(Comment.ticket),
-        )
-    )
-    ticket = None
-    if att is not None:
-        ticket = att.ticket if att.comment is None else att.comment.ticket
-    if att is None or ticket is None or ticket.id != ticket_id:
-        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
-    return file_response_for_attachment(att, lang=lang)

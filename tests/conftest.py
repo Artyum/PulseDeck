@@ -111,7 +111,7 @@ def admin_user(db_session):
         role=UserRole.ADMIN,
         activated_at=datetime.now(timezone.utc),
     )
-    set_password(user, "Admin123!")
+    set_password(user, "Admin123!abcd")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -127,7 +127,7 @@ def client_user(db_session):
         role=UserRole.USER,
         activated_at=datetime.now(timezone.utc),
     )
-    set_password(user, "Client123!")
+    set_password(user, "Client123!ab")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -143,7 +143,7 @@ def staff_user(db_session):
         role=UserRole.STAFF,
         activated_at=datetime.now(timezone.utc),
     )
-    set_password(user, "Staff123!")
+    set_password(user, "Staff123!abcd")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)

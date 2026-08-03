@@ -97,6 +97,9 @@ ui:
       title: "Unsubscribe"
       heading: "Unsubscribed"
       heading_invalid: "Invalid link"
+      heading_confirm: "Confirm unsubscribe"
+      confirm_body: "Do you want to unsubscribe from: {type}?"
+      confirm: "Confirm unsubscribe"
       done: "You've been unsubscribed from: {type}."
       invalid: "This unsubscribe link is invalid or has expired."
       manage: "Notification preferences"
@@ -104,6 +107,9 @@ ui:
     badge: "Quick reply"
     login_cta: "Go to sign in"
     attach_login_hint: "To attach a file, sign in to the portal."
+    attachments_hidden: "Attachments are hidden."
+    earlier_hidden: "Earlier messages are hidden."
+    earlier_hidden_login: "Sign in to view the full thread."
     used:
       title: "Link already used"
       body: "Sign in to open the thread in PulseDeck."
@@ -118,7 +124,7 @@ ui:
       body: "You no longer have access to this thread, or the account is unavailable."
     conflict:
       title: "Different account"
-      body: "You are signed in as {session}. This link is for {owner}. Sign out and open the link again."
+      body: "This link belongs to a different account. Sign out to continue."
       logout: "Sign out"
     thanks:
       title: "Thank you"

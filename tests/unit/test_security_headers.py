@@ -68,7 +68,9 @@ class TestContentSecurityPolicy:
     def test_default(self):
         csp = _content_security_policy()
         assert "default-src 'self'" in csp
-        assert "script-src" in csp
+        assert "script-src 'self' 'unsafe-eval'" in csp
+        assert "script-src-attr 'unsafe-inline'" in csp
+        assert "'unsafe-inline'" not in csp.split("script-src ")[1].split(";")[0]
         assert "style-src" in csp
         assert "font-src" in csp
         assert "img-src 'self' data: blob:" in csp

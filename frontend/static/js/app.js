@@ -1,4 +1,16 @@
 (function () {
+  function loadI18n() {
+    var el = document.getElementById("app-i18n");
+    if (!el) return {};
+    try {
+      var parsed = JSON.parse(el.textContent || "{}");
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (e) {
+      return {};
+    }
+  }
+  window.__i18n = loadI18n();
+
   function i18n(key, fallback) {
     var dict = window.__i18n || {};
     var value = dict[key];

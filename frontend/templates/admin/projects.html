@@ -83,9 +83,7 @@
             <form method="post"
                   action="{{ url_for('admin_project_active', key=p.key) }}"
                   {% if p.is_active %} data-confirm-title="{{ t('ui.confirm.disable_project.title') }}" data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}" data-confirm-action="{{ t('ui.confirm.disable_project.action') }}" data-confirm-danger {% endif %}>
-              {% if show_disabled %}
-                <input type="hidden" name="disabled" value="1">
-              {% endif %}
+              {% if show_disabled %}<input type="hidden" name="disabled" value="1">{% endif %}
               {% if p.is_active %}
                 <input type="hidden" name="active" value="0">
                 <button type="submit" class="btn btn-danger">{{ t("ui.admin.projects.disable") }}</button>

@@ -24,6 +24,8 @@ from app.validation import clean, clean_many
 
 logger = logging.getLogger("pulsedeck.auth")
 
+DUMMY_PASSWORD_HASH = "$2b$12$vqkSTwVDgTzZlLVxe2RpiuMihWoqM7Hpn9bYUmpOaSjrjjM2wjmJC"
+
 
 def hash_magic_token(raw: str) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -50,6 +52,7 @@ def email_taken(db: Session, email: str, *, exclude_user_id: int | None = None) 
 def authenticate_password(db: Session, email: str, password: str) -> User | None:
     user = get_user_by_email(db, email)
     if not user or not user.password_hash:
+        verify_password(password, DUMMY_PASSWORD_HASH)
         return None
     if not verify_password(password, user.password_hash):
         return None

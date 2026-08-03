@@ -114,7 +114,7 @@ class TestMembership:
             role=UserRole.USER,
             activated_at=datetime.now(timezone.utc),
         )
-        set_password(free, "FreeUser1!")
+        set_password(free, "FreeUser1!abc")
         db_session.add(free)
         db_session.commit()
         db_session.refresh(free)

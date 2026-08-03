@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from app.validation.spec import FieldSpec
 
-PASSWORD_MIN_LEN = 8
+PASSWORD_MIN_LEN = 12
 PASSWORD_MAX_BYTES = 72
 
 _SPECIAL_RE = re.compile(rf"[{re.escape(string.punctuation)}]")

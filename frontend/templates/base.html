@@ -4,57 +4,19 @@
       data-scheme="{{ ui_scheme }}"
       data-theme-gradient="{{ ui_theme_gradient }}"
       data-density="{{ ui_density }}"
-      data-font-size="{{ ui_font_size }}">
+      data-font-size="{{ ui_font_size }}"
+      data-dark-themes="{{ dark_theme_ids|tojson|forceescape }}"
+      data-theme-ids="{{ theme_choices|map(attribute='id') |list|tojson|forceescape }}"
+      data-theme-storage-key="{{ theme_storage_key }}"
+      data-theme-gradient-storage-key="{{ theme_gradient_storage_key }}"
+      data-density-ids="{{ density_choices|map(attribute='id') |list|tojson|forceescape }}"
+      data-density-storage-key="{{ density_storage_key }}"
+      data-font-size-ids="{{ font_size_choices|map(attribute='id') |list|tojson|forceescape }}"
+      data-font-size-storage-key="{{ font_size_storage_key }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script>
-        (function () {
-          var root = document.documentElement;
-          var darkThemes = {{ dark_theme_ids|tojson }};
-          function applyScheme(theme) {
-            root.setAttribute(
-              "data-scheme",
-              darkThemes.indexOf(theme) !== -1 ? "dark" : "light"
-            );
-          }
-          function applyPref(key, allowed, attr) {
-            try {
-              var value = localStorage.getItem(key);
-              if (value && allowed.indexOf(value) !== -1) {
-                root.setAttribute(attr, value);
-                return value;
-              }
-            } catch (e) {}
-            return null;
-          }
-          var theme = applyPref(
-            {{ theme_storage_key|tojson }},
-            {{ theme_choices|map(attribute='id')|list|tojson }},
-            "data-theme"
-          ) || root.getAttribute("data-theme") || {{ ui_theme|tojson }};
-          applyScheme(theme);
-          try {
-            var gradKey = {{ theme_gradient_storage_key|tojson }};
-            var map = JSON.parse(localStorage.getItem(gradKey) || "{}");
-            var grad = map[theme];
-            root.setAttribute(
-              "data-theme-gradient",
-              grad === false || grad === "off" ? "off" : "on"
-            );
-          } catch (e) {}
-          applyPref(
-            {{ density_storage_key|tojson }},
-            {{ density_choices|map(attribute='id')|list|tojson }},
-            "data-density"
-          );
-          applyPref(
-            {{ font_size_storage_key|tojson }},
-            {{ font_size_choices|map(attribute='id')|list|tojson }},
-            "data-font-size"
-          );
-        })();
-    </script>
+    <script src="{{ static_url('js/theme-boot.js') }}"></script>
     <title>{% block title %}{{ app_name }}{% endblock title %}</title>
     <meta name="theme-color" content="#2f72e8">
     <link rel="icon" href="{{ static_url('images/favicon.ico') }}" sizes="any">
@@ -74,7 +36,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" href="{{ static_url('css/app.css') }}">
-    <script>window.__i18n = {{ js_i18n|tojson }};</script>
+    <script type="application/json" id="app-i18n">{{ js_i18n|tojson }}</script>
     <script src="{{ static_url('vendor/htmx.min.js') }}"></script>
     <script src="{{ static_url('vendor/alpine.min.js') }}" defer></script>
     <script src="{{ static_url('js/app.js') }}" defer></script>

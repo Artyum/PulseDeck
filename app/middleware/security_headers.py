@@ -27,7 +27,8 @@ def _request_is_secure_context(request: Request) -> bool:
 def _content_security_policy(*, upgrade_insecure: bool = False) -> str:
     policy = (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+        "script-src 'self' 'unsafe-eval'; "
+        "script-src-attr 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' data: https://fonts.gstatic.com; "
         "img-src 'self' data: blob:; "
@@ -46,7 +47,13 @@ def apply_security_headers(request: Request, response: Response) -> Response:
     settings = get_settings()
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
-    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    path = request.url.path
+    if path.startswith("/open/"):
+        response.headers["Referrer-Policy"] = "no-referrer"
+    else:
+        response.headers.setdefault(
+            "Referrer-Policy", "strict-origin-when-cross-origin"
+        )
     response.headers.setdefault(
         "Permissions-Policy",
         "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
@@ -63,7 +70,6 @@ def apply_security_headers(request: Request, response: Response) -> Response:
             "Strict-Transport-Security",
             "max-age=31536000; includeSubDomains",
         )
-    path = request.url.path
     if path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     elif (response.headers.get("content-type") or "").lower().startswith("text/html"):

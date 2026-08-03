@@ -62,23 +62,6 @@ class TestReplyToken:
             == ReplyTokenStatus.EXPIRED
         )
 
-    def test_reply_file_sig_roundtrip(self):
-        url = reply_token_service.make_reply_file_url(12, ticket_id=34)
-        assert url.startswith("/reply-file/12?")
-        assert "sig=" in url
-        from urllib.parse import parse_qs, urlparse
-
-        q = parse_qs(urlparse(url).query)
-        assert reply_token_service.verify_reply_file_sig(
-            12,
-            ticket_id=int(q["ticket_id"][0]),
-            exp=int(q["exp"][0]),
-            sig=q["sig"][0],
-        )
-        assert not reply_token_service.verify_reply_file_sig(
-            12, ticket_id=34, exp=int(q["exp"][0]), sig="deadbeef"
-        )
-
     def test_purpose_is_ticket_reply(
         self, db_session, project_with_members, client_user, staff_user
     ):

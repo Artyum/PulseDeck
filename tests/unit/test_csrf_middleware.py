@@ -46,8 +46,8 @@ class TestIsExempt:
     def test_login_post(self):
         assert _is_exempt("/auth/login", "POST") is True
 
-    def test_open_reply_post_prefix(self):
-        assert _is_exempt("/open/abcToken", "POST") is True
+    def test_open_reply_post_not_exempt(self):
+        assert _is_exempt("/open/abcToken", "POST") is False
         assert _is_exempt("/open/abcToken", "GET") is False
 
     def test_other_path(self):
@@ -127,6 +127,43 @@ class TestCSRFProtectMiddleware:
             response, call_next = _dispatch(
                 _request(session=session, headers={CSRF_HEADER: token})
             )
+            assert response.body == b"ok"
+            call_next.assert_awaited_once()
+        finally:
+            get_settings.cache_clear()
+
+    def test_form_token_passes(self, monkeypatch):
+        monkeypatch.setenv("SECURITY_CSRF_ENABLED", "true")
+        get_settings.cache_clear()
+        try:
+            token = "good-token"
+            session = {CSRF_SESSION_KEY: token}
+            body = f"csrf_token={token}&content=hi".encode()
+            scope = {
+                "type": "http",
+                "asgi": {"version": "3.0"},
+                "http_version": "1.1",
+                "method": "POST",
+                "scheme": "http",
+                "path": "/open/tok",
+                "raw_path": b"/open/tok",
+                "query_string": b"",
+                "headers": [
+                    (b"content-type", b"application/x-www-form-urlencoded"),
+                    (b"content-length", str(len(body)).encode()),
+                ],
+                "client": ("127.0.0.1", 12345),
+                "server": ("testserver", 80),
+                "session": session,
+            }
+
+            async def receive():
+                return {"type": "http.request", "body": body, "more_body": False}
+
+            request = Request(scope, receive)
+            app = CSRFProtectMiddleware(app=AsyncMock())
+            call_next = AsyncMock(return_value=PlainTextResponse("ok"))
+            response = asyncio.run(app.dispatch(request, call_next))
             assert response.body == b"ok"
             call_next.assert_awaited_once()
         finally:

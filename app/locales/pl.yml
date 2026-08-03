@@ -97,6 +97,9 @@ ui:
       title: "Wypisanie"
       heading: "Wypisano"
       heading_invalid: "Link nieprawidłowy"
+      heading_confirm: "Potwierdź wypisanie"
+      confirm_body: "Czy na pewno chcesz wypisać się z powiadomień: {type}?"
+      confirm: "Potwierdź wypisanie z powiadomień"
       done: "Wypisano Cię z powiadomień: {type}."
       invalid: "Ten link wypisania jest nieprawidłowy lub wygasł."
       manage: "Preferencje powiadomień"
@@ -104,6 +107,9 @@ ui:
     badge: "Szybka odpowiedź"
     login_cta: "Przejdź do logowania"
     attach_login_hint: "Aby dołączyć plik, zaloguj się w portalu."
+    attachments_hidden: "Załączniki są ukryte."
+    earlier_hidden: "Wcześniejsza korespondencja jest ukryta."
+    earlier_hidden_login: "Zaloguj się, aby zobaczyć cały wątek."
     used:
       title: "Link już wykorzystany"
       body: "Zaloguj się, aby otworzyć wątek w PulseDeck."
@@ -118,7 +124,7 @@ ui:
       body: "Nie masz już dostępu do tego wątku albo konto jest niedostępne."
     conflict:
       title: "Inne konto"
-      body: "Jesteś zalogowany jako {session}. Ten link jest przeznaczony dla {owner}. Wyloguj się i otwórz link ponownie."
+      body: "Ten odnośnik jest przypisany do innego konta. Wyloguj się, aby uzyskać dostęp."
       logout: "Wyloguj się"
     thanks:
       title: "Dziękujemy"

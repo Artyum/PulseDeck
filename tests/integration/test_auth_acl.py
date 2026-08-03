@@ -18,14 +18,14 @@ def test_health(client):
 
 
 def test_login_and_feed(client, admin_user, client_user, project_with_members):
-    _login(client, "client@test.local", "Client123!")
+    _login(client, "client@test.local", "Client123!ab")
     r = client.get(f"/p/{project_with_members.key}")
     assert r.status_code == 200
     assert "Demo" in r.text
 
 
 def test_admin_requires_admin(client, client_user, project_with_members):
-    _login(client, "client@test.local", "Client123!")
+    _login(client, "client@test.local", "Client123!ab")
     r = client.get("/admin", follow_redirects=False)
     assert r.status_code in (303, 403, 401)
 
@@ -47,7 +47,7 @@ def test_comment_acl(
         role=UserRole.USER,
         activated_at=datetime.now(timezone.utc),
     )
-    set_password(other2, "Client123!")
+    set_password(other2, "Client123!ab")
     db_session.add(other2)
     db_session.commit()
     db_session.refresh(other2)
@@ -121,8 +121,8 @@ def test_user_activation(client, db_session, admin_user, project_with_members):
         "/auth/activate",
         data={
             "token": raw_token,
-            "new_password": "NowyUser1!",
-            "confirm_password": "NowyUser1!",
+            "new_password": "NowyUser1!ab",
+            "confirm_password": "NowyUser1!ab",
             "phone": "",
         },
         follow_redirects=False,

@@ -81,9 +81,6 @@ class Settings(BaseSettings):
     reply_token_ttl_hours: int = Field(
         default=48, validation_alias="REPLY_TOKEN_TTL_HOURS"
     )
-    reply_file_sig_ttl_seconds: int = Field(
-        default=300, validation_alias="REPLY_FILE_SIG_TTL_SECONDS"
-    )
     reply_token_get_rate_limit: str = "60/minute"
     reply_token_post_rate_limit: str = "10/minute"
     ticket_reopen_days: int = Field(default=7, validation_alias="TICKET_REOPEN_DAYS")

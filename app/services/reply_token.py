@@ -1,17 +1,12 @@
 from __future__ import annotations
 
-import hashlib
-import hmac
 import logging
-import time
 from datetime import datetime, timezone
 from enum import Enum
-from urllib.parse import urlencode
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.config import get_settings
 from app.models.enums import MagicTokenPurpose
 from app.models.ticket import MagicToken, Ticket
 from app.models.user import User
@@ -87,50 +82,6 @@ def lock_reply_token(db: Session, token_id: int) -> MagicToken | None:
 
 def consume_reply_token(row: MagicToken) -> None:
     row.used_at = datetime.now(timezone.utc)
-
-
-def _sign_reply_file(body: str) -> str:
-    return hmac.new(
-        get_settings().storage_secret.encode("utf-8"),
-        body.encode("utf-8"),
-        hashlib.sha256,
-    ).hexdigest()
-
-
-def make_reply_file_url(attachment_id: int, *, ticket_id: int) -> str:
-    exp = int(time.time()) + int(get_settings().reply_file_sig_ttl_seconds)
-    body = f"{attachment_id}.{ticket_id}.{exp}"
-    qs = urlencode({"exp": exp, "sig": _sign_reply_file(body), "ticket_id": ticket_id})
-    return f"/reply-file/{attachment_id}?{qs}"
-
-
-def verify_reply_file_sig(
-    attachment_id: int, *, ticket_id: int, exp: int, sig: str
-) -> bool:
-    try:
-        exp_i = int(exp)
-    except (TypeError, ValueError):
-        return False
-    if exp_i < int(time.time()):
-        return False
-    expected = _sign_reply_file(f"{attachment_id}.{ticket_id}.{exp_i}")
-    try:
-        return hmac.compare_digest(sig or "", expected)
-    except (TypeError, ValueError):
-        return False
-
-
-def attachment_file_urls(ticket: Ticket, user: User) -> dict[int, str]:
-    urls: dict[int, str] = {
-        att.id: make_reply_file_url(att.id, ticket_id=ticket.id)
-        for att in ticket.attachments or []
-    }
-    for comment in ticket.comments or []:
-        if comment.is_internal and not user.is_staff:
-            continue
-        for att in comment.attachments or []:
-            urls[att.id] = make_reply_file_url(att.id, ticket_id=ticket.id)
-    return urls
 
 
 def log_reply_token_event(

@@ -227,7 +227,7 @@ def _peer_participant(db, project, author):
         role=UserRole.USER,
         activated_at=datetime.now(timezone.utc),
     )
-    set_password(peer, "Peer1234!")
+    set_password(peer, "Peer1234!abcd")
     db.add(peer)
     db.commit()
     db.refresh(peer)
@@ -379,7 +379,7 @@ class TestTicketMutations:
             role=UserRole.USER,
             activated_at=datetime.now(timezone.utc),
         )
-        set_password(outsider, "Outsider1!")
+        set_password(outsider, "Outsider1!abc")
         db_session.add(outsider)
         db_session.commit()
         db_session.refresh(outsider)

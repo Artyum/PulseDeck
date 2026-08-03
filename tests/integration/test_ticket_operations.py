@@ -23,7 +23,7 @@ class TestTags:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/tags",
             data={"name": "urgent"},
@@ -42,7 +42,7 @@ class TestTags:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/tags",
             data={"name": "urgent"},
@@ -61,7 +61,7 @@ class TestAssign:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/assign",
             data={"assignee_id": str(staff_user.id)},
@@ -80,7 +80,7 @@ class TestAssign:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/self-assign",
             follow_redirects=False,
@@ -100,7 +100,7 @@ class TestPriorityType:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/priority",
             data={"priority": "HIGH"},
@@ -117,7 +117,7 @@ class TestPriorityType:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/type",
             data={"type": "QUESTION"},

@@ -52,7 +52,7 @@ class TestCanComment:
             role=UserRole.USER,
             activated_at=datetime.now(timezone.utc),
         )
-        set_password(non_member, "Test1234!")
+        set_password(non_member, "Test1234!abcd")
         db_session.add(non_member)
         db_session.commit()
         db_session.refresh(non_member)
@@ -116,7 +116,7 @@ class TestCanSetDone:
             role=UserRole.USER,
             activated_at=datetime.now(timezone.utc),
         )
-        set_password(other, "Client123!")
+        set_password(other, "Client123!ab")
         db_session.add(other)
         db_session.commit()
         db_session.refresh(other)

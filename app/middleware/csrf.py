@@ -14,6 +14,8 @@ from app.utils.i18n import resolve_lang, t
 
 logger = logging.getLogger("pulsedeck.security")
 
+CSRF_FORM_FIELD = "csrf_token"
+
 _EXEMPT: tuple[tuple[str, str], ...] = (
     ("/auth/login", "POST"),
     ("/auth/forgot-password", "POST"),
@@ -21,13 +23,9 @@ _EXEMPT: tuple[tuple[str, str], ...] = (
     ("/email/unsubscribe", "POST"),
 )
 
-_EXEMPT_PREFIX: tuple[tuple[str, str], ...] = (("/open/", "POST"),)
-
 
 def _is_exempt(path: str, method: str) -> bool:
-    if (path, method) in _EXEMPT:
-        return True
-    return any(method == m and path.startswith(prefix) for prefix, m in _EXEMPT_PREFIX)
+    return (path, method) in _EXEMPT
 
 
 def _csrf_reject(request: Request, detail_key: str):
@@ -40,6 +38,24 @@ def _csrf_reject(request: Request, detail_key: str):
         status_code=403,
         content=f"<p>{detail} {hint}</p>",
     )
+
+
+async def _request_csrf_token(request: Request) -> str | None:
+    header = request.headers.get(CSRF_HEADER)
+    if header:
+        return header
+    content_type = (request.headers.get("content-type") or "").lower()
+    if (
+        "application/x-www-form-urlencoded" in content_type
+        or "multipart/form-data" in content_type
+    ):
+        await request.body()
+        form = await request.form()
+        raw = form.get(CSRF_FORM_FIELD)
+        if raw is None:
+            return None
+        return str(raw)
+    return None
 
 
 class CSRFProtectMiddleware(BaseHTTPMiddleware):
@@ -59,7 +75,7 @@ class CSRFProtectMiddleware(BaseHTTPMiddleware):
 
         ensure_csrf_token(request)
         session_token = request.session.get(CSRF_SESSION_KEY)
-        token = request.headers.get(CSRF_HEADER)
+        token = await _request_csrf_token(request)
 
         if not session_token or not token:
             logger.warning(

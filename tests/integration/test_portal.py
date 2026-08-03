@@ -15,24 +15,24 @@ def _login(client, email, password):
 
 class TestFeed:
     def test_project_feed(self, client, client_user, project_with_members):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get(f"/p/{project_with_members.key}")
         assert r.status_code == 200
         assert project_with_members.name in r.text
 
     def test_project_feed_with_filters(self, client, client_user, project_with_members):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get(f"/p/{project_with_members.key}?view=waiting_on_me")
         assert r.status_code == 200
 
     def test_project_not_found(self, client, client_user):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get("/p/NONEXIST", follow_redirects=False)
         assert r.status_code in (303, 403, 404, 200)
 
     def test_redirect_when_no_projects(self, client, client_user):
         # client_user has no projects by default (project_with_members not loaded)
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get("/", follow_redirects=False)
         # Just check it returns something valid (redirect or empty)
         assert r.status_code in (200, 303)
@@ -53,7 +53,7 @@ class TestFeed:
         ticket_service.add_ticket_tag(db_session, ticket, staff_user, "urgent")
         db_session.add(Tag(project_id=project_with_members.id, name="orphan"))
         db_session.commit()
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.get(f"/p/{project_with_members.key}")
         assert r.status_code == 200
         assert "urgent" in r.text
@@ -72,7 +72,7 @@ class TestFeed:
         )
         ticket_service.add_ticket_tag(db_session, ticket, staff_user, "bug")
         db_session.commit()
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.get(f"/p/{project_with_members.key}")
         assert r.status_code == 200
         assert "bug" in r.text
@@ -80,7 +80,7 @@ class TestFeed:
 
 class TestTicketCRUD:
     def test_create_ticket(self, client, client_user, project_with_members):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/p/{project_with_members.key}/tickets",
             data={
@@ -96,7 +96,7 @@ class TestTicketCRUD:
     def test_create_ticket_missing_title(
         self, client, client_user, project_with_members
     ):
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/p/{project_with_members.key}/tickets",
             data={
@@ -117,7 +117,7 @@ class TestTicketCRUD:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get(f"/t/{project_with_members.key}-{ticket.number}")
         assert r.status_code == 200
         assert "Detail test" in r.text
@@ -131,7 +131,7 @@ class TestTicketCRUD:
             description="Original",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/edit",
             data={
@@ -153,7 +153,7 @@ class TestComments:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={
@@ -174,7 +174,7 @@ class TestComments:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={
@@ -197,7 +197,7 @@ class TestComments:
             ticket_type=TicketType.BUG,
         )
         ticket_service.set_status(db_session, ticket, client_user, TicketStatus.DONE)
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={"content": "Late comment"},
@@ -219,7 +219,7 @@ class TestTicketStatus:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/status",
             data={"status": "IN_PROGRESS"},
@@ -237,7 +237,7 @@ class TestTicketStatus:
             ticket_type=TicketType.BUG,
         )
         ticket_service.set_status(db_session, ticket, staff_user, TicketStatus.DONE)
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/reopen",
             follow_redirects=False,
@@ -254,7 +254,7 @@ class TestInactiveProject:
         project_service.set_project_active(
             db_session, project_with_members, active=False
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.get(f"/p/{project_with_members.key}", follow_redirects=False)
         assert r.status_code in (303, 404)
 
@@ -271,7 +271,7 @@ class TestParticipantsAndReporter:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!")
+        _login(client, "client@test.local", "Client123!ab")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/participants",
             data={"user_id": str(staff_user.id)},
@@ -299,7 +299,7 @@ class TestParticipantsAndReporter:
             role=UserRole.USER,
             activated_at=datetime.now(timezone.utc),
         )
-        set_password(peer, "Peer1234!")
+        set_password(peer, "Peer1234!abcd")
         db_session.add(peer)
         db_session.commit()
         db_session.refresh(peer)
@@ -315,7 +315,7 @@ class TestParticipantsAndReporter:
         )
         ticket_service.add_participant(db_session, ticket, client_user, peer.id)
 
-        _login(client, "admin@test.local", "Admin123!")
+        _login(client, "admin@test.local", "Admin123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/unwatch",
             data={"user_id": str(peer.id)},
@@ -339,7 +339,7 @@ class TestParticipantsAndReporter:
             description="Desc",
             ticket_type=TicketType.BUG,
         )
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/reporter",
             data={"author_id": str(client_user.id)},
@@ -360,7 +360,7 @@ class TestRemoveTag:
         )
         tagged = ticket_service.add_ticket_tag(db_session, ticket, staff_user, "temp")
         tag_id = tagged.ticket_tags[0].tag_id
-        _login(client, "staff@test.local", "Staff123!")
+        _login(client, "staff@test.local", "Staff123!abcd")
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/tags/remove",
             data={"tag_id": str(tag_id)},
