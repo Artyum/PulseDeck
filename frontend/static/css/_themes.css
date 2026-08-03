@@ -802,6 +802,7 @@ html[data-theme-gradient="off"] {
   --edge-shadow-end: none;
   --edge-shadow-start: none;
   --header-border: 1px solid var(--color-line);
+  --app-header-border-w: 1px;
   --header-bg: var(--color-surface);
   --header-blur: 0px;
   --header-shadow: none;

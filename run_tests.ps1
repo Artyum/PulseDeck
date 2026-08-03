@@ -36,7 +36,7 @@ function Import-EnvFile {
     return $true
 }
 
-function Resolve-TestFile {
+function Resolve-TestFiles {
     param(
         [Parameter(Mandatory = $true)]
         [string]$TestArg,
@@ -46,12 +46,12 @@ function Resolve-TestFile {
 
     $normalized = $TestArg -replace '/', '\'
     if (Test-Path -LiteralPath $normalized) {
-        return (Resolve-Path -LiteralPath $normalized).Path
+        return @((Resolve-Path -LiteralPath $normalized).Path)
     }
 
     $underRoot = Join-Path $TestRoot $normalized
     if (Test-Path -LiteralPath $underRoot) {
-        return (Resolve-Path -LiteralPath $underRoot).Path
+        return @((Resolve-Path -LiteralPath $underRoot).Path)
     }
 
     if ([System.IO.Path]::GetExtension($TestArg) -ieq '.py') {
@@ -63,12 +63,13 @@ function Resolve-TestFile {
         }
     }
 
-    $found = Get-ChildItem -Path $TestRoot -Recurse -Filter $filter -File -ErrorAction SilentlyContinue |
-        Select-Object -First 1
-    if ($found) {
-        return $found.FullName
+    $found = @(Get-ChildItem -Path $TestRoot -Recurse -Filter $filter -File -ErrorAction SilentlyContinue |
+        Sort-Object FullName |
+        ForEach-Object { $_.FullName })
+    if ($found.Count -gt 0) {
+        return $found
     }
-    return $null
+    return @()
 }
 
 $envDev = Join-Path $Root 'deploy\.env.dev'
@@ -106,16 +107,25 @@ $runCoverage = $true
 
 Write-Host ''
 if ($TestTarget) {
-    $testFile = Resolve-TestFile -TestArg $TestTarget -TestRoot $TestRoot
-    if (-not $testFile) {
+    $testFiles = @(Resolve-TestFiles -TestArg $TestTarget -TestRoot $TestRoot)
+    if ($testFiles.Count -eq 0) {
         Fail "Nie znaleziono pliku testow: $TestTarget`n       Szukano w: $TestRoot"
     }
-    if (-not (Test-Path -LiteralPath $testFile)) {
-        Fail "Plik testow nie istnieje: $testFile"
+    foreach ($testFile in $testFiles) {
+        if (-not (Test-Path -LiteralPath $testFile)) {
+            Fail "Plik testow nie istnieje: $testFile"
+        }
     }
-    Write-Step "===== Uruchamianie: $testFile =====" 'Magenta'
+    if ($testFiles.Count -eq 1) {
+        Write-Step "===== Uruchamianie: $($testFiles[0]) =====" 'Magenta'
+    } else {
+        Write-Step "===== Uruchamianie $($testFiles.Count) plikow (ta sama nazwa): =====" 'Magenta'
+        foreach ($testFile in $testFiles) {
+            Write-Host "  - $testFile" -ForegroundColor DarkGray
+        }
+    }
     $runCoverage = $false
-    & python -m pytest $testFile -v --tb=line --color=yes @PytestArgs
+    & python -m pytest @testFiles -v --tb=line --color=yes @PytestArgs
 } else {
     Write-Step '===== Uruchamianie wszystkich testow =====' 'Magenta'
     & python -m pytest tests/ -v --tb=line --color=yes --cov=app --cov-report=term-missing @PytestArgs

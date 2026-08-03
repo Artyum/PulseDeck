@@ -10,7 +10,7 @@
   <section class="admin-section" data-coachmark="admin-projects">
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
     <form method="post"
-          action="{{ url_for('create_project') }}{% if show_disabled %}?disabled=1{% endif %}"
+          action="{{ url_for('create_project') }}{%- if show_disabled -%}?disabled=1{%- endif -%}"
           class="admin-form-row">
       <div class="admin-form-field">
         <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
@@ -52,7 +52,9 @@
                  name="disabled"
                  value="1"
                  class="checkbox"
-                 {% if show_disabled %}checked{% endif %}
+                 {%- if show_disabled -%}
+                 checked
+                 {%- endif -%}
                  onchange="this.form.requestSubmit()">
           {{ t("ui.admin.projects.show_disabled") }}
         </label>
@@ -82,7 +84,12 @@
                class="btn btn-secondary">{{ t("ui.common.edit") }}</a>
             <form method="post"
                   action="{{ url_for('admin_project_active', key=p.key) }}"
-                  {% if p.is_active %} data-confirm-title="{{ t('ui.confirm.disable_project.title') }}" data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}" data-confirm-action="{{ t('ui.confirm.disable_project.action') }}" data-confirm-danger {% endif %}>
+                  {%- if p.is_active %}
+                  data-confirm-title="{{ t('ui.confirm.disable_project.title') }}"
+                  data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}"
+                  data-confirm-action="{{ t('ui.confirm.disable_project.action') }}"
+                  data-confirm-danger
+                  {%- endif -%}>
               {% if show_disabled %}<input type="hidden" name="disabled" value="1">{% endif %}
               {% if p.is_active %}
                 <input type="hidden" name="active" value="0">

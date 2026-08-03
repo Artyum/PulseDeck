@@ -260,6 +260,41 @@
   function armDomEnhancements(root) {
     armFormValidation(root);
     armAutoResize(root);
+    armIssueStickyHeads(root);
+  }
+
+  function appHeaderOffsetPx() {
+    var header = document.querySelector(".app-header");
+    return header ? header.getBoundingClientRect().height : 0;
+  }
+
+  function armIssueStickyHeads(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    scope.querySelectorAll("[data-issue-sticky-head]").forEach(function (head) {
+      if (head.dataset.stickyArmed === "1") return;
+      head.dataset.stickyArmed = "1";
+      var sentinel = head.previousElementSibling;
+      if (!sentinel || !sentinel.hasAttribute("data-issue-sticky-sentinel")) return;
+
+      var observer = null;
+      function syncStickyOffset() {
+        if (observer) observer.disconnect();
+        var top = appHeaderOffsetPx();
+        head.style.top = top ? top + "px" : "";
+        observer = new IntersectionObserver(
+          function (entries) {
+            var entry = entries[0];
+            if (!entry) return;
+            head.classList.toggle("is-compact", !entry.isIntersecting);
+          },
+          { rootMargin: "-" + top + "px 0px 0px 0px", threshold: 0 }
+        );
+        observer.observe(sentinel);
+      }
+
+      syncStickyOffset();
+      window.addEventListener("resize", syncStickyOffset, { passive: true });
+    });
   }
 
   armDomEnhancements(document);

@@ -1,3 +1,7 @@
-<div class="issue-head">
-  <h1 class="issue-title">{{ ticket.title }}</h1>
+<div data-issue-sticky-sentinel aria-hidden="true"></div>
+<div class="issue-head" data-issue-sticky-head>
+  <h1 class="issue-title">
+    <span class="issue-title-key">{{ ticket|ticket_label }}</span>
+    <span class="issue-title-text">{{ ticket.title }}</span>
+  </h1>
 </div>

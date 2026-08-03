@@ -30,9 +30,7 @@
           <span aria-hidden="true">/</span>
           <span class="issue-key" aria-current="page">{{ ticket|ticket_label }}</span>
         </nav>
-        <div class="issue-head">
-          <h1 class="issue-title">{{ ticket.title }}</h1>
-        </div>
+        {% include "partials/ticket_header.html" %}
         <section class="issue-section">
           <div class="issue-section-bar">
             <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
