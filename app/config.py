@@ -72,6 +72,7 @@ class Settings(BaseSettings):
     mail_max_per_hour: int = Field(default=300, validation_alias="MAIL_MAX_PER_HOUR")
     mail_max_attempts: int = Field(default=5, validation_alias="MAIL_MAX_ATTEMPTS")
     mail_idle_ms: int = Field(default=1000, validation_alias="MAIL_IDLE_MS")
+    mail_max_age_days: int = Field(default=7, validation_alias="MAIL_MAX_AGE_DAYS")
 
     auth_link_ttl_days: int = Field(default=7, validation_alias="AUTH_LINK_TTL_DAYS")
     email_confirm_ttl_minutes: int = Field(

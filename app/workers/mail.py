@@ -11,7 +11,7 @@ from app.db.session import SessionLocal
 from app.logging_setup import setup_logging
 from app.models.email_outbox import EmailOutbox
 from app.models.enums import EmailOutboxPriority, EmailOutboxStatus
-from app.services.email import send_email_sync
+from app.services.email import _smtp_local_hostname, send_email_sync
 
 logger = logging.getLogger("pulsedeck.mail")
 
@@ -25,7 +25,28 @@ def _recover_stuck(db) -> None:
     db.commit()
 
 
-def _ticket_rate_ok(db, settings) -> bool:
+def _expire_stale(db, settings) -> None:
+    cutoff = (
+        datetime.now(timezone.utc) - timedelta(days=settings.mail_max_age_days)
+    ).replace(tzinfo=None)
+    result = db.execute(
+        update(EmailOutbox)
+        .where(
+            EmailOutbox.status == EmailOutboxStatus.PENDING,
+            EmailOutbox.created_at < cutoff,
+        )
+        .values(status=EmailOutboxStatus.FAILED, last_error="expired")
+    )
+    db.commit()
+    if result.rowcount:
+        logger.warning(
+            "Expired %s stale outbox email(s) older than %s days",
+            result.rowcount,
+            settings.mail_max_age_days,
+        )
+
+
+def _ticket_hourly_ok(db, settings) -> bool:
     since = datetime.now(timezone.utc) - timedelta(hours=1)
     sent = db.scalar(
         select(func.count())
@@ -36,25 +57,7 @@ def _ticket_rate_ok(db, settings) -> bool:
             EmailOutbox.sent_at >= since,
         )
     )
-    if (sent or 0) >= settings.mail_max_per_hour:
-        return False
-    last = db.scalar(
-        select(EmailOutbox.sent_at)
-        .where(
-            EmailOutbox.priority == EmailOutboxPriority.TICKET,
-            EmailOutbox.status == EmailOutboxStatus.SENT,
-            EmailOutbox.sent_at.is_not(None),
-        )
-        .order_by(EmailOutbox.sent_at.desc())
-        .limit(1)
-    )
-    if last is None:
-        return True
-    if last.tzinfo is None:
-        last = last.replace(tzinfo=timezone.utc)
-    return (
-        datetime.now(timezone.utc) - last
-    ).total_seconds() * 1000 >= settings.mail_min_interval_ms
+    return (sent or 0) < settings.mail_max_per_hour
 
 
 def claim_next(db) -> EmailOutbox | None:
@@ -75,7 +78,9 @@ def claim_next(db) -> EmailOutbox | None:
     if row is None:
         db.rollback()
         return None
-    if row.priority == EmailOutboxPriority.TICKET and not _ticket_rate_ok(db, settings):
+    if row.priority == EmailOutboxPriority.TICKET and not _ticket_hourly_ok(
+        db, settings
+    ):
         db.rollback()
         return None
     row.status = EmailOutboxStatus.SENDING
@@ -115,11 +120,13 @@ def process_row(db, row: EmailOutbox) -> None:
 
 def run_forever() -> None:
     settings = get_settings()
+    _smtp_local_hostname()
     logger.info(
-        "Mail worker started idle_ms=%s min_interval_ms=%s max_per_hour=%s",
+        "Mail worker started idle_ms=%s min_interval_ms=%s max_per_hour=%s max_age_days=%s",
         settings.mail_idle_ms,
         settings.mail_min_interval_ms,
         settings.mail_max_per_hour,
+        settings.mail_max_age_days,
     )
     with SessionLocal() as db:
         _recover_stuck(db)
@@ -127,11 +134,18 @@ def run_forever() -> None:
         try:
             settings = get_settings()
             with SessionLocal() as db:
+                _expire_stale(db, settings)
                 row = claim_next(db)
                 if row is None:
                     time.sleep(max(0.05, settings.mail_idle_ms / 1000))
                     continue
+                priority = row.priority
                 process_row(db, row)
+                if (
+                    priority == EmailOutboxPriority.TICKET
+                    and row.status == EmailOutboxStatus.SENT
+                ):
+                    time.sleep(max(0.0, settings.mail_min_interval_ms / 1000))
         except Exception:
             logger.exception("Mail worker loop error")
             settings = get_settings()

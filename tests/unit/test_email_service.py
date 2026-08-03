@@ -6,6 +6,30 @@ from app.services import email as email_service
 from app.services import tickets as ticket_service
 
 
+class TestSmtpLocalHostname:
+    def test_caches_fqdn(self, monkeypatch):
+        email_service._smtp_local_hostname.cache_clear()
+        calls = {"n": 0}
+
+        def fake_getfqdn():
+            calls["n"] += 1
+            return "mail.example.com"
+
+        monkeypatch.setattr(email_service.socket, "getfqdn", fake_getfqdn)
+        assert email_service._smtp_local_hostname() == "mail.example.com"
+        assert email_service._smtp_local_hostname() == "mail.example.com"
+        assert calls["n"] == 1
+
+    def test_address_literal_when_no_dot(self, monkeypatch):
+        email_service._smtp_local_hostname.cache_clear()
+        monkeypatch.setattr(email_service.socket, "getfqdn", lambda: "NITRO")
+        monkeypatch.setattr(email_service.socket, "gethostname", lambda: "NITRO")
+        monkeypatch.setattr(
+            email_service.socket, "gethostbyname", lambda _h: "192.168.1.10"
+        )
+        assert email_service._smtp_local_hostname() == "[192.168.1.10]"
+
+
 class TestEnqueueAndRender:
     def test_enqueue_email(self, db_session):
         email_service.enqueue_email(
@@ -91,8 +115,14 @@ class TestEnqueueAndRender:
         smtp = MagicMock()
         smtp.__enter__.return_value = smtp
         smtp.__exit__.return_value = False
-        with patch("app.services.email.smtplib.SMTP_SSL", return_value=smtp):
+        email_service._smtp_local_hostname.cache_clear()
+        monkeypatch.setattr(
+            email_service, "_smtp_local_hostname", lambda: "client.example.com"
+        )
+        with patch("app.services.email.smtplib.SMTP_SSL", return_value=smtp) as ctor:
             assert email_service.send_email_sync("a@b.c", "subj", "<p>body</p>") is True
+        ctor.assert_called_once()
+        assert ctor.call_args.kwargs.get("local_hostname") == "client.example.com"
         smtp.login.assert_called_once()
         smtp.send_message.assert_called_once()
 

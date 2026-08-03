@@ -3,11 +3,12 @@ from __future__ import annotations
 import logging
 import re
 import smtplib
+import socket
 from collections.abc import Iterable
 from datetime import datetime, timezone
 from email.message import EmailMessage
 from email.utils import formatdate, make_msgid, parseaddr
-from functools import partial
+from functools import cache, partial
 from html import unescape
 from html.parser import HTMLParser
 from urllib.parse import urlparse
@@ -118,6 +119,35 @@ def _mail_domain(from_addr: str, app_base_url: str) -> str:
     return (host or "localhost").lower()
 
 
+@cache
+def _smtp_local_hostname() -> str:
+    fqdn = socket.getfqdn().strip()
+    if "." in fqdn:
+        return fqdn
+    addr = "127.0.0.1"
+    try:
+        addr = socket.gethostbyname(socket.gethostname())
+    except OSError:
+        pass
+    return f"[{addr}]"
+
+
+def _smtp_connect(portal: PortalSettings) -> smtplib.SMTP:
+    host = portal.smtp_server
+    port = portal.smtp_port
+    local_hostname = _smtp_local_hostname()
+    if portal.smtp_security == "ssl":
+        return smtplib.SMTP_SSL(host, port, local_hostname=local_hostname, timeout=30)
+    smtp = smtplib.SMTP(host, port, local_hostname=local_hostname, timeout=30)
+    smtp.ehlo()
+    if portal.smtp_security == "starttls":
+        if not smtp.has_extn("starttls"):
+            raise RuntimeError("SMTP server does not support STARTTLS")
+        smtp.starttls()
+        smtp.ehlo()
+    return smtp
+
+
 def _build_message(
     to: str,
     subject: str,
@@ -182,22 +212,9 @@ def send_email_sync(
         portal=portal,
     )
     try:
-        if portal.smtp_security == "ssl":
-            with smtplib.SMTP_SSL(
-                portal.smtp_server, portal.smtp_port, timeout=30
-            ) as smtp:
-                _smtp_auth(smtp, portal.smtp_user, portal.smtp_pass)
-                smtp.send_message(msg)
-        else:
-            with smtplib.SMTP(portal.smtp_server, portal.smtp_port, timeout=30) as smtp:
-                smtp.ehlo()
-                if portal.smtp_security == "starttls":
-                    if not smtp.has_extn("starttls"):
-                        raise RuntimeError("SMTP server does not support STARTTLS")
-                    smtp.starttls()
-                    smtp.ehlo()
-                _smtp_auth(smtp, portal.smtp_user, portal.smtp_pass)
-                smtp.send_message(msg)
+        with _smtp_connect(portal) as smtp:
+            _smtp_auth(smtp, portal.smtp_user, portal.smtp_pass)
+            smtp.send_message(msg)
         logger.info("Email sent to %s subject=%s", to, subject)
         return True
     except Exception:
