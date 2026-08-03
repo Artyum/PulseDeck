@@ -824,6 +824,15 @@
     document.documentElement.setAttribute("data-theme-gradient", isGradientOn(readGradientMap(gradientKey), themeId) ? "on" : "off");
   }
 
+  function applyThemeScheme(themeId, root) {
+    var darkAttr = (root && root.getAttribute("data-ui-dark-themes")) || "";
+    var darkThemes = darkAttr ? darkAttr.split(",") : [];
+    document.documentElement.setAttribute(
+      "data-scheme",
+      darkThemes.indexOf(themeId) !== -1 ? "dark" : "light"
+    );
+  }
+
   function syncPrefPicker(root) {
     if (!root) return;
     var key = root.getAttribute("data-ui-storage-key");
@@ -859,6 +868,7 @@
       localStorage.setItem(key, value);
     } catch (e) {}
     document.documentElement.setAttribute(attr, value);
+    if (attr === "data-theme") applyThemeScheme(value, root);
     var gradientKey = root.getAttribute("data-ui-gradient-key");
     if (gradientKey) applyThemeGradient(value, gradientKey);
     syncPrefPicker(root);
@@ -926,6 +936,7 @@
         } catch (e) {}
         document.documentElement.setAttribute(themeAttr, themeId);
       }
+      if (themeAttr === "data-theme") applyThemeScheme(themeId, root);
       applyThemeGradient(themeId, gradientKey);
       syncPrefPicker(root);
       return;

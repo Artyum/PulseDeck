@@ -1,3 +1,76 @@
+/* === Depth: light === */
+:root {
+  --comment-bg: color-mix(in oklab, var(--color-surface-2) 25%, var(--color-surface));
+  --surface-gradient: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 88%, var(--color-surface-2)) 100%);
+  --surface-gradient-soft: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 96%, var(--color-surface-2)) 100%);
+  --surface-highlight: color-mix(in oklab, var(--color-surface) 40%, transparent);
+  --surface-highlight-soft: color-mix(in oklab, var(--color-surface) 30%, transparent);
+  --shadow-ambient: color-mix(in oklab, var(--color-ink) 8%, transparent);
+  --shadow-ambient-strong: color-mix(in oklab, var(--color-ink) 14%, transparent);
+  --shadow-lift-sm: 0 1px 0 var(--surface-highlight) inset, 0 1px 0 var(--surface-highlight-soft), 0 3px 12px var(--shadow-ambient), 0 14px 32px -16px var(--shadow-ambient-strong);
+  --shadow-lift-md: 0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 16px -6px color-mix(in oklab, var(--color-ink) 10%, transparent);
+  --shadow-float:
+    0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 14px color-mix(in oklab, var(--color-ink) 7%, transparent),
+    0 12px 28px -14px color-mix(in oklab, var(--color-ink) 10%, transparent);
+  --shadow-menu: 0 2px 8px -2px color-mix(in oklab, var(--color-ink) 10%, transparent), 0 8px 18px -8px color-mix(in oklab, var(--color-ink) 12%, transparent);
+  --btn-shadow-rest:
+    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 52%, transparent), 0 1px 0 color-mix(in oklab, var(--color-surface) 14%, transparent),
+    0 4px 10px -8px color-mix(in oklab, var(--color-ink) 22%, transparent);
+  --btn-shadow-hover:
+    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 44%, transparent), 0 1px 0 color-mix(in oklab, var(--color-surface) 12%, transparent),
+    0 8px 18px -12px color-mix(in oklab, var(--color-ink) 28%, transparent);
+  --btn-shadow-primary:
+    inset 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 18%, transparent), 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 8%, transparent),
+    0 6px 16px -10px color-mix(in oklab, var(--color-pulse) 38%, transparent);
+  --btn-shadow-primary-hover:
+    inset 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 14%, transparent), 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 8%, transparent),
+    0 10px 22px -12px color-mix(in oklab, var(--color-pulse) 44%, transparent);
+  --btn-bg-primary: linear-gradient(180deg, var(--color-pulse-bright) 0%, var(--color-pulse) 100%);
+  --btn-bg-primary-hover: linear-gradient(180deg, var(--color-pulse) 0%, var(--color-pulse-deep) 100%);
+  --btn-bg-secondary: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 92%, var(--color-surface-2)) 0%, color-mix(in oklab, var(--color-surface-2) 74%, var(--color-soft-blue)) 100%);
+  --btn-bg-secondary-hover: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 88%, var(--color-surface-3)) 0%, color-mix(in oklab, var(--color-surface-3) 58%, var(--color-soft-blue)) 100%);
+  --btn-bg-danger: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 88%, var(--color-soft-red)) 0%, color-mix(in oklab, var(--color-soft-red) 78%, var(--color-surface)) 100%);
+  --btn-bg-danger-hover: linear-gradient(180deg, color-mix(in oklab, var(--color-soft-red) 74%, var(--color-surface)) 0%, color-mix(in oklab, var(--color-soft-red) 55%, var(--color-danger)) 100%);
+  color-scheme: light;
+}
+
+/* === Depth: dark === */
+html[data-scheme="dark"] {
+  --comment-bg: var(--color-surface-3);
+  --surface-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-surface) 94%, white) 0%,
+    var(--color-surface) 16%,
+    color-mix(in oklab, var(--color-surface) 86%, var(--color-surface-2)) 100%
+  );
+  --surface-gradient-soft: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-surface) 92%, white) 0%,
+    var(--color-surface) 24%,
+    color-mix(in oklab, var(--color-surface) 92%, var(--color-surface-2)) 100%
+  );
+  --surface-highlight: color-mix(in oklab, white 18%, transparent);
+  --surface-highlight-soft: color-mix(in oklab, white 10%, transparent);
+  --shadow-ambient: color-mix(in oklab, black 34%, transparent);
+  --shadow-ambient-strong: color-mix(in oklab, black 54%, transparent);
+  --shadow-lift-sm:
+    0 1px 0 color-mix(in oklab, white 16%, transparent) inset, 0 1px 0 color-mix(in oklab, white 7%, transparent), 0 10px 24px -18px color-mix(in oklab, black 42%, transparent),
+    0 20px 44px -26px color-mix(in oklab, black 60%, transparent);
+  --shadow-lift-md:
+    0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 8px 20px -14px color-mix(in oklab, black 34%, transparent), 0 18px 38px -28px color-mix(in oklab, black 52%, transparent);
+  --shadow-float:
+    0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 6px 18px -12px color-mix(in oklab, black 28%, transparent), 0 14px 32px -18px color-mix(in oklab, black 40%, transparent);
+  --shadow-menu: 0 4px 12px -4px color-mix(in oklab, black 36%, transparent), 0 12px 24px -12px color-mix(in oklab, black 40%, transparent);
+  --btn-shadow-rest: inset 0 1px 0 color-mix(in oklab, white 16%, transparent), 0 1px 0 color-mix(in oklab, white 6%, transparent), 0 8px 16px -14px color-mix(in oklab, black 46%, transparent);
+  --btn-shadow-hover: inset 0 1px 0 color-mix(in oklab, white 14%, transparent), 0 1px 0 color-mix(in oklab, white 5%, transparent), 0 12px 22px -14px color-mix(in oklab, black 54%, transparent);
+  --btn-shadow-primary:
+    inset 0 1px 0 color-mix(in oklab, white 22%, transparent), 0 1px 0 color-mix(in oklab, white 8%, transparent), 0 10px 20px -14px color-mix(in oklab, var(--color-pulse) 44%, transparent);
+  --btn-shadow-primary-hover:
+    inset 0 1px 0 color-mix(in oklab, white 18%, transparent), 0 1px 0 color-mix(in oklab, white 8%, transparent), 0 14px 26px -14px color-mix(in oklab, var(--color-pulse) 52%, transparent);
+  color-scheme: dark;
+}
+
+/* === Palettes: blue === */
 :root,
 html[data-theme="morning-mist"] {
   --color-mist: #e6eef8;
@@ -50,194 +123,6 @@ html[data-theme="morning-mist"] {
     radial-gradient(ellipse 48% 36% at 6% 78%, rgb(206 222 240 / 0.07), transparent 68%), linear-gradient(180deg, #eaf2f9 0%, #f0f5fb 26%, #f3f7fb 58%, #f5f8fc 100%);
   --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(150 190 230 / 0.12), transparent 62%), linear-gradient(185deg, #e2ebf5 0%, #e8f0f8 34%, #eef3fa 68%, #e9f0f7 100%);
   --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(155 195 235 / 0.03), transparent 68%), linear-gradient(180deg, #fbfcfe 0%, #f9fbfd 48%, #f7f9fc 100%);
-  --comment-bg: color-mix(in oklab, var(--color-surface-2) 25%, var(--color-surface));
-  --surface-gradient: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 88%, var(--color-surface-2)) 100%);
-  --surface-gradient-soft: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 96%, var(--color-surface-2)) 100%);
-  --surface-highlight: color-mix(in oklab, var(--color-surface) 40%, transparent);
-  --surface-highlight-soft: color-mix(in oklab, var(--color-surface) 30%, transparent);
-  --shadow-ambient: color-mix(in oklab, var(--color-ink) 8%, transparent);
-  --shadow-ambient-strong: color-mix(in oklab, var(--color-ink) 14%, transparent);
-  --shadow-lift-sm: 0 1px 0 var(--surface-highlight) inset, 0 1px 0 var(--surface-highlight-soft), 0 3px 12px var(--shadow-ambient), 0 14px 32px -16px var(--shadow-ambient-strong);
-  --shadow-lift-md: 0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 16px -6px color-mix(in oklab, var(--color-ink) 10%, transparent);
-  --shadow-float:
-    0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 14px color-mix(in oklab, var(--color-ink) 7%, transparent),
-    0 12px 28px -14px color-mix(in oklab, var(--color-ink) 10%, transparent);
-  --shadow-menu: 0 2px 8px -2px color-mix(in oklab, var(--color-ink) 10%, transparent), 0 8px 18px -8px color-mix(in oklab, var(--color-ink) 12%, transparent);
-  --btn-shadow-rest:
-    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 52%, transparent), 0 1px 0 color-mix(in oklab, var(--color-surface) 14%, transparent),
-    0 4px 10px -8px color-mix(in oklab, var(--color-ink) 22%, transparent);
-  --btn-shadow-hover:
-    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 44%, transparent), 0 1px 0 color-mix(in oklab, var(--color-surface) 12%, transparent),
-    0 8px 18px -12px color-mix(in oklab, var(--color-ink) 28%, transparent);
-  --btn-shadow-primary:
-    inset 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 18%, transparent), 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 8%, transparent),
-    0 6px 16px -10px color-mix(in oklab, var(--color-pulse) 38%, transparent);
-  --btn-shadow-primary-hover:
-    inset 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 14%, transparent), 0 1px 0 color-mix(in oklab, var(--color-on-pulse) 8%, transparent),
-    0 10px 22px -12px color-mix(in oklab, var(--color-pulse) 44%, transparent);
-  color-scheme: light;
-}
-
-html[data-theme="sandy-dawn"] {
-  --color-mist: #f0e6d8;
-  --color-page: #faf5ee;
-  --color-aside: #f3ebe0;
-  --color-ink: #352e26;
-  --color-steel: #75685a;
-  --color-line: #ded0be;
-  --color-pulse: #c9923a;
-  --color-signal: #b87222;
-  --color-danger: #c2473c;
-  --color-primary: #c9923a;
-  --color-secondary: #75685a;
-  --color-accent: #c9923a;
-  --color-brand: #352e26;
-  --color-base-100: #f0e6d8;
-  --color-soft-blue: #ebe5dc;
-  --color-soft-yellow: #f3e5c2;
-  --color-soft-purple: #ebe3e0;
-  --color-soft-green: #e2eadc;
-  --color-soft-red: #f1dfd8;
-  --color-soft-teal: #e2e9e3;
-  --color-soft-orange: #f1e2cc;
-  --color-frame: #c7b59e;
-  --color-frame-strong: #ab9780;
-  --color-surface: #fffdfb;
-  --color-surface-2: #f8f1e8;
-  --color-surface-3: #efe5d8;
-  --color-pulse-bright: #d6a34c;
-  --color-pulse-deep: #a87828;
-  --color-on-pulse: #fffaf2;
-  --color-chip-neutral: #efe7dc;
-  --color-chip-neutral-border: #d0c2b0;
-  --color-chip-blue-fg: #8a5e1c;
-  --color-chip-blue-border: #d2b686;
-  --color-chip-teal-fg: #3d6a58;
-  --color-chip-teal-border: #a4c2b4;
-  --color-chip-orange-fg: #8a5016;
-  --color-chip-orange-border: #d2ae84;
-  --color-chip-purple-fg: #68506a;
-  --color-chip-purple-border: #c6b4c2;
-  --color-chip-green-fg: #3d6a48;
-  --color-chip-green-border: #a6c4a8;
-  --color-chip-red-fg: #9a3a30;
-  --color-chip-red-border: #dbafa8;
-  --color-chip-yellow-fg: #765c18;
-  --color-chip-yellow-border: #d8c686;
-  --page-gradient:
-    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(238 205 155 / 0.17), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(236 214 178 / 0.09), transparent 62%),
-    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(242 226 200 / 0.07), transparent 68%), linear-gradient(180deg, #f6eee3 0%, #f8f1e8 26%, #f9f3eb 58%, #faf5ee 100%);
-  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(228 190 140 / 0.12), transparent 62%), linear-gradient(185deg, #eadfcf 0%, #efe6d8 34%, #f3ebe0 68%, #f0e7db 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(230 195 150 / 0.03), transparent 68%), linear-gradient(180deg, #fefcf9 0%, #fdfaf6 48%, #fcf8f3 100%);
-  color-scheme: light;
-}
-
-html[data-theme="green-meadow"] {
-  --color-mist: #e2ede5;
-  --color-page: #f4f8f4;
-  --color-aside: #e8f0ea;
-  --color-ink: #1f3228;
-  --color-steel: #587266;
-  --color-line: #c8d7ce;
-  --color-pulse: #3d9470;
-  --color-signal: #bc7620;
-  --color-danger: #c2473c;
-  --color-primary: #3d9470;
-  --color-secondary: #587266;
-  --color-accent: #3d9470;
-  --color-brand: #1f3228;
-  --color-base-100: #e2ede5;
-  --color-soft-blue: #dae7e3;
-  --color-soft-yellow: #f0e9d2;
-  --color-soft-purple: #e1e3eb;
-  --color-soft-green: #d2eadc;
-  --color-soft-red: #f0deda;
-  --color-soft-teal: #d2e9e5;
-  --color-soft-orange: #eee4d4;
-  --color-frame: #a1bbaa;
-  --color-frame-strong: #7f9f8f;
-  --color-surface: #ffffff;
-  --color-surface-2: #f0f6f1;
-  --color-surface-3: #e4eee8;
-  --color-pulse-bright: #4ea880;
-  --color-pulse-deep: #2f785a;
-  --color-on-pulse: #f3fff8;
-  --color-chip-neutral: #e7eee9;
-  --color-chip-neutral-border: #bfd0c5;
-  --color-chip-blue-fg: #226a52;
-  --color-chip-blue-border: #8cbca6;
-  --color-chip-teal-fg: #1c6870;
-  --color-chip-teal-border: #8abcc0;
-  --color-chip-orange-fg: #8a5218;
-  --color-chip-orange-border: #d2ae84;
-  --color-chip-purple-fg: #4c4e88;
-  --color-chip-purple-border: #b2b2d6;
-  --color-chip-green-fg: #226a48;
-  --color-chip-green-border: #8ec4a8;
-  --color-chip-red-fg: #9a3a30;
-  --color-chip-red-border: #dbafa8;
-  --color-chip-yellow-fg: #6c5a18;
-  --color-chip-yellow-border: #d2c486;
-  --page-gradient:
-    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(160 210 180 / 0.16), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(178 218 192 / 0.08), transparent 62%),
-    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(198 226 208 / 0.06), transparent 68%), linear-gradient(180deg, #e8f2eb 0%, #eef5f0 26%, #f1f7f2 58%, #f4f8f4 100%);
-  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(145 195 165 / 0.12), transparent 62%), linear-gradient(185deg, #dce9e2 0%, #e4ede7 34%, #e8f0ea 68%, #e5ede8 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(148 198 168 / 0.03), transparent 68%), linear-gradient(180deg, #fbfdfb 0%, #f9fcfa 48%, #f7faf8 100%);
-  color-scheme: light;
-}
-
-html[data-theme="graphite-day"] {
-  --color-mist: #e7eaef;
-  --color-page: #f5f6f8;
-  --color-aside: #eceef3;
-  --color-ink: #1e222a;
-  --color-steel: #5e6674;
-  --color-line: #d0d4dc;
-  --color-pulse: #3d6fd9;
-  --color-signal: #bc7020;
-  --color-danger: #c2473c;
-  --color-primary: #3d6fd9;
-  --color-secondary: #5e6674;
-  --color-accent: #3d6fd9;
-  --color-brand: #1e222a;
-  --color-base-100: #e7eaef;
-  --color-soft-blue: #dde5f3;
-  --color-soft-yellow: #f0ead4;
-  --color-soft-purple: #e3e1ee;
-  --color-soft-green: #dae9e2;
-  --color-soft-red: #f0dfdc;
-  --color-soft-teal: #dae5ea;
-  --color-soft-orange: #eee3d8;
-  --color-frame: #b0b6c2;
-  --color-frame-strong: #8e96a4;
-  --color-surface: #ffffff;
-  --color-surface-2: #f0f1f4;
-  --color-surface-3: #e6e8ee;
-  --color-pulse-bright: #5082e4;
-  --color-pulse-deep: #2d5bb8;
-  --color-on-pulse: #f4f7ff;
-  --color-chip-neutral: #eceef2;
-  --color-chip-neutral-border: #c4c8d2;
-  --color-chip-blue-fg: #1d509c;
-  --color-chip-blue-border: #98aed4;
-  --color-chip-teal-fg: #1c606c;
-  --color-chip-teal-border: #8abcc4;
-  --color-chip-orange-fg: #8a5218;
-  --color-chip-orange-border: #d2ae84;
-  --color-chip-purple-fg: #4c4488;
-  --color-chip-purple-border: #b2acd6;
-  --color-chip-green-fg: #226a48;
-  --color-chip-green-border: #8ec4a8;
-  --color-chip-red-fg: #9a3a30;
-  --color-chip-red-border: #dbafa8;
-  --color-chip-yellow-fg: #6c5a18;
-  --color-chip-yellow-border: #d2c486;
-  --page-gradient:
-    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 188 225 / 0.15), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(180 196 222 / 0.07), transparent 62%),
-    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(200 208 222 / 0.05), transparent 68%), linear-gradient(180deg, #ebedf3 0%, #f0f2f6 26%, #f3f4f7 58%, #f5f6f8 100%);
-  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(155 172 210 / 0.11), transparent 62%), linear-gradient(185deg, #e0e3eb 0%, #e7e9f0 34%, #eceef3 68%, #e8eaf1 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(158 176 212 / 0.03), transparent 68%), linear-gradient(180deg, #fbfbfc 0%, #f9fafb 48%, #f8f9fa 100%);
-  color-scheme: light;
 }
 
 html[data-theme="deep-ocean"] {
@@ -293,205 +178,60 @@ html[data-theme="deep-ocean"] {
     radial-gradient(ellipse 112% 54% at 46% -20%, rgb(96 170 255 / 0.14), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(14 38 72 / 0.18), transparent 76%),
     linear-gradient(185deg, #183049 0%, #142841 32%, #101c2e 68%, #0d1827 100%);
   --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(92 164 244 / 0.08), transparent 62%), linear-gradient(180deg, #16273d 0%, #142338 46%, #101d2f 100%);
-  --surface-gradient: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--color-surface) 94%, white) 0%,
-    var(--color-surface) 16%,
-    color-mix(in oklab, var(--color-surface) 86%, var(--color-surface-2)) 100%
-  );
-  --surface-gradient-soft: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--color-surface) 92%, white) 0%,
-    var(--color-surface) 24%,
-    color-mix(in oklab, var(--color-surface) 92%, var(--color-surface-2)) 100%
-  );
-  --surface-highlight: color-mix(in oklab, white 18%, transparent);
-  --surface-highlight-soft: color-mix(in oklab, white 10%, transparent);
-  --shadow-ambient: color-mix(in oklab, black 34%, transparent);
-  --shadow-ambient-strong: color-mix(in oklab, black 54%, transparent);
-  --shadow-lift-sm:
-    0 1px 0 color-mix(in oklab, white 16%, transparent) inset, 0 1px 0 color-mix(in oklab, white 7%, transparent), 0 10px 24px -18px color-mix(in oklab, black 42%, transparent),
-    0 20px 44px -26px color-mix(in oklab, black 60%, transparent);
-  --shadow-lift-md:
-    0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 8px 20px -14px color-mix(in oklab, black 34%, transparent), 0 18px 38px -28px color-mix(in oklab, black 52%, transparent);
-  --shadow-float:
-    0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 6px 18px -12px color-mix(in oklab, black 28%, transparent), 0 14px 32px -18px color-mix(in oklab, black 40%, transparent);
-  --shadow-menu: 0 4px 12px -4px color-mix(in oklab, black 36%, transparent), 0 12px 24px -12px color-mix(in oklab, black 40%, transparent);
-  --btn-shadow-rest: inset 0 1px 0 color-mix(in oklab, white 16%, transparent), 0 1px 0 color-mix(in oklab, white 6%, transparent), 0 8px 16px -14px color-mix(in oklab, black 46%, transparent);
-  --btn-shadow-hover: inset 0 1px 0 color-mix(in oklab, white 14%, transparent), 0 1px 0 color-mix(in oklab, white 5%, transparent), 0 12px 22px -14px color-mix(in oklab, black 54%, transparent);
-  --btn-shadow-primary:
-    inset 0 1px 0 color-mix(in oklab, white 22%, transparent), 0 1px 0 color-mix(in oklab, white 8%, transparent), 0 10px 20px -14px color-mix(in oklab, var(--color-pulse) 44%, transparent);
-  --btn-shadow-primary-hover:
-    inset 0 1px 0 color-mix(in oklab, white 18%, transparent), 0 1px 0 color-mix(in oklab, white 8%, transparent), 0 14px 26px -14px color-mix(in oklab, var(--color-pulse) 52%, transparent);
-  color-scheme: dark;
 }
 
-html[data-theme="midnight-berry"] {
-  --color-mist: #120e16;
-  --color-page: #120e16;
-  --color-aside: #17131c;
-  --color-ink: #ebe3f2;
-  --color-steel: #a89ab8;
-  --color-line: #2e263a;
-  --color-pulse: #b07ddc;
-  --color-signal: #d69658;
-  --color-danger: #d87278;
-  --color-primary: #b07ddc;
-  --color-secondary: #a89ab8;
-  --color-accent: #b07ddc;
-  --color-brand: #ebe3f2;
-  --color-base-100: #120e16;
-  --color-soft-blue: #282238;
-  --color-soft-yellow: #3c3224;
-  --color-soft-purple: #322846;
-  --color-soft-green: #24342c;
-  --color-soft-red: #3a2830;
-  --color-soft-teal: #243036;
-  --color-soft-orange: #3a2e24;
-  --color-frame: #463c56;
-  --color-frame-strong: #645870;
-  --color-surface: #1e1826;
-  --color-surface-2: #18131f;
-  --color-surface-3: #282036;
-  --color-pulse-bright: #c092e6;
-  --color-pulse-deep: #9260c4;
-  --color-on-pulse: #faf5ff;
-  --color-chip-neutral: #2a2238;
-  --color-chip-neutral-border: #544c66;
-  --color-chip-blue-fg: #d2bcf2;
-  --color-chip-blue-border: #7862a0;
-  --color-chip-teal-fg: #92ced6;
-  --color-chip-teal-border: #4e7a82;
-  --color-chip-orange-fg: #eaba92;
-  --color-chip-orange-border: #9a704c;
-  --color-chip-purple-fg: #d8c2fa;
-  --color-chip-purple-border: #8668b4;
-  --color-chip-green-fg: #9ad6b2;
-  --color-chip-green-border: #50846c;
-  --color-chip-red-fg: #f0b0b6;
-  --color-chip-red-border: #9e6870;
-  --color-chip-yellow-fg: #e8ce8e;
-  --color-chip-yellow-border: #92804c;
+/* === Palettes: sand === */
+html[data-theme="sandy-dawn"] {
+  --color-mist: #f0e6d8;
+  --color-page: #faf5ee;
+  --color-aside: #f3ebe0;
+  --color-ink: #352e26;
+  --color-steel: #75685a;
+  --color-line: #ded0be;
+  --color-pulse: #c9923a;
+  --color-signal: #b87222;
+  --color-danger: #c2473c;
+  --color-primary: #c9923a;
+  --color-secondary: #75685a;
+  --color-accent: #c9923a;
+  --color-brand: #352e26;
+  --color-base-100: #f0e6d8;
+  --color-soft-blue: #ebe5dc;
+  --color-soft-yellow: #f3e5c2;
+  --color-soft-purple: #ebe3e0;
+  --color-soft-green: #e2eadc;
+  --color-soft-red: #f1dfd8;
+  --color-soft-teal: #e2e9e3;
+  --color-soft-orange: #f1e2cc;
+  --color-frame: #c7b59e;
+  --color-frame-strong: #ab9780;
+  --color-surface: #fffdfb;
+  --color-surface-2: #f8f1e8;
+  --color-surface-3: #efe5d8;
+  --color-pulse-bright: #d6a34c;
+  --color-pulse-deep: #a87828;
+  --color-on-pulse: #fffaf2;
+  --color-chip-neutral: #efe7dc;
+  --color-chip-neutral-border: #d0c2b0;
+  --color-chip-blue-fg: #8a5e1c;
+  --color-chip-blue-border: #d2b686;
+  --color-chip-teal-fg: #3d6a58;
+  --color-chip-teal-border: #a4c2b4;
+  --color-chip-orange-fg: #8a5016;
+  --color-chip-orange-border: #d2ae84;
+  --color-chip-purple-fg: #68506a;
+  --color-chip-purple-border: #c6b4c2;
+  --color-chip-green-fg: #3d6a48;
+  --color-chip-green-border: #a6c4a8;
+  --color-chip-red-fg: #9a3a30;
+  --color-chip-red-border: #dbafa8;
+  --color-chip-yellow-fg: #765c18;
+  --color-chip-yellow-border: #d8c686;
   --page-gradient:
-    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(188 126 240 / 0.18), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(126 82 184 / 0.11), transparent 60%),
-    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(66 38 102 / 0.22), transparent 72%), linear-gradient(180deg, #21192c 0%, #1a1523 18%, #150f1b 48%, #120e16 100%);
-  --aside-gradient:
-    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(188 126 240 / 0.13), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(56 30 90 / 0.17), transparent 76%),
-    linear-gradient(185deg, #221a2c 0%, #1d1626 32%, #17131c 68%, #140f18 100%);
-  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(178 118 230 / 0.07), transparent 62%), linear-gradient(180deg, #211924 0%, #1c1621 46%, #17121c 100%);
-  color-scheme: dark;
-}
-
-html[data-theme="northern-spruce"] {
-  --color-mist: #0e1612;
-  --color-page: #0e1612;
-  --color-aside: #121b16;
-  --color-ink: #d8e8de;
-  --color-steel: #8eaa98;
-  --color-line: #24342c;
-  --color-pulse: #52c295;
-  --color-signal: #d49e4e;
-  --color-danger: #e07870;
-  --color-primary: #52c295;
-  --color-secondary: #8eaa98;
-  --color-accent: #52c295;
-  --color-brand: #d8e8de;
-  --color-base-100: #0e1612;
-  --color-soft-blue: #1e322c;
-  --color-soft-yellow: #363224;
-  --color-soft-purple: #263236;
-  --color-soft-green: #1e3830;
-  --color-soft-red: #362a28;
-  --color-soft-teal: #1e3432;
-  --color-soft-orange: #363024;
-  --color-frame: #364e42;
-  --color-frame-strong: #526e60;
-  --color-surface: #18231e;
-  --color-surface-2: #131d18;
-  --color-surface-3: #202e28;
-  --color-pulse-bright: #68d0a6;
-  --color-pulse-deep: #3ea07a;
-  --color-on-pulse: #f0fff6;
-  --color-chip-neutral: #22342c;
-  --color-chip-neutral-border: #446054;
-  --color-chip-blue-fg: #92deb8;
-  --color-chip-blue-border: #4c8e74;
-  --color-chip-teal-fg: #92d6d2;
-  --color-chip-teal-border: #4c8884;
-  --color-chip-orange-fg: #f0c496;
-  --color-chip-orange-border: #9c764c;
-  --color-chip-purple-fg: #bac6d8;
-  --color-chip-purple-border: #687888;
-  --color-chip-green-fg: #96deb2;
-  --color-chip-green-border: #4c8e6c;
-  --color-chip-red-fg: #f0b0a8;
-  --color-chip-red-border: #9e6862;
-  --color-chip-yellow-fg: #e8d48c;
-  --color-chip-yellow-border: #96884c;
-  --page-gradient:
-    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(96 214 158 / 0.17), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(56 142 108 / 0.1), transparent 60%),
-    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(26 74 56 / 0.2), transparent 72%), linear-gradient(180deg, #17261e 0%, #132119 18%, #101811 48%, #0e1612 100%);
-  --aside-gradient:
-    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(98 210 162 / 0.13), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(24 72 54 / 0.16), transparent 76%),
-    linear-gradient(185deg, #192821 0%, #15221b 32%, #121b16 68%, #101813 100%);
-  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(92 200 150 / 0.06), transparent 62%), linear-gradient(180deg, #17211c 0%, #141d18 46%, #111914 100%);
-  color-scheme: dark;
-}
-
-html[data-theme="charcoal-dusk"] {
-  --color-mist: #0e1012;
-  --color-page: #0e1012;
-  --color-aside: #13161a;
-  --color-ink: #dce1e8;
-  --color-steel: #929aa6;
-  --color-line: #262a30;
-  --color-pulse: #4ec4de;
-  --color-signal: #d49e4e;
-  --color-danger: #e07870;
-  --color-primary: #4ec4de;
-  --color-secondary: #929aa6;
-  --color-accent: #4ec4de;
-  --color-brand: #dce1e8;
-  --color-base-100: #0e1012;
-  --color-soft-blue: #1e2e36;
-  --color-soft-yellow: #363224;
-  --color-soft-purple: #262a38;
-  --color-soft-green: #1e322e;
-  --color-soft-red: #362a2a;
-  --color-soft-teal: #1e3438;
-  --color-soft-orange: #363024;
-  --color-frame: #384148;
-  --color-frame-strong: #56606a;
-  --color-surface: #181c20;
-  --color-surface-2: #13161a;
-  --color-surface-3: #22282e;
-  --color-pulse-bright: #66d2e8;
-  --color-pulse-deep: #3aa4bc;
-  --color-on-pulse: #effbff;
-  --color-chip-neutral: #242a30;
-  --color-chip-neutral-border: #484e56;
-  --color-chip-blue-fg: #9cdcee;
-  --color-chip-blue-border: #4c90a6;
-  --color-chip-teal-fg: #92d6d6;
-  --color-chip-teal-border: #4c8888;
-  --color-chip-orange-fg: #f0c496;
-  --color-chip-orange-border: #9c764c;
-  --color-chip-purple-fg: #babad8;
-  --color-chip-purple-border: #6e6e8e;
-  --color-chip-green-fg: #92dcb0;
-  --color-chip-green-border: #48886c;
-  --color-chip-red-fg: #f0b0a8;
-  --color-chip-red-border: #9e6862;
-  --color-chip-yellow-fg: #e8d48c;
-  --color-chip-yellow-border: #96884c;
-  --page-gradient:
-    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(90 214 234 / 0.16), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(52 138 156 / 0.1), transparent 60%),
-    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(24 52 64 / 0.18), transparent 72%), linear-gradient(180deg, #171d22 0%, #14191d 18%, #101418 48%, #0e1012 100%);
-  --aside-gradient:
-    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(92 214 234 / 0.12), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(22 48 60 / 0.16), transparent 76%),
-    linear-gradient(185deg, #1a1f24 0%, #161a1f 32%, #13161a 68%, #101316 100%);
-  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(86 198 216 / 0.06), transparent 62%), linear-gradient(180deg, #171b1f 0%, #15191d 46%, #12161a 100%);
-  color-scheme: dark;
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(238 205 155 / 0.17), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(236 214 178 / 0.09), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(242 226 200 / 0.07), transparent 68%), linear-gradient(180deg, #f6eee3 0%, #f8f1e8 26%, #f9f3eb 58%, #faf5ee 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(228 190 140 / 0.12), transparent 62%), linear-gradient(185deg, #eadfcf 0%, #efe6d8 34%, #f3ebe0 68%, #f0e7db 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(230 195 150 / 0.03), transparent 68%), linear-gradient(180deg, #fefcf9 0%, #fdfaf6 48%, #fcf8f3 100%);
 }
 
 html[data-theme="amber-night"] {
@@ -547,17 +287,445 @@ html[data-theme="amber-night"] {
     radial-gradient(ellipse 112% 54% at 46% -20%, rgb(228 174 84 / 0.12), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(74 54 22 / 0.16), transparent 76%),
     linear-gradient(185deg, #211a14 0%, #1c1611 32%, #181410 68%, #15110d 100%);
   --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(218 164 76 / 0.06), transparent 62%), linear-gradient(180deg, #1f1914 0%, #1b1611 46%, #17130f 100%);
-  color-scheme: dark;
 }
 
-html[data-theme="deep-ocean"],
-html[data-theme="midnight-berry"],
-html[data-theme="northern-spruce"],
-html[data-theme="charcoal-dusk"],
-html[data-theme="amber-night"] {
-  --comment-bg: var(--color-surface-3);
+/* === Palettes: green === */
+html[data-theme="green-meadow"] {
+  --color-mist: #e2ede5;
+  --color-page: #f4f8f4;
+  --color-aside: #e8f0ea;
+  --color-ink: #1f3228;
+  --color-steel: #587266;
+  --color-line: #c8d7ce;
+  --color-pulse: #3d9470;
+  --color-signal: #bc7620;
+  --color-danger: #c2473c;
+  --color-primary: #3d9470;
+  --color-secondary: #587266;
+  --color-accent: #3d9470;
+  --color-brand: #1f3228;
+  --color-base-100: #e2ede5;
+  --color-soft-blue: #dae7e3;
+  --color-soft-yellow: #f0e9d2;
+  --color-soft-purple: #e1e3eb;
+  --color-soft-green: #d2eadc;
+  --color-soft-red: #f0deda;
+  --color-soft-teal: #d2e9e5;
+  --color-soft-orange: #eee4d4;
+  --color-frame: #a1bbaa;
+  --color-frame-strong: #7f9f8f;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f6f1;
+  --color-surface-3: #e4eee8;
+  --color-pulse-bright: #4ea880;
+  --color-pulse-deep: #2f785a;
+  --color-on-pulse: #f3fff8;
+  --color-chip-neutral: #e7eee9;
+  --color-chip-neutral-border: #bfd0c5;
+  --color-chip-blue-fg: #226a52;
+  --color-chip-blue-border: #8cbca6;
+  --color-chip-teal-fg: #1c6870;
+  --color-chip-teal-border: #8abcc0;
+  --color-chip-orange-fg: #8a5218;
+  --color-chip-orange-border: #d2ae84;
+  --color-chip-purple-fg: #4c4e88;
+  --color-chip-purple-border: #b2b2d6;
+  --color-chip-green-fg: #226a48;
+  --color-chip-green-border: #8ec4a8;
+  --color-chip-red-fg: #9a3a30;
+  --color-chip-red-border: #dbafa8;
+  --color-chip-yellow-fg: #6c5a18;
+  --color-chip-yellow-border: #d2c486;
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(160 210 180 / 0.16), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(178 218 192 / 0.08), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(198 226 208 / 0.06), transparent 68%), linear-gradient(180deg, #e8f2eb 0%, #eef5f0 26%, #f1f7f2 58%, #f4f8f4 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(145 195 165 / 0.12), transparent 62%), linear-gradient(185deg, #dce9e2 0%, #e4ede7 34%, #e8f0ea 68%, #e5ede8 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(148 198 168 / 0.03), transparent 68%), linear-gradient(180deg, #fbfdfb 0%, #f9fcfa 48%, #f7faf8 100%);
 }
 
+html[data-theme="northern-spruce"] {
+  --color-mist: #0e1612;
+  --color-page: #0e1612;
+  --color-aside: #121b16;
+  --color-ink: #d8e8de;
+  --color-steel: #8eaa98;
+  --color-line: #24342c;
+  --color-pulse: #52c295;
+  --color-signal: #d49e4e;
+  --color-danger: #e07870;
+  --color-primary: #52c295;
+  --color-secondary: #8eaa98;
+  --color-accent: #52c295;
+  --color-brand: #d8e8de;
+  --color-base-100: #0e1612;
+  --color-soft-blue: #1e322c;
+  --color-soft-yellow: #363224;
+  --color-soft-purple: #263236;
+  --color-soft-green: #1e3830;
+  --color-soft-red: #362a28;
+  --color-soft-teal: #1e3432;
+  --color-soft-orange: #363024;
+  --color-frame: #364e42;
+  --color-frame-strong: #526e60;
+  --color-surface: #18231e;
+  --color-surface-2: #131d18;
+  --color-surface-3: #202e28;
+  --color-pulse-bright: #68d0a6;
+  --color-pulse-deep: #3ea07a;
+  --color-on-pulse: #f0fff6;
+  --color-chip-neutral: #22342c;
+  --color-chip-neutral-border: #446054;
+  --color-chip-blue-fg: #92deb8;
+  --color-chip-blue-border: #4c8e74;
+  --color-chip-teal-fg: #92d6d2;
+  --color-chip-teal-border: #4c8884;
+  --color-chip-orange-fg: #f0c496;
+  --color-chip-orange-border: #9c764c;
+  --color-chip-purple-fg: #bac6d8;
+  --color-chip-purple-border: #687888;
+  --color-chip-green-fg: #96deb2;
+  --color-chip-green-border: #4c8e6c;
+  --color-chip-red-fg: #f0b0a8;
+  --color-chip-red-border: #9e6862;
+  --color-chip-yellow-fg: #e8d48c;
+  --color-chip-yellow-border: #96884c;
+  --page-gradient:
+    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(96 214 158 / 0.17), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(56 142 108 / 0.1), transparent 60%),
+    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(26 74 56 / 0.2), transparent 72%), linear-gradient(180deg, #17261e 0%, #132119 18%, #101811 48%, #0e1612 100%);
+  --aside-gradient:
+    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(98 210 162 / 0.13), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(24 72 54 / 0.16), transparent 76%),
+    linear-gradient(185deg, #192821 0%, #15221b 32%, #121b16 68%, #101813 100%);
+  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(92 200 150 / 0.06), transparent 62%), linear-gradient(180deg, #17211c 0%, #141d18 46%, #111914 100%);
+}
+
+/* === Palettes: graphite === */
+html[data-theme="graphite-day"] {
+  --color-mist: #e7eaef;
+  --color-page: #f5f6f8;
+  --color-aside: #eceef3;
+  --color-ink: #1e222a;
+  --color-steel: #5e6674;
+  --color-line: #d0d4dc;
+  --color-pulse: #3d6fd9;
+  --color-signal: #bc7020;
+  --color-danger: #c2473c;
+  --color-primary: #3d6fd9;
+  --color-secondary: #5e6674;
+  --color-accent: #3d6fd9;
+  --color-brand: #1e222a;
+  --color-base-100: #e7eaef;
+  --color-soft-blue: #dde5f3;
+  --color-soft-yellow: #f0ead4;
+  --color-soft-purple: #e3e1ee;
+  --color-soft-green: #dae9e2;
+  --color-soft-red: #f0dfdc;
+  --color-soft-teal: #dae5ea;
+  --color-soft-orange: #eee3d8;
+  --color-frame: #b0b6c2;
+  --color-frame-strong: #8e96a4;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f1f4;
+  --color-surface-3: #e6e8ee;
+  --color-pulse-bright: #5082e4;
+  --color-pulse-deep: #2d5bb8;
+  --color-on-pulse: #f4f7ff;
+  --color-chip-neutral: #eceef2;
+  --color-chip-neutral-border: #c4c8d2;
+  --color-chip-blue-fg: #1d509c;
+  --color-chip-blue-border: #98aed4;
+  --color-chip-teal-fg: #1c606c;
+  --color-chip-teal-border: #8abcc4;
+  --color-chip-orange-fg: #8a5218;
+  --color-chip-orange-border: #d2ae84;
+  --color-chip-purple-fg: #4c4488;
+  --color-chip-purple-border: #b2acd6;
+  --color-chip-green-fg: #226a48;
+  --color-chip-green-border: #8ec4a8;
+  --color-chip-red-fg: #9a3a30;
+  --color-chip-red-border: #dbafa8;
+  --color-chip-yellow-fg: #6c5a18;
+  --color-chip-yellow-border: #d2c486;
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 188 225 / 0.15), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(180 196 222 / 0.07), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(200 208 222 / 0.05), transparent 68%), linear-gradient(180deg, #ebedf3 0%, #f0f2f6 26%, #f3f4f7 58%, #f5f6f8 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(155 172 210 / 0.11), transparent 62%), linear-gradient(185deg, #e0e3eb 0%, #e7e9f0 34%, #eceef3 68%, #e8eaf1 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(158 176 212 / 0.03), transparent 68%), linear-gradient(180deg, #fbfbfc 0%, #f9fafb 48%, #f8f9fa 100%);
+}
+
+html[data-theme="charcoal-dusk"] {
+  --color-mist: #0e1012;
+  --color-page: #0e1012;
+  --color-aside: #13161a;
+  --color-ink: #dce1e8;
+  --color-steel: #929aa6;
+  --color-line: #262a30;
+  --color-pulse: #4ec4de;
+  --color-signal: #d49e4e;
+  --color-danger: #e07870;
+  --color-primary: #4ec4de;
+  --color-secondary: #929aa6;
+  --color-accent: #4ec4de;
+  --color-brand: #dce1e8;
+  --color-base-100: #0e1012;
+  --color-soft-blue: #1e2e36;
+  --color-soft-yellow: #363224;
+  --color-soft-purple: #262a38;
+  --color-soft-green: #1e322e;
+  --color-soft-red: #362a2a;
+  --color-soft-teal: #1e3438;
+  --color-soft-orange: #363024;
+  --color-frame: #384148;
+  --color-frame-strong: #56606a;
+  --color-surface: #181c20;
+  --color-surface-2: #13161a;
+  --color-surface-3: #22282e;
+  --color-pulse-bright: #66d2e8;
+  --color-pulse-deep: #3aa4bc;
+  --color-on-pulse: #effbff;
+  --color-chip-neutral: #242a30;
+  --color-chip-neutral-border: #484e56;
+  --color-chip-blue-fg: #9cdcee;
+  --color-chip-blue-border: #4c90a6;
+  --color-chip-teal-fg: #92d6d6;
+  --color-chip-teal-border: #4c8888;
+  --color-chip-orange-fg: #f0c496;
+  --color-chip-orange-border: #9c764c;
+  --color-chip-purple-fg: #babad8;
+  --color-chip-purple-border: #6e6e8e;
+  --color-chip-green-fg: #92dcb0;
+  --color-chip-green-border: #48886c;
+  --color-chip-red-fg: #f0b0a8;
+  --color-chip-red-border: #9e6862;
+  --color-chip-yellow-fg: #e8d48c;
+  --color-chip-yellow-border: #96884c;
+  --page-gradient:
+    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(90 214 234 / 0.16), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(52 138 156 / 0.1), transparent 60%),
+    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(24 52 64 / 0.18), transparent 72%), linear-gradient(180deg, #171d22 0%, #14191d 18%, #101418 48%, #0e1012 100%);
+  --aside-gradient:
+    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(92 214 234 / 0.12), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(22 48 60 / 0.16), transparent 76%),
+    linear-gradient(185deg, #1a1f24 0%, #161a1f 32%, #13161a 68%, #101316 100%);
+  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(86 198 216 / 0.06), transparent 62%), linear-gradient(180deg, #171b1f 0%, #15191d 46%, #12161a 100%);
+}
+
+/* === Palettes: berry === */
+html[data-theme="berry-dawn"] {
+  --color-mist: #eee8f4;
+  --color-page: #f8f5fb;
+  --color-aside: #f1ecf6;
+  --color-ink: #2e2438;
+  --color-steel: #736686;
+  --color-line: #d8d0e4;
+  --color-pulse: #9458c8;
+  --color-signal: #bc7020;
+  --color-danger: #c2473c;
+  --color-primary: #9458c8;
+  --color-secondary: #736686;
+  --color-accent: #9458c8;
+  --color-brand: #2e2438;
+  --color-base-100: #eee8f4;
+  --color-soft-blue: #e4e0ec;
+  --color-soft-yellow: #f2ead4;
+  --color-soft-purple: #e8e0f2;
+  --color-soft-green: #dde9e4;
+  --color-soft-red: #f0dfdc;
+  --color-soft-teal: #dde6ea;
+  --color-soft-orange: #eee3d8;
+  --color-frame: #b8a8cc;
+  --color-frame-strong: #9580b0;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f1f9;
+  --color-surface-3: #ebe4f2;
+  --color-pulse-bright: #a870d4;
+  --color-pulse-deep: #7340a8;
+  --color-on-pulse: #faf5ff;
+  --color-chip-neutral: #efeaf5;
+  --color-chip-neutral-border: #c8bdd8;
+  --color-chip-blue-fg: #6a3f9c;
+  --color-chip-blue-border: #b49ad4;
+  --color-chip-teal-fg: #1c6870;
+  --color-chip-teal-border: #8abcc0;
+  --color-chip-orange-fg: #8a5218;
+  --color-chip-orange-border: #d2ae84;
+  --color-chip-purple-fg: #5c3f9c;
+  --color-chip-purple-border: #b3a3d6;
+  --color-chip-green-fg: #226a48;
+  --color-chip-green-border: #8ec4a8;
+  --color-chip-red-fg: #9a3a30;
+  --color-chip-red-border: #dbafa8;
+  --color-chip-yellow-fg: #6c5a18;
+  --color-chip-yellow-border: #d2c486;
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(210 180 235 / 0.2), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(220 200 238 / 0.1), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(230 216 242 / 0.08), transparent 68%), linear-gradient(180deg, #f2ecf8 0%, #f5f1fa 26%, #f7f4fb 58%, #f8f5fb 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(190 160 225 / 0.14), transparent 62%), linear-gradient(185deg, #e8e0f0 0%, #eee8f4 34%, #f1ecf6 68%, #ede6f3 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(200 170 230 / 0.04), transparent 68%), linear-gradient(180deg, #fcfbfd 0%, #faf8fc 48%, #f8f6fb 100%);
+}
+
+html[data-theme="midnight-berry"] {
+  --color-mist: #120e16;
+  --color-page: #120e16;
+  --color-aside: #17131c;
+  --color-ink: #ebe3f2;
+  --color-steel: #a89ab8;
+  --color-line: #2e263a;
+  --color-pulse: #b07ddc;
+  --color-signal: #d69658;
+  --color-danger: #d87278;
+  --color-primary: #b07ddc;
+  --color-secondary: #a89ab8;
+  --color-accent: #b07ddc;
+  --color-brand: #ebe3f2;
+  --color-base-100: #120e16;
+  --color-soft-blue: #282238;
+  --color-soft-yellow: #3c3224;
+  --color-soft-purple: #322846;
+  --color-soft-green: #24342c;
+  --color-soft-red: #3a2830;
+  --color-soft-teal: #243036;
+  --color-soft-orange: #3a2e24;
+  --color-frame: #463c56;
+  --color-frame-strong: #645870;
+  --color-surface: #1e1826;
+  --color-surface-2: #18131f;
+  --color-surface-3: #282036;
+  --color-pulse-bright: #c092e6;
+  --color-pulse-deep: #9260c4;
+  --color-on-pulse: #faf5ff;
+  --color-chip-neutral: #2a2238;
+  --color-chip-neutral-border: #544c66;
+  --color-chip-blue-fg: #d2bcf2;
+  --color-chip-blue-border: #7862a0;
+  --color-chip-teal-fg: #92ced6;
+  --color-chip-teal-border: #4e7a82;
+  --color-chip-orange-fg: #eaba92;
+  --color-chip-orange-border: #9a704c;
+  --color-chip-purple-fg: #d8c2fa;
+  --color-chip-purple-border: #8668b4;
+  --color-chip-green-fg: #9ad6b2;
+  --color-chip-green-border: #50846c;
+  --color-chip-red-fg: #f0b0b6;
+  --color-chip-red-border: #9e6870;
+  --color-chip-yellow-fg: #e8ce8e;
+  --color-chip-yellow-border: #92804c;
+  --page-gradient:
+    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(188 126 240 / 0.18), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(126 82 184 / 0.11), transparent 60%),
+    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(66 38 102 / 0.22), transparent 72%), linear-gradient(180deg, #21192c 0%, #1a1523 18%, #150f1b 48%, #120e16 100%);
+  --aside-gradient:
+    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(188 126 240 / 0.13), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(56 30 90 / 0.17), transparent 76%),
+    linear-gradient(185deg, #221a2c 0%, #1d1626 32%, #17131c 68%, #140f18 100%);
+  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(178 118 230 / 0.07), transparent 62%), linear-gradient(180deg, #211924 0%, #1c1621 46%, #17121c 100%);
+}
+
+/* === Palettes: rose === */
+html[data-theme="rose-dawn"] {
+  --color-mist: #f4e8ec;
+  --color-page: #fbf5f7;
+  --color-aside: #f6eef1;
+  --color-ink: #3a2430;
+  --color-steel: #86606e;
+  --color-line: #e4d0d8;
+  --color-pulse: #d45a82;
+  --color-signal: #bc7020;
+  --color-danger: #c2473c;
+  --color-primary: #d45a82;
+  --color-secondary: #86606e;
+  --color-accent: #d45a82;
+  --color-brand: #3a2430;
+  --color-base-100: #f4e8ec;
+  --color-soft-blue: #eee4ea;
+  --color-soft-yellow: #f2ead4;
+  --color-soft-purple: #eee0ea;
+  --color-soft-green: #e4ebe6;
+  --color-soft-red: #f3ddd9;
+  --color-soft-teal: #e4e8ea;
+  --color-soft-orange: #f0e4da;
+  --color-frame: #d0a8b8;
+  --color-frame-strong: #b48498;
+  --color-surface: #ffffff;
+  --color-surface-2: #f9f1f4;
+  --color-surface-3: #f0e4ea;
+  --color-pulse-bright: #e07096;
+  --color-pulse-deep: #b0446a;
+  --color-on-pulse: #fff7fa;
+  --color-chip-neutral: #f4eaf0;
+  --color-chip-neutral-border: #d8c0cc;
+  --color-chip-blue-fg: #9a3a62;
+  --color-chip-blue-border: #d4a0b4;
+  --color-chip-teal-fg: #1c6870;
+  --color-chip-teal-border: #8abcc0;
+  --color-chip-orange-fg: #8a5218;
+  --color-chip-orange-border: #d2ae84;
+  --color-chip-purple-fg: #8a4068;
+  --color-chip-purple-border: #c8a0b8;
+  --color-chip-green-fg: #226a48;
+  --color-chip-green-border: #8ec4a8;
+  --color-chip-red-fg: #9a3a30;
+  --color-chip-red-border: #dbafa8;
+  --color-chip-yellow-fg: #6c5a18;
+  --color-chip-yellow-border: #d2c486;
+  --page-gradient:
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(240 170 190 / 0.2), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(242 200 214 / 0.1), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(246 220 230 / 0.08), transparent 68%), linear-gradient(180deg, #f8eef2 0%, #faf3f6 26%, #fbf5f7 58%, #fbf5f7 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(230 150 175 / 0.14), transparent 62%), linear-gradient(185deg, #f0e0e6 0%, #f4e8ec 34%, #f6eef1 68%, #f2e6ec 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(235 160 185 / 0.04), transparent 68%), linear-gradient(180deg, #fefbfc 0%, #fdf9fb 48%, #fcf7f9 100%);
+}
+
+html[data-theme="rose-night"] {
+  --color-mist: #160e12;
+  --color-page: #160e12;
+  --color-aside: #1c1218;
+  --color-ink: #f0e4ea;
+  --color-steel: #b898a4;
+  --color-line: #34242c;
+  --color-pulse: #e88aa8;
+  --color-signal: #d69658;
+  --color-danger: #e07870;
+  --color-primary: #e88aa8;
+  --color-secondary: #b898a4;
+  --color-accent: #e88aa8;
+  --color-brand: #f0e4ea;
+  --color-base-100: #160e12;
+  --color-soft-blue: #32242c;
+  --color-soft-yellow: #3c3224;
+  --color-soft-purple: #362430;
+  --color-soft-green: #24302a;
+  --color-soft-red: #3a2828;
+  --color-soft-teal: #282e32;
+  --color-soft-orange: #3a2e24;
+  --color-frame: #4e3642;
+  --color-frame-strong: #6e5060;
+  --color-surface: #1f151a;
+  --color-surface-2: #191116;
+  --color-surface-3: #2a1e24;
+  --color-pulse-bright: #f0a0b8;
+  --color-pulse-deep: #c86888;
+  --color-on-pulse: #1a1014;
+  --color-chip-neutral: #2c2026;
+  --color-chip-neutral-border: #564048;
+  --color-chip-blue-fg: #f0b8c8;
+  --color-chip-blue-border: #9a6078;
+  --color-chip-teal-fg: #92ced6;
+  --color-chip-teal-border: #4e7a82;
+  --color-chip-orange-fg: #eaba92;
+  --color-chip-orange-border: #9a704c;
+  --color-chip-purple-fg: #e8c0d0;
+  --color-chip-purple-border: #8a6078;
+  --color-chip-green-fg: #9ad6b2;
+  --color-chip-green-border: #50846c;
+  --color-chip-red-fg: #f0b0b6;
+  --color-chip-red-border: #9e6870;
+  --color-chip-yellow-fg: #e8ce8e;
+  --color-chip-yellow-border: #92804c;
+  --page-gradient:
+    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(232 120 160 / 0.18), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(160 70 100 / 0.12), transparent 60%),
+    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(70 30 48 / 0.22), transparent 72%), linear-gradient(180deg, #24161c 0%, #1c1218 18%, #180f14 48%, #160e12 100%);
+  --aside-gradient:
+    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(232 120 160 / 0.13), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(64 28 44 / 0.17), transparent 76%),
+    linear-gradient(185deg, #24181e 0%, #1e141a 32%, #1c1218 68%, #180f14 100%);
+  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(220 110 150 / 0.07), transparent 62%), linear-gradient(180deg, #22161c 0%, #1c1318 46%, #181016 100%);
+}
+
+/* === Depth: flat === */
 html[data-theme-gradient="off"] {
   --shadow-lift-sm: none;
   --shadow-lift-md: none;
@@ -569,4 +737,10 @@ html[data-theme-gradient="off"] {
   --btn-shadow-primary-hover: none;
   --surface-gradient: var(--color-surface);
   --surface-gradient-soft: var(--color-surface);
+  --btn-bg-primary: var(--color-pulse);
+  --btn-bg-primary-hover: var(--color-pulse-deep);
+  --btn-bg-secondary: color-mix(in oklab, var(--color-surface) 92%, var(--color-surface-2));
+  --btn-bg-secondary-hover: color-mix(in oklab, var(--color-surface) 88%, var(--color-surface-3));
+  --btn-bg-danger: color-mix(in oklab, var(--color-surface) 88%, var(--color-soft-red));
+  --btn-bg-danger-hover: color-mix(in oklab, var(--color-soft-red) 74%, var(--color-surface));
 }

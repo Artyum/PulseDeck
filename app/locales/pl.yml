@@ -407,21 +407,30 @@ themes:
   graphite-day:
     label: "Grafitowy dzień"
     description: "Chłodny grafit z delikatną kobaltową mgiełką."
+  berry-dawn:
+    label: "Jagodowy wrzos"
+    description: "Delikatny wrzos i jagoda w jasnej, miękkiej poświacie."
+  rose-dawn:
+    label: "Malinowy blask"
+    description: "Ciepły róż i pudrowy blush w jasnej, delikatnej poświacie."
   deep-ocean:
     label: "Głęboki ocean"
     description: "Głębia szafiru z głębinową, miękką poświatą."
-  midnight-berry:
-    label: "Nocna borówka"
-    description: "Dojrzała jagoda w ciepłym, fioletowym półmroku."
+  amber-night:
+    label: "Bursztynowy żar"
+    description: "Espresso z ciepłym, szampańskim żarem."
   northern-spruce:
     label: "Północny świerk"
     description: "Ciemny las z krystaliczną, miętową poświatą."
   charcoal-dusk:
     label: "Węglowy zmierzch"
     description: "Charcoal z lodowym cyjanem w cichym zmierzchu."
-  amber-night:
-    label: "Bursztynowa noc"
-    description: "Espresso z ciepłym, szampańskim żarem."
+  midnight-berry:
+    label: "Dojrzała borówka"
+    description: "Dojrzała jagoda w ciepłym, fioletowym półmroku."
+  rose-night:
+    label: "Karmazynowy aksamit"
+    description: "Głęboki róż w ciepłym, aksamitnym półmroku."
   density:
     tight:
       label: "Zwarty"

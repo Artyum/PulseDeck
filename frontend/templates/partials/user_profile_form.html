@@ -237,7 +237,8 @@
          data-ui-attr="data-theme"
          data-ui-storage-key="{{ theme_storage_key }}"
          data-ui-fallback="{{ ui_theme }}"
-         data-ui-gradient-key="{{ theme_gradient_storage_key }}">
+         data-ui-gradient-key="{{ theme_gradient_storage_key }}"
+         data-ui-dark-themes="{{ dark_theme_ids|join(',') }}">
       {% for theme in theme_choices %}
         <div class="theme-option"
              role="radio"

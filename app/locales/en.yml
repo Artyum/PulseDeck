@@ -399,7 +399,7 @@ themes:
     label: "Morning Mist"
     description: "Pearly blue with a soft glow."
   sandy-dawn:
-    label: "Sandy Dawn"
+    label: "Sandy Shore"
     description: "Warm sand and honeyed amber in a gentle wash."
   green-meadow:
     label: "Green Meadow"
@@ -407,21 +407,30 @@ themes:
   graphite-day:
     label: "Graphite Day"
     description: "Cool graphite with a soft cobalt haze."
+  berry-dawn:
+    label: "Heather Bloom"
+    description: "Soft heather and berry in a bright, gentle wash."
+  rose-dawn:
+    label: "Blush Glow"
+    description: "Warm rose and powder blush in a bright, gentle wash."
   deep-ocean:
     label: "Deep Ocean"
     description: "Sapphire depth with a soft abyssal glow."
-  midnight-berry:
-    label: "Midnight Berry"
-    description: "Ripe berry in a warm purple half-light."
+  amber-night:
+    label: "Amber Ember"
+    description: "Espresso with a warm champagne ember."
   northern-spruce:
     label: "Northern Spruce"
     description: "Dark forest with a crystalline mint glow."
   charcoal-dusk:
     label: "Charcoal Dusk"
     description: "Charcoal with icy cyan in a quiet dusk."
-  amber-night:
-    label: "Amber Night"
-    description: "Espresso with a warm champagne ember."
+  midnight-berry:
+    label: "Velvet Berry"
+    description: "Ripe berry in a warm purple half-light."
+  rose-night:
+    label: "Crimson Veil"
+    description: "Deep rose in a warm, velvet half-light."
   density:
     tight:
       label: "Tight"

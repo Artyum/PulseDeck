@@ -38,7 +38,9 @@ from app.utils.themes import (
     FONT_SIZE_STORAGE_KEY,
     THEME_CHOICES,
     THEME_GRADIENT_STORAGE_KEY,
+    THEME_PAIRS,
     THEME_STORAGE_KEY,
+    theme_scheme,
 )
 from app.utils.timefmt import (
     DEFAULT_DATETIME_FORMAT,
@@ -106,30 +108,26 @@ def _enum_label_map(lang: str, group: str, enum_cls: type[Enum]) -> dict:
 
 
 def _theme_choices(lang: str):
-    out = []
-    for theme in THEME_CHOICES:
-        out.append(
-            SimpleNamespace(
-                id=theme.id,
-                swatches=theme.swatches,
-                label=t(lang, f"themes.{theme.id}.label"),
-                description=t(lang, f"themes.{theme.id}.description"),
-            )
+    return [
+        SimpleNamespace(
+            id=theme.id,
+            swatches=theme.swatches,
+            label=t(lang, f"themes.{theme.id}.label"),
+            description=t(lang, f"themes.{theme.id}.description"),
         )
-    return out
+        for theme in THEME_CHOICES
+    ]
 
 
 def _appearance_choices(lang: str, group: str, choices):
-    out = []
-    for choice in choices:
-        out.append(
-            SimpleNamespace(
-                id=choice.id,
-                label=t(lang, f"themes.{group}.{choice.id}.label"),
-                description=t(lang, f"themes.{group}.{choice.id}.description"),
-            )
+    return [
+        SimpleNamespace(
+            id=choice.id,
+            label=t(lang, f"themes.{group}.{choice.id}.label"),
+            description=t(lang, f"themes.{group}.{choice.id}.description"),
         )
-    return out
+        for choice in choices
+    ]
 
 
 def common_context(request: Request, **extra) -> dict:
@@ -145,6 +143,8 @@ def common_context(request: Request, **extra) -> dict:
         "lang_choices": list_languages(),
         "lang_storage_key": LANG_STORAGE_KEY,
         "ui_theme": DEFAULT_THEME,
+        "ui_scheme": theme_scheme(DEFAULT_THEME),
+        "dark_theme_ids": [dark for _, dark in THEME_PAIRS],
         "theme_choices": _theme_choices(lang),
         "theme_storage_key": THEME_STORAGE_KEY,
         "ui_theme_gradient": DEFAULT_THEME_GRADIENT,

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ ui_lang }}"
       data-theme="{{ ui_theme }}"
+      data-scheme="{{ ui_scheme }}"
       data-theme-gradient="{{ ui_theme_gradient }}"
       data-density="{{ ui_density }}"
       data-font-size="{{ ui_font_size }}">
@@ -10,22 +11,31 @@
     <script>
         (function () {
           var root = document.documentElement;
+          var darkThemes = {{ dark_theme_ids|tojson }};
+          function applyScheme(theme) {
+            root.setAttribute(
+              "data-scheme",
+              darkThemes.indexOf(theme) !== -1 ? "dark" : "light"
+            );
+          }
           function applyPref(key, allowed, attr) {
             try {
               var value = localStorage.getItem(key);
               if (value && allowed.indexOf(value) !== -1) {
                 root.setAttribute(attr, value);
+                return value;
               }
             } catch (e) {}
+            return null;
           }
-          applyPref(
+          var theme = applyPref(
             {{ theme_storage_key|tojson }},
             {{ theme_choices|map(attribute='id')|list|tojson }},
             "data-theme"
-          );
+          ) || root.getAttribute("data-theme") || {{ ui_theme|tojson }};
+          applyScheme(theme);
           try {
             var gradKey = {{ theme_gradient_storage_key|tojson }};
-            var theme = root.getAttribute("data-theme") || {{ ui_theme|tojson }};
             var map = JSON.parse(localStorage.getItem(gradKey) || "{}");
             var grad = map[theme];
             root.setAttribute(

@@ -34,7 +34,7 @@ alwaysApply: true
 
 - Log errors in key operations and try/except.
 - Secure code resistant to known attacks.
-- No comments (unless the user requires them).
+- No comments (unless the user requires them). Structural CSS section banners `/* === … === */` are allowed.
 - Never edit `frontend/static/css/app.css` — generated (`css:watch` / `css:build`).
 - Reuse existing styles — consistency before new CSS.
 - KISS / YAGNI / DRY; SOLID when it makes sense, no over-architecture.
@@ -44,6 +44,15 @@ alwaysApply: true
 - Tailwind + custom components in `_components.css` (`.btn`, `.input`, `.modal`…). Avoid unnecessary custom CSS and inline styles.
 - First look for an existing component / class in `_components.css` / `_primitives.css`, then combine Tailwind classes.
 - Use colors from `@theme` (`bg-primary`, `text-secondary`, `bg-base-100`).
+- Banery sekcji `/* === … === */` w CSS są dozwolone; innych komentarzy unikać.
+
+## Themes / CSS tokens
+
+- Osie: `data-theme` = paleta; `data-scheme` = light/dark depth; `data-theme-gradient` = on (głębia) / off (płaski).
+- Palety: zachować hexy `--color-*` i charakter `--page/aside/rail-gradient`; depth/btn wolno uspójniać.
+- Komponenty: tła/cienie przycisków przez `var(--btn-bg-*)` / `var(--btn-shadow-*)`; nie hardcodować nowych glow/gradientów btn.
+- Nowa para motywów: wpis w `THEME_PAIRS` + `_THEMES` + paleta w `_themes.css` + i18n (drugi ID w parze = dark, `DARK_THEME_IDS` liczone automatycznie).
+- Nie edytować `frontend/static/css/app.css` — generated (`css:watch` / `css:build`).
 
 ## Stack
 
