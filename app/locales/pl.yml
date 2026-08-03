@@ -272,6 +272,15 @@ ui:
       hint_icon: "Do {count} {file_word} · maks. 5 MB"
       button: "Załącz plik"
       remove: "Usuń {name}"
+  editor:
+    toolbar: "Formatowanie"
+    bold: "Pogrubienie"
+    italic: "Kursywa"
+    bullet_list: "Lista punktowana"
+    ordered_list: "Lista numerowana"
+    inline_code: "Kod w linii"
+    code_block: "Blok kodu"
+    blockquote: "Cytat"
   admin:
     aside_label: "Administracja"
     nav_aria: "Admin"
@@ -660,6 +669,7 @@ js:
     submit_failed: "Nie udało się wysłać formularza."
     network: "Brak połączenia z serwerem."
     comment_empty: "Napisz coś w komentarzu"
+    content_too_long: "Tekst jest za długi (maks. {max} znaków)"
   validation:
     missing_user: "Wybierz użytkownika"
     missing_field: "Uzupełnij {label}"

@@ -94,3 +94,4 @@ def setup_logging() -> None:
             lg.addHandler(error_handler)
 
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("markdown_it").setLevel(logging.WARNING)

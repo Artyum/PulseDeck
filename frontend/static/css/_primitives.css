@@ -41,8 +41,8 @@
   }
 
   ::selection {
-    background: var(--color-soft-blue);
-    color: var(--color-ink);
+    background: var(--selection-bg);
+    color: var(--selection-fg);
   }
 
   :focus-visible {

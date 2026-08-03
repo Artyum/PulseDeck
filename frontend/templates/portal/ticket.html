@@ -1,5 +1,6 @@
 {% extends "base_app.html" %}
 {% from "partials/ticket_macros.html" import modal_header, modal_cancel, attach_picker with context %}
+{% from "partials/rich_editor.html" import rich_editor with context %}
 {% block title %}{{ app_name }} - {{ t("ui.ticket.doc_title", label=ticket|ticket_label) }}{% endblock title %}
 {% block content %}
   <div id="ticket-view" class="issue-page">{% include "partials/ticket_view.html" %}</div>
@@ -21,11 +22,7 @@
           </div>
           <div>
             <label class="label" for="edit-ticket-description">{{ t("ui.portal.feed.field.description") }}</label>
-            <textarea id="edit-ticket-description"
-                      name="description"
-                      {{ field_attrs('ticket.description') }}
-                      rows="10"
-                      class="textarea mt-1">{{ ticket.description }}</textarea>
+            {{ rich_editor('description', 'ticket.description', ticket.description, id='edit-ticket-description', extra_class='mt-1') }}
           </div>
           {{ attach_picker('edit-ticket-attachments', 'zone', max_files=upload_max_files, existing=ticket.attachments) }}
         </div>

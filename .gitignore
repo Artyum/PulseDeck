@@ -18,6 +18,7 @@ logs/
 data/uploads/*
 !data/uploads/.gitkeep
 frontend/static/css/app.css
+frontend/static/js/editor.bundle.js
 
 /! Docs/
 

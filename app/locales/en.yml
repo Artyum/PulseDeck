@@ -272,6 +272,15 @@ ui:
       hint_icon: "Up to {count} {file_word} · max 5 MB"
       button: "Attach file"
       remove: "Remove {name}"
+  editor:
+    toolbar: "Formatting"
+    bold: "Bold"
+    italic: "Italic"
+    bullet_list: "Bullet list"
+    ordered_list: "Numbered list"
+    inline_code: "Inline code"
+    code_block: "Code block"
+    blockquote: "Quote"
   admin:
     aside_label: "Administration"
     nav_aria: "Admin"
@@ -660,6 +669,7 @@ js:
     submit_failed: "Couldn't submit the form."
     network: "Couldn't reach the server."
     comment_empty: "Write something in the comment"
+    content_too_long: "Text is too long (max {max} characters)"
   validation:
     missing_user: "Select a user"
     missing_field: "Fill in {label}"

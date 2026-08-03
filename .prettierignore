@@ -1,4 +1,5 @@
 *.min.js
+*.bundle.js
 frontend/static/vendor/
 frontend/templates/
 app/templates/

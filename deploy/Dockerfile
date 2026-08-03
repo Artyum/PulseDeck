@@ -4,6 +4,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY frontend ./frontend
 RUN npx tailwindcss -i frontend/static/css/tailwind.css -o frontend/static/css/app.css --minify
+RUN npm run js:build
 
 FROM python:3.13-slim
 WORKDIR /app
@@ -13,6 +14,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 COPY --from=frontend /build/frontend/static/css/app.css frontend/static/css/app.css
+COPY --from=frontend /build/frontend/static/js/editor.bundle.js frontend/static/js/editor.bundle.js
+
 RUN chmod +x deploy/entrypoint.sh deploy/entrypoint_worker.sh deploy/entrypoint_migrate.sh
 EXPOSE 8000
 ENTRYPOINT ["/app/deploy/entrypoint.sh"]

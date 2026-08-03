@@ -1,0 +1,57 @@
+{% macro rich_editor(name, field_id, value='', placeholder='', id=none, extra_class='') -%}
+  <div class="rich-editor {{ extra_class }}"
+       data-rich-editor
+       data-field-wrap
+       {% if placeholder %}data-placeholder="{{ placeholder }}"{% endif %}
+       {% if id %}id="{{ id }}"{% endif %}>
+    <input type="hidden"
+           name="{{ name }}"
+           value="{{ value }}"
+           {{ field_attrs(field_id, required=False) }}
+           data-rich-input>
+    <div class="rich-editor-toolbar"
+         role="toolbar"
+         aria-label="{{ t('ui.editor.toolbar') }}">
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleBold"
+              aria-label="{{ t('ui.editor.bold') }}"
+              title="{{ t('ui.editor.bold') }}"><strong>B</strong></button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleItalic"
+              aria-label="{{ t('ui.editor.italic') }}"
+              title="{{ t('ui.editor.italic') }}"><em>I</em></button>
+      <span class="rich-editor-sep" aria-hidden="true"></span>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleBulletList"
+              aria-label="{{ t('ui.editor.bullet_list') }}"
+              title="{{ t('ui.editor.bullet_list') }}">•≡</button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleOrderedList"
+              aria-label="{{ t('ui.editor.ordered_list') }}"
+              title="{{ t('ui.editor.ordered_list') }}">1.</button>
+      <span class="rich-editor-sep" aria-hidden="true"></span>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleCode"
+              aria-label="{{ t('ui.editor.inline_code') }}"
+              title="{{ t('ui.editor.inline_code') }}">`c`</button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleCodeBlock"
+              aria-label="{{ t('ui.editor.code_block') }}"
+              title="{{ t('ui.editor.code_block') }}">{ }</button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleBlockquote"
+              aria-label="{{ t('ui.editor.blockquote') }}"
+              title="{{ t('ui.editor.blockquote') }}">❝</button>
+    </div>
+    <div class="rich-editor-surface textarea">
+      <div data-rich-surface></div>
+    </div>
+  </div>
+{%- endmacro %}

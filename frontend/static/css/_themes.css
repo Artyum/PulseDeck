@@ -72,6 +72,8 @@
   --coachmark-accent-deep: #b45309;
   --coachmark-bg: color-mix(in oklab, var(--coachmark-accent) 12%, var(--color-surface));
   --coachmark-border: color-mix(in oklab, var(--coachmark-accent) 72%, var(--color-frame));
+  --selection-bg: color-mix(in oklab, var(--color-pulse) 28%, var(--color-soft-blue));
+  --selection-fg: var(--color-ink);
   color-scheme: light;
 }
 
@@ -125,6 +127,8 @@ html[data-scheme="dark"] {
   --coachmark-accent-deep: #f59e0b;
   --coachmark-bg: color-mix(in oklab, var(--coachmark-accent) 14%, var(--color-surface));
   --coachmark-border: color-mix(in oklab, var(--coachmark-accent) 58%, var(--color-frame));
+  --selection-bg: color-mix(in oklab, var(--color-pulse) 48%, transparent);
+  --selection-fg: var(--color-ink);
   color-scheme: dark;
 }
 

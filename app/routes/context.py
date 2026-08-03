@@ -27,6 +27,7 @@ from app.utils.i18n import (
     t,
     translations_prefix,
 )
+from app.utils.markdown import render_markdown_safe
 from app.utils.static_assets import static_url
 from app.utils.themes import (
     DEFAULT_DENSITY,
@@ -99,6 +100,7 @@ _templates.env.filters["admin_project_path"] = admin_project_path
 _templates.env.filters["attachment_path"] = attachment_path
 _templates.env.filters["user_initials"] = user_initials
 _templates.env.filters["avatar_tone"] = avatar_tone
+_templates.env.filters["markdown_safe"] = render_markdown_safe
 _templates.env.globals["static_url"] = static_url
 _templates.env.globals["field_attrs"] = field_attrs
 

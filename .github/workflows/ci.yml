@@ -57,7 +57,10 @@ jobs:
         run: npm run lint:dup
 
       - name: Build static assets
-        run: npm run css:build
+        run: |
+          npm run css:build
+          npm run js:build
+
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

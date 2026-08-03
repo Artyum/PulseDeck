@@ -49,6 +49,15 @@ if (-not (Test-Path "frontend/static/css/app.css")) {
   npm run css:build:dev
 }
 
+if (-not (Test-Path "frontend/static/js/editor.bundle.js")) {
+  Write-Host "[JS] Budowanie edytora (js:build)..."
+  npm run js:build
+  if ($LASTEXITCODE -ne 0) {
+    Write-Error "npm run js:build failed"
+  }
+}
+
+
 $hostAddr = if ($env:UVICORN_HOST) { $env:UVICORN_HOST } else { "127.0.0.1" }
 $port = if ($env:UVICORN_PORT) { $env:UVICORN_PORT } else { "8000" }
 

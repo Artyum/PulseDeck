@@ -3,6 +3,7 @@
 {% from "partials/avatar.html" import user_avatar %}
 {% from "partials/ticket_macros.html" import status_chip, priority_chip, type_chip with context %}
 {% from "partials/app_flash.html" import app_flash %}
+{% from "partials/rich_editor.html" import rich_editor with context %}
 {% macro signed_attachments(items, extra_class='') -%}
   {% if items %}
     <div class="flex flex-wrap gap-2 {{ extra_class }}">
@@ -62,7 +63,7 @@
           <div class="issue-section-bar">
             <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
           </div>
-          <p class="issue-description">{{ ticket.description }}</p>
+          <div class="issue-description rich-content">{{ ticket.description | markdown_safe }}</div>
           {% if ticket.attachments %}
             <div class="issue-attachments">
               <h3 class="issue-subhead"><span class="section-icon" aria-hidden="true">{{ icon("attachments") }}</span>{{ t("ui.ticket.attachments") }}</h3>
@@ -94,7 +95,7 @@
                         {% endif %}
                         <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
                       </header>
-                      <p class="comment-body">{{ c.content }}</p>
+                      <div class="comment-body rich-content">{{ c.content | markdown_safe }}</div>
                       {{ signed_attachments(c.attachments, 'mt-3') }}
                     </div>
                   {% endfor %}
@@ -105,12 +106,7 @@
               <form method="post"
                     action="{{ url_for('open_reply_post', token=token) }}"
                     class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
-                <textarea name="content"
-                          {{ field_attrs('comment.content') }}
-                          rows="3"
-                          placeholder="{{ t('ui.ticket.reply_placeholder') }}"
-                          class="textarea"
-                          data-auto-resize></textarea>
+                {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') ) }}
                 <div class="issue-composer-bar">
                   <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
                      class="issue-composer-opt link-quiet">{{ t("ui.reply.attach_login_hint") }}</a>

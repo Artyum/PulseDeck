@@ -1,6 +1,7 @@
 {% from "partials/ticket_macros.html" import attachment_list, attach_picker with context %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/avatar.html" import user_avatar %}
+{% from "partials/rich_editor.html" import rich_editor with context %}
 <div class="issue-thread">
   {% if user.is_staff %}
     {% set comments = ticket.comments %}
@@ -36,7 +37,7 @@
                       {% if can_edit_comments %}
                         <button type="button"
                                 class="btn btn-ghost comment-action"
-                                @click="editing = true; $nextTick(() => window.autoResizeTextarea($refs.editBody))"
+                                @click="editing = true; $nextTick(() => window.richEditorFocus($el.closest('.comment-segment')))"
                                 aria-label="{{ t('ui.ticket.edit_comment') }}">{{ icon("edit") }}</button>
                       {% endif %}
                       {% if can_delete_comments %}
@@ -58,8 +59,8 @@
                 </span>
               </span>
             </header>
-            <p class="comment-body"
-               {% if can_edit_comments %}x-show="!editing"{% endif %}>{{ c.content }}</p>
+            <div class="comment-body rich-content"
+                 {% if can_edit_comments %}x-show="!editing"{% endif %}>{{ c.content | markdown_safe }}</div>
             {% if can_edit_comments %}
               <form hx-post="{{ url_for('edit_comment', ticket_ref=ticket|ticket_label, comment_id=c.id) }}"
                     hx-target="#ticket-view"
@@ -68,13 +69,8 @@
                     class="comment-edit-form"
                     x-show="editing"
                     x-cloak
-                    @submit="if (!$refs.editBody.value.trim()) { $event.preventDefault(); window.showFieldError($event.target, 'content', window.__i18n['errors.comment_empty'] || ''); } else { editing = false; }">
-                <textarea name="content"
-                          {{ field_attrs('comment.content') }}
-                          rows="3"
-                          class="textarea"
-                          x-ref="editBody"
-                          data-auto-resize>{{ c.content }}</textarea>
+                    @submit="editing = false">
+                {{ rich_editor('content', 'comment.content', c.content) }}
                 {{ attach_picker('comment-edit-attachments-' ~ c.id, 'zone', max_files=upload_max_files, existing=c.attachments) }}
                 <div class="comment-edit-actions">
                   <button type="submit"
@@ -82,7 +78,7 @@
                           aria-label="{{ t('ui.ticket.save_comment') }}">{{ icon("check") }}</button>
                   <button type="button"
                           class="btn btn-ghost comment-action"
-                          @click="editing = false; $refs.editBody.value = $refs.editBody.defaultValue; const p = $el.closest('form').querySelector('[data-attach-picker]'); if (p && p._attachReset) p._attachReset();"
+                          @click="editing = false; window.richEditorReset($el.closest('form')); const p = $el.closest('form').querySelector('[data-attach-picker]'); if (p && p._attachReset) p._attachReset();"
                           aria-label="{{ t('ui.ticket.cancel_edit') }}">{{ icon("close") }}</button>
                 </div>
               </form>
@@ -99,12 +95,7 @@
           hx-swap="innerHTML"
           enctype="multipart/form-data"
           class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
-      <textarea name="content"
-                {{ field_attrs('comment.content') }}
-                rows="3"
-                placeholder="{{ t('ui.ticket.reply_placeholder') }}"
-                class="textarea"
-                data-auto-resize></textarea>
+      {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') ) }}
       <div class="issue-composer-bar">
         {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files) }}
         <div class="issue-composer-actions">

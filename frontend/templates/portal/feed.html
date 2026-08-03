@@ -1,6 +1,7 @@
 {% extends "base_app.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import ticket_row, attach_picker, modal_header, modal_cancel, filter_field_menu, form_select_menu with context %}
+{% from "partials/rich_editor.html" import rich_editor with context %}
 {% block title %}{{ app_name }} - {{ t("ui.portal.feed.tickets") }}{% endblock title %}
 {% block content %}
   {% if user.is_staff %}
@@ -169,11 +170,7 @@
         </div>
         <div>
           <label class="label" for="new-ticket-description">{{ t("ui.portal.feed.field.description") }}</label>
-          <textarea id="new-ticket-description"
-                    name="description"
-                    {{ field_attrs('ticket.description') }}
-                    rows="8"
-                    class="textarea mt-1"></textarea>
+          {{ rich_editor('description', 'ticket.description', '', id='new-ticket-description', extra_class='mt-1') }}
         </div>
         {{ attach_picker('new-ticket-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
       </div>

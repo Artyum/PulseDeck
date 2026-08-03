@@ -2690,7 +2690,6 @@
 
   .issue-description {
     margin: 0;
-    white-space: pre-wrap;
     font-size: 0.9375rem;
     line-height: 1.65;
     color: var(--color-ink);
@@ -3043,7 +3042,6 @@
 
   .comment-body {
     margin: calc(0.55rem * var(--space-scale)) 0 0;
-    white-space: pre-wrap;
     font-size: 0.9375rem;
     line-height: 1.55;
     color: var(--color-ink);
@@ -3064,8 +3062,186 @@
     border-top: none;
   }
 
-  .issue-composer .textarea {
-    min-height: 5.5rem;
+  .issue-composer .rich-editor-surface {
+    min-height: 12rem;
+  }
+
+  .issue-composer .rich-editor-surface .rich-editor-prose {
+    min-height: 10rem;
+  }
+
+  .comment-edit-form .rich-editor-surface {
+    min-height: 10rem;
+  }
+
+  .comment-edit-form .rich-editor-surface .rich-editor-prose {
+    min-height: 8rem;
+  }
+
+  /* === Rich text editor / markdown content === */
+
+  .rich-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .rich-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.3rem 0.35rem;
+    border: 1px solid var(--color-line);
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+    background: var(--color-surface-2);
+  }
+
+  .rich-editor-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.85rem;
+    height: 1.85rem;
+    padding: 0 0.35rem;
+    border: none;
+    border-radius: 0.35rem;
+    background: transparent;
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 0.8125rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .rich-editor-btn:hover {
+    background: color-mix(in oklab, var(--color-line) 55%, transparent);
+  }
+
+  .rich-editor-btn.is-active {
+    background: color-mix(in oklab, var(--color-pulse) 18%, transparent);
+    color: var(--color-pulse);
+  }
+
+  .rich-editor-sep {
+    width: 1px;
+    height: 1.1rem;
+    margin: 0 0.2rem;
+    background: var(--color-line);
+  }
+
+  .rich-editor-surface,
+  .rich-editor-surface.textarea,
+  .modal-body .rich-editor-surface.textarea {
+    min-height: 6.5rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    overflow: auto;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+  }
+
+  .rich-editor-surface .rich-editor-prose {
+    min-height: 4.5rem;
+    outline: none;
+  }
+
+  #new-ticket.modal,
+  #edit-ticket.modal {
+    width: min(100% - 2rem, 48rem);
+    max-height: min(94vh, 58rem);
+  }
+
+  .modal-body .rich-editor-surface {
+    min-height: 16rem;
+  }
+
+  .modal-body .rich-editor-surface .rich-editor-prose {
+    min-height: 14rem;
+  }
+
+  .rich-editor-prose:has(> p:only-child:empty)::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    color: var(--color-steel);
+  }
+
+  .rich-content > :first-child {
+    margin-top: 0;
+  }
+
+  .rich-content > :last-child {
+    margin-bottom: 0;
+  }
+
+  .rich-content p,
+  .rich-editor-prose p {
+    margin: 0 0 0.65em;
+  }
+
+  .rich-content ul,
+  .rich-content ol,
+  .rich-editor-prose ul,
+  .rich-editor-prose ol {
+    margin: 0 0 0.65em;
+    padding-left: 1.35em;
+  }
+
+  .rich-content ul,
+  .rich-editor-prose ul {
+    list-style-type: disc;
+  }
+
+  .rich-content ol,
+  .rich-editor-prose ol {
+    list-style-type: decimal;
+  }
+
+  .rich-content li,
+  .rich-editor-prose li {
+    margin: 0.15em 0;
+    display: list-item;
+    list-style: inherit;
+  }
+
+  .rich-content blockquote,
+  .rich-editor-prose blockquote {
+    margin: 0 0 0.65em;
+    padding: 0.15em 0 0.15em 0.85em;
+    border-left: 3px solid color-mix(in oklab, var(--color-line) 80%, var(--color-pulse));
+    color: var(--color-steel);
+  }
+
+  .rich-content code,
+  .rich-editor-prose code {
+    font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size: 0.875em;
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+    background: var(--comment-bg);
+  }
+
+  .rich-content pre,
+  .rich-editor-prose pre {
+    margin: 0 0 0.75em;
+    padding: 0.75rem 0.9rem;
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-line);
+    background: var(--comment-bg);
+  }
+
+  .rich-content pre code,
+  .rich-editor-prose pre code {
+    padding: 0;
+    background: transparent;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--color-ink);
   }
 
   textarea[data-auto-resize] {
@@ -3413,7 +3589,8 @@
     order: 3;
   }
 
-  .issue-composer > .textarea {
+  .issue-composer > .textarea,
+  .issue-composer > .rich-editor {
     order: 1;
   }
 

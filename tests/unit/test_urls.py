@@ -81,11 +81,14 @@ class TestDefaultFeedPath:
 class TestBuildFeedPath:
     def test_view_and_mine(self):
         assert (
-            build_feed_path("DEMO", view="open", mine=True) == "/p/DEMO?view=open&mine=1"
+            build_feed_path("DEMO", view="open", mine=True)
+            == "/p/DEMO?view=open&mine=1"
         )
 
     def test_omits_default_sort(self):
-        assert build_feed_path("DEMO", view="all", sort="updated_at") == "/p/DEMO?view=all"
+        assert (
+            build_feed_path("DEMO", view="all", sort="updated_at") == "/p/DEMO?view=all"
+        )
 
     def test_includes_non_default_sort_and_filters(self):
         assert (

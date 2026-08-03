@@ -55,6 +55,16 @@ if (-not $?) {
 }
 
 Write-Host ""
+Write-Host "[JS] Budowanie edytora (js:build)..."
+npm run js:build
+if (-not $?) {
+    Write-Host "[BLAD] npm run js:build failed"
+    Read-Host "Enter"
+    exit 1
+}
+
+Write-Host ""
 Write-Host "[OK] Gotowe. Jesli zmienil sie package-lock.json - zacommituj go."
 Write-Host "     Major bump (poza ^/~) rob recznie w package.json."
 exit 0
+
