@@ -827,10 +827,7 @@
   function applyThemeScheme(themeId, root) {
     var darkAttr = (root && root.getAttribute("data-ui-dark-themes")) || "";
     var darkThemes = darkAttr ? darkAttr.split(",") : [];
-    document.documentElement.setAttribute(
-      "data-scheme",
-      darkThemes.indexOf(themeId) !== -1 ? "dark" : "light"
-    );
+    document.documentElement.setAttribute("data-scheme", darkThemes.indexOf(themeId) !== -1 ? "dark" : "light");
   }
 
   function syncPrefPicker(root) {

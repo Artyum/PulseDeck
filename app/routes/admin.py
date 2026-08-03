@@ -449,9 +449,7 @@ async def admin_user_update(
             phone=_form_text(form, "phone"),
             lang=lang,
         )
-        auth_service.admin_set_email(
-            db, target, _form_text(form, "email"), lang=lang
-        )
+        auth_service.admin_set_email(db, target, _form_text(form, "email"), lang=lang)
         target.ui_lang = normalize_lang(_form_text(form, "ui_lang"))
         role_raw = _form_text(form, "role")
         if role_raw and target.id != user.id:

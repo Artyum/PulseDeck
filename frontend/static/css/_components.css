@@ -35,19 +35,22 @@
     position: sticky;
     top: 0;
     z-index: 40;
-    border-bottom: 1px solid var(--color-line);
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--color-surface) 96%, transparent) 0%,
-      color-mix(in oklab, var(--color-surface) 92%, var(--color-mist)) 72%,
-      color-mix(in oklab, var(--color-surface) 88%, var(--color-mist)) 100%
-    );
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    box-shadow:
-      0 1px 0 color-mix(in oklab, var(--color-surface) 28%, transparent) inset,
-      0 2px 8px -2px color-mix(in oklab, var(--color-ink) 9%, transparent),
-      0 12px 28px -12px color-mix(in oklab, var(--color-ink) 16%, transparent);
+    border-bottom: var(--header-border);
+    background: var(--header-bg);
+    -webkit-backdrop-filter: blur(var(--header-blur));
+    backdrop-filter: blur(var(--header-blur));
+    box-shadow: var(--header-shadow);
+  }
+
+  .app-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--edge-line);
+    pointer-events: none;
   }
 
   .app-header .issue-menu {
@@ -386,17 +389,14 @@
     gap: calc(1.15rem * var(--space-scale));
     height: calc(100vh - var(--app-header-h));
     padding: calc(1.35rem * var(--space-scale)) calc(0.85rem * var(--space-scale)) calc(1.1rem * var(--space-scale));
-    border-right: 1px solid var(--color-line);
+    border-right: var(--aside-border);
     background-color: var(--color-aside);
     background-image: var(--aside-gradient);
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
     isolation: isolate;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, var(--color-surface) 14%, transparent),
-      6px 0 18px -10px color-mix(in oklab, var(--color-ink) 12%, transparent),
-      14px 0 36px -14px color-mix(in oklab, var(--color-ink) 18%, transparent);
+    box-shadow: var(--aside-shadow);
   }
 
   .admin-aside::after {
@@ -406,7 +406,7 @@
     right: 0;
     bottom: 0;
     width: 1px;
-    background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--color-pulse) 16%, transparent) 16%, color-mix(in oklab, var(--color-pulse) 7%, transparent) 52%, transparent 100%);
+    background: var(--edge-line);
     pointer-events: none;
     z-index: 1;
   }
@@ -444,13 +444,10 @@
 
   .admin-nav-item.is-active {
     color: var(--color-chip-blue-fg);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 96%, var(--color-soft-blue)) 0%, var(--color-surface) 100%);
+    background: var(--nav-item-active-bg);
     border-color: color-mix(in oklab, var(--color-pulse) 28%, var(--color-frame));
     font-weight: 650;
-    box-shadow:
-      0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset,
-      0 1px 3px color-mix(in oklab, var(--color-ink) 8%, transparent),
-      0 5px 14px -4px color-mix(in oklab, var(--color-ink) 12%, transparent);
+    box-shadow: var(--nav-item-active-shadow);
   }
 
   .admin-nav-item .section-icon {
@@ -1663,18 +1660,7 @@
   .issue-list {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--color-frame);
-    border-radius: 0.85rem;
-    overflow: hidden;
-    background: var(--surface-gradient-soft);
-    box-shadow: var(--shadow-lift-md);
-  }
-
-  .issue-list > .empty {
-    border: none;
-    border-radius: 0;
-    margin: 0;
-    background: transparent;
+    gap: calc(0.55rem * var(--space-scale));
   }
 
   .ticket-row {
@@ -1682,20 +1668,17 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: calc(0.85rem * var(--space-scale)) calc(1.25rem * var(--space-scale));
-    padding: calc(0.95rem * var(--space-scale)) calc(1.15rem * var(--space-scale)) calc(0.95rem * var(--space-scale)) calc(1rem * var(--space-scale));
+    padding: calc(1.05rem * var(--space-scale)) calc(0.95rem * var(--space-scale)) calc(1.05rem * var(--space-scale)) calc(0.85rem * var(--space-scale));
     text-decoration: none;
     color: inherit;
-    background: var(--color-surface);
-    border: none;
-    border-bottom: 1px solid var(--color-line);
+    background: color-mix(in oklab, var(--color-surface-2) 42%, var(--color-surface));
+    border: 1px solid color-mix(in oklab, var(--color-frame) 55%, transparent);
     border-left: 3px solid transparent;
+    border-radius: 0.65rem;
+    box-shadow: var(--shadow-card);
     transition:
       background 0.15s ease,
       border-left-color 0.15s ease;
-  }
-
-  .ticket-row:last-child {
-    border-bottom: none;
   }
 
   .ticket-row[data-status="NEW"] {
@@ -1980,17 +1963,6 @@
     background-color: color-mix(in oklab, var(--color-aside) 14%, var(--color-surface));
   }
 
-  .issue-page::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: var(--issue-sidebar-w);
-    bottom: 0;
-    width: 1px;
-    background: var(--color-line);
-    pointer-events: none;
-  }
-
   .issue-page-body {
     min-width: 0;
     padding: calc(1.5rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
@@ -2005,10 +1977,12 @@
     display: flex;
     flex-direction: column;
     padding: calc(1.5rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
+    border-left: var(--aside-border);
     background-color: color-mix(in oklab, var(--color-aside) 14%, var(--color-surface));
     background-image: var(--rail-gradient);
     background-repeat: no-repeat;
     background-size: 100% 100%;
+    box-shadow: var(--edge-shadow-start);
   }
 
   .issue-sidebar:has(.is-menu-open) {
@@ -2022,7 +1996,7 @@
     left: 0;
     bottom: 0;
     width: 1px;
-    background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--color-pulse) 14%, transparent) 18%, color-mix(in oklab, var(--color-pulse) 6%, transparent) 55%, transparent 100%);
+    background: var(--edge-line);
     pointer-events: none;
   }
 
@@ -3149,7 +3123,7 @@
     padding: 1rem 1.2rem;
     border-bottom: 1px solid color-mix(in oklab, var(--color-line) 75%, transparent);
     border-radius: 1.1rem 1.1rem 0 0;
-    background: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 82%, var(--color-surface-3)) 100%);
+    background: var(--modal-header-bg);
   }
 
   .modal-title {
@@ -3530,7 +3504,7 @@
     padding: 0.9rem 1.2rem 1.1rem;
     border-top: 1px solid color-mix(in oklab, var(--color-line) 75%, transparent);
     border-radius: 0 0 1.1rem 1.1rem;
-    background: color-mix(in oklab, var(--color-surface) 70%, var(--color-mist));
+    background: var(--modal-footer-bg);
   }
 
   @media (max-width: 480px) {
@@ -3653,6 +3627,7 @@
     border: 1px solid var(--color-line);
     border-left: 3px solid var(--color-frame-strong);
     background: var(--comment-bg);
+    box-shadow: var(--shadow-card);
     padding: calc(0.9rem * var(--space-scale)) calc(1rem * var(--space-scale));
   }
 
@@ -3900,10 +3875,6 @@
       background-color: transparent;
     }
 
-    .issue-page::after {
-      display: none;
-    }
-
     .issue-page-body {
       padding: 1.5rem 1rem 1.25rem;
       order: 0;
@@ -3914,8 +3885,10 @@
       min-height: 0;
       order: 1;
       padding: 1.25rem 1rem 2.5rem;
+      border-left: none;
       border-top: 1px solid var(--color-line);
       background-image: none;
+      box-shadow: none;
     }
 
     .issue-sidebar::before {
@@ -4075,6 +4048,7 @@
     border: 1px solid var(--color-frame);
     border-radius: 0.7rem;
     background: var(--color-surface);
+    box-shadow: var(--shadow-card);
     cursor: pointer;
     text-align: left;
     transition:
@@ -4090,7 +4064,9 @@
 
   .theme-option.is-active {
     border-color: color-mix(in oklab, var(--color-pulse) 65%, var(--color-frame));
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-pulse) 45%, transparent);
+    box-shadow:
+      var(--shadow-card),
+      0 0 0 1px color-mix(in oklab, var(--color-pulse) 45%, transparent);
     background: color-mix(in oklab, var(--color-soft-blue) 78%, var(--color-pulse) 12%);
   }
 
@@ -4216,43 +4192,15 @@
     outline-offset: 2px;
   }
 
-  /* === Flat overrides === */
+  /* === Flat overrides ===
+     Tylko to, czego tokeny nie pokryją (page/aside/rail background-image).
+  */
   html[data-theme-gradient="off"] body,
   html[data-theme-gradient="off"] .auth-scene,
   html[data-theme-gradient="off"] .admin-aside,
   html[data-theme-gradient="off"] .issue-page,
   html[data-theme-gradient="off"] .issue-sidebar {
     background-image: none;
-  }
-
-  html[data-theme-gradient="off"] .app-header {
-    background: var(--color-surface);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: none;
-  }
-
-  html[data-theme-gradient="off"] .admin-aside {
-    box-shadow: none;
-  }
-
-  html[data-theme-gradient="off"] .admin-aside::after,
-  html[data-theme-gradient="off"] .issue-sidebar::before {
-    display: none;
-  }
-
-  html[data-theme-gradient="off"] .admin-nav-item.is-active {
-    background: var(--color-surface);
-    box-shadow: none;
-  }
-
-  html[data-theme-gradient="off"] .modal-header,
-  html[data-theme-gradient="off"] .modal-footer {
-    background: var(--color-surface);
-  }
-
-  html[data-theme-gradient="off"] .modal-form {
-    box-shadow: none;
   }
 
   @media (max-width: 48rem) {
@@ -4277,6 +4225,7 @@
     border: 1px solid var(--color-frame);
     border-radius: 0.7rem;
     background: var(--color-surface);
+    box-shadow: var(--shadow-card);
     cursor: pointer;
     text-align: left;
     transition:
@@ -4292,7 +4241,9 @@
 
   .pref-segment-option.is-active {
     border-color: color-mix(in oklab, var(--color-pulse) 55%, var(--color-frame));
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-pulse) 35%, transparent);
+    box-shadow:
+      var(--shadow-card),
+      0 0 0 1px color-mix(in oklab, var(--color-pulse) 35%, transparent);
     background: color-mix(in oklab, var(--color-surface) 82%, var(--color-soft-blue));
   }
 

@@ -49,8 +49,10 @@ alwaysApply: true
 ## Themes / CSS tokens
 
 - Osie: `data-theme` = paleta; `data-scheme` = light/dark depth; `data-theme-gradient` = on (głębia) / off (płaski).
+- **Jedno źródło głębokości:** `frontend/static/css/_themes.css` — bloki `Depth: light` / `Depth: dark` / `Depth: flat` (te same nazwy tokenów).
+- Grupy tokenów depth: surfaces (`--surface-*`, `--comment-bg`) · shadows (`--shadow-*`) · edges (`--edge-line`, `--edge-shadow-*`; cast też w `--header-shadow` / `--aside-shadow`) · chrome (`--header-*`, `--aside-*`, `--nav-item-active-*`, `--modal-*-bg`) · buttons (`--btn-*`).
 - Palety: zachować hexy `--color-*` i charakter `--page/aside/rail-gradient`; depth/btn wolno uspójniać.
-- Komponenty: tła/cienie przycisków przez `var(--btn-bg-*)` / `var(--btn-shadow-*)`; nie hardcodować nowych glow/gradientów btn.
+- Komponenty: tła/cienie/chrome tylko przez `var(--…)`; nie hardcodować nowych glow/gradientów głębokości ani btn. Flat overrides w `_components.css` tylko na non-token (np. `background-image: none`).
 - Nowa para motywów: wpis w `THEME_PAIRS` + `_THEMES` + paleta w `_themes.css` + i18n (drugi ID w parze = dark, `DARK_THEME_IDS` liczone automatycznie).
 - Nie edytować `frontend/static/css/app.css` — generated (`css:watch` / `css:build`).
 

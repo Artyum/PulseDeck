@@ -1,4 +1,8 @@
-/* === Depth: light === */
+/* === Depth: light ===
+   Receptury głębokości (scheme=light). Flat niżej zeruje lift/glow/btn.
+   Kolejność: surfaces · shadows · edges · chrome · buttons
+   Krawędzie: hairline `--edge-line` + cast (`--header-shadow` / `--aside-shadow` / `--edge-shadow-*`).
+*/
 :root {
   --comment-bg: color-mix(in oklab, var(--color-surface-2) 25%, var(--color-surface));
   --surface-gradient: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 88%, var(--color-surface-2)) 100%);
@@ -9,10 +13,35 @@
   --shadow-ambient-strong: color-mix(in oklab, var(--color-ink) 14%, transparent);
   --shadow-lift-sm: 0 1px 0 var(--surface-highlight) inset, 0 1px 0 var(--surface-highlight-soft), 0 3px 12px var(--shadow-ambient), 0 14px 32px -16px var(--shadow-ambient-strong);
   --shadow-lift-md: 0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 16px -6px color-mix(in oklab, var(--color-ink) 10%, transparent);
+  --shadow-card:
+    0 1px 0 var(--surface-highlight-soft), 0 2px 6px color-mix(in oklab, var(--color-ink) 6%, transparent), 0 8px 22px -6px color-mix(in oklab, var(--color-ink) 7%, transparent),
+    0 16px 36px -16px color-mix(in oklab, var(--color-ink) 10%, transparent);
   --shadow-float:
     0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 14px color-mix(in oklab, var(--color-ink) 7%, transparent),
     0 12px 28px -14px color-mix(in oklab, var(--color-ink) 10%, transparent);
   --shadow-menu: 0 2px 8px -2px color-mix(in oklab, var(--color-ink) 10%, transparent), 0 8px 18px -8px color-mix(in oklab, var(--color-ink) 12%, transparent);
+  --edge-line: var(--color-line);
+  --edge-shadow-end: 6px 0 18px -10px color-mix(in oklab, var(--color-ink) 12%, transparent), 14px 0 36px -14px color-mix(in oklab, var(--color-ink) 18%, transparent);
+  --edge-shadow-start: -6px 0 18px -10px color-mix(in oklab, var(--color-ink) 12%, transparent), -14px 0 36px -14px color-mix(in oklab, var(--color-ink) 18%, transparent);
+  --header-border: none;
+  --header-bg: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-surface) 96%, transparent) 0%,
+    color-mix(in oklab, var(--color-surface) 92%, var(--color-mist)) 72%,
+    color-mix(in oklab, var(--color-surface) 88%, var(--color-mist)) 100%
+  );
+  --header-blur: 10px;
+  --header-shadow:
+    0 1px 0 color-mix(in oklab, var(--color-surface) 28%, transparent) inset, 0 2px 8px -2px color-mix(in oklab, var(--color-ink) 9%, transparent),
+    0 12px 28px -12px color-mix(in oklab, var(--color-ink) 16%, transparent);
+  --aside-border: none;
+  --aside-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-surface) 14%, transparent), var(--edge-shadow-end);
+  --nav-item-active-bg: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 96%, var(--color-soft-blue)) 0%, var(--color-surface) 100%);
+  --nav-item-active-shadow:
+    0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 1px 3px color-mix(in oklab, var(--color-ink) 8%, transparent),
+    0 5px 14px -4px color-mix(in oklab, var(--color-ink) 12%, transparent);
+  --modal-header-bg: linear-gradient(180deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-surface) 82%, var(--color-surface-3)) 100%);
+  --modal-footer-bg: color-mix(in oklab, var(--color-surface) 70%, var(--color-mist));
   --btn-shadow-rest:
     inset 0 1px 0 color-mix(in oklab, var(--color-surface) 52%, transparent), 0 1px 0 color-mix(in oklab, var(--color-surface) 14%, transparent),
     0 4px 10px -8px color-mix(in oklab, var(--color-ink) 22%, transparent);
@@ -28,13 +57,19 @@
   --btn-bg-primary: linear-gradient(180deg, var(--color-pulse-bright) 0%, var(--color-pulse) 100%);
   --btn-bg-primary-hover: linear-gradient(180deg, var(--color-pulse) 0%, var(--color-pulse-deep) 100%);
   --btn-bg-secondary: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 92%, var(--color-surface-2)) 0%, color-mix(in oklab, var(--color-surface-2) 74%, var(--color-soft-blue)) 100%);
-  --btn-bg-secondary-hover: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 88%, var(--color-surface-3)) 0%, color-mix(in oklab, var(--color-surface-3) 58%, var(--color-soft-blue)) 100%);
+  --btn-bg-secondary-hover: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-surface) 88%, var(--color-surface-3)) 0%,
+    color-mix(in oklab, var(--color-surface-3) 58%, var(--color-soft-blue)) 100%
+  );
   --btn-bg-danger: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 88%, var(--color-soft-red)) 0%, color-mix(in oklab, var(--color-soft-red) 78%, var(--color-surface)) 100%);
   --btn-bg-danger-hover: linear-gradient(180deg, color-mix(in oklab, var(--color-soft-red) 74%, var(--color-surface)) 0%, color-mix(in oklab, var(--color-soft-red) 55%, var(--color-danger)) 100%);
   color-scheme: light;
 }
 
-/* === Depth: dark === */
+/* === Depth: dark ===
+   Nadpisuje receptury light. Border/chrome bez zmian dziedziczą z :root.
+*/
 html[data-scheme="dark"] {
   --comment-bg: var(--color-surface-3);
   --surface-gradient: linear-gradient(
@@ -58,9 +93,18 @@ html[data-scheme="dark"] {
     0 20px 44px -26px color-mix(in oklab, black 60%, transparent);
   --shadow-lift-md:
     0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 8px 20px -14px color-mix(in oklab, black 34%, transparent), 0 18px 38px -28px color-mix(in oklab, black 52%, transparent);
+  --shadow-card:
+    0 1px 0 color-mix(in oklab, white 12%, transparent) inset, 0 2px 8px color-mix(in oklab, black 20%, transparent), 0 10px 24px -8px color-mix(in oklab, black 32%, transparent),
+    0 20px 40px -18px color-mix(in oklab, black 40%, transparent);
   --shadow-float:
     0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 6px 18px -12px color-mix(in oklab, black 28%, transparent), 0 14px 32px -18px color-mix(in oklab, black 40%, transparent);
   --shadow-menu: 0 4px 12px -4px color-mix(in oklab, black 36%, transparent), 0 12px 24px -12px color-mix(in oklab, black 40%, transparent);
+  --edge-shadow-end: 6px 0 20px -10px color-mix(in oklab, black 32%, transparent), 14px 0 40px -14px color-mix(in oklab, black 44%, transparent);
+  --edge-shadow-start: -6px 0 20px -10px color-mix(in oklab, black 32%, transparent), -14px 0 40px -14px color-mix(in oklab, black 44%, transparent);
+  --header-shadow:
+    0 1px 0 color-mix(in oklab, var(--color-surface) 28%, transparent) inset, 0 2px 10px -2px color-mix(in oklab, black 28%, transparent), 0 14px 32px -12px color-mix(in oklab, black 40%, transparent);
+  --nav-item-active-shadow:
+    0 1px 0 color-mix(in oklab, white 12%, transparent) inset, 0 1px 3px color-mix(in oklab, black 22%, transparent), 0 5px 14px -4px color-mix(in oklab, black 30%, transparent);
   --btn-shadow-rest: inset 0 1px 0 color-mix(in oklab, white 16%, transparent), 0 1px 0 color-mix(in oklab, white 6%, transparent), 0 8px 16px -14px color-mix(in oklab, black 46%, transparent);
   --btn-shadow-hover: inset 0 1px 0 color-mix(in oklab, white 14%, transparent), 0 1px 0 color-mix(in oklab, white 5%, transparent), 0 12px 22px -14px color-mix(in oklab, black 54%, transparent);
   --btn-shadow-primary:
@@ -725,12 +769,28 @@ html[data-theme="rose-night"] {
   --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(220 110 150 / 0.07), transparent 62%), linear-gradient(180deg, #22161c 0%, #1c1318 46%, #181016 100%);
 }
 
-/* === Depth: flat === */
+/* === Depth: flat ===
+   Kill-switch głębi. Te same nazwy co light/dark → none / solid.
+*/
 html[data-theme-gradient="off"] {
   --shadow-lift-sm: none;
   --shadow-lift-md: none;
+  --shadow-card: none;
   --shadow-float: none;
   --shadow-menu: none;
+  --edge-line: none;
+  --edge-shadow-end: none;
+  --edge-shadow-start: none;
+  --header-border: 1px solid var(--color-line);
+  --header-bg: var(--color-surface);
+  --header-blur: 0px;
+  --header-shadow: none;
+  --aside-border: 1px solid var(--color-line);
+  --aside-shadow: none;
+  --nav-item-active-bg: var(--color-surface);
+  --nav-item-active-shadow: none;
+  --modal-header-bg: var(--color-surface);
+  --modal-footer-bg: var(--color-surface);
   --btn-shadow-rest: none;
   --btn-shadow-hover: none;
   --btn-shadow-primary: none;

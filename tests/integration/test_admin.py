@@ -149,7 +149,9 @@ class TestAdminUsers:
         assert user.ui_lang == "pl"
         assert r.headers["location"].startswith(f"/admin/users/{user.id}")
 
-    def test_create_user_active(self, client, db_session, admin_user, project_with_members):
+    def test_create_user_active(
+        self, client, db_session, admin_user, project_with_members
+    ):
         _login_admin(client)
         with patch("app.services.auth.send_password_link") as send_link:
             r = client.post(
