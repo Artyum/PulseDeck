@@ -55,7 +55,11 @@
     return fallback;
   }
 
-  function place(el, anchor) {
+  function hostFor(anchor) {
+    return (anchor && anchor.closest("dialog[open]")) || document.body;
+  }
+
+  function place(el, anchor, host) {
     var rect = anchor.getBoundingClientRect();
     var tip = el.getBoundingClientRect();
     var vw = window.innerWidth || 0;
@@ -71,6 +75,12 @@
     }
     left = Math.min(Math.max(8, left), Math.max(8, vw - tip.width - 8));
     top = Math.max(8, top);
+
+    if (host !== document.body) {
+      var hostRect = host.getBoundingClientRect();
+      left -= hostRect.left;
+      top -= hostRect.top;
+    }
 
     el.classList.toggle("coachmark--below", side === "below");
     el.classList.toggle("coachmark--above", side === "above");
@@ -97,12 +107,13 @@
     if (!entry || !entry.el || !entry.anchor) return;
 
     var el = entry.el;
+    var host = entry.host;
     var prev = "";
     var stable = 0;
     var tries = 0;
 
     function finish() {
-      place(el, entry.anchor);
+      place(el, entry.anchor, host);
       el.style.visibility = "";
       el.classList.add("is-shown");
       entry.ready = true;
@@ -115,7 +126,7 @@
         dismiss(id);
         return;
       }
-      var key = place(el, entry.anchor);
+      var key = place(el, entry.anchor, host);
       tries += 1;
       if (key === prev) stable += 1;
       else {
@@ -132,17 +143,16 @@
     function start() {
       if (!active[id] || active[id].el !== el) return;
       el.style.visibility = "hidden";
-      try {
-        if (typeof el.showPopover === "function") {
+      if (host === document.body && typeof el.showPopover === "function") {
+        try {
           el.setAttribute("popover", "manual");
           el.showPopover();
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
       requestAnimationFrame(tick);
     }
 
-    if (entry.anchor.closest("dialog")) window.setTimeout(start, 100);
-    else start();
+    start();
   }
 
   function render(hint, anchor) {
@@ -178,8 +188,10 @@
     });
     el.appendChild(close);
 
-    active[hint.id] = { el: el, anchor: anchor, ready: false };
-    document.body.appendChild(el);
+    var host = hostFor(anchor);
+    if (host !== document.body) el.classList.add("coachmark--dialog");
+    active[hint.id] = { el: el, anchor: anchor, host: host, ready: false };
+    host.appendChild(el);
     revealStable(hint.id);
   }
 
@@ -190,7 +202,7 @@
         dismiss(id);
         return;
       }
-      if (entry.ready) place(entry.el, entry.anchor);
+      if (entry.ready) place(entry.el, entry.anchor, entry.host);
     });
   }
 
@@ -247,9 +259,6 @@
     function (ev) {
       if (!ev.target || ev.target.tagName !== "DIALOG") return;
       scheduleScan(!!ev.target.open);
-      if (ev.target.open) {
-        window.setTimeout(syncActive, 180);
-      }
     },
     true
   );

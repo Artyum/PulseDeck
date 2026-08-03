@@ -3224,6 +3224,10 @@
     opacity: 0;
   }
 
+  .coachmark--dialog {
+    position: absolute;
+  }
+
   .coachmark.is-shown {
     animation: coachmark-in 0.22s ease-out forwards;
   }
