@@ -1,0 +1,3 @@
+{% from "partials/ticket_macros.html" import attachment_list with context %}
+<div class="comment-body rich-content">{{ comment.content | markdown_safe }}</div>
+{{ attachment_list(comment.attachments, 'mt-3') }}

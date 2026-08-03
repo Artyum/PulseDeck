@@ -23,7 +23,17 @@ function i18n(key, vars) {
 
 function syncMarkdown(editor, input) {
   if (!input) return;
-  input.value = String(editor.getMarkdown() || "").trimEnd();
+  input.value = trimMarkdownEdges(editor.getMarkdown() || "");
+}
+
+function trimMarkdownEdges(md) {
+  var lines = String(md || "")
+    .replace(/\r\n?/g, "\n")
+    .split("\n");
+  var blank = /^(?:&nbsp;|\u00a0|\s)*$/;
+  while (lines.length && blank.test(lines[0])) lines.shift();
+  while (lines.length && blank.test(lines[lines.length - 1])) lines.pop();
+  return lines.join("\n").replace(/^\s+|\s+$/g, "");
 }
 
 function updateToolbar(root, editor) {
@@ -41,12 +51,14 @@ function maxLenFromInput(input) {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-function setMarkdownContent(editor, markdown) {
-  editor.commands.setContent(markdown || "", { contentType: "markdown" });
+function inClosedDialog(root) {
+  var dlg = root && root.closest ? root.closest("dialog") : null;
+  return !!(dlg && !dlg.open);
 }
 
 function initEditor(root) {
   if (!root || root._richEditor) return;
+  if (inClosedDialog(root)) return;
   var surface = root.querySelector("[data-rich-surface]");
   var input = root.querySelector("[data-rich-input]");
   if (!surface || !input) return;
@@ -98,7 +110,6 @@ function initEditor(root) {
 
   root._richEditor = editor;
   root._richInput = input;
-  root._richInitial = initial;
 }
 
 function scan(scope) {
@@ -152,23 +163,6 @@ window.richEditorValidate = function (formOrRoot) {
   return true;
 };
 
-window.richEditorReset = function (formOrRoot) {
-  var root = findEditorRoot(formOrRoot);
-  if (!root || !root._richEditor) return;
-  setMarkdownContent(root._richEditor, root._richInitial || "");
-  syncMarkdown(root._richEditor, root._richInput);
-  updateToolbar(root, root._richEditor);
-};
-
-window.richEditorFocus = function (formOrRoot) {
-  var root = findEditorRoot(formOrRoot);
-  if (!root || !root._richEditor) {
-    scan(formOrRoot || document);
-    root = findEditorRoot(formOrRoot);
-  }
-  if (root && root._richEditor) root._richEditor.commands.focus("end");
-};
-
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", function () {
     scan(document);
@@ -202,3 +196,14 @@ document.body.addEventListener("htmx:beforeSwap", function (ev) {
 document.body.addEventListener("htmx:afterSwap", function (ev) {
   scan(ev.detail && ev.detail.target ? ev.detail.target : document);
 });
+
+document.body.addEventListener(
+  "toggle",
+  function (ev) {
+    var dlg = ev.target;
+    if (!dlg || dlg.tagName !== "DIALOG") return;
+    if (dlg.open) scan(dlg);
+    else destroyIn(dlg);
+  },
+  true
+);

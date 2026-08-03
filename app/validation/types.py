@@ -12,6 +12,7 @@ PASSWORD_MAX_BYTES = 72
 
 _SPECIAL_RE = re.compile(rf"[{re.escape(string.punctuation)}]")
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+_BLANK_EDGE_LINE_RE = re.compile(r"^(?:&nbsp;|\u00a0|\s)*$")
 
 
 class FieldValidationError(Exception):
@@ -35,6 +36,15 @@ class ValidationValueError(ValueError):
         self.code = code
 
 
+def trim_blank_edges(value: str) -> str:
+    lines = value.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    while lines and _BLANK_EDGE_LINE_RE.fullmatch(lines[0]):
+        lines.pop(0)
+    while lines and _BLANK_EDGE_LINE_RE.fullmatch(lines[-1]):
+        lines.pop()
+    return "\n".join(lines).strip()
+
+
 def normalize_raw(value: Any, spec: FieldSpec) -> Any:
     if value is None:
         return None
@@ -42,6 +52,8 @@ def normalize_raw(value: Any, spec: FieldSpec) -> Any:
         value = str(value)
     if spec.strip:
         value = value.strip()
+    if spec.trim_blank_edges:
+        value = trim_blank_edges(value)
     if spec.collapse_spaces:
         value = " ".join(value.split())
     if spec.case == "lower":

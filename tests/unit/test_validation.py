@@ -287,6 +287,15 @@ class TestCleanManyAndErrors:
         )
         assert data == {"ticket.title": "T", "ticket.description": "Body"}
 
+    def test_trims_nbsp_edges_on_rich_text(self):
+        raw = "&nbsp;\nawdawd\n&nbsp;\n&nbsp;"
+        assert clean("comment.content", raw) == "awdawd"
+        assert clean("ticket.description", raw) == "awdawd"
+
+    def test_keeps_internal_blank_lines(self):
+        raw = "one\n\ntwo"
+        assert clean("comment.content", raw) == "one\n\ntwo"
+
     def test_clean_many_stops_on_first_error(self):
         with pytest.raises(ValidationValueError) as exc:
             clean_many({"ticket.title": "", "ticket.description": "ok"})

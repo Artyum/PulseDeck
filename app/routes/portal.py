@@ -376,6 +376,66 @@ async def create_ticket(
     return RedirectResponse(ticket_path(ticket), status_code=303)
 
 
+def _comment_edit_partial(
+    request: Request,
+    ticket_ref: str,
+    comment_id: int,
+    user: User,
+    db: Session,
+    template: str,
+):
+    lang = resolve_lang(request)
+    if not ticket_service.can_edit_comments(user):
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
+        )
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
+    comment = ticket_service.get_ticket_comment(db, ticket, comment_id, lang=lang)
+    return render(
+        request,
+        template,
+        user=user,
+        ticket=ticket,
+        comment=comment,
+    )
+
+
+@router.get("/t/{ticket_ref}/comments/{comment_id}/edit", response_class=HTMLResponse)
+def comment_edit_form(
+    request: Request,
+    ticket_ref: str,
+    comment_id: int,
+    user: CurrentUser,
+    db: DbSession,
+):
+    return _comment_edit_partial(
+        request,
+        ticket_ref,
+        comment_id,
+        user,
+        db,
+        "partials/comment_edit_form.html",
+    )
+
+
+@router.get("/t/{ticket_ref}/comments/{comment_id}/body", response_class=HTMLResponse)
+def comment_body(
+    request: Request,
+    ticket_ref: str,
+    comment_id: int,
+    user: CurrentUser,
+    db: DbSession,
+):
+    return _comment_edit_partial(
+        request,
+        ticket_ref,
+        comment_id,
+        user,
+        db,
+        "partials/comment_body.html",
+    )
+
+
 @router.post("/t/{ticket_ref}/comments", response_class=HTMLResponse)
 @limiter.limit(_upload_limit)
 async def add_comment(

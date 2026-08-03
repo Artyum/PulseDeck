@@ -418,6 +418,12 @@ def _get_ticket_comment(
     return comment
 
 
+def get_ticket_comment(
+    db: Session, ticket: Ticket, comment_id: int, *, lang: str | None = None
+) -> Comment:
+    return _get_ticket_comment(db, ticket, comment_id, lang=lang or DEFAULT_LANG)
+
+
 def update_comment(
     db: Session,
     ticket: Ticket,

@@ -1,0 +1,24 @@
+{% from "partials/ticket_macros.html" import attach_picker with context %}
+{% from "partials/icons.html" import icon %}
+{% from "partials/rich_editor.html" import rich_editor with context %}
+<form hx-post="{{ url_for('edit_comment', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
+      hx-target="#ticket-view"
+      hx-swap="innerHTML"
+      enctype="multipart/form-data"
+      class="comment-edit-form">
+  {{ rich_editor('content', 'comment.content', comment.content) }}
+  <div class="issue-composer-bar">
+    {{ attach_picker('comment-edit-attachments-' ~ comment.id, 'zone', max_files=upload_max_files, existing=comment.attachments) }}
+    <div class="comment-edit-actions">
+      <button type="button"
+              class="btn comment-edit-action comment-edit-action-cancel"
+              hx-get="{{ url_for('comment_body', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
+              hx-target="#comment-panel-{{ comment.id }}"
+              hx-swap="innerHTML"
+              aria-label="{{ t('ui.ticket.cancel_edit') }}">{{ icon("close") }}</button>
+      <button type="submit"
+              class="btn comment-edit-action comment-edit-action-save"
+              aria-label="{{ t('ui.ticket.save_comment') }}">{{ icon("check") }}</button>
+    </div>
+  </div>
+</form>

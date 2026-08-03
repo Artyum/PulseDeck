@@ -3011,21 +3011,49 @@
     margin-top: calc(0.55rem * var(--space-scale));
   }
 
-  .comment-edit-form .file-pick,
-  .comment-edit-form .file-pick-zone {
-    width: fit-content;
-    max-width: 100%;
-  }
-
-  .comment-edit-form .file-pick-zone {
-    padding: 0.55rem 0.75rem;
-  }
-
   .comment-edit-actions {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 0.15rem;
+    gap: 0.35rem;
+    margin-left: auto;
+  }
+
+  .comment-edit-action {
+    min-width: 1.7rem;
+    min-height: 1.7rem;
+    padding: 0.2rem;
+    box-shadow: var(--btn-shadow-rest);
+  }
+
+  .comment-edit-action .icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .comment-edit-action-save {
+    background: var(--color-soft-green);
+    border-color: var(--color-chip-green-border);
+    color: var(--color-chip-green-fg);
+  }
+
+  .comment-edit-action-save:hover {
+    background: color-mix(in oklab, var(--color-soft-green) 70%, var(--color-chip-green-border));
+    border-color: var(--color-chip-green-border);
+    color: var(--color-chip-green-fg);
+    box-shadow: var(--btn-shadow-hover);
+  }
+
+  .comment-edit-action-cancel {
+    background: var(--color-soft-red);
+    border-color: var(--color-chip-red-border);
+    color: var(--color-chip-red-fg);
+  }
+
+  .comment-edit-action-cancel:hover {
+    background: color-mix(in oklab, var(--color-soft-red) 70%, var(--color-chip-red-border));
+    border-color: var(--color-chip-red-border);
+    color: var(--color-chip-red-fg);
+    box-shadow: var(--btn-shadow-hover);
   }
 
   .comment-when {
@@ -3272,7 +3300,7 @@
     max-width: 100%;
   }
 
-  .issue-composer .file-pick-zone {
+  .issue-composer-bar .file-pick-zone {
     width: fit-content;
     max-width: 100%;
     padding: 0.55rem 0.75rem;
@@ -4288,6 +4316,10 @@
     margin-top: calc(0.75rem * var(--space-scale));
     padding-top: calc(0.75rem * var(--space-scale));
     border-top: 1px solid color-mix(in oklab, var(--color-line) 70%, transparent);
+  }
+
+  .comment-segment:has(.comment-edit-form) .comment-actions {
+    display: none;
   }
 
   .comment-staff {

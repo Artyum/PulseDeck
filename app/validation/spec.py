@@ -17,6 +17,7 @@ class FieldSpec:
     strip: bool = True
     case: str | None = None
     collapse_spaces: bool = False
+    trim_blank_edges: bool = False
     html_input_type: str | None = None
     html_pattern: str | None = None
 
@@ -47,6 +48,7 @@ def text(
     max_len: int,
     collapse_spaces: bool = False,
     case: str | None = None,
+    trim_blank_edges: bool = False,
 ) -> FieldSpec:
     return FieldSpec(
         field_type="text",
@@ -55,6 +57,7 @@ def text(
         max_len=max_len,
         collapse_spaces=collapse_spaces,
         case=case,
+        trim_blank_edges=trim_blank_edges,
     )
 
 
