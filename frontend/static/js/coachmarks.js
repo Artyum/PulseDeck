@@ -76,21 +76,7 @@
     el.classList.toggle("coachmark--above", side === "above");
     el.style.left = Math.round(left) + "px";
     el.style.top = Math.round(top) + "px";
-    return (
-      Math.round(left) +
-      "," +
-      Math.round(top) +
-      "," +
-      side +
-      "," +
-      Math.round(rect.top) +
-      "," +
-      Math.round(rect.left) +
-      "," +
-      Math.round(tip.width) +
-      "," +
-      Math.round(tip.height)
-    );
+    return Math.round(left) + "," + Math.round(top) + "," + side + "," + Math.round(rect.top) + "," + Math.round(rect.left) + "," + Math.round(tip.width) + "," + Math.round(tip.height);
   }
 
   function dismiss(id) {

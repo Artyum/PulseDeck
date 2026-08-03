@@ -122,6 +122,7 @@
                      {{ field_attrs('user.password', required=False) }}
                      class="input"
                      autocomplete="new-password">
+              <p class="admin-field-hint">{{ t("ui.profile.password.hint") }}</p>
             </div>
             <div class="admin-field">
               <label class="label" for="admin-confirm-password">{{ t("ui.profile.password.confirm") }}</label>
@@ -167,6 +168,7 @@
                name="new_password"
                class="input"
                autocomplete="new-password">
+        <p class="admin-field-hint">{{ t("ui.profile.password.hint") }}</p>
       </div>
       <div class="admin-field">
         <label class="label" for="confirm_password">{{ t("ui.profile.password.confirm") }}</label>
@@ -268,7 +270,12 @@
              aria-label="{{ theme.label }}">
           <span class="theme-option-preview"
                 aria-hidden="true"
-                style="--tp-page: {{ theme.preview.page }}; --tp-aside: {{ theme.preview.aside }}; --tp-surface: {{ theme.preview.surface }}; --tp-soft: {{ theme.preview.soft }}; --tp-pulse: {{ theme.preview.pulse }}; --tp-ink: {{ theme.preview.ink }}">
+                style="--tp-page: {{ theme.preview.page }};
+                       --tp-aside: {{ theme.preview.aside }};
+                       --tp-surface: {{ theme.preview.surface }};
+                       --tp-soft: {{ theme.preview.soft }};
+                       --tp-pulse: {{ theme.preview.pulse }};
+                       --tp-ink: {{ theme.preview.ink }}">
             <span class="theme-option-preview-rail"></span>
             <span class="theme-option-preview-body">
               <span class="theme-option-preview-chip"></span>

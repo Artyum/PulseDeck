@@ -19,10 +19,7 @@
   --shadow-float:
     0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 14px color-mix(in oklab, var(--color-ink) 7%, transparent),
     0 12px 28px -14px color-mix(in oklab, var(--color-ink) 10%, transparent);
-  --shadow-coachmark:
-    0 2px 6px rgb(0 0 0 / 0.12),
-    0 6px 16px rgb(0 0 0 / 0.14),
-    0 14px 28px -4px rgb(0 0 0 / 0.18);
+  --shadow-coachmark: 0 2px 6px rgb(0 0 0 / 0.12), 0 6px 16px rgb(0 0 0 / 0.14), 0 14px 28px -4px rgb(0 0 0 / 0.18);
   --shadow-menu: 0 2px 8px -2px color-mix(in oklab, var(--color-ink) 10%, transparent), 0 8px 18px -8px color-mix(in oklab, var(--color-ink) 12%, transparent);
   --shadow-field:
     inset 0 1px 2px color-mix(in oklab, var(--color-ink) 5%, transparent), 0 1px 2px color-mix(in oklab, var(--color-ink) 5%, transparent),
@@ -109,14 +106,9 @@ html[data-scheme="dark"] {
     0 20px 40px -18px color-mix(in oklab, black 40%, transparent);
   --shadow-float:
     0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 6px 18px -12px color-mix(in oklab, black 28%, transparent), 0 14px 32px -18px color-mix(in oklab, black 40%, transparent);
-  --shadow-coachmark:
-    0 2px 6px rgb(0 0 0 / 0.35),
-    0 8px 18px rgb(0 0 0 / 0.42),
-    0 16px 32px -4px rgb(0 0 0 / 0.5);
+  --shadow-coachmark: 0 2px 6px rgb(0 0 0 / 0.35), 0 8px 18px rgb(0 0 0 / 0.42), 0 16px 32px -4px rgb(0 0 0 / 0.5);
   --shadow-menu: 0 4px 12px -4px color-mix(in oklab, black 36%, transparent), 0 12px 24px -12px color-mix(in oklab, black 40%, transparent);
-  --shadow-field:
-    inset 0 1px 2px color-mix(in oklab, black 30%, transparent), 0 1px 0 color-mix(in oklab, white 5%, transparent),
-    0 5px 14px -6px color-mix(in oklab, black 42%, transparent);
+  --shadow-field: inset 0 1px 2px color-mix(in oklab, black 30%, transparent), 0 1px 0 color-mix(in oklab, white 5%, transparent), 0 5px 14px -6px color-mix(in oklab, black 42%, transparent);
   --edge-shadow-end: 6px 0 20px -10px color-mix(in oklab, black 32%, transparent), 14px 0 40px -14px color-mix(in oklab, black 44%, transparent);
   --edge-shadow-start: -6px 0 20px -10px color-mix(in oklab, black 32%, transparent), -14px 0 40px -14px color-mix(in oklab, black 44%, transparent);
   --header-shadow:
@@ -472,15 +464,15 @@ html[data-theme="graphite-day"] {
   --color-ink: #1e222a;
   --color-steel: #5e6674;
   --color-line: #d0d4dc;
-  --color-pulse: #3d6fd9;
+  --color-pulse: #5a6678;
   --color-signal: #bc7020;
   --color-danger: #c2473c;
-  --color-primary: #3d6fd9;
+  --color-primary: #5a6678;
   --color-secondary: #5e6674;
-  --color-accent: #3d6fd9;
+  --color-accent: #5a6678;
   --color-brand: #1e222a;
   --color-base-100: #e7eaef;
-  --color-soft-blue: #dde5f3;
+  --color-soft-blue: #dde1e8;
   --color-soft-yellow: #f0ead4;
   --color-soft-purple: #e3e1ee;
   --color-soft-green: #dae9e2;
@@ -492,13 +484,13 @@ html[data-theme="graphite-day"] {
   --color-surface: #ffffff;
   --color-surface-2: #f0f1f4;
   --color-surface-3: #e6e8ee;
-  --color-pulse-bright: #5082e4;
-  --color-pulse-deep: #2d5bb8;
-  --color-on-pulse: #f4f7ff;
+  --color-pulse-bright: #6d7a8c;
+  --color-pulse-deep: #454f5e;
+  --color-on-pulse: #f4f6f8;
   --color-chip-neutral: #eceef2;
   --color-chip-neutral-border: #c4c8d2;
-  --color-chip-blue-fg: #1d509c;
-  --color-chip-blue-border: #98aed4;
+  --color-chip-blue-fg: #3a4a62;
+  --color-chip-blue-border: #9aa6b6;
   --color-chip-teal-fg: #1c606c;
   --color-chip-teal-border: #8abcc4;
   --color-chip-orange-fg: #8a5218;
@@ -512,10 +504,10 @@ html[data-theme="graphite-day"] {
   --color-chip-yellow-fg: #6c5a18;
   --color-chip-yellow-border: #d2c486;
   --page-gradient:
-    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 188 225 / 0.15), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(180 196 222 / 0.07), transparent 62%),
-    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(200 208 222 / 0.05), transparent 68%), linear-gradient(180deg, #ebedf3 0%, #f0f2f6 26%, #f3f4f7 58%, #f5f6f8 100%);
-  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(155 172 210 / 0.11), transparent 62%), linear-gradient(185deg, #e0e3eb 0%, #e7e9f0 34%, #eceef3 68%, #e8eaf1 100%);
-  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(158 176 212 / 0.03), transparent 68%), linear-gradient(180deg, #fbfbfc 0%, #f9fafb 48%, #f8f9fa 100%);
+    radial-gradient(ellipse 120% 68% at 48% -22%, rgb(168 176 190 / 0.14), transparent 58%), radial-gradient(ellipse 55% 42% at 94% 12%, rgb(176 184 198 / 0.07), transparent 62%),
+    radial-gradient(ellipse 48% 36% at 6% 78%, rgb(196 202 212 / 0.05), transparent 68%), linear-gradient(180deg, #ebedf3 0%, #f0f2f6 26%, #f3f4f7 58%, #f5f6f8 100%);
+  --aside-gradient: radial-gradient(ellipse 110% 52% at 42% -18%, rgb(160 168 182 / 0.1), transparent 62%), linear-gradient(185deg, #e0e3eb 0%, #e7e9f0 34%, #eceef3 68%, #e8eaf1 100%);
+  --rail-gradient: radial-gradient(ellipse 90% 42% at 50% -14%, rgb(158 166 178 / 0.03), transparent 68%), linear-gradient(180deg, #fbfbfc 0%, #f9fafb 48%, #f8f9fa 100%);
 }
 
 html[data-theme="charcoal-dusk"] {
@@ -525,15 +517,15 @@ html[data-theme="charcoal-dusk"] {
   --color-ink: #dce1e8;
   --color-steel: #929aa6;
   --color-line: #262a30;
-  --color-pulse: #4ec4de;
+  --color-pulse: #9aa8b8;
   --color-signal: #d49e4e;
   --color-danger: #e07870;
-  --color-primary: #4ec4de;
+  --color-primary: #9aa8b8;
   --color-secondary: #929aa6;
-  --color-accent: #4ec4de;
+  --color-accent: #9aa8b8;
   --color-brand: #dce1e8;
   --color-base-100: #0e1012;
-  --color-soft-blue: #1e2e36;
+  --color-soft-blue: #242a32;
   --color-soft-yellow: #363224;
   --color-soft-purple: #262a38;
   --color-soft-green: #1e322e;
@@ -545,13 +537,13 @@ html[data-theme="charcoal-dusk"] {
   --color-surface: #181c20;
   --color-surface-2: #13161a;
   --color-surface-3: #22282e;
-  --color-pulse-bright: #66d2e8;
-  --color-pulse-deep: #3aa4bc;
-  --color-on-pulse: #effbff;
+  --color-pulse-bright: #b0bcc8;
+  --color-pulse-deep: #7e8c9c;
+  --color-on-pulse: #121518;
   --color-chip-neutral: #242a30;
   --color-chip-neutral-border: #484e56;
-  --color-chip-blue-fg: #9cdcee;
-  --color-chip-blue-border: #4c90a6;
+  --color-chip-blue-fg: #b0bcc8;
+  --color-chip-blue-border: #5e6a7a;
   --color-chip-teal-fg: #92d6d6;
   --color-chip-teal-border: #4c8888;
   --color-chip-orange-fg: #f0c496;
@@ -565,12 +557,12 @@ html[data-theme="charcoal-dusk"] {
   --color-chip-yellow-fg: #e8d48c;
   --color-chip-yellow-border: #96884c;
   --page-gradient:
-    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(90 214 234 / 0.16), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(52 138 156 / 0.1), transparent 60%),
-    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(24 52 64 / 0.18), transparent 72%), linear-gradient(180deg, #171d22 0%, #14191d 18%, #101418 48%, #0e1012 100%);
+    radial-gradient(ellipse 118% 62% at 50% -24%, rgb(156 172 188 / 0.12), transparent 54%), radial-gradient(ellipse 62% 46% at 94% 14%, rgb(72 84 98 / 0.1), transparent 60%),
+    radial-gradient(ellipse 52% 40% at 8% 86%, rgb(28 34 42 / 0.18), transparent 72%), linear-gradient(180deg, #171d22 0%, #14191d 18%, #101418 48%, #0e1012 100%);
   --aside-gradient:
-    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(92 214 234 / 0.12), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(22 48 60 / 0.16), transparent 76%),
+    radial-gradient(ellipse 112% 54% at 46% -20%, rgb(148 164 180 / 0.1), transparent 58%), radial-gradient(ellipse 64% 56% at 14% 100%, rgb(28 34 42 / 0.16), transparent 76%),
     linear-gradient(185deg, #1a1f24 0%, #161a1f 32%, #13161a 68%, #101316 100%);
-  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(86 198 216 / 0.06), transparent 62%), linear-gradient(180deg, #171b1f 0%, #15191d 46%, #12161a 100%);
+  --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(148 160 176 / 0.05), transparent 62%), linear-gradient(180deg, #171b1f 0%, #15191d 46%, #12161a 100%);
 }
 
 /* === Palettes: berry === */
@@ -799,10 +791,7 @@ html[data-theme-gradient="off"] {
   --shadow-lift-md: none;
   --shadow-card: none;
   --shadow-float: none;
-  --shadow-coachmark:
-    0 2px 6px rgb(0 0 0 / 0.14),
-    0 6px 16px rgb(0 0 0 / 0.16),
-    0 14px 28px -4px rgb(0 0 0 / 0.2);
+  --shadow-coachmark: 0 2px 6px rgb(0 0 0 / 0.14), 0 6px 16px rgb(0 0 0 / 0.16), 0 14px 28px -4px rgb(0 0 0 / 0.2);
   --shadow-menu: none;
   --shadow-field: inset 0 1px 2px color-mix(in oklab, var(--color-ink) 4%, transparent);
   --edge-line: none;

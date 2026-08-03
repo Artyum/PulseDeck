@@ -151,6 +151,7 @@ ui:
       current: "Obecne hasło"
       new: "Nowe hasło"
       confirm: "Powtórz nowe hasło"
+      hint: "Minimum 8 znaków, w tym mała litera, wielka litera, cyfra oraz znak specjalny."
       save: "Zapisz hasło"
       set: "Ustaw hasło"
       send_activation: "Wyślij link aktywacyjny"
@@ -310,7 +311,6 @@ ui:
         smtp_security_ssl: "SSL/TLS"
         smtp_user: "Użytkownik"
         smtp_pass: "Hasło"
-        smtp_pass_set: "Zapisane — wpisz nowe, aby zmienić"
         smtp_pass_hint: "Zostaw puste, aby zachować obecne hasło."
         email_from: "Adres nadawcy"
         test_heading: "Wyślij mail testowy"
@@ -448,7 +448,7 @@ themes:
     description: "Szałwia i mech w spokojnej, kameralnej poświacie."
   graphite-day:
     label: "Grafitowy dzień"
-    description: "Chłodny grafit z delikatną kobaltową mgiełką."
+    description: "Chłodny grafit w spokojnej, stalowej poświacie."
   berry-dawn:
     label: "Jagodowy wrzos"
     description: "Delikatny wrzos i jagoda w jasnej, miękkiej poświacie."
@@ -466,7 +466,7 @@ themes:
     description: "Ciemny las z krystaliczną, miętową poświatą."
   charcoal-dusk:
     label: "Węglowy zmierzch"
-    description: "Charcoal z lodowym cyjanem w cichym zmierzchu."
+    description: "Węgiel ze stalowym srebrem w cichym zmierzchu."
   midnight-berry:
     label: "Dojrzała borówka"
     description: "Dojrzała jagoda w ciepłym, fioletowym półmroku."

@@ -151,6 +151,7 @@ ui:
       current: "Current password"
       new: "New password"
       confirm: "Repeat new password"
+      hint: "At least 8 characters, with a lowercase letter, an uppercase letter, a digit, and a special character."
       save: "Save password"
       set: "Set password"
       send_activation: "Send activation link"
@@ -310,7 +311,6 @@ ui:
         smtp_security_ssl: "SSL/TLS"
         smtp_user: "Username"
         smtp_pass: "Password"
-        smtp_pass_set: "Saved — enter a new value to change"
         smtp_pass_hint: "Leave blank to keep the current password."
         email_from: "From address"
         test_heading: "Send test email"
@@ -448,7 +448,7 @@ themes:
     description: "Sage and moss in a quiet, intimate glow."
   graphite-day:
     label: "Graphite Day"
-    description: "Cool graphite with a soft cobalt haze."
+    description: "Cool graphite in a quiet steel wash."
   berry-dawn:
     label: "Heather Bloom"
     description: "Soft heather and berry in a bright, gentle wash."
@@ -466,7 +466,7 @@ themes:
     description: "Dark forest with a crystalline mint glow."
   charcoal-dusk:
     label: "Charcoal Dusk"
-    description: "Charcoal with icy cyan in a quiet dusk."
+    description: "Charcoal with cool steel silver in a quiet dusk."
   midnight-berry:
     label: "Velvet Berry"
     description: "Ripe berry in a warm purple half-light."

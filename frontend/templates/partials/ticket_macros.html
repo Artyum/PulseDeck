@@ -213,7 +213,8 @@
     </div>
   {%- endset %}
   <div data-attach-picker data-attach-max="{{ max_files }}">
-    <div class="file-pick"{% if coachmark %} data-coachmark="{{ coachmark }}"{% endif %}>
+    <div class="file-pick"
+         {% if coachmark %}data-coachmark="{{ coachmark }}"{% endif %}>
       <input data-attach-input
              id="{{ input_id }}"
              type="file"
