@@ -690,6 +690,25 @@ js:
     too_many: "You can attach up to {count} files."
   copy_ok: "Copied"
   copy_err: "Couldn't copy"
+  coachmarks:
+    dismiss: "Dismiss"
+    nav-appearance:
+      body: "Adjust the theme and colors to your preferences."
+      cta: "Change appearance"
+    nav-project:
+      body: "Quickly switch between your projects."
+    feed-create:
+      body: "Got something to report? Create a new ticket here."
+    ticket-status:
+      body: "Click to change the ticket status."
+    profile-notifications:
+      body: "Manage email notifications about activity on your tickets."
+    admin-projects:
+      body: "Create a new project and invite your team."
+    admin-mail:
+      body: "Tip: Configure the SMTP server so the system can send email notifications."
+    compose-attach:
+      body: "Add files by choosing them from disk, dragging them here, or pasting from the clipboard (Ctrl+V)."
 
 email:
   confirm:

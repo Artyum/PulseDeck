@@ -7,7 +7,7 @@
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
   </div>
-  <section class="admin-section">
+  <section class="admin-section" data-coachmark="admin-projects">
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
     <form method="post"
           action="{{ url_for('create_project') }}"

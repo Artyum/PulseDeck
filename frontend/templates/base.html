@@ -79,9 +79,12 @@
     <script src="{{ static_url('vendor/alpine.min.js') }}" defer></script>
     <script src="{{ static_url('js/app.js') }}" defer></script>
     <script src="{{ static_url('js/attach-picker.js') }}" defer></script>
+    <script src="{{ static_url('js/coachmarks-catalog.js') }}" defer></script>
+    <script src="{{ static_url('js/coachmarks.js') }}" defer></script>
     <meta name="csrf-token" content="{{ csrf_token }}">
   </head>
   <body class="min-h-screen antialiased"
+        {% if user is defined and user %}data-user-id="{{ user.id }}"{% endif %}
         data-datetime-prefs-locked="{{ '1' if datetime_prefs_locked else '0' }}"
         data-lang-storage-key="{{ lang_storage_key }}"
         data-available-langs="{{ lang_choices|map(attribute='id') |join(',') }}"

@@ -39,6 +39,7 @@
             @click="open = !open"
             :aria-expanded="open"
             class="app-header-project-btn"
+            data-coachmark="nav-project"
             aria-label="{{ t('ui.nav.select_project') }}"
             title="{{ t('ui.nav.select_project') }}">
       <span class="app-header-section-label">{{ label }}</span>
@@ -93,6 +94,7 @@
                 @click="open = !open"
                 :aria-expanded="open"
                 class="nav-chrome nav-user"
+                data-coachmark="nav-appearance"
                 aria-label="{{ t('ui.nav.user_menu') }}"
                 title="{{ user.display_name }}">
           <span class="nav-user-name">{{ user.display_name }}</span>
@@ -112,6 +114,7 @@
          :class="{'is-menu-open': open}">
       <button type="button"
               class="nav-chrome nav-hamburger"
+              data-coachmark="nav-appearance"
               @click="open = !open"
               :aria-expanded="open"
               aria-controls="app-nav-mobile-panel"

@@ -182,7 +182,7 @@
 {% endif %}
 {% if show_notifications %}
   <section class="admin-section"
-           {% if not is_admin_edit %}id="notification-settings"{% endif %}>
+           {% if not is_admin_edit %}id="notification-settings" data-coachmark="profile-notifications"{% endif %}>
     {% if is_admin_edit %}
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
       <div class="admin-prefs">

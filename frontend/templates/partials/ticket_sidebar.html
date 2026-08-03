@@ -34,7 +34,7 @@
         <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
       {% endif %}
     </div>
-    <div class="issue-field">
+    <div class="issue-field" data-coachmark="ticket-status">
       <span class="label-tight">{{ t("ui.ticket.status") }}</span>
       {% if user.is_staff %}
         {% call issue_field_menu(t('ui.ticket.change_status'), url_for('change_status', ticket_ref=tref), 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}

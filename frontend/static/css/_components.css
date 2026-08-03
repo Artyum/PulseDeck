@@ -3195,6 +3195,148 @@
     animation: toast-out 0.18s ease-in forwards;
   }
 
+  /* === Coachmarks === */
+  .coachmark {
+    --coachmark-arrow: 0.55rem;
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    z-index: 90;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: min(22rem, calc(100vw - 1.5rem));
+    padding: 1.05rem 2.45rem 1.1rem 1.15rem;
+    border-radius: 0.9rem;
+    border: 1px solid var(--coachmark-border);
+    background: var(--coachmark-bg);
+    box-shadow: var(--shadow-coachmark);
+    color: var(--color-ink);
+    font-size: 0.9375rem;
+    font-weight: 650;
+    line-height: 1.45;
+    pointer-events: auto;
+    overflow: visible;
+    opacity: 0;
+  }
+
+  .coachmark.is-shown {
+    animation: coachmark-in 0.22s ease-out forwards;
+  }
+
+  @keyframes coachmark-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .coachmark::before,
+  .coachmark::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .coachmark--below::before {
+    bottom: 100%;
+    border-width: 0 var(--coachmark-arrow) var(--coachmark-arrow) var(--coachmark-arrow);
+    border-color: transparent transparent var(--coachmark-border) transparent;
+  }
+
+  .coachmark--below::after {
+    bottom: calc(100% - 1px);
+    border-width: 0 var(--coachmark-arrow) var(--coachmark-arrow) var(--coachmark-arrow);
+    border-color: transparent transparent var(--coachmark-bg) transparent;
+  }
+
+  .coachmark--above::before {
+    top: 100%;
+    border-width: var(--coachmark-arrow) var(--coachmark-arrow) 0 var(--coachmark-arrow);
+    border-color: var(--coachmark-border) transparent transparent transparent;
+  }
+
+  .coachmark--above::after {
+    top: calc(100% - 1px);
+    border-width: var(--coachmark-arrow) var(--coachmark-arrow) 0 var(--coachmark-arrow);
+    border-color: var(--coachmark-bg) transparent transparent transparent;
+  }
+
+  .coachmark-body {
+    margin: 0;
+  }
+
+  .coachmark-cta {
+    display: inline-block;
+    margin-top: 0.55rem;
+    font-weight: 700;
+    color: var(--coachmark-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+  }
+
+  .coachmark-cta:hover {
+    color: var(--coachmark-accent-deep);
+  }
+
+  .coachmark-close {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 0.45rem;
+    background: transparent;
+    color: var(--color-steel);
+    font-size: 0;
+    line-height: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .coachmark-close::before,
+  .coachmark-close::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.75rem;
+    height: 1.5px;
+    border-radius: 1px;
+    background: currentColor;
+  }
+
+  .coachmark-close::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .coachmark-close::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .coachmark-close:hover {
+    background: color-mix(in oklab, var(--coachmark-accent) 14%, var(--color-surface));
+    border-color: var(--coachmark-border);
+    color: var(--color-ink);
+  }
+
   .field-feedback {
     --bubble-bg: #b42318;
     position: relative;

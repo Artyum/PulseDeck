@@ -690,6 +690,25 @@ js:
     too_many: "Możesz dodać maksymalnie {count} plików."
   copy_ok: "Skopiowano"
   copy_err: "Nie udało się skopiować"
+  coachmarks:
+    dismiss: "Zamknij"
+    nav-appearance:
+      body: "Dostosuj motyw i kolory do swoich preferencji."
+      cta: "Zmień wygląd"
+    nav-project:
+      body: "Szybko przełączaj się między swoimi projektami."
+    feed-create:
+      body: "Masz sprawę? Zgłoś nowy ticket tutaj."
+    ticket-status:
+      body: "Kliknij, by zmienić status zgłoszenia."
+    profile-notifications:
+      body: "Zarządzaj powiadomieniami e-mail o aktywności w Twoich zgłoszeniach."
+    admin-projects:
+      body: "Utwórz nowy projekt i zaproś do niego zespół."
+    admin-mail:
+      body: "Wskazówka: Skonfiguruj serwer SMTP, aby system mógł wysyłać powiadomienia e-mail."
+    compose-attach:
+      body: "Dodaj pliki wybierając je z dysku, przeciągając w to miejsce lub wklejając ze schowka (Ctrl+V)."
 
 email:
   confirm:

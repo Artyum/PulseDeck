@@ -185,7 +185,7 @@
 {% macro filter_field_menu(name, aria_label, choices, current_value, labels=none, empty_label=none) -%}
   {{ form_select_menu(name, aria_label, choices, current_value, labels, compact=true, empty_label=empty_label) }}
 {%- endmacro %}
-{% macro attach_picker(input_id, variant='zone', max_files=3, existing=none) -%}
+{% macro attach_picker(input_id, variant='zone', max_files=3, existing=none, coachmark=none) -%}
   {% set file_word = t('ui.ticket.attach.file_one') if max_files == 1 else t('ui.ticket.attach.file_many') %}
   {% set preview -%}
     <div data-attach-preview
@@ -213,7 +213,7 @@
     </div>
   {%- endset %}
   <div data-attach-picker data-attach-max="{{ max_files }}">
-    <div class="file-pick">
+    <div class="file-pick"{% if coachmark %} data-coachmark="{{ coachmark }}"{% endif %}>
       <input data-attach-input
              id="{{ input_id }}"
              type="file"

@@ -33,7 +33,8 @@
           <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.portal.feed.tickets") }}</h2>
           <button type="button"
                   onclick="document.getElementById('new-ticket').showModal()"
-                  class="btn btn-primary">{{ t("ui.portal.feed.create") }}</button>
+                  class="btn btn-primary"
+                  data-coachmark="feed-create">{{ t("ui.portal.feed.create") }}</button>
         </div>
         <div class="issue-list">
           {% for tkt in tickets %}
@@ -169,7 +170,7 @@
                     rows="8"
                     class="textarea mt-1"></textarea>
         </div>
-        {{ attach_picker('new-ticket-attachments', 'zone', max_files=upload_max_files) }}
+        {{ attach_picker('new-ticket-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
       </div>
       <div class="modal-footer">
         {{ modal_cancel("new-ticket") }}

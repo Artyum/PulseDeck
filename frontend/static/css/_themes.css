@@ -19,6 +19,10 @@
   --shadow-float:
     0 1px 0 color-mix(in oklab, var(--color-surface) 35%, transparent) inset, 0 4px 14px color-mix(in oklab, var(--color-ink) 7%, transparent),
     0 12px 28px -14px color-mix(in oklab, var(--color-ink) 10%, transparent);
+  --shadow-coachmark:
+    0 2px 6px rgb(0 0 0 / 0.12),
+    0 6px 16px rgb(0 0 0 / 0.14),
+    0 14px 28px -4px rgb(0 0 0 / 0.18);
   --shadow-menu: 0 2px 8px -2px color-mix(in oklab, var(--color-ink) 10%, transparent), 0 8px 18px -8px color-mix(in oklab, var(--color-ink) 12%, transparent);
   --shadow-field:
     inset 0 1px 2px color-mix(in oklab, var(--color-ink) 5%, transparent), 0 1px 2px color-mix(in oklab, var(--color-ink) 5%, transparent),
@@ -67,6 +71,10 @@
   );
   --btn-bg-danger: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 88%, var(--color-soft-red)) 0%, color-mix(in oklab, var(--color-soft-red) 78%, var(--color-surface)) 100%);
   --btn-bg-danger-hover: linear-gradient(180deg, color-mix(in oklab, var(--color-soft-red) 74%, var(--color-surface)) 0%, color-mix(in oklab, var(--color-soft-red) 55%, var(--color-danger)) 100%);
+  --coachmark-accent: #d97706;
+  --coachmark-accent-deep: #b45309;
+  --coachmark-bg: color-mix(in oklab, var(--coachmark-accent) 12%, var(--color-surface));
+  --coachmark-border: color-mix(in oklab, var(--coachmark-accent) 72%, var(--color-frame));
   color-scheme: light;
 }
 
@@ -101,6 +109,10 @@ html[data-scheme="dark"] {
     0 20px 40px -18px color-mix(in oklab, black 40%, transparent);
   --shadow-float:
     0 1px 0 color-mix(in oklab, white 14%, transparent) inset, 0 6px 18px -12px color-mix(in oklab, black 28%, transparent), 0 14px 32px -18px color-mix(in oklab, black 40%, transparent);
+  --shadow-coachmark:
+    0 2px 6px rgb(0 0 0 / 0.35),
+    0 8px 18px rgb(0 0 0 / 0.42),
+    0 16px 32px -4px rgb(0 0 0 / 0.5);
   --shadow-menu: 0 4px 12px -4px color-mix(in oklab, black 36%, transparent), 0 12px 24px -12px color-mix(in oklab, black 40%, transparent);
   --shadow-field:
     inset 0 1px 2px color-mix(in oklab, black 30%, transparent), 0 1px 0 color-mix(in oklab, white 5%, transparent),
@@ -117,6 +129,10 @@ html[data-scheme="dark"] {
     inset 0 1px 0 color-mix(in oklab, white 22%, transparent), 0 1px 0 color-mix(in oklab, white 8%, transparent), 0 10px 20px -14px color-mix(in oklab, var(--color-pulse) 44%, transparent);
   --btn-shadow-primary-hover:
     inset 0 1px 0 color-mix(in oklab, white 18%, transparent), 0 1px 0 color-mix(in oklab, white 8%, transparent), 0 14px 26px -14px color-mix(in oklab, var(--color-pulse) 52%, transparent);
+  --coachmark-accent: #fbbf24;
+  --coachmark-accent-deep: #f59e0b;
+  --coachmark-bg: color-mix(in oklab, var(--coachmark-accent) 14%, var(--color-surface));
+  --coachmark-border: color-mix(in oklab, var(--coachmark-accent) 58%, var(--color-frame));
   color-scheme: dark;
 }
 
@@ -783,6 +799,10 @@ html[data-theme-gradient="off"] {
   --shadow-lift-md: none;
   --shadow-card: none;
   --shadow-float: none;
+  --shadow-coachmark:
+    0 2px 6px rgb(0 0 0 / 0.14),
+    0 6px 16px rgb(0 0 0 / 0.16),
+    0 14px 28px -4px rgb(0 0 0 / 0.2);
   --shadow-menu: none;
   --shadow-field: inset 0 1px 2px color-mix(in oklab, var(--color-ink) 4%, transparent);
   --edge-line: none;
