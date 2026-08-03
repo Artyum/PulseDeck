@@ -173,7 +173,7 @@ def require_project_access(
 
 
 def _apply_view_filter(stmt, *, view: str | None):
-    if not view:
+    if not view or view in ("all", "all_open"):
         return stmt
     if view == "open":
         return stmt.where(Ticket.status.in_(_OPEN_STATUSES))

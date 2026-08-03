@@ -211,6 +211,7 @@ ui:
         priority: "Priority"
         description: "Description"
     view:
+      all: "All"
       open: "Open"
       done: "Closed"
       staff:

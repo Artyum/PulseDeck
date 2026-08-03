@@ -53,7 +53,7 @@ class TestListTicketsFilters:
             db_session,
             project_with_members.id,
             user=staff_user,
-            view="all_open",
+            view="all",
             assignee_filter="unassigned",
         )
         assert any(r.id == t.id for r in rows)
@@ -62,7 +62,7 @@ class TestListTicketsFilters:
             db_session,
             project_with_members.id,
             user=staff_user,
-            view="all_open",
+            view="all",
             assignee_filter="unassigned",
         )
         assert all(r.id != t.id for r in rows_after)
@@ -82,7 +82,7 @@ class TestListTicketsFilters:
             db_session,
             project_with_members.id,
             user=staff_user,
-            view="all_open",
+            view="all",
             mine=True,
         )
         ids = {t.id for t in rows}
@@ -172,9 +172,10 @@ class TestListTicketsFilters:
         t = _ticket(db_session, project_with_members, staff_user)
         ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
         for view in (
+            "all",
             "needs_us",
             "waiting_on_client",
-            "all_open",
+            "open",
             "done",
         ):
             rows = ticket_service.list_tickets(
@@ -190,7 +191,7 @@ class TestListTicketsFilters:
     ):
         t = _ticket(db_session, project_with_members, client_user)
         ticket_service.set_status(db_session, t, client_user, TicketStatus.DONE)
-        for view in ("open", "waiting_on_me", "done"):
+        for view in ("all", "open", "waiting_on_me", "done"):
             rows = ticket_service.list_tickets(
                 db_session,
                 project_with_members.id,

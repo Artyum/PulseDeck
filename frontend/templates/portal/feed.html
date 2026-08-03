@@ -5,6 +5,7 @@
 {% block content %}
   {% if user.is_staff %}
     {% set views = [
+          ('all', t('ui.portal.view.all')),
           ('needs_us', t('ui.portal.view.staff.needs_us')),
           ('waiting_on_client', t('ui.portal.view.staff.waiting_on_client')),
           ('open', t('ui.portal.view.open')),
@@ -12,6 +13,7 @@
         ] %}
   {% else %}
     {% set views = [
+          ('all', t('ui.portal.view.all')),
           ('open', t('ui.portal.view.open')),
           ('waiting_on_me', t('ui.portal.view.client.waiting_on_me')),
           ('done', t('ui.portal.view.done'))
