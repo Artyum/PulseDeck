@@ -9,6 +9,7 @@ from app.models.enums import (
     TicketType,
     UserRole,
 )
+from app.models.portal_settings import PortalSetting
 from app.models.ticket import (
     Attachment,
     Comment,
@@ -27,6 +28,7 @@ __all__ = [
     "EmailOutboxPriority",
     "EmailOutboxStatus",
     "MagicToken",
+    "PortalSetting",
     "Project",
     "ProjectMember",
     "Tag",

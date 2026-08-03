@@ -45,7 +45,9 @@ class TestListTicketsFilters:
         assert mine.id in mine_ids
         assert other.id not in mine_ids
 
-    def test_staff_assignee_unassigned(self, db_session, project_with_members, staff_user):
+    def test_staff_assignee_unassigned(
+        self, db_session, project_with_members, staff_user
+    ):
         t = _ticket(db_session, project_with_members, staff_user, title="Unassigned")
         rows = ticket_service.list_tickets(
             db_session,
@@ -68,8 +70,12 @@ class TestListTicketsFilters:
     def test_staff_mine_assignee_or_author(
         self, db_session, project_with_members, staff_user, client_user
     ):
-        authored = _ticket(db_session, project_with_members, staff_user, title="Authored")
-        assigned = _ticket(db_session, project_with_members, client_user, title="Assigned")
+        authored = _ticket(
+            db_session, project_with_members, staff_user, title="Authored"
+        )
+        assigned = _ticket(
+            db_session, project_with_members, client_user, title="Assigned"
+        )
         ticket_service.assign_ticket(db_session, assigned, staff_user, staff_user.id)
         other = _ticket(db_session, project_with_members, client_user, title="Other")
         rows = ticket_service.list_tickets(
@@ -193,7 +199,9 @@ class TestListTicketsFilters:
             )
             assert isinstance(rows, list)
 
-    def test_client_mine_includes_participant(self, db_session, project_with_members, client_user):
+    def test_client_mine_includes_participant(
+        self, db_session, project_with_members, client_user
+    ):
         t, peer = _peer_participant(db_session, project_with_members, client_user)
         rows = ticket_service.list_tickets(
             db_session,
@@ -241,13 +249,20 @@ class TestTicketMutations:
     def test_reopen_forbidden_for_client_after_deadline(
         self, db_session, project_with_members, client_user, monkeypatch
     ):
-        from app.config import get_settings
+        from dataclasses import replace
+
+        from app.services.portal_settings import get_portal_settings
 
         t = _ticket(db_session, project_with_members, client_user)
         ticket_service.set_status(db_session, t, client_user, TicketStatus.DONE)
         t.closed_at = datetime.now(timezone.utc) - timedelta(days=30)
         db_session.commit()
-        monkeypatch.setattr(get_settings(), "ticket_reopen_days", 7)
+        portal = get_portal_settings(db_session)
+        monkeypatch.setattr(
+            ticket_service,
+            "get_portal_settings",
+            lambda _db=None: replace(portal, ticket_reopen_days=7),
+        )
         with pytest.raises(HTTPException) as exc:
             ticket_service.reopen_ticket(db_session, t, client_user)
         assert exc.value.status_code == 403

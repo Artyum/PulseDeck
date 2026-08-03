@@ -9,7 +9,6 @@ from fastapi import HTTPException, status
 from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
-from app.config import get_settings
 from app.models.enums import TicketPriority, TicketStatus, TicketType
 from app.models.ticket import (
     Attachment,
@@ -20,6 +19,7 @@ from app.models.ticket import (
     TicketTag,
 )
 from app.models.user import Project, ProjectMember, User
+from app.services.portal_settings import get_portal_settings
 from app.services.projects import is_project_member
 from app.utils.i18n import DEFAULT_LANG, t
 from app.validation import clean, clean_many
@@ -122,11 +122,11 @@ def can_reopen(
         return True
     if ticket.closed_at is None:
         return False
-    settings = get_settings()
+    portal = get_portal_settings(db)
     closed = ticket.closed_at
     if closed.tzinfo is None:
         closed = closed.replace(tzinfo=timezone.utc)
-    deadline = closed + timedelta(days=settings.ticket_reopen_days)
+    deadline = closed + timedelta(days=portal.ticket_reopen_days)
     return datetime.now(timezone.utc) <= deadline
 
 

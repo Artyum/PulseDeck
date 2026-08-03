@@ -110,10 +110,7 @@
         <div class="issue-composer-actions">
           {% if user.is_staff %}
             <label class="issue-composer-opt">
-              <input type="checkbox"
-                     name="is_internal"
-                     value="1"
-                     class="checkbox">
+              <input type="checkbox" name="is_internal" value="1" class="checkbox">
               {{ t("ui.ticket.internal_note") }}
             </label>
           {% endif %}

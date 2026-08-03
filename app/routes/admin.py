@@ -13,6 +13,7 @@ from app.models.enums import UserRole
 from app.models.ticket import Tag
 from app.models.user import Project, User
 from app.rate_limit import limiter
+from app.routes import admin_settings
 from app.routes.context import render
 from app.services import auth as auth_service
 from app.services import projects as project_service
@@ -20,6 +21,7 @@ from app.utils.i18n import DEFAULT_LANG, normalize_lang, resolve_lang, t
 from app.utils.urls import admin_project_path
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+router.include_router(admin_settings.router)
 
 
 def _admin_user_create_limit() -> str:

@@ -32,7 +32,7 @@ def _save(file: UploadFile, **kwargs):
 
 
 @pytest.fixture()
-def upload_tmp(tmp_path, monkeypatch):
+def upload_tmp(tmp_path, monkeypatch, db_session):
     monkeypatch.setenv("UPLOAD_DIR", str(tmp_path / "uploads"))
     get_settings.cache_clear()
     yield tmp_path / "uploads"
@@ -108,16 +108,30 @@ class TestSaveUpload:
             _save(_upload("empty.png", b""))
         assert exc.value.status_code == 400
 
-    def test_too_large_image_rejected(self, upload_tmp, monkeypatch):
-        monkeypatch.setenv("UPLOAD_MAX_IMAGE_BYTES", "10")
-        get_settings.cache_clear()
+    def test_too_large_image_rejected(self, upload_tmp, db_session, monkeypatch):
+        from dataclasses import replace
+
+        from app.services import uploads as uploads_service
+        from app.services.portal_settings import get_portal_settings
+
+        portal = replace(get_portal_settings(db_session), upload_max_image_bytes=10)
+        monkeypatch.setattr(
+            uploads_service, "get_portal_settings", lambda _db=None: portal
+        )
         with pytest.raises(HTTPException) as exc:
             _save(_upload("big.png", _png_bytes()))
         assert exc.value.status_code == 400
 
-    def test_too_large_file_rejected(self, upload_tmp, monkeypatch):
-        monkeypatch.setenv("UPLOAD_MAX_FILE_BYTES", "10")
-        get_settings.cache_clear()
+    def test_too_large_file_rejected(self, upload_tmp, db_session, monkeypatch):
+        from dataclasses import replace
+
+        from app.services import uploads as uploads_service
+        from app.services.portal_settings import get_portal_settings
+
+        portal = replace(get_portal_settings(db_session), upload_max_file_bytes=10)
+        monkeypatch.setattr(
+            uploads_service, "get_portal_settings", lambda _db=None: portal
+        )
         with pytest.raises(HTTPException) as exc:
             _save(_upload("big.txt", b"hello world text"))
         assert exc.value.status_code == 400

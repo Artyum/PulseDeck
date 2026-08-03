@@ -14,10 +14,11 @@ from PIL import Image
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from app.config import get_settings, resolve_upload_dir
+from app.config import resolve_upload_dir
 from app.models.ticket import Attachment, Comment
 from app.models.user import User
 from app.services import tickets as ticket_service
+from app.services.portal_settings import get_portal_settings
 from app.utils.i18n import DEFAULT_LANG, t
 
 logger = logging.getLogger("pulsedeck.app.uploads")
@@ -153,9 +154,10 @@ async def save_upload(
     *,
     subdir: str = "tickets",
     lang: str | None = None,
+    db: Session | None = None,
 ) -> tuple[str, str]:
     lang = lang or DEFAULT_LANG
-    settings = get_settings()
+    portal = get_portal_settings(db)
     original = sanitize_original_filename(file.filename)
     ext = _ext(original)
     data = await file.read()
@@ -166,7 +168,7 @@ async def save_upload(
 
     is_image = ext in ALLOWED_IMAGE
     max_bytes = (
-        settings.upload_max_image_bytes if is_image else settings.upload_max_file_bytes
+        portal.upload_max_image_bytes if is_image else portal.upload_max_file_bytes
     )
     if len(data) > max_bytes:
         raise _bad(

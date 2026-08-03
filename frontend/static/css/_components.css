@@ -475,6 +475,63 @@
     border-bottom: 1px solid var(--color-line);
   }
 
+  .admin-page-head-tabs {
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.85rem * var(--space-scale));
+    padding-bottom: 0;
+  }
+
+  .admin-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.15rem;
+    margin: 0 calc(-0.35rem * var(--space-scale));
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .admin-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex: 0 0 auto;
+    padding: calc(0.55rem * var(--space-scale)) calc(0.85rem * var(--space-scale));
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0.45rem 0.45rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 550;
+    color: var(--color-steel);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .admin-tab:hover {
+    color: var(--color-ink);
+    background: color-mix(in oklab, var(--color-surface) 70%, transparent);
+  }
+
+  .admin-tab.is-active {
+    color: var(--color-ink);
+    font-weight: 650;
+    border-bottom-color: var(--color-pulse);
+    background: color-mix(in oklab, var(--color-soft-blue) 55%, transparent);
+  }
+
+  .admin-tab .section-icon {
+    opacity: 0.85;
+  }
+
+  .admin-tab.is-active .section-icon {
+    opacity: 1;
+    color: var(--color-pulse);
+  }
+
   .admin-page-head .issue-title {
     margin: 0;
   }
@@ -1436,6 +1493,11 @@
     grid-template-columns: minmax(14rem, 1fr) max-content;
   }
 
+  .admin-settings-test-row {
+    grid-template-columns: minmax(12rem, calc(32rem + 1rem)) max-content;
+    justify-content: start;
+  }
+
   .admin-form-row-filters {
     grid-template-columns: minmax(12rem, 1fr) max-content max-content max-content;
   }
@@ -1746,6 +1808,52 @@
   .checkbox:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  .checkbox-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.25rem;
+  }
+
+  .radio-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .radio {
+    --radio-size: 0.95rem;
+    appearance: none;
+    width: var(--radio-size);
+    height: var(--radio-size);
+    margin: 0;
+    border: 1px solid var(--color-frame);
+    border-radius: 999px;
+    background: var(--color-surface);
+    cursor: pointer;
+  }
+
+  .radio:checked {
+    border-color: var(--color-pulse);
+    background: radial-gradient(circle at center, var(--color-pulse) 0 35%, transparent 36%);
+  }
+
+  .radio:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--color-pulse) 55%, transparent);
+    outline-offset: 2px;
   }
 
   .input:hover,
@@ -3393,6 +3501,61 @@
     gap: 1rem;
   }
 
+  .form-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-settings-form {
+    max-width: calc(44 * var(--layout-rem));
+  }
+
+  .admin-settings-form .form-grid-3 {
+    align-items: start;
+    grid-template-rows: auto auto;
+  }
+
+  .admin-settings-form .form-grid-3 > .admin-field {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+    row-gap: 0.4rem;
+  }
+
+  .admin-settings-form .form-grid-3-hints {
+    grid-template-rows: auto auto auto;
+  }
+
+  .admin-settings-form .form-grid-3-hints > .admin-field {
+    grid-row: span 3;
+  }
+
+  .admin-settings-form .form-grid > .admin-field > .input {
+    width: 100%;
+    max-width: 16rem;
+  }
+
+  .admin-settings-form .form-grid > .admin-field > .input[type="number"] {
+    max-width: 7.5rem;
+  }
+
+  .admin-settings-smtp-host {
+    grid-template-columns: minmax(0, 16rem) 7.5rem;
+  }
+
+  .admin-settings-smtp-auth {
+    grid-template-columns: repeat(2, minmax(0, 16rem));
+  }
+
+  .admin-settings-form .form-grid > .admin-field > .input.admin-settings-wide-email,
+  .admin-settings-wide-email {
+    width: 100%;
+    max-width: calc(32rem + 1rem);
+  }
+
+  .admin-field-span {
+    grid-column: 1 / -1;
+  }
+
   .modal-body fieldset {
     margin: 0;
     padding: 0;
@@ -3653,6 +3816,18 @@
 
   @media (max-width: 480px) {
     .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form-grid-3 {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-settings-smtp-host {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-settings-smtp-auth {
       grid-template-columns: 1fr;
     }
   }

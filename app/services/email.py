@@ -24,6 +24,7 @@ from app.models.user import ProjectMember, User
 from app.services import projects as project_service
 from app.services import reply_token as reply_token_service
 from app.services.auth import login_blocked_reason
+from app.services.portal_settings import PortalSettings, get_portal_settings
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.unsubscribe import make_unsubscribe_url
 from app.utils.urls import ticket_label, ticket_path
@@ -123,9 +124,11 @@ def _build_message(
     html_body: str,
     *,
     list_unsubscribe_url: str | None = None,
+    portal: PortalSettings | None = None,
 ) -> EmailMessage:
     settings = get_settings()
-    from_addr = settings.email_from_address
+    portal = portal or get_portal_settings()
+    from_addr = portal.email_from_address
     domain = _mail_domain(from_addr, settings.app_base_url)
     plain = html_to_plain(html_body)
 
@@ -165,30 +168,35 @@ def send_email_sync(
     html_body: str,
     *,
     list_unsubscribe_url: str | None = None,
+    db: Session | None = None,
 ) -> bool:
-    settings = get_settings()
-    if not settings.smtp_configured:
+    portal = get_portal_settings(db)
+    if not portal.smtp_configured:
         logger.warning("SMTP not configured — skip email to %s subject=%s", to, subject)
         return False
     msg = _build_message(
-        to, subject, html_body, list_unsubscribe_url=list_unsubscribe_url
+        to,
+        subject,
+        html_body,
+        list_unsubscribe_url=list_unsubscribe_url,
+        portal=portal,
     )
     try:
-        if settings.smtp_use_ssl:
+        if portal.smtp_security == "ssl":
             with smtplib.SMTP_SSL(
-                settings.smtp_server, settings.smtp_port, timeout=30
+                portal.smtp_server, portal.smtp_port, timeout=30
             ) as smtp:
-                _smtp_auth(smtp, settings.smtp_user, settings.smtp_pass)
+                _smtp_auth(smtp, portal.smtp_user, portal.smtp_pass)
                 smtp.send_message(msg)
         else:
-            with smtplib.SMTP(
-                settings.smtp_server, settings.smtp_port, timeout=30
-            ) as smtp:
+            with smtplib.SMTP(portal.smtp_server, portal.smtp_port, timeout=30) as smtp:
                 smtp.ehlo()
-                if smtp.has_extn("starttls"):
+                if portal.smtp_security == "starttls":
+                    if not smtp.has_extn("starttls"):
+                        raise RuntimeError("SMTP server does not support STARTTLS")
                     smtp.starttls()
                     smtp.ehlo()
-                _smtp_auth(smtp, settings.smtp_user, settings.smtp_pass)
+                _smtp_auth(smtp, portal.smtp_user, portal.smtp_pass)
                 smtp.send_message(msg)
         logger.info("Email sent to %s subject=%s", to, subject)
         return True
@@ -210,6 +218,12 @@ def render_email_html(template: str, context: dict, *, lang: str = DEFAULT_LANG)
         logo_src=f"cid:{LOGO_CID}",
         t=partial(t, lang),
     )
+
+
+def send_smtp_test(*, to_email: str, lang: str, db: Session | None = None) -> bool:
+    subject = t(lang, "email.smtp_test.subject", app=APP_NAME)
+    html = render_email_html("smtp_test.html", {}, lang=lang)
+    return send_email_sync(to_email, subject, html, db=db)
 
 
 def enqueue_email(
@@ -383,6 +397,7 @@ def notify_email_confirm(
 ) -> None:
     lang = normalize_lang(user.ui_lang)
     settings = get_settings()
+    portal = get_portal_settings(db)
     _enqueue_auth(
         db,
         to_email=to_email,
@@ -391,7 +406,7 @@ def notify_email_confirm(
         context={
             "user": user,
             "url": f"{settings.app_base_url}/auth/confirm-email?token={token}",
-            "ttl_minutes": settings.email_confirm_ttl_minutes,
+            "ttl_minutes": portal.email_confirm_ttl_minutes,
         },
         lang=lang,
     )
@@ -404,6 +419,7 @@ def notify_password_set(
 ) -> None:
     lang = normalize_lang(user.ui_lang)
     settings = get_settings()
+    portal = get_portal_settings(db)
     activation = user.activated_at is None
     _enqueue_auth(
         db,
@@ -417,7 +433,7 @@ def notify_password_set(
         context={
             "user": user,
             "url": f"{settings.app_base_url}/auth/activate?token={token}",
-            "ttl_days": settings.auth_link_ttl_days,
+            "ttl_days": portal.auth_link_ttl_days,
         },
         lang=lang,
     )

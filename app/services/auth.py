@@ -13,6 +13,7 @@ from app.models.enums import MagicTokenPurpose, UserRole
 from app.models.ticket import MagicToken
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
+from app.services.portal_settings import get_portal_settings
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.password import (
     hash_password,
@@ -143,9 +144,10 @@ def create_magic_token(
     ticket_id: int | None = None,
 ) -> tuple[MagicToken, str]:
     settings = get_settings()
+    portal = get_portal_settings(db)
     if purpose == MagicTokenPurpose.PASSWORD_SET:
         expires_at = datetime.now(timezone.utc) + timedelta(
-            days=settings.auth_link_ttl_days
+            days=portal.auth_link_ttl_days
         )
     elif purpose == MagicTokenPurpose.TICKET_REPLY:
         if ticket_id is None:
@@ -155,7 +157,7 @@ def create_magic_token(
         )
     else:
         expires_at = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.email_confirm_ttl_minutes
+            minutes=portal.email_confirm_ttl_minutes
         )
     raw = secrets.token_urlsafe(32)
     row = MagicToken(

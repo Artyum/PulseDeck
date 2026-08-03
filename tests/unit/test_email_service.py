@@ -24,26 +24,30 @@ class TestEnqueueAndRender:
         assert row.priority == EmailOutboxPriority.AUTH
         assert row.list_unsubscribe_url is None
 
-    def test_build_message_list_unsubscribe_headers(self, monkeypatch):
-        from app.config import get_settings
+    def test_build_message_list_unsubscribe_headers(self, db_session, monkeypatch):
+        from dataclasses import replace
 
-        monkeypatch.setenv("EMAIL_FROM", "PulseDeck <noreply@pulsedeck.local>")
-        get_settings.cache_clear()
-        try:
-            unsub = "https://pulsedeck.lan/email/unsubscribe?token=abc"
-            msg = email_service._build_message(
-                "a@b.c",
-                "subj",
-                "<p>hi</p>",
-                list_unsubscribe_url=unsub,
-            )
-            assert msg["List-Unsubscribe"] == f"<{unsub}>"
-            assert msg["List-Unsubscribe-Post"] == "List-Unsubscribe=One-Click"
-            bare = email_service._build_message("a@b.c", "subj", "<p>hi</p>")
-            assert bare.get("List-Unsubscribe") is None
-            assert bare.get("List-Unsubscribe-Post") is None
-        finally:
-            get_settings.cache_clear()
+        from app.services.portal_settings import get_portal_settings
+
+        portal = replace(
+            get_portal_settings(db_session),
+            email_from="PulseDeck <noreply@pulsedeck.local>",
+        )
+        monkeypatch.setattr(
+            email_service, "get_portal_settings", lambda _db=None: portal
+        )
+        unsub = "https://pulsedeck.lan/email/unsubscribe?token=abc"
+        msg = email_service._build_message(
+            "a@b.c",
+            "subj",
+            "<p>hi</p>",
+            list_unsubscribe_url=unsub,
+        )
+        assert msg["List-Unsubscribe"] == f"<{unsub}>"
+        assert msg["List-Unsubscribe-Post"] == "List-Unsubscribe=One-Click"
+        bare = email_service._build_message("a@b.c", "subj", "<p>hi</p>")
+        assert bare.get("List-Unsubscribe") is None
+        assert bare.get("List-Unsubscribe-Post") is None
 
     def test_render_email_html(self):
         html = email_service.render_email_html(
@@ -56,56 +60,62 @@ class TestEnqueueAndRender:
         )
         assert "http://test/confirm" in html
 
-    def test_send_email_sync_without_smtp(self, monkeypatch):
-        from app.config import get_settings
+    def test_send_email_sync_without_smtp(self, db_session, monkeypatch):
+        from dataclasses import replace
 
-        monkeypatch.setenv("SMTP_SERVER", "")
-        get_settings.cache_clear()
-        try:
-            assert email_service.send_email_sync("a@b.c", "x", "<p>y</p>") is False
-        finally:
-            get_settings.cache_clear()
+        from app.services.portal_settings import get_portal_settings
 
-    def test_send_email_sync_with_smtp_ssl(self, monkeypatch):
-        from app.config import get_settings
+        portal = replace(get_portal_settings(db_session), smtp_server="")
+        monkeypatch.setattr(
+            email_service, "get_portal_settings", lambda _db=None: portal
+        )
+        assert email_service.send_email_sync("a@b.c", "x", "<p>y</p>") is False
 
-        monkeypatch.setenv("SMTP_SERVER", "smtp.test")
-        monkeypatch.setenv("SMTP_PORT", "465")
-        monkeypatch.setenv("SMTP_USE_SSL", "true")
-        monkeypatch.setenv("SMTP_USER", "u")
-        monkeypatch.setenv("SMTP_PASS", "p")
-        monkeypatch.setenv("EMAIL_FROM", "from@test.local")
-        get_settings.cache_clear()
-        try:
-            smtp = MagicMock()
-            smtp.__enter__.return_value = smtp
-            smtp.__exit__.return_value = False
-            with patch("app.services.email.smtplib.SMTP_SSL", return_value=smtp):
-                assert (
-                    email_service.send_email_sync("a@b.c", "subj", "<p>body</p>")
-                    is True
-                )
-            smtp.login.assert_called_once()
-            smtp.send_message.assert_called_once()
-        finally:
-            get_settings.cache_clear()
+    def test_send_email_sync_with_smtp_ssl(self, db_session, monkeypatch):
+        from dataclasses import replace
 
-    def test_send_email_sync_exception(self, monkeypatch):
-        from app.config import get_settings
+        from app.services.portal_settings import get_portal_settings
 
-        monkeypatch.setenv("SMTP_SERVER", "smtp.test")
-        get_settings.cache_clear()
-        try:
-            with patch(
-                "app.services.email.smtplib.SMTP",
-                side_effect=OSError("down"),
-            ):
-                assert (
-                    email_service.send_email_sync("a@b.c", "subj", "<p>body</p>")
-                    is False
-                )
-        finally:
-            get_settings.cache_clear()
+        portal = replace(
+            get_portal_settings(db_session),
+            smtp_server="smtp.test",
+            smtp_port=465,
+            smtp_security="ssl",
+            smtp_user="u",
+            smtp_pass="p",
+            email_from="from@test.local",
+        )
+        monkeypatch.setattr(
+            email_service, "get_portal_settings", lambda _db=None: portal
+        )
+        smtp = MagicMock()
+        smtp.__enter__.return_value = smtp
+        smtp.__exit__.return_value = False
+        with patch("app.services.email.smtplib.SMTP_SSL", return_value=smtp):
+            assert email_service.send_email_sync("a@b.c", "subj", "<p>body</p>") is True
+        smtp.login.assert_called_once()
+        smtp.send_message.assert_called_once()
+
+    def test_send_email_sync_exception(self, db_session, monkeypatch):
+        from dataclasses import replace
+
+        from app.services.portal_settings import get_portal_settings
+
+        portal = replace(
+            get_portal_settings(db_session),
+            smtp_server="smtp.test",
+            smtp_security="none",
+        )
+        monkeypatch.setattr(
+            email_service, "get_portal_settings", lambda _db=None: portal
+        )
+        with patch(
+            "app.services.email.smtplib.SMTP",
+            side_effect=OSError("down"),
+        ):
+            assert (
+                email_service.send_email_sync("a@b.c", "subj", "<p>body</p>") is False
+            )
 
 
 class TestNotify:

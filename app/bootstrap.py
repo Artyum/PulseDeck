@@ -6,6 +6,7 @@ import sys
 from app.db.session import SessionLocal
 from app.logging_setup import setup_logging
 from app.services.auth import ensure_admin_seed
+from app.services.portal_settings import ensure_portal_settings_seed
 
 logger = logging.getLogger("pulsedeck.bootstrap")
 
@@ -15,6 +16,7 @@ def main() -> int:
     db = SessionLocal()
     try:
         ensure_admin_seed(db)
+        ensure_portal_settings_seed(db)
     except Exception:
         logger.exception("Bootstrap failed")
         return 1

@@ -117,7 +117,9 @@
                    class="input input-compact">
           </div>
           <datalist id="feed-tag-list">
-            {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
+            {% for tag in project_tags %}
+              <option value="{{ tag.name }}"></option>
+            {% endfor %}
           </datalist>
           <div class="issue-field">
             <span class="label-tight">{{ t("ui.portal.feed.sort") }}</span>

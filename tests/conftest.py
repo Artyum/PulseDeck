@@ -21,9 +21,11 @@ os.environ["UPLOAD_RATE_LIMIT"] = "100/minute"
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+import app.db.session as db_session_module
+import app.models  # noqa: F401
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import build_fastapi_app
@@ -31,6 +33,7 @@ from app.models.enums import UserRole
 from app.models.user import User
 from app.services import projects as project_service
 from app.services.auth import set_password
+from app.services.portal_settings import ensure_portal_settings_seed, invalidate_cache
 
 
 @pytest.fixture()
@@ -41,16 +44,37 @@ def db_engine():
         poolclass=StaticPool,
     )
     Base.metadata.create_all(bind=engine)
+
+    previous_engine = db_session_module.engine
+    previous_factory = db_session_module.SessionLocal
+    db_session_module.engine = engine
+    db_session_module.SessionLocal = sessionmaker(
+        bind=engine, autoflush=False, autocommit=False, class_=Session
+    )
+
+    seed_db = db_session_module.SessionLocal()
+    try:
+        ensure_portal_settings_seed(seed_db)
+    finally:
+        seed_db.close()
+    invalidate_cache()
+
     yield engine
+
+    invalidate_cache()
+    db_session_module.engine = previous_engine
+    db_session_module.SessionLocal = previous_factory
     Base.metadata.drop_all(bind=engine)
     engine.dispose()
 
 
 @pytest.fixture()
 def db_session(db_engine):
-    Session = sessionmaker(bind=db_engine, autoflush=False, autocommit=False)
-    session = Session()
+    SessionLocal = sessionmaker(bind=db_engine, autoflush=False, autocommit=False)
+    session = SessionLocal()
     try:
+        ensure_portal_settings_seed(session)
+        invalidate_cache()
         yield session
     finally:
         session.close()
@@ -58,10 +82,10 @@ def db_session(db_engine):
 
 @pytest.fixture()
 def client(db_engine, db_session):
-    Session = sessionmaker(bind=db_engine, autoflush=False, autocommit=False)
+    SessionLocal = sessionmaker(bind=db_engine, autoflush=False, autocommit=False)
 
     def _get_db():
-        db = Session()
+        db = SessionLocal()
         try:
             yield db
         finally:
@@ -70,6 +94,7 @@ def client(db_engine, db_session):
     from app.config import get_settings
 
     get_settings.cache_clear()
+    invalidate_cache()
     app = build_fastapi_app()
     app.dependency_overrides[get_db] = _get_db
     with TestClient(app) as c:

@@ -25,6 +25,11 @@
             <span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>
             {{ t("ui.admin.nav.users") }}
           </a>
+          <a href="{{ url_for('admin_settings_tickets') }}"
+             class="admin-nav-item{% if path.startswith('/admin/settings') %} is-active{% endif %}">
+            <span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>
+            {{ t("ui.admin.nav.settings") }}
+          </a>
         </nav>
       </aside>
       <main class="admin-main">

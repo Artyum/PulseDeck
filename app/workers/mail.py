@@ -91,6 +91,7 @@ def process_row(db, row: EmailOutbox) -> None:
         row.subject,
         row.html_body,
         list_unsubscribe_url=row.list_unsubscribe_url,
+        db=db,
     )
     row.attempts += 1
     if ok:
@@ -124,6 +125,7 @@ def run_forever() -> None:
         _recover_stuck(db)
     while True:
         try:
+            settings = get_settings()
             with SessionLocal() as db:
                 row = claim_next(db)
                 if row is None:
@@ -132,6 +134,7 @@ def run_forever() -> None:
                 process_row(db, row)
         except Exception:
             logger.exception("Mail worker loop error")
+            settings = get_settings()
             time.sleep(max(1.0, settings.mail_idle_ms / 1000))
 
 

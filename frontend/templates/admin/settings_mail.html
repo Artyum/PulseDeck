@@ -1,0 +1,124 @@
+{% extends "admin/base_settings.html" %}
+{% block settings_content %}
+  <section class="admin-section">
+    <h2 class="issue-section-title">{{ t("ui.admin.settings.mail.smtp_heading") }}</h2>
+    <p class="admin-section-note">{{ t("ui.admin.settings.mail.smtp_hint") }}</p>
+    <form method="post"
+          action="{{ url_for('admin_settings_mail_save') }}"
+          class="admin-form-stack admin-settings-form">
+      <div class="form-grid admin-settings-smtp-host">
+        <div class="admin-field">
+          <label class="label" for="smtp_server">{{ t("ui.admin.settings.mail.smtp_server") }}</label>
+          <input id="smtp_server"
+                 name="smtp_server"
+                 type="text"
+                 value="{{ form.smtp_server }}"
+                 class="input"
+                 autocomplete="off">
+        </div>
+        <div class="admin-field">
+          <label class="label" for="smtp_port">{{ t("ui.admin.settings.mail.smtp_port") }}</label>
+          <input id="smtp_port"
+                 name="smtp_port"
+                 type="number"
+                 min="1"
+                 max="65535"
+                 required
+                 value="{{ form.smtp_port }}"
+                 class="input">
+        </div>
+      </div>
+      <div class="form-grid admin-settings-smtp-auth">
+        <div class="admin-field">
+          <label class="label" for="smtp_user">{{ t("ui.admin.settings.mail.smtp_user") }}</label>
+          <input id="smtp_user"
+                 name="smtp_user"
+                 type="text"
+                 value="{{ form.smtp_user }}"
+                 class="input"
+                 autocomplete="off">
+        </div>
+        <div class="admin-field">
+          <label class="label" for="smtp_pass">{{ t("ui.admin.settings.mail.smtp_pass") }}</label>
+          <input id="smtp_pass"
+                 name="smtp_pass"
+                 type="password"
+                 value=""
+                 placeholder="{%- if form.smtp_pass_set -%}{{ t('ui.admin.settings.mail.smtp_pass_set') }}{%- endif -%}"
+                 class="input"
+                 autocomplete="new-password">
+          <p class="admin-field-hint">{{ t("ui.admin.settings.mail.smtp_pass_hint") }}</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="admin-field admin-field-span">
+          <span class="label">{{ t("ui.admin.settings.mail.smtp_security") }}</span>
+          <div class="radio-group"
+               role="radiogroup"
+               aria-label="{{ t('ui.admin.settings.mail.smtp_security') }}">
+            <label class="radio-row" for="smtp_security_none">
+              <input id="smtp_security_none"
+                     name="smtp_security"
+                     type="radio"
+                     value="none"
+                     class="radio"
+                     {% if form.smtp_security == 'none' %}checked{% endif %}>
+              <span>{{ t("ui.admin.settings.mail.smtp_security_none") }}</span>
+            </label>
+            <label class="radio-row" for="smtp_security_starttls">
+              <input id="smtp_security_starttls"
+                     name="smtp_security"
+                     type="radio"
+                     value="starttls"
+                     class="radio"
+                     {% if form.smtp_security == 'starttls' %}checked{% endif %}>
+              <span>{{ t("ui.admin.settings.mail.smtp_security_starttls") }}</span>
+            </label>
+            <label class="radio-row" for="smtp_security_ssl">
+              <input id="smtp_security_ssl"
+                     name="smtp_security"
+                     type="radio"
+                     value="ssl"
+                     class="radio"
+                     {% if form.smtp_security == 'ssl' %}checked{% endif %}>
+              <span>{{ t("ui.admin.settings.mail.smtp_security_ssl") }}</span>
+            </label>
+          </div>
+        </div>
+        <div class="admin-field admin-field-span">
+          <label class="label" for="email_from">{{ t("ui.admin.settings.mail.email_from") }}</label>
+          <input id="email_from"
+                 name="email_from"
+                 type="text"
+                 value="{{ form.email_from }}"
+                 class="input admin-settings-wide-email"
+                 autocomplete="off">
+        </div>
+      </div>
+      <div class="admin-form-actions">
+        <button type="submit" class="btn btn-primary">{{ t("ui.admin.settings.save") }}</button>
+      </div>
+    </form>
+  </section>
+  <section class="admin-section">
+    <h2 class="issue-section-title">{{ t("ui.admin.settings.mail.test_heading") }}</h2>
+    <p class="admin-section-note">{{ t("ui.admin.settings.mail.test_hint") }}</p>
+    <form method="post"
+          action="{{ url_for('admin_settings_mail_test') }}"
+          class="admin-form-row admin-form-row-2 admin-settings-test-row">
+      <div class="admin-form-field">
+        <label class="label-tight" for="test_email">{{ t("ui.admin.settings.mail.test_email") }}</label>
+        <input id="test_email"
+               name="test_email"
+               type="email"
+               required
+               value="{{ test_email }}"
+               class="input admin-settings-wide-email">
+      </div>
+      <div class="admin-form-field">
+        <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
+        <button type="submit" class="btn btn-secondary">{{ t("ui.admin.settings.mail.test_send") }}</button>
+      </div>
+    </form>
+  </section>
+{% endblock settings_content %}

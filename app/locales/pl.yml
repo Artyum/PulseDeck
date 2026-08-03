@@ -276,6 +276,47 @@ ui:
       overview: "Statystyki"
       projects: "Projekty"
       users: "Użytkownicy"
+      settings: "Ustawienia"
+    settings:
+      title: "Ustawienia portalu"
+      nav_aria: "Sekcje ustawień portalu"
+      save: "Zapisz"
+      nav:
+        tickets: "Zgłoszenia"
+        uploads: "Załączniki"
+        mail: "Poczta"
+      tickets:
+        heading: "Polityka zgłoszeń i linków"
+        hint: "Okno ponownego otwarcia dla klientów oraz ważność linków aktywacji, resetu hasła i potwierdzenia e-mail."
+        reopen_days: "Okno ponownego otwarcia (dni)"
+        auth_link_ttl_days: "Link aktywacji / resetu hasła (dni)"
+        email_confirm_ttl_minutes: "Link potwierdzenia e-mail (minuty)"
+      uploads:
+        heading: "Limity załączników"
+        hint: "Każdy limit dotyczy jednego zgłoszenia lub komentarza."
+        max_files: "Maks. plików"
+        max_image_mb: "Maks. obraz (MB)"
+        max_image_formats: "JPG, PNG, WebP, GIF"
+        max_file_mb: "Maks. plik (MB)"
+        max_file_formats: "PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z"
+      mail:
+        smtp_heading: "SMTP"
+        smtp_hint: "Pusty serwer wyłącza wysyłkę. Hasło bez zmian, gdy pole jest puste. SSL zwykle port 465; STARTTLS zwykle port 587."
+        smtp_server: "Serwer SMTP"
+        smtp_port: "Port"
+        smtp_security: "Zabezpieczenie połączenia"
+        smtp_security_none: "Brak"
+        smtp_security_starttls: "STARTTLS"
+        smtp_security_ssl: "SSL/TLS"
+        smtp_user: "Użytkownik"
+        smtp_pass: "Hasło"
+        smtp_pass_set: "Zapisane — wpisz nowe, aby zmienić"
+        smtp_pass_hint: "Zostaw puste, aby zachować obecne hasło."
+        email_from: "Adres nadawcy"
+        test_heading: "Wyślij mail testowy"
+        test_hint: "Używa zapisanej konfiguracji SMTP. Najpierw zapisz zmiany."
+        test_email: "Odbiorca"
+        test_send: "Wyślij test"
     dashboard:
       title: "Statystyki"
       stat_projects: "Projekty"
@@ -474,6 +515,10 @@ flash:
     password_set: "Hasło ustawione."
     activation_resent: "Link aktywacyjny wysłany ponownie."
     notifications_updated: "Preferencje powiadomień zapisane."
+    settings_saved: "Ustawienia portalu zapisane."
+    settings_test_sent: "Mail testowy wysłany."
+    settings_test_failed: "Mail testowy nie wyszedł — sprawdź SMTP i logi."
+    settings_smtp_missing: "SMTP nie jest skonfigurowane — najpierw ustaw i zapisz serwer."
 
 messages:
   auth:
@@ -487,6 +532,9 @@ messages:
     invalid_role: "Wybierz poprawną rolę."
     unknown_action: "Tej akcji nie da się wykonać."
     already_activated: "To konto jest już aktywne."
+    settings_invalid_int: "Podaj poprawną liczbę."
+    settings_out_of_range: "Wartość poza dozwolonym zakresem."
+    settings_invalid_choice: "Wybierz poprawną opcję."
   projects:
     name_exists: "Projekt o tej nazwie już istnieje."
     key_exists: "Ten klucz projektu jest już zajęty."
@@ -656,6 +704,9 @@ email:
     subject: "Reset hasła — {app}"
     body: "Otrzymaliśmy prośbę o reset hasła do konta w {app}. Ustaw nowe hasło klikając poniższy przycisk. Link jest ważny przez {days} dni. Jeśli to nie Ty, zignoruj tę wiadomość."
     cta: "Ustaw nowe hasło"
+  smtp_test:
+    subject: "{app} — wiadomość testowa"
+    body: "To jest wiadomość testowa z {app}. Jeśli widzisz ten tekst w szablonie z logo, SMTP działa poprawnie."
   new_ticket:
     subject: "Nowe zgłoszenie — {label}: {title}"
     body_before: "Utworzono nowe zgłoszenie "

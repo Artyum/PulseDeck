@@ -36,6 +36,7 @@ from app.services.email import (
     notify_new_ticket,
     notify_ticket_update,
 )
+from app.services.portal_settings import get_portal_settings
 from app.services.uploads import (
     file_response_for_attachment,
     get_attachment_for_download,
@@ -50,7 +51,7 @@ _TICKET_REF_RE = re.compile(r"^([A-Z0-9]{1,5})-(\d+)$")
 
 
 def _upload_max_files() -> int:
-    return max(1, get_settings().upload_max_files)
+    return max(1, get_portal_settings().upload_max_files)
 
 
 def _upload_limit() -> str:
@@ -153,7 +154,7 @@ async def _maybe_attach(
     if not attachment or not attachment.filename:
         return
     original, rel = await save_upload(
-        attachment, subdir=f"tickets/{ticket_id}", lang=lang
+        attachment, subdir=f"tickets/{ticket_id}", lang=lang, db=db
     )
     ticket_service.add_attachment(
         db,
@@ -238,9 +239,7 @@ def project_feed(
     filter_mine = (mine or "").strip().lower() in ("1", "true", "on") or (
         not has_query and not user.is_staff
     )
-    assignee_filter = (
-        "unassigned" if (assignee or "").strip() == "unassigned" else ""
-    )
+    assignee_filter = "unassigned" if (assignee or "").strip() == "unassigned" else ""
     default_view = "needs_us" if user.is_staff else "open"
     if status_filter:
         current_view = ""

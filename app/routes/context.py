@@ -15,6 +15,7 @@ from app.models.enums import (
     TicketType,
     UserRole,
 )
+from app.services.portal_settings import get_portal_settings
 from app.utils.avatar import avatar_tone, user_initials
 from app.utils.csrf import ensure_csrf_token
 from app.utils.dev_page_info import build_dev_page_info
@@ -132,6 +133,7 @@ def _appearance_choices(lang: str, group: str, choices):
 
 def common_context(request: Request, **extra) -> dict:
     settings = get_settings()
+    portal = get_portal_settings()
     lang = resolve_lang(request)
     ctx = {
         "request": request,
@@ -168,8 +170,8 @@ def common_context(request: Request, **extra) -> dict:
         "status_labels": _enum_label_map(lang, "ticket_status", TicketStatus),
         "priority_labels": _enum_label_map(lang, "ticket_priority", TicketPriority),
         "role_labels": _enum_label_map(lang, "user_role", UserRole),
-        "ticket_reopen_days": settings.ticket_reopen_days,
-        "upload_max_files": max(1, settings.upload_max_files),
+        "ticket_reopen_days": portal.ticket_reopen_days,
+        "upload_max_files": max(1, portal.upload_max_files),
         "js_i18n": translations_prefix(lang, "js"),
     }
 

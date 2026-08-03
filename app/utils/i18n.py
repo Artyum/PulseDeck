@@ -100,6 +100,48 @@ def normalize_lang(code: str | None) -> str:
     return next(iter(langs), DEFAULT_LANG)
 
 
+def match_accept_language(header: str | None, available: frozenset[str]) -> str | None:
+    if not header or not available:
+        return None
+    scored: list[tuple[float, str]] = []
+    for item in header.split(","):
+        part = item.strip()
+        if not part:
+            continue
+        lang_part, _, rest = part.partition(";")
+        q = 1.0
+        rest = rest.strip()
+        if rest.lower().startswith("q="):
+            try:
+                q = float(rest[2:].strip())
+            except ValueError:
+                q = 0.0
+        code = lang_part.strip().lower().replace("_", "-")
+        if code:
+            scored.append((q, code))
+    scored.sort(key=lambda item: -item[0])
+    for _, code in scored:
+        if code in available:
+            return code
+        primary = code.split("-", 1)[0]
+        if primary in available:
+            return primary
+    return None
+
+
+_LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 5
+
+
+def set_lang_cookie(response, lang: str) -> None:
+    response.set_cookie(
+        LANG_STORAGE_KEY,
+        normalize_lang(lang),
+        max_age=_LANG_COOKIE_MAX_AGE,
+        path="/",
+        samesite="lax",
+    )
+
+
 def resolve_lang(request: Request | None = None, explicit: str | None = None) -> str:
     langs = available_lang_ids()
     if explicit and explicit in langs:
@@ -108,6 +150,10 @@ def resolve_lang(request: Request | None = None, explicit: str | None = None) ->
         cookie = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
         if cookie in langs:
             return cookie
+        detected = match_accept_language(request.headers.get("accept-language"), langs)
+        if detected:
+            request.state.lang_from_accept = detected
+            return detected
     return normalize_lang(None)
 
 

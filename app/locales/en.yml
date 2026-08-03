@@ -276,6 +276,47 @@ ui:
       overview: "Statistics"
       projects: "Projects"
       users: "Users"
+      settings: "Settings"
+    settings:
+      title: "Portal settings"
+      nav_aria: "Portal settings sections"
+      save: "Save"
+      nav:
+        tickets: "Tickets"
+        uploads: "Attachments"
+        mail: "Mail"
+      tickets:
+        heading: "Ticket & link policy"
+        hint: "Reopen window for clients, and how long activation / password-reset / email-confirm links stay valid."
+        reopen_days: "Reopen window (days)"
+        auth_link_ttl_days: "Activation / password-reset link (days)"
+        email_confirm_ttl_minutes: "Email confirm link (minutes)"
+      uploads:
+        heading: "Attachment limits"
+        hint: "Each limit applies to a single ticket or comment."
+        max_files: "Max files"
+        max_image_mb: "Max image (MB)"
+        max_image_formats: "JPG, PNG, WebP, GIF"
+        max_file_mb: "Max file (MB)"
+        max_file_formats: "PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z"
+      mail:
+        smtp_heading: "SMTP"
+        smtp_hint: "Leave the server empty to disable outbound mail. Password is left unchanged if the field is empty. SSL is typically port 465; STARTTLS is typically port 587."
+        smtp_server: "SMTP server"
+        smtp_port: "Port"
+        smtp_security: "Connection security"
+        smtp_security_none: "None"
+        smtp_security_starttls: "STARTTLS"
+        smtp_security_ssl: "SSL/TLS"
+        smtp_user: "Username"
+        smtp_pass: "Password"
+        smtp_pass_set: "Saved — enter a new value to change"
+        smtp_pass_hint: "Leave blank to keep the current password."
+        email_from: "From address"
+        test_heading: "Send test email"
+        test_hint: "Uses the saved SMTP settings. Save changes before testing."
+        test_email: "Recipient"
+        test_send: "Send test"
     dashboard:
       title: "Statistics"
       stat_projects: "Projects"
@@ -474,6 +515,10 @@ flash:
     password_set: "Password set."
     activation_resent: "Activation link sent again."
     notifications_updated: "Notification preferences saved."
+    settings_saved: "Portal settings saved."
+    settings_test_sent: "Test email sent."
+    settings_test_failed: "Test email failed — check SMTP settings and logs."
+    settings_smtp_missing: "SMTP is not configured — set and save a server first."
 
 messages:
   auth:
@@ -487,6 +532,9 @@ messages:
     invalid_role: "Pick a valid role."
     unknown_action: "That action can't be done."
     already_activated: "This account is already active."
+    settings_invalid_int: "Enter a valid number."
+    settings_out_of_range: "That value is out of the allowed range."
+    settings_invalid_choice: "Pick a valid option."
   projects:
     name_exists: "A project with this name already exists."
     key_exists: "This project key is already taken."
@@ -656,6 +704,9 @@ email:
     subject: "Password reset — {app}"
     body: "We received a request to reset your password for {app}. Set a new password using the button below. The link is valid for {days} days. If this wasn’t you, you can ignore this message."
     cta: "Set new password"
+  smtp_test:
+    subject: "{app} — test email"
+    body: "This is a test message from {app}. If you can read this in the branded layout, SMTP is working."
   new_ticket:
     subject: "New ticket — {label}: {title}"
     body_before: "A new ticket was created: "

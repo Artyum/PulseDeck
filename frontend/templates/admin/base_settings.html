@@ -1,0 +1,32 @@
+{% extends "admin/base_admin.html" %}
+{% from "partials/icons.html" import icon %}
+{% from "partials/app_flash.html" import app_flash %}
+{% block title %}{{ app_name }} - {{ t("ui.admin.settings.title") }}{% endblock title %}
+{% block content %}
+  {{ app_flash(flash=flash, error=error) }}
+  <div class="admin-page-head admin-page-head-tabs">
+    <h1 class="issue-title">{{ t("ui.admin.settings.title") }}</h1>
+    <nav class="admin-tabs" aria-label="{{ t('ui.admin.settings.nav_aria') }}">
+      <a href="{{ url_for('admin_settings_tickets') }}"
+         class="admin-tab{% if settings_section == 'tickets' %} is-active{% endif %}"
+         {% if settings_section == 'tickets' %}aria-current="page"{% endif %}>
+        <span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>
+        {{ t("ui.admin.settings.nav.tickets") }}
+      </a>
+      <a href="{{ url_for('admin_settings_uploads') }}"
+         class="admin-tab{% if settings_section == 'uploads' %} is-active{% endif %}"
+         {% if settings_section == 'uploads' %}aria-current="page"{% endif %}>
+        <span class="section-icon" aria-hidden="true">{{ icon("attach") }}</span>
+        {{ t("ui.admin.settings.nav.uploads") }}
+      </a>
+      <a href="{{ url_for('admin_settings_mail') }}"
+         class="admin-tab{% if settings_section == 'mail' %} is-active{% endif %}"
+         {% if settings_section == 'mail' %}aria-current="page"{% endif %}>
+        <span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>
+        {{ t("ui.admin.settings.nav.mail") }}
+      </a>
+    </nav>
+  </div>
+  {% block settings_content %}
+  {% endblock settings_content %}
+{% endblock content %}

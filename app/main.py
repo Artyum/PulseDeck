@@ -22,6 +22,7 @@ from app.middleware.security_headers import apply_security_headers
 from app.middleware.session_sliding import SessionSlidingMiddleware
 from app.rate_limit import client_ip_key, limiter
 from app.routes import admin, auth, health, open_reply, portal
+from app.utils.i18n import LANG_STORAGE_KEY, set_lang_cookie
 
 logger = logging.getLogger("pulsedeck.app")
 security_logger = logging.getLogger("pulsedeck.security")
@@ -65,7 +66,11 @@ def build_fastapi_app() -> FastAPI:
     @app.middleware("http")
     async def security_headers_middleware(request: Request, call_next):
         response = await call_next(request)
-        return apply_security_headers(request, response)
+        response = apply_security_headers(request, response)
+        detected = getattr(request.state, "lang_from_accept", None)
+        if detected and LANG_STORAGE_KEY not in request.cookies:
+            set_lang_cookie(response, detected)
+        return response
 
     hosts = settings.trusted_hosts_list()
     if settings.environment == "dev":

@@ -30,8 +30,8 @@ from app.utils.csrf import ensure_csrf_token
 from app.utils.i18n import (
     LANG_STORAGE_KEY,
     available_lang_ids,
-    normalize_lang,
     resolve_lang,
+    set_lang_cookie,
     t,
 )
 from app.utils.password import verify_password
@@ -41,18 +41,6 @@ from app.utils.urls import safe_next_path
 router = APIRouter(tags=["auth"])
 logger = logging.getLogger("pulsedeck.auth")
 security_logger = logging.getLogger("pulsedeck.security")
-
-_LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 5
-
-
-def _set_lang_cookie(response: Response, lang: str) -> None:
-    response.set_cookie(
-        LANG_STORAGE_KEY,
-        normalize_lang(lang),
-        max_age=_LANG_COOKIE_MAX_AGE,
-        path="/",
-        samesite="lax",
-    )
 
 
 def _login_limit() -> str:
@@ -198,7 +186,7 @@ def login_submit(
         if cookie_lang != user.ui_lang:
             auth_service.update_ui_lang(db, user, cookie_lang)
     else:
-        _set_lang_cookie(response, user.ui_lang)
+        set_lang_cookie(response, user.ui_lang)
     logger.info("Login ok email=%s user_id=%s ip=%s", user.email, user.id, ip)
     return response
 
@@ -346,7 +334,7 @@ def update_language(
 ):
     auth_service.update_ui_lang(db, user, lang)
     response = PlainTextResponse("ok")
-    _set_lang_cookie(response, lang)
+    set_lang_cookie(response, lang)
     return response
 
 
@@ -393,7 +381,7 @@ def update_datetime_prefs_auto(
         return Response(status_code=204)
     response = PlainTextResponse("ok")
     if ui_lang:
-        _set_lang_cookie(response, ui_lang)
+        set_lang_cookie(response, ui_lang)
     return response
 
 
