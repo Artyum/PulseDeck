@@ -743,6 +743,16 @@
     });
   }
 
+  document.addEventListener("submit", function (ev) {
+    var form = ev.target;
+    if (!form || form.id !== "feed-filters") return;
+    var statusInput = form.querySelector('[data-form-select-input][name="status"]');
+    var viewInput = form.querySelector('input[type="hidden"][name="view"]');
+    if (statusInput && statusInput.value && viewInput) {
+      viewInput.remove();
+    }
+  });
+
   document.addEventListener("click", function (ev) {
     var clearBtn = ev.target.closest("[data-feed-filter-clear]");
     if (clearBtn) {
@@ -756,6 +766,15 @@
         var input = root.querySelector("[data-form-select-input]");
         var name = input ? input.getAttribute("name") : "";
         setFormSelectValue(root, name === "sort" ? "updated_at" : "");
+      });
+      var formId = clearForm.getAttribute("id");
+      if (formId) {
+        document.querySelectorAll('input[type="checkbox"][form="' + formId + '"]').forEach(function (el) {
+          el.checked = false;
+        });
+      }
+      clearForm.querySelectorAll('input[type="hidden"][name="view"]').forEach(function (el) {
+        el.remove();
       });
       clearForm.requestSubmit();
       return;

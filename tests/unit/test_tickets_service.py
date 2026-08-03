@@ -20,26 +20,79 @@ def _ticket(db, project, author, **kwargs):
 
 
 class TestListTicketsFilters:
-    def test_view_mine(self, db_session, project_with_members, client_user, staff_user):
+    def test_view_open_and_mine_client(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
         mine = _ticket(db_session, project_with_members, client_user, title="Mine")
         other = _ticket(db_session, project_with_members, staff_user, title="Other")
-        rows = ticket_service.list_tickets(
+        open_rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
             user=client_user,
-            view="mine",
+            view="open",
         )
-        ids = {t.id for t in rows}
-        assert mine.id in ids
-        assert other.id not in ids
+        open_ids = {t.id for t in open_rows}
+        assert mine.id in open_ids
+        assert other.id in open_ids
+        mine_rows = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=client_user,
+            view="open",
+            mine=True,
+        )
+        mine_ids = {t.id for t in mine_rows}
+        assert mine.id in mine_ids
+        assert other.id not in mine_ids
 
-    def test_staff_unassigned(self, db_session, project_with_members, staff_user):
+    def test_staff_assignee_unassigned(self, db_session, project_with_members, staff_user):
         t = _ticket(db_session, project_with_members, staff_user, title="Unassigned")
         rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
             user=staff_user,
-            view="unassigned",
+            view="all_open",
+            assignee_filter="unassigned",
+        )
+        assert any(r.id == t.id for r in rows)
+        ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
+        rows_after = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="all_open",
+            assignee_filter="unassigned",
+        )
+        assert all(r.id != t.id for r in rows_after)
+
+    def test_staff_mine_assignee_or_author(
+        self, db_session, project_with_members, staff_user, client_user
+    ):
+        authored = _ticket(db_session, project_with_members, staff_user, title="Authored")
+        assigned = _ticket(db_session, project_with_members, client_user, title="Assigned")
+        ticket_service.assign_ticket(db_session, assigned, staff_user, staff_user.id)
+        other = _ticket(db_session, project_with_members, client_user, title="Other")
+        rows = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="all_open",
+            mine=True,
+        )
+        ids = {t.id for t in rows}
+        assert authored.id in ids
+        assert assigned.id in ids
+        assert other.id not in ids
+
+    def test_status_overrides_view(self, db_session, project_with_members, staff_user):
+        t = _ticket(db_session, project_with_members, staff_user, title="Done")
+        ticket_service.set_status(db_session, t, staff_user, TicketStatus.DONE)
+        rows = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="needs_us",
+            status_filter="DONE",
         )
         assert any(r.id == t.id for r in rows)
 
@@ -113,10 +166,10 @@ class TestListTicketsFilters:
         t = _ticket(db_session, project_with_members, staff_user)
         ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
         for view in (
-            "mine_open",
             "needs_us",
+            "waiting_on_client",
+            "all_open",
             "done",
-            "all",
         ):
             rows = ticket_service.list_tickets(
                 db_session,
@@ -131,7 +184,7 @@ class TestListTicketsFilters:
     ):
         t = _ticket(db_session, project_with_members, client_user)
         ticket_service.set_status(db_session, t, client_user, TicketStatus.DONE)
-        for view in ("waiting_on_me", "done"):
+        for view in ("open", "waiting_on_me", "done"):
             rows = ticket_service.list_tickets(
                 db_session,
                 project_with_members.id,
@@ -139,6 +192,17 @@ class TestListTicketsFilters:
                 view=view,
             )
             assert isinstance(rows, list)
+
+    def test_client_mine_includes_participant(self, db_session, project_with_members, client_user):
+        t, peer = _peer_participant(db_session, project_with_members, client_user)
+        rows = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=peer,
+            view="open",
+            mine=True,
+        )
+        assert any(r.id == t.id for r in rows)
 
 
 def _peer_participant(db, project, author):

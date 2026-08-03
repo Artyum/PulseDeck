@@ -172,30 +172,34 @@ def require_project_access(
         )
 
 
-def _apply_view_filter(stmt, *, view: str | None, user: User, staff: bool):
-    if not view or view == "all":
+def _apply_view_filter(stmt, *, view: str | None):
+    if not view:
         return stmt
-    if staff:
-        if view == "unassigned":
-            return stmt.where(
-                Ticket.assignee_id.is_(None), Ticket.status.in_(_OPEN_STATUSES)
-            )
-        if view == "mine_open":
-            return stmt.where(
-                Ticket.assignee_id == user.id, Ticket.status.in_(_OPEN_STATUSES)
-            )
-        if view == "needs_us":
-            return stmt.where(Ticket.status.in_(_NEEDS_US_STATUSES))
-        if view == "done":
-            return stmt.where(Ticket.status == TicketStatus.DONE)
-    else:
-        if view == "mine":
-            return stmt.where(Ticket.author_id == user.id)
-        if view == "waiting_on_me":
-            return stmt.where(Ticket.status == TicketStatus.WAITING_ON_CLIENT)
-        if view == "done":
-            return stmt.where(Ticket.status == TicketStatus.DONE)
+    if view == "open":
+        return stmt.where(Ticket.status.in_(_OPEN_STATUSES))
+    if view == "needs_us":
+        return stmt.where(Ticket.status.in_(_NEEDS_US_STATUSES))
+    if view in ("waiting_on_client", "waiting_on_me"):
+        return stmt.where(Ticket.status == TicketStatus.WAITING_ON_CLIENT)
+    if view == "done":
+        return stmt.where(Ticket.status == TicketStatus.DONE)
     return stmt
+
+
+def _apply_mine_scope(stmt, user: User):
+    if user.is_staff:
+        return stmt.where(
+            or_(Ticket.assignee_id == user.id, Ticket.author_id == user.id)
+        )
+    participant_exists = (
+        select(TicketParticipant.ticket_id)
+        .where(
+            TicketParticipant.ticket_id == Ticket.id,
+            TicketParticipant.user_id == user.id,
+        )
+        .exists()
+    )
+    return stmt.where(or_(Ticket.author_id == user.id, participant_exists))
 
 
 def _apply_sort(stmt, sort: str | None):
@@ -217,6 +221,8 @@ def list_tickets(
     *,
     user: User,
     view: str | None = None,
+    mine: bool = False,
+    assignee_filter: str | None = None,
     status_filter: str | None = None,
     priority_filter: str | None = None,
     type_filter: str | None = None,
@@ -225,7 +231,12 @@ def list_tickets(
     sort: str | None = None,
 ) -> list[Ticket]:
     stmt = select(Ticket).where(Ticket.project_id == project_id)
-    stmt = _apply_view_filter(stmt, view=view, user=user, staff=user.is_staff)
+    effective_view = None if status_filter else view
+    stmt = _apply_view_filter(stmt, view=effective_view)
+    if mine:
+        stmt = _apply_mine_scope(stmt, user)
+    if assignee_filter == "unassigned":
+        stmt = stmt.where(Ticket.assignee_id.is_(None))
     if status_filter:
         try:
             stmt = stmt.where(Ticket.status == TicketStatus(status_filter))

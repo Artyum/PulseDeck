@@ -252,6 +252,7 @@
           <input type="checkbox"
                  name="project_ids"
                  value="{{ p.id }}"
+                 class="checkbox"
                  {% if p.id in form_project_ids %}checked{% endif %}>
           {{ p.name }}
           <span class="text-steel">({{ p.key }})</span>

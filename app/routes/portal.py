@@ -220,6 +220,8 @@ def project_feed(
     user: CurrentUser,
     db: DbSession,
     view: str | None = None,
+    mine: str | None = None,
+    assignee: str | None = None,
     status: str | None = None,
     priority: str | None = None,
     type: str | None = None,
@@ -231,13 +233,31 @@ def project_feed(
     project = _load_project(db, key, user, lang=lang)
     set_last_project_key(request, project.key)
     projects = project_service.list_user_projects(db, user)
-    current_view = view or ("all" if user.is_staff else "mine")
+    status_filter = (status or "").strip() or None
+    has_query = bool(request.query_params)
+    filter_mine = (mine or "").strip().lower() in ("1", "true", "on") or (
+        not has_query and not user.is_staff
+    )
+    assignee_filter = (
+        "unassigned" if (assignee or "").strip() == "unassigned" else ""
+    )
+    default_view = "needs_us" if user.is_staff else "open"
+    if status_filter:
+        current_view = ""
+    elif view:
+        current_view = view
+    elif not has_query:
+        current_view = default_view
+    else:
+        current_view = ""
     tickets = ticket_service.list_tickets(
         db,
         project.id,
         user=user,
-        view=current_view,
-        status_filter=status,
+        view=current_view or None,
+        mine=filter_mine,
+        assignee_filter=assignee_filter or None,
+        status_filter=status_filter,
         priority_filter=priority,
         type_filter=type,
         tag=tag,
@@ -252,7 +272,9 @@ def project_feed(
         projects=projects,
         tickets=tickets,
         current_view=current_view,
-        filter_status=status or "",
+        filter_mine=filter_mine,
+        filter_assignee=assignee_filter,
+        filter_status=status_filter or "",
         filter_priority=priority or "",
         filter_type=type or "",
         filter_tag=tag or "",

@@ -190,6 +190,10 @@ ui:
       type: "Typ"
       priority: "Priorytet"
       tag: "Tag"
+      assignee: "Przypisanie"
+      assignee_any: "Dowolne"
+      assignee_unassigned: "Nieprzypisane"
+      mine_only: "Tylko moje"
       sort: "Sortuj"
       sort_options:
         updated: "Ostatnia aktywność"
@@ -205,17 +209,13 @@ ui:
         priority: "Priorytet"
         description: "Opis"
     view:
+      open: "Otwarte"
+      done: "Zakończone"
       staff:
-        all: "Wszystkie"
-        mine_open: "Moje otwarte"
         needs_us: "Do obsługi"
-        unassigned: "Nieprzypisane"
-        done: "Zakończone"
+        waiting_on_client: "U klienta"
       client:
-        all: "Wszystkie"
-        mine: "Moje"
-        waiting_on_me: "Oczekuje na mnie"
-        done: "Zakończone"
+        waiting_on_me: "Oczekuje na odpowiedź"
   ticket:
     doc_title: "Zgłoszenie {label}"
     description: "Opis"

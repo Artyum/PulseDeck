@@ -5,21 +5,22 @@
 {% block content %}
   {% if user.is_staff %}
     {% set views = [
-          ('all', t('ui.portal.view.staff.all')),
-          ('mine_open', t('ui.portal.view.staff.mine_open')),
           ('needs_us', t('ui.portal.view.staff.needs_us')),
-          ('unassigned', t('ui.portal.view.staff.unassigned')),
-          ('done', t('ui.portal.view.staff.done'))
+          ('waiting_on_client', t('ui.portal.view.staff.waiting_on_client')),
+          ('open', t('ui.portal.view.open')),
+          ('done', t('ui.portal.view.done'))
         ] %}
   {% else %}
     {% set views = [
-          ('all', t('ui.portal.view.client.all')),
-          ('mine', t('ui.portal.view.client.mine')),
+          ('open', t('ui.portal.view.open')),
           ('waiting_on_me', t('ui.portal.view.client.waiting_on_me')),
-          ('done', t('ui.portal.view.client.done'))
+          ('done', t('ui.portal.view.done'))
         ] %}
   {% endif %}
-  <div class="issue-page">
+  {% macro chip_query(key) -%}
+    view={{ key }}{%- if filter_mine -%}&mine=1{%- endif -%}{%- if filter_assignee -%}&assignee={{ filter_assignee }}{%- endif -%}{%- if filter_sort and filter_sort != 'updated_at' -%}&sort={{ filter_sort }}{%- endif -%}
+  {%- endmacro %}
+  <div id="feed-header-and-results" class="issue-page">
     <div class="issue-page-body">
       <div class="issue-head">
         <h1 class="issue-title">{{ project.name }}</h1>
@@ -34,7 +35,7 @@
                   onclick="document.getElementById('new-ticket').showModal()"
                   class="btn btn-primary">{{ t("ui.portal.feed.create") }}</button>
         </div>
-        <div id="feed-results" class="issue-list">
+        <div class="issue-list">
           {% for tkt in tickets %}
             {{ ticket_row(tkt) }}
           {% else %}
@@ -48,21 +49,35 @@
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.portal.feed.view") }}</h2>
         <div class="feed-views">
           {% for key, label in views %}
-            <a href="{{ url_for('project_feed', key=project.key) }}?view={{ key }}{%- if filter_sort and filter_sort != 'updated_at' -%}&sort={{ filter_sort }}{%- endif -%}" class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
+            <a href="{{ url_for('project_feed', key=project.key) }}?{{ chip_query(key) }}"
+               class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
           {% endfor %}
         </div>
+        <label class="flex items-center gap-2 text-sm mt-3">
+          <input type="checkbox"
+                 form="feed-filters"
+                 name="mine"
+                 value="1"
+                 class="checkbox"
+                 {% if filter_mine %}checked{% endif %}
+                 onchange="document.getElementById('feed-filters').requestSubmit()">
+          {{ t("ui.portal.feed.mine_only") }}
+        </label>
       </section>
       <section class="issue-side-block">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.portal.feed.filters") }}</h2>
-        <form method="get"
+        <form id="feed-filters"
+              method="get"
               action="{{ url_for('project_feed', key=project.key) }}"
               class="issue-side-fields"
               hx-get="{{ url_for('project_feed', key=project.key) }}"
-              hx-target="#feed-results"
-              hx-select="#feed-results"
+              hx-target="#feed-header-and-results"
+              hx-select="#feed-header-and-results"
               hx-swap="outerHTML"
               hx-push-url="true">
-          <input type="hidden" name="view" value="{{ current_view }}">
+          {% if current_view %}
+            <input type="hidden" name="view" value="{{ current_view }}">
+          {% endif %}
           <div class="issue-field">
             <label class="label-tight" for="feed-q">{{ t("ui.portal.feed.search") }}</label>
             <input id="feed-q"
@@ -76,6 +91,14 @@
             <span class="label-tight">{{ t("ui.portal.feed.status") }}</span>
             {{ filter_field_menu('status', t('ui.portal.feed.status') , ticket_statuses, filter_status, status_labels, empty_label=t('ui.common.empty_dash')) }}
           </div>
+          {% if user.is_staff %}
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.portal.feed.assignee") }}</span>
+              {{ filter_field_menu('assignee', t('ui.portal.feed.assignee') , [
+              namespace(value='unassigned', label=t('ui.portal.feed.assignee_unassigned')),
+              ], filter_assignee, empty_label=t('ui.portal.feed.assignee_any')) }}
+            </div>
+          {% endif %}
           <div class="issue-field">
             <span class="label-tight">{{ t("ui.portal.feed.type") }}</span>
             {{ filter_field_menu('type', t('ui.portal.feed.type') , ticket_types, filter_type, type_labels, empty_label=t('ui.common.empty_dash')) }}

@@ -190,6 +190,10 @@ ui:
       type: "Type"
       priority: "Priority"
       tag: "Tag"
+      assignee: "Assignee"
+      assignee_any: "Any"
+      assignee_unassigned: "Unassigned"
+      mine_only: "Only mine"
       sort: "Sort"
       sort_options:
         updated: "Last activity"
@@ -205,17 +209,13 @@ ui:
         priority: "Priority"
         description: "Description"
     view:
+      open: "Open"
+      done: "Closed"
       staff:
-        all: "All"
-        mine_open: "My open"
         needs_us: "To handle"
-        unassigned: "Unassigned"
-        done: "Closed"
+        waiting_on_client: "At client"
       client:
-        all: "All"
-        mine: "Mine"
-        waiting_on_me: "Waiting on me"
-        done: "Closed"
+        waiting_on_me: "Awaiting reply"
   ticket:
     doc_title: "Ticket {label}"
     description: "Description"

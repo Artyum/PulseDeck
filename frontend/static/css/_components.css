@@ -1604,6 +1604,81 @@
     line-height: 1.5;
   }
 
+  .checkbox {
+    --checkbox-size: 0.95rem;
+    position: relative;
+    flex-shrink: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+    margin: 0;
+    border: 1.5px solid var(--color-frame-strong);
+    border-radius: 999px;
+    background: transparent;
+    vertical-align: middle;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease-in-out,
+      transform 0.12s ease-out;
+  }
+
+  .checkbox:hover {
+    border-color: color-mix(in oklab, var(--color-pulse) 50%, var(--color-frame-strong));
+  }
+
+  .checkbox:active {
+    border-color: var(--color-pulse);
+  }
+
+  .checkbox:focus-visible {
+    outline: 2px solid var(--color-pulse);
+    outline-offset: 2px;
+  }
+
+  .checkbox:checked {
+    border-color: var(--color-pulse);
+    background: transparent;
+  }
+
+  .checkbox::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-pulse);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.5l3 3 6-7' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.5l3 3 6-7' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: 92% 92%;
+    mask-size: 92% 92%;
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+    transition:
+      clip-path 0.24s ease-out,
+      opacity 0.01s linear;
+  }
+
+  .checkbox:checked::after {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+
+  .checkbox:checked:hover {
+    border-color: var(--color-pulse-deep);
+  }
+
+  .checkbox:checked:hover::after {
+    background-color: var(--color-pulse-deep);
+  }
+
+  .checkbox:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
   .input:hover,
   .select:hover,
   .textarea:hover {
