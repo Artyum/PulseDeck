@@ -52,6 +52,22 @@
                                    color:#ffffff;
                                    letter-spacing:-0.02em;
                                    line-height:1">{{ app_name }}</span>
+                      {% if project_name %}
+                        <span style="display:inline-block;
+                                     margin:0 10px;
+                                     font-size:16px;
+                                     font-weight:400;
+                                     color:rgba(255,255,255,0.45);
+                                     line-height:1"
+                              aria-hidden="true">|</span>
+                        <span style="display:inline-block;
+                                     font-size:15px;
+                                     font-weight:650;
+                                     color:rgba(255,255,255,0.82);
+                                     letter-spacing:0.04em;
+                                     text-transform:uppercase;
+                                     line-height:1">{{ project_name }}</span>
+                      {% endif %}
                     </td>
                   </tr>
                 </table>

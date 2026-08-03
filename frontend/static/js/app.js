@@ -569,6 +569,17 @@
       });
   });
 
+  document.addEventListener("htmx:confirm", function (ev) {
+    var elt = ev.detail && ev.detail.elt;
+    if (!elt || !elt.closest) return;
+    var form = elt.closest("form");
+    if (!form || !form.getAttribute("data-confirm")) return;
+    ev.preventDefault();
+    confirmForForm(form).then(function (ok) {
+      if (ok) ev.detail.issueRequest(true);
+    });
+  });
+
   document.addEventListener("htmx:beforeSwap", function (ev) {
     if (ev.detail.xhr.status >= 400) {
       ev.detail.shouldSwap = false;

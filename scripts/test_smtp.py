@@ -96,6 +96,7 @@ def main() -> int:
             "ticket": ticket,
             "url": ticket_url,
             "label": "DEMO-1",
+            "project_name": "Demo",
             "unsubscribe_url": url,
             **extra,
         }, url
@@ -162,6 +163,7 @@ def main() -> int:
                 "ticket": ticket,
                 "url": ticket_url,
                 "label": "DEMO-1",
+                "project_name": "Demo",
                 "user": user,
             },
             None,
@@ -173,6 +175,7 @@ def main() -> int:
                 "ticket": ticket,
                 "url": ticket_url,
                 "label": "DEMO-1",
+                "project_name": "Demo",
                 "user": user,
             },
             None,

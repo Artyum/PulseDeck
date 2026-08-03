@@ -193,7 +193,7 @@ html[data-theme="deep-ocean"] {
   --color-aside: #101c2e;
   --color-ink: #d8e4f2;
   --color-steel: #8aa0b8;
-  --color-line: #243650;
+  --color-line: #2d435e;
   --color-pulse: #5aa8ff;
   --color-signal: #e09e56;
   --color-danger: #e87870;
@@ -302,7 +302,7 @@ html[data-theme="amber-night"] {
   --color-aside: #181410;
   --color-ink: #ebe2d6;
   --color-steel: #b0a090;
-  --color-line: #2e2820;
+  --color-line: #3b342a;
   --color-pulse: #dbab55;
   --color-signal: #e09048;
   --color-danger: #e0786c;
@@ -411,7 +411,7 @@ html[data-theme="northern-spruce"] {
   --color-aside: #121b16;
   --color-ink: #d8e8de;
   --color-steel: #8eaa98;
-  --color-line: #24342c;
+  --color-line: #2d4137;
   --color-pulse: #52c295;
   --color-signal: #d49e4e;
   --color-danger: #e07870;
@@ -520,7 +520,7 @@ html[data-theme="charcoal-dusk"] {
   --color-aside: #13161a;
   --color-ink: #dce1e8;
   --color-steel: #929aa6;
-  --color-line: #262a30;
+  --color-line: #2f363c;
   --color-pulse: #9aa8b8;
   --color-signal: #d49e4e;
   --color-danger: #e07870;
@@ -629,7 +629,7 @@ html[data-theme="midnight-berry"] {
   --color-aside: #17131c;
   --color-ink: #ebe3f2;
   --color-steel: #a89ab8;
-  --color-line: #2e263a;
+  --color-line: #3a3148;
   --color-pulse: #b07ddc;
   --color-signal: #d69658;
   --color-danger: #d87278;
@@ -738,7 +738,7 @@ html[data-theme="rose-night"] {
   --color-aside: #1c1218;
   --color-ink: #f0e4ea;
   --color-steel: #b898a4;
-  --color-line: #34242c;
+  --color-line: #412d37;
   --color-pulse: #e88aa8;
   --color-signal: #d69658;
   --color-danger: #e07870;

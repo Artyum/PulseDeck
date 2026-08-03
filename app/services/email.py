@@ -368,7 +368,13 @@ def _ticket_mail_ctx(ticket: Ticket, **extra) -> dict:
     except ValueError:
         label = str(ticket.number)
         url = f"{settings.app_base_url}/"
-    return {"ticket": ticket, "url": url, "label": label, **extra}
+    return {
+        "ticket": ticket,
+        "url": url,
+        "label": label,
+        "project_name": getattr(getattr(ticket, "project", None), "name", None),
+        **extra,
+    }
 
 
 def _send_pref_mails(

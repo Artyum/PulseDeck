@@ -4288,7 +4288,7 @@
   .comment-segment + .comment-segment {
     margin-top: calc(0.75rem * var(--space-scale));
     padding-top: calc(0.75rem * var(--space-scale));
-    border-top: 1px solid color-mix(in oklab, var(--color-line) 70%, transparent);
+    border-top: 1px solid var(--color-line);
   }
 
   .comment-segment:has(.comment-edit-form) .comment-actions {

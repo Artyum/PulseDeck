@@ -41,8 +41,9 @@
                                 aria-label="{{ t('ui.ticket.edit_comment') }}">{{ icon("edit") }}</button>
                       {% endif %}
                       {% if can_delete_comments %}
-                        <form method="post"
-                              action="{{ url_for('delete_comment', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
+                        <form hx-post="{{ url_for('delete_comment', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
+                              hx-target="#ticket-view"
+                              hx-swap="innerHTML show:none"
                               class="comment-delete-form"
                               data-confirm-title="{{ t('ui.confirm.delete_comment.title') }}"
                               data-confirm="{{ t('ui.confirm.delete_comment.message') }}"
