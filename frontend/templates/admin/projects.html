@@ -10,7 +10,7 @@
   <section class="admin-section" data-coachmark="admin-projects">
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
     <form method="post"
-          action="{{ url_for('create_project') }}"
+          action="{{ url_for('create_project') }}{% if show_disabled %}?disabled=1{% endif %}"
           class="admin-form-row">
       <div class="admin-form-field">
         <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
@@ -44,7 +44,20 @@
     </form>
   </section>
   <section class="admin-section">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
+    <div class="issue-section-bar">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
+      <form method="get" action="{{ url_for('admin_projects') }}">
+        <label class="checkbox-row">
+          <input type="checkbox"
+                 name="disabled"
+                 value="1"
+                 class="checkbox"
+                 {% if show_disabled %}checked{% endif %}
+                 onchange="this.form.requestSubmit()">
+          {{ t("ui.admin.projects.show_disabled") }}
+        </label>
+      </form>
+    </div>
     <ul class="admin-list">
       {% for item in projects %}
         {% set p = item.project %}
@@ -70,6 +83,9 @@
             <form method="post"
                   action="{{ url_for('admin_project_active', key=p.key) }}"
                   {% if p.is_active %} data-confirm-title="{{ t('ui.confirm.disable_project.title') }}" data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}" data-confirm-action="{{ t('ui.confirm.disable_project.action') }}" data-confirm-danger {% endif %}>
+              {% if show_disabled %}
+                <input type="hidden" name="disabled" value="1">
+              {% endif %}
               {% if p.is_active %}
                 <input type="hidden" name="active" value="0">
                 <button type="submit" class="btn btn-danger">{{ t("ui.admin.projects.disable") }}</button>
@@ -89,7 +105,7 @@
           </details>
         </li>
       {% else %}
-        <li class="empty">{{ t("ui.admin.projects.empty") }}</li>
+        <li class="empty">{{ t("ui.admin.projects.empty_disabled" if show_disabled else "ui.admin.projects.empty") }}</li>
       {% endfor %}
     </ul>
   </section>

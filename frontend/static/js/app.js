@@ -516,9 +516,14 @@
       .then(function (ok) {
         if (!ok) return;
         const action = form.getAttribute("action") || window.location.href;
+        var body = new FormData(form);
+        var submitter = ev.submitter;
+        if (submitter && submitter.name && (submitter.type === "submit" || submitter.type === "image")) {
+          body.append(submitter.name, submitter.value);
+        }
         return fetch(action, {
           method: "POST",
-          body: new FormData(form),
+          body: body,
           headers: { "X-CSRF-Token": token },
           credentials: "same-origin",
           redirect: "follow",

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Annotated
 from urllib.parse import urlencode
 
-from fastapi import APIRouter, Form, HTTPException, Request
+from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -81,6 +81,10 @@ def _form_truthy(value: str) -> bool:
     return value in ("1", "true", "on")
 
 
+def _admin_projects_path(*, disabled: bool = False) -> str:
+    return "/admin/projects?disabled=1" if disabled else "/admin/projects"
+
+
 def _form_text(form, key: str) -> str:
     return str(form.get(key) or "")
 
@@ -134,12 +138,21 @@ def admin_home(request: Request, user: AdminUser, db: DbSession):
 
 
 @router.get("/projects", response_class=HTMLResponse)
-def admin_projects(request: Request, user: AdminUser, db: DbSession):
+def admin_projects(
+    request: Request,
+    user: AdminUser,
+    db: DbSession,
+    disabled: Annotated[str, Query()] = "",
+):
+    show_disabled = _form_truthy(disabled)
     return render(
         request,
         "admin/projects.html",
         user=user,
-        projects=project_service.list_project_summaries(db),
+        show_disabled=show_disabled,
+        projects=project_service.list_project_summaries(
+            db, disabled_only=show_disabled
+        ),
     )
 
 
@@ -153,6 +166,7 @@ def create_project(
     description: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
+    show_disabled = _form_truthy(request.query_params.get("disabled", ""))
     try:
         project_service.create_project(db, name, key, description, lang=lang)
     except ValueError as exc:
@@ -160,13 +174,16 @@ def create_project(
             request,
             "admin/projects.html",
             user=user,
-            projects=project_service.list_project_summaries(db),
+            show_disabled=show_disabled,
+            projects=project_service.list_project_summaries(
+                db, disabled_only=show_disabled
+            ),
             error=str(exc),
             form_name=name,
             form_key=key,
             form_description=description,
         )
-    return RedirectResponse("/admin/projects", status_code=303)
+    return RedirectResponse(_admin_projects_path(), status_code=303)
 
 
 @router.post("/projects/{key}/active")
@@ -175,11 +192,14 @@ def admin_project_active(
     user: AdminUser,
     db: DbSession,
     active: Annotated[str, Form()],
+    disabled: Annotated[str, Form()] = "",
 ):
     project = project_service.get_project_by_key(db, key)
     if project:
         project_service.set_project_active(db, project, active=_form_truthy(active))
-    return RedirectResponse("/admin/projects", status_code=303)
+    return RedirectResponse(
+        _admin_projects_path(disabled=_form_truthy(disabled)), status_code=303
+    )
 
 
 def _project_detail_ctx(db: Session, project: Project) -> dict:

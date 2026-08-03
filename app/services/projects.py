@@ -43,10 +43,14 @@ class ProjectTicketStats:
         return sum(self.counts.values())
 
 
-def list_projects(db: Session, *, active_only: bool = False) -> list[Project]:
+def list_projects(
+    db: Session, *, active_only: bool = False, inactive_only: bool = False
+) -> list[Project]:
     stmt = select(Project)
     if active_only:
         stmt = stmt.where(Project.is_active.is_(True))
+    elif inactive_only:
+        stmt = stmt.where(Project.is_active.is_(False))
     return list(db.scalars(stmt.order_by(Project.name)).all())
 
 
@@ -179,8 +183,12 @@ def list_users(
     return list(db.scalars(stmt).all())
 
 
-def list_project_summaries(db: Session) -> list[ProjectSummary]:
-    projects = list_projects(db)
+def list_project_summaries(
+    db: Session, *, disabled_only: bool = False
+) -> list[ProjectSummary]:
+    projects = list_projects(
+        db, active_only=not disabled_only, inactive_only=disabled_only
+    )
     if not projects:
         return []
     ids = [p.id for p in projects]

@@ -3844,24 +3844,31 @@
     max-width: calc(44 * var(--layout-rem));
   }
 
-  .admin-settings-form .form-grid-3 {
-    align-items: start;
-    grid-template-rows: auto auto;
-  }
-
-  .admin-settings-form .form-grid-3 > .admin-field {
+  .admin-settings-form > .admin-field {
     display: grid;
-    grid-template-rows: subgrid;
-    grid-row: span 2;
-    row-gap: 0.4rem;
+    grid-template-columns: minmax(12rem, 20rem) minmax(0, auto);
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
   }
 
-  .admin-settings-form .form-grid-3-hints {
-    grid-template-rows: auto auto auto;
+  .admin-settings-form > .admin-field > .label {
+    margin: 0;
   }
 
-  .admin-settings-form .form-grid-3-hints > .admin-field {
-    grid-row: span 3;
+  .admin-settings-form > .admin-field > .input {
+    width: 100%;
+    max-width: 16rem;
+    justify-self: start;
+  }
+
+  .admin-settings-form > .admin-field > .input[type="number"] {
+    max-width: 7.5rem;
+  }
+
+  .admin-settings-form > .admin-field > .admin-field-hint,
+  .admin-settings-form > .admin-field > .field-feedback {
+    grid-column: 2;
   }
 
   .admin-settings-form .form-grid > .admin-field > .input {
@@ -4156,6 +4163,15 @@
 
     .form-grid-3 {
       grid-template-columns: 1fr;
+    }
+
+    .admin-settings-form > .admin-field {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-settings-form > .admin-field > .admin-field-hint,
+    .admin-settings-form > .admin-field > .field-feedback {
+      grid-column: 1;
     }
 
     .admin-settings-smtp-host {
