@@ -3022,38 +3022,11 @@
     min-width: 1.7rem;
     min-height: 1.7rem;
     padding: 0.2rem;
-    box-shadow: var(--btn-shadow-rest);
   }
 
   .comment-edit-action .icon {
     width: 0.9rem;
     height: 0.9rem;
-  }
-
-  .comment-edit-action-save {
-    background: var(--color-soft-green);
-    border-color: var(--color-chip-green-border);
-    color: var(--color-chip-green-fg);
-  }
-
-  .comment-edit-action-save:hover {
-    background: color-mix(in oklab, var(--color-soft-green) 70%, var(--color-chip-green-border));
-    border-color: var(--color-chip-green-border);
-    color: var(--color-chip-green-fg);
-    box-shadow: var(--btn-shadow-hover);
-  }
-
-  .comment-edit-action-cancel {
-    background: var(--color-soft-red);
-    border-color: var(--color-chip-red-border);
-    color: var(--color-chip-red-fg);
-  }
-
-  .comment-edit-action-cancel:hover {
-    background: color-mix(in oklab, var(--color-soft-red) 70%, var(--color-chip-red-border));
-    border-color: var(--color-chip-red-border);
-    color: var(--color-chip-red-fg);
-    box-shadow: var(--btn-shadow-hover);
   }
 
   .comment-when {

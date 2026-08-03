@@ -11,13 +11,13 @@
     {{ attach_picker('comment-edit-attachments-' ~ comment.id, 'zone', max_files=upload_max_files, existing=comment.attachments) }}
     <div class="comment-edit-actions">
       <button type="button"
-              class="btn comment-edit-action comment-edit-action-cancel"
+              class="btn btn-secondary comment-edit-action"
               hx-get="{{ url_for('comment_body', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
               hx-target="#comment-panel-{{ comment.id }}"
               hx-swap="innerHTML"
               aria-label="{{ t('ui.ticket.cancel_edit') }}">{{ icon("close") }}</button>
       <button type="submit"
-              class="btn comment-edit-action comment-edit-action-save"
+              class="btn btn-primary comment-edit-action"
               aria-label="{{ t('ui.ticket.save_comment') }}">{{ icon("check") }}</button>
     </div>
   </div>
