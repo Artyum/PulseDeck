@@ -211,7 +211,9 @@ def _apply_sort(stmt, sort: str | None):
             (Ticket.priority == TicketPriority.NORMAL, 1),
             else_=2,
         )
-        return stmt.order_by(priority_order, Ticket.updated_at.desc())
+        return stmt.add_columns(priority_order).order_by(
+            priority_order, Ticket.updated_at.desc()
+        )
     return stmt.order_by(Ticket.updated_at.desc())
 
 

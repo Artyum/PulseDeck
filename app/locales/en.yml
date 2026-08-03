@@ -432,7 +432,7 @@ enums:
     BUG: "Bug"
     QUESTION: "Question"
     CHANGE: "Change"
-    TASK: "Task"
+    TASK: "New feature"
   ticket_status:
     NEW: "New"
     IN_PROGRESS: "In progress"
