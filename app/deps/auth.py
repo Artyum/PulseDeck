@@ -13,10 +13,12 @@ from app.middleware.session_sliding import SESSION_ACTIVITY_KEY
 from app.models.enums import UserRole
 from app.models.user import User
 from app.utils.i18n import LANG_STORAGE_KEY, available_lang_ids, resolve_lang, t
+from app.utils.urls import default_feed_path, normalize_project_key, validate_feed_path
 
 SESSION_USER_ID_KEY = "user_id"
 SESSION_AUTH_EPOCH_KEY = "auth_epoch"
 SESSION_LAST_PROJECT_KEY = "last_project_key"
+SESSION_LAST_FEED_BY_PROJECT = "last_feed_by_project"
 
 DbSession = Annotated[Session, Depends(get_db)]
 
@@ -37,7 +39,7 @@ def clear_user_session(
 
 
 def set_last_project_key(request: Request, key: str) -> None:
-    clean = (key or "").strip().upper()
+    clean = normalize_project_key(key)
     if clean:
         request.session[SESSION_LAST_PROJECT_KEY] = clean
 
@@ -46,8 +48,38 @@ def get_last_project_key(request: Request) -> str | None:
     raw = request.session.get(SESSION_LAST_PROJECT_KEY)
     if not raw:
         return None
-    clean = str(raw).strip().upper()
-    return clean or None
+    return normalize_project_key(str(raw)) or None
+
+
+def set_last_feed(request: Request, key: str, path: str) -> None:
+    clean = normalize_project_key(key)
+    validated = validate_feed_path(path, clean)
+    if not clean or not validated:
+        return
+    feeds = request.session.get(SESSION_LAST_FEED_BY_PROJECT)
+    if not isinstance(feeds, dict):
+        feeds = {}
+    else:
+        feeds = dict(feeds)
+    feeds[clean] = validated
+    request.session[SESSION_LAST_FEED_BY_PROJECT] = feeds
+
+
+def get_last_feed(request: Request, key: str) -> str | None:
+    clean = normalize_project_key(key)
+    if not clean:
+        return None
+    feeds = request.session.get(SESSION_LAST_FEED_BY_PROJECT)
+    if not isinstance(feeds, dict):
+        return None
+    raw = feeds.get(clean)
+    if not isinstance(raw, str):
+        return None
+    return validate_feed_path(raw, clean)
+
+
+def resolve_last_feed_url(request: Request, key: str, *, is_staff: bool) -> str:
+    return get_last_feed(request, key) or default_feed_path(key, is_staff=is_staff)
 
 
 def get_optional_user_id(request: Request) -> int | None:

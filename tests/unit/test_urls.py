@@ -7,10 +7,13 @@ from app.models.user import Project
 from app.utils.urls import (
     admin_project_path,
     attachment_path,
+    build_feed_path,
+    default_feed_path,
     project_path,
     safe_next_path,
     ticket_label,
     ticket_path,
+    validate_feed_path,
 )
 
 
@@ -65,3 +68,48 @@ class TestSafeNextPath:
         assert safe_next_path("//evil.test") == "/"
         assert safe_next_path("https://evil.test") == "/"
         assert safe_next_path("/\\evil") == "/"
+
+
+class TestDefaultFeedPath:
+    def test_staff(self):
+        assert default_feed_path("demo", is_staff=True) == "/p/DEMO?view=needs_us"
+
+    def test_client(self):
+        assert default_feed_path("demo", is_staff=False) == "/p/DEMO?view=open&mine=1"
+
+
+class TestBuildFeedPath:
+    def test_view_and_mine(self):
+        assert (
+            build_feed_path("DEMO", view="open", mine=True) == "/p/DEMO?view=open&mine=1"
+        )
+
+    def test_omits_default_sort(self):
+        assert build_feed_path("DEMO", view="all", sort="updated_at") == "/p/DEMO?view=all"
+
+    def test_includes_non_default_sort_and_filters(self):
+        assert (
+            build_feed_path(
+                "DEMO",
+                status="OPEN",
+                priority="HIGH",
+                type="BUG",
+                tag="x",
+                q="foo",
+                sort="created_at",
+                assignee="unassigned",
+            )
+            == "/p/DEMO?assignee=unassigned&status=OPEN&priority=HIGH&type=BUG&tag=x&q=foo&sort=created_at"
+        )
+
+
+class TestValidateFeedPath:
+    def test_accepts_same_project(self):
+        assert validate_feed_path("/p/DEMO?view=open", "DEMO") == "/p/DEMO?view=open"
+
+    def test_rejects_other_project(self):
+        assert validate_feed_path("/p/OTHER?view=open", "DEMO") is None
+
+    def test_rejects_open_redirect(self):
+        assert validate_feed_path("//evil.test", "DEMO") is None
+        assert validate_feed_path("/t/DEMO-1", "DEMO") is None

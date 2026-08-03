@@ -41,6 +41,31 @@ class TestSessionHelpers:
         assert deps_auth.get_last_project_key(request) == "DEMO"
         assert deps_auth.get_last_project_key(_request({})) is None
 
+    def test_last_feed_by_project(self):
+        request = _request({})
+        deps_auth.set_last_feed(request, "demo", "/p/DEMO?view=open&mine=1")
+        assert deps_auth.get_last_feed(request, "DEMO") == "/p/DEMO?view=open&mine=1"
+        deps_auth.set_last_feed(request, "OTHER", "/p/OTHER?view=all")
+        assert deps_auth.get_last_feed(request, "DEMO") == "/p/DEMO?view=open&mine=1"
+        assert deps_auth.get_last_feed(request, "OTHER") == "/p/OTHER?view=all"
+        assert (
+            deps_auth.resolve_last_feed_url(request, "DEMO", is_staff=False)
+            == "/p/DEMO?view=open&mine=1"
+        )
+        assert (
+            deps_auth.resolve_last_feed_url(_request({}), "DEMO", is_staff=True)
+            == "/p/DEMO?view=needs_us"
+        )
+
+    def test_last_feed_rejects_invalid(self):
+        request = _request({})
+        deps_auth.set_last_feed(request, "DEMO", "/p/OTHER?view=all")
+        assert deps_auth.get_last_feed(request, "DEMO") is None
+        request.session[deps_auth.SESSION_LAST_FEED_BY_PROJECT] = {
+            "DEMO": "//evil.test",
+        }
+        assert deps_auth.get_last_feed(request, "DEMO") is None
+
     def test_clear_preserves_last_project(self, client_user):
         request = _request({})
         deps_auth.set_user_session(request, client_user)

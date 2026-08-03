@@ -19,8 +19,11 @@ from app.config import get_settings
 from app.deps.auth import (
     CurrentUser,
     DbSession,
+    get_last_feed,
     get_last_project_key,
     get_optional_user,
+    resolve_last_feed_url,
+    set_last_feed,
     set_last_project_key,
 )
 from app.models.enums import TicketPriority, TicketStatus, TicketType
@@ -43,7 +46,7 @@ from app.services.uploads import (
     save_upload,
 )
 from app.utils.i18n import resolve_lang, t
-from app.utils.urls import project_path, ticket_path
+from app.utils.urls import build_feed_path, default_feed_path, ticket_path
 
 router = APIRouter(tags=["portal"])
 
@@ -84,7 +87,7 @@ def _load_ticket(
     return project, ticket
 
 
-def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:
+def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> dict:
     perms = ticket_service.get_ticket_permissions(db, user, ticket)
     members = (
         project_service.list_project_member_users(db, ticket.project)
@@ -97,6 +100,12 @@ def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:
             (u.first_name or "").casefold(),
             (u.last_name or "").casefold(),
         ),
+    )
+    project_key = ticket.project.key if ticket.project else ""
+    back_to_feed_url = (
+        resolve_last_feed_url(request, project_key, is_staff=user.is_staff)
+        if project_key
+        else "/"
     )
     return {
         "user": user,
@@ -113,6 +122,7 @@ def _header_ctx(db: Session, user: User, ticket: Ticket) -> dict:
         "staff_members": [m for m in members if m.is_staff],
         "project_members": members,
         "project_tags": ticket_service.list_project_tags(db, ticket.project_id),
+        "back_to_feed_url": back_to_feed_url,
     }
 
 
@@ -121,7 +131,9 @@ def _ticket_mutation_response(
 ):
     if request.headers.get("HX-Request"):
         return render(
-            request, "partials/ticket_view.html", **_header_ctx(db, user, ticket)
+            request,
+            "partials/ticket_view.html",
+            **_header_ctx(db, user, ticket, request),
         )
     return RedirectResponse(ticket_path(ticket), status_code=303)
 
@@ -211,7 +223,10 @@ def home(request: Request, db: DbSession):
         return render(request, "portal/empty.html", user=user)
     last_key = get_last_project_key(request)
     target = next((p for p in projects if p.key == last_key), projects[0])
-    return RedirectResponse(project_path(target), status_code=303)
+    return RedirectResponse(
+        resolve_last_feed_url(request, target.key, is_staff=user.is_staff),
+        status_code=303,
+    )
 
 
 @router.get("/p/{key}", response_class=HTMLResponse)
@@ -233,8 +248,18 @@ def project_feed(
     lang = resolve_lang(request)
     project = _load_project(db, key, user, lang=lang)
     set_last_project_key(request, project.key)
+    if not request.query_params:
+        saved = get_last_feed(request, project.key)
+        bare = f"/p/{project.key}"
+        if saved and saved != bare:
+            return RedirectResponse(saved, status_code=303)
     projects = project_service.list_user_projects(db, user)
     status_filter = (status or "").strip() or None
+    priority_filter = (priority or "").strip() or None
+    type_filter = (type or "").strip() or None
+    tag_filter = (tag or "").strip() or None
+    q_filter = (q or "").strip() or None
+    sort_filter = (sort or "").strip() or None
     has_query = bool(request.query_params)
     filter_mine = (mine or "").strip().lower() in ("1", "true", "on") or (
         not has_query and not user.is_staff
@@ -257,12 +282,25 @@ def project_feed(
         mine=filter_mine,
         assignee_filter=assignee_filter or None,
         status_filter=status_filter,
-        priority_filter=priority,
-        type_filter=type,
-        tag=tag,
-        q=q,
-        sort=sort,
+        priority_filter=priority_filter,
+        type_filter=type_filter,
+        tag=tag_filter,
+        q=q_filter,
+        sort=sort_filter,
     )
+    feed_url = build_feed_path(
+        project.key,
+        view=current_view or None,
+        mine=filter_mine,
+        assignee=assignee_filter or None,
+        status=status_filter,
+        priority=priority_filter,
+        type=type_filter,
+        tag=tag_filter,
+        q=q_filter,
+        sort=sort_filter,
+    )
+    set_last_feed(request, project.key, feed_url)
     return render(
         request,
         "portal/feed.html",
@@ -274,12 +312,13 @@ def project_feed(
         filter_mine=filter_mine,
         filter_assignee=assignee_filter,
         filter_status=status_filter or "",
-        filter_priority=priority or "",
-        filter_type=type or "",
-        filter_tag=tag or "",
-        filter_q=q or "",
-        filter_sort=sort or "updated_at",
+        filter_priority=priority_filter or "",
+        filter_type=type_filter or "",
+        filter_tag=tag_filter or "",
+        filter_q=q_filter or "",
+        filter_sort=sort_filter or "updated_at",
         project_tags=project_service.list_used_project_tags(db, project.id),
+        default_feed_url=default_feed_path(project.key, is_staff=user.is_staff),
     )
 
 
@@ -298,7 +337,7 @@ def ticket_detail(
         request,
         "portal/ticket.html",
         projects=projects,
-        **_header_ctx(db, user, ticket),
+        **_header_ctx(db, user, ticket, request),
     )
 
 

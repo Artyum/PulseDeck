@@ -2,7 +2,13 @@
 {% from "partials/icons.html" import icon %}
 {% set tref = ticket|ticket_label %}
 <section class="issue-side-block">
-  <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+  <div class="issue-section-bar">
+    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+    <a href="{{ back_to_feed_url }}" class="nav-back">
+      <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
+      {{ t("ui.ticket.back_to_list") }}
+    </a>
+  </div>
   <div class="issue-side-fields">
     <div class="issue-field">
       <span class="label-tight">{{ t("ui.ticket.created") }}</span>

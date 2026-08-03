@@ -766,9 +766,14 @@
   document.addEventListener("click", function (ev) {
     var clearBtn = ev.target.closest("[data-feed-filter-clear]");
     if (clearBtn) {
+      ev.preventDefault();
+      var clearUrl = clearBtn.getAttribute("data-feed-filter-clear-url");
+      if (clearUrl) {
+        window.location.assign(clearUrl);
+        return;
+      }
       var clearForm = clearBtn.closest("form");
       if (!clearForm) return;
-      ev.preventDefault();
       clearForm.querySelectorAll("input[name='q'], input[name='tag']").forEach(function (el) {
         el.value = "";
       });

@@ -2358,8 +2358,15 @@
     padding-bottom: 0;
   }
 
-  .issue-side-block > .issue-section-title {
+  .issue-side-block > .issue-section-title,
+  .issue-side-block > .issue-section-bar {
     margin: 0 0 calc(0.9rem * var(--space-scale));
+  }
+
+  .issue-sidebar .issue-section-bar .nav-back {
+    flex-shrink: 0;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.75rem;
   }
 
   .issue-side-fields {

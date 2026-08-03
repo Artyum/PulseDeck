@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from urllib.parse import urlencode
 
 if TYPE_CHECKING:
     from app.models.ticket import Attachment, Ticket
@@ -41,3 +42,66 @@ def safe_next_path(value: str | None, *, default: str = "/") -> str:
     if "://" in path:
         return default
     return path
+
+
+def normalize_project_key(key: str) -> str:
+    return (key or "").strip().upper()
+
+
+def default_feed_path(key: str, *, is_staff: bool) -> str:
+    clean = normalize_project_key(key)
+    if is_staff:
+        return f"/p/{clean}?view=needs_us"
+    return f"/p/{clean}?view=open&mine=1"
+
+
+def build_feed_path(
+    key: str,
+    *,
+    view: str | None = None,
+    mine: bool = False,
+    assignee: str | None = None,
+    status: str | None = None,
+    priority: str | None = None,
+    type: str | None = None,
+    tag: str | None = None,
+    q: str | None = None,
+    sort: str | None = None,
+) -> str:
+    clean = normalize_project_key(key)
+    params: list[tuple[str, str]] = []
+    if view:
+        params.append(("view", view))
+    if mine:
+        params.append(("mine", "1"))
+    if assignee:
+        params.append(("assignee", assignee))
+    if status:
+        params.append(("status", status))
+    if priority:
+        params.append(("priority", priority))
+    if type:
+        params.append(("type", type))
+    if tag:
+        params.append(("tag", tag))
+    if q:
+        params.append(("q", q))
+    if sort and sort != "updated_at":
+        params.append(("sort", sort))
+    base = f"/p/{clean}"
+    if not params:
+        return base
+    return f"{base}?{urlencode(params)}"
+
+
+def validate_feed_path(path: str | None, key: str) -> str | None:
+    clean = normalize_project_key(key)
+    if not clean or not path:
+        return None
+    safe = safe_next_path(path, default="")
+    if not safe:
+        return None
+    prefix = f"/p/{clean}"
+    if safe == prefix or safe.startswith(f"{prefix}?"):
+        return safe
+    return None

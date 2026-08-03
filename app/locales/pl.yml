@@ -227,6 +227,7 @@ ui:
     edit_modal: "Edytuj zgłoszenie"
     lightbox_aria: "Podgląd załącznika"
     self_assign: "Przypisz mnie"
+    back_to_list: "Wróć do listy"
     details: "Szczegóły"
     created: "Utworzono"
     closed: "Zamknięte"

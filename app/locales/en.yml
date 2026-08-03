@@ -227,6 +227,7 @@ ui:
     edit_modal: "Edit ticket"
     lightbox_aria: "Attachment preview"
     self_assign: "Assign me"
+    back_to_list: "Back to list"
     details: "Details"
     created: "Created"
     closed: "Closed"
