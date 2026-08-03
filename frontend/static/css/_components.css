@@ -3157,8 +3157,8 @@
 
   .toast-stack {
     position: fixed;
-    bottom: 1.25rem;
-    left: 50%;
+    inset: auto auto 1.25rem 50%;
+    margin: 0;
     transform: translateX(-50%);
     z-index: 80;
     display: flex;
@@ -3166,6 +3166,11 @@
     align-items: center;
     gap: 0.5rem;
     width: min(24rem, calc(100vw - 32px));
+    border: none;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    color: inherit;
     pointer-events: none;
   }
 

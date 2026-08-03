@@ -117,6 +117,15 @@
     return stack;
   }
 
+  function promoteToastStack(stack) {
+    if (!stack || typeof stack.showPopover !== "function") return;
+    try {
+      stack.setAttribute("popover", "manual");
+      if (stack.matches(":popover-open")) stack.hidePopover();
+      stack.showPopover();
+    } catch (e) {}
+  }
+
   function feedbackDisplayText(message) {
     return (message || "").toString().trim().replace(/\.+$/, "");
   }
@@ -126,6 +135,7 @@
     if (!text) return;
     var level = type === "success" ? "success" : "error";
     var stack = ensureToastStack();
+    promoteToastStack(stack);
     while (stack.children.length >= TOAST_MAX) stack.removeChild(stack.firstChild);
     var el = document.createElement("div");
     el.className = "toast toast-" + level;
