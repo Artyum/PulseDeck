@@ -1,9 +1,13 @@
 {% from "partials/ticket_macros.html" import priority_chip, status_chip, type_chip, issue_field_menu with context %}
 {% from "partials/icons.html" import icon %}
+{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 {% set tref = ticket|ticket_label %}
 <section class="issue-side-block">
   <div class="issue-section-bar">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+    <div class="issue-section-title-row">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+      {{ coachmark_replay("ticket") }}
+    </div>
     <a href="{{ back_to_feed_url }}" class="nav-back">
       <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
       {{ t("ui.ticket.back_to_list") }}
@@ -30,8 +34,7 @@
         <div class="field-value">{{ type_chip(ticket.type) }}</div>
       {% endif %}
     </div>
-    <div class="issue-field"
-         {% if user.is_staff %} data-coachmark="ticket-priority"{% endif %}>
+    <div class="issue-field">
       <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
       {% if user.is_staff %}
         {% call issue_field_menu(t('ui.ticket.change_priority'), url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
@@ -53,13 +56,16 @@
              @click.outside="open = false"
              :class="{'is-menu-open': open}"
              class="issue-menu relative">
-          <button type="button"
-                  @click="open = !open"
-                  :aria-expanded="open"
-                  class="issue-menu-trigger"
-                  data-coachmark="ticket-done"
-                  aria-label="{{ t('ui.ticket.change_status') }}"
-                  title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
+          <div class="issue-field-editable">
+            <span class="issue-field-face">{{ status_chip(ticket.status) }}</span>
+            <button type="button"
+                    @click="open = !open"
+                    :aria-expanded="open"
+                    class="issue-field-edit-btn"
+                    data-coachmark="ticket-done"
+                    aria-label="{{ t('ui.ticket.change_status') }}"
+                    title="{{ t('ui.ticket.change_status') }}">{{ icon("edit") }}</button>
+          </div>
           <div x-show="open"
                x-transition
                x-cloak
@@ -78,13 +84,15 @@
              @click.outside="open = false"
              :class="{'is-menu-open': open}"
              class="issue-menu relative">
-          <button type="button"
-                  @click="open = !open"
-                  :aria-expanded="open"
-                  class="issue-menu-trigger"
-                  data-coachmark="ticket-reopen"
-                  aria-label="{{ t('ui.ticket.change_status') }}"
-                  title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
+          <div class="issue-field-editable">
+            <span class="issue-field-face">{{ status_chip(ticket.status) }}</span>
+            <button type="button"
+                    @click="open = !open"
+                    :aria-expanded="open"
+                    class="issue-field-edit-btn"
+                    aria-label="{{ t('ui.ticket.change_status') }}"
+                    title="{{ t('ui.ticket.change_status') }}">{{ icon("edit") }}</button>
+          </div>
           <div x-show="open"
                x-transition
                x-cloak
@@ -128,9 +136,7 @@
             <form hx-post="{{ url_for('self_assign', ticket_ref=tref) }}"
                   hx-target="#ticket-view"
                   hx-swap="innerHTML">
-              <button type="submit"
-                      class="issue-self-assign-btn"
-                      data-coachmark="ticket-self-assign">{{ t("ui.ticket.self_assign") }}</button>
+              <button type="submit" class="issue-self-assign-btn">{{ t("ui.ticket.self_assign") }}</button>
             </form>
           {% endif %}
         </div>
@@ -153,7 +159,6 @@
                       @click="open = !open"
                       :aria-expanded="open"
                       class="issue-menu-trigger"
-                      data-coachmark="ticket-add-participant"
                       aria-label="{{ t('ui.ticket.add_participant') }}"
                       title="{{ t('ui.ticket.add_participant') }}">
                 <span class="issue-add-btn">{{ icon("add") }}</span>
@@ -203,7 +208,6 @@
                 <input type="hidden" name="user_id" value="{{ p.user_id }}">
                 <button type="submit"
                         class="issue-unwatch-btn"
-                        {% if self_unwatch %}data-coachmark="ticket-participants"{% endif %}
                         title="{{ t('ui.ticket.remove_participant' if as_admin else 'ui.ticket.stop_watching') }}"
                         aria-label="{{ t('ui.ticket.remove_participant_aria', name=pname) if as_admin else t('ui.ticket.stop_watching') }}">{{ icon("bell-off") }}</button>
               </form>
@@ -230,7 +234,6 @@
                     <input type="hidden" name="user_id" value="{{ p.user_id }}">
                     <button type="submit"
                             class="issue-unwatch-btn"
-                            {% if self_unwatch %}data-coachmark="ticket-participants"{% endif %}
                             title="{{ t('ui.ticket.remove_participant' if as_admin else 'ui.ticket.stop_watching') }}"
                             aria-label="{{ t('ui.ticket.remove_participant_aria', name=pname) if as_admin else t('ui.ticket.stop_watching') }}">{{ icon("bell-off") }}</button>
                   </form>
@@ -243,8 +246,7 @@
     </div>
   </div>
 </section>
-<section class="issue-side-block"
-         {% if can_manage_tags %}data-coachmark="ticket-tags"{% endif %}>
+<section class="issue-side-block">
   <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.ticket.tags") }}</h2>
   <div class="issue-side-fields">
     <div class="field-value">

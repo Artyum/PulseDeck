@@ -715,61 +715,36 @@ js:
   copy_ok: "Copied"
   copy_err: "Couldn't copy"
   coachmarks:
-    dismiss: "Dismiss"
+    next: "Next"
+    back: "Back"
+    done: "Done"
+    skip: "Skip"
+    replay: "Tips for this page"
+    step: "{current}/{total}"
+    tour_label: "Tips"
+    nav-project:
+      body: "Quickly switch between your projects."
     nav-appearance:
       body: "Adjust the theme and colors to your preferences."
       cta: "Change appearance"
-    nav-admin:
-      body: "Open the admin panel to manage projects, users, and portal settings."
-      cta: "Go to admin"
-    nav-project:
-      body: "Quickly switch between your projects."
     feed-create:
       body: "Got something to report? Create a new ticket here."
     feed-needs-us:
       body: "Tickets waiting for your team’s reply."
-    feed-waiting-on-me:
-      body: "Tickets where a reply from you is expected."
-    feed-unassigned:
-      body: "Open tickets with no assignee yet."
-    feed-mine:
-      body: "Limit the list to tickets assigned to you."
     feed-filters:
       body: "Narrow the list by type, priority, or tag."
     ticket-status:
       body: "Click to change the ticket status."
     ticket-done:
-      body: "Mark the ticket as done when the issue is resolved."
-    ticket-reopen:
-      body: "You can reopen this ticket within the allowed time window."
-    ticket-priority:
-      body: "Set how urgent this ticket is for your team."
+      body: "Mark the ticket as done when the issue is resolved — you can reopen it later if needed."
     ticket-assignee:
       body: "Assign a team member to handle this ticket."
-    ticket-self-assign:
-      body: "Take this ticket yourself in one click."
-    ticket-add-participant:
-      body: "Add someone from the project so they get notifications about this ticket."
-    ticket-participants:
-      body: "Leave the participants list to stop receiving notifications about this ticket."
-    ticket-tags:
-      body: "Add tags to organize tickets and filter them in the feed."
-    profile-notifications:
-      body: "Manage email notifications about activity on your tickets."
     admin-projects:
       body: "Create a new project and invite your team."
-    admin-project-tags:
-      body: "Review and remove tags created on tickets in this project."
     admin-project-members:
       body: "Add people to the project so they can see and work on its tickets."
     admin-users-new:
       body: "Create a user account — they’ll get an activation link by email."
-    admin-settings-tickets:
-      body: "Set reopen windows and how long email links stay valid."
-    admin-settings-uploads:
-      body: "Limit how many attachments and how large they can be."
-    admin-mail:
-      body: "Tip: Configure the SMTP server so the system can send email notifications."
     compose-attach:
       body: "Add files by choosing them from disk, dragging them here, or pasting from the clipboard (Ctrl+V)."
     compose-quote:

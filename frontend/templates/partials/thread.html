@@ -2,6 +2,7 @@
 {% from "partials/icons.html" import icon %}
 {% from "partials/avatar.html" import user_avatar %}
 {% from "partials/rich_editor.html" import rich_editor with context %}
+{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 <div class="issue-thread">
   {% if user.is_staff %}
     {% set comments = ticket.comments %}
@@ -74,7 +75,7 @@
           class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
       {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') , quote_coachmark=true) }}
       <div class="issue-composer-bar">
-        {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files) }}
+        {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
         <div class="issue-composer-actions">
           {% if user.is_staff %}
             <label class="issue-composer-opt" data-coachmark="compose-internal">
@@ -83,6 +84,7 @@
             </label>
           {% endif %}
           <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
+          {{ coachmark_replay("ticket-compose") }}
         </div>
       </div>
     </form>

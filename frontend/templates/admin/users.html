@@ -1,6 +1,7 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import project_checkboxes, modal_header, form_select_menu with context %}
+{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 {% macro users_sort_th(col, label) -%}
   {% set next = 'desc' if sort == col and sort_dir == 'asc' else 'asc' %}
   <a href="{{ sort_links[col] }}"
@@ -14,7 +15,10 @@
   </div>
   <section class="admin-section">
     <div class="issue-section-bar">
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.admin.users.list") }}</h2>
+      <div class="issue-section-title-row">
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.admin.users.list") }}</h2>
+        {{ coachmark_replay("admin-users") }}
+      </div>
       <button type="button"
               class="btn btn-primary"
               data-coachmark="admin-users-new"

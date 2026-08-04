@@ -715,61 +715,36 @@ js:
   copy_ok: "Skopiowano"
   copy_err: "Nie udało się skopiować"
   coachmarks:
-    dismiss: "Zamknij"
+    next: "Dalej"
+    back: "Wstecz"
+    done: "Gotowe"
+    skip: "Pomiń"
+    replay: "Wskazówki dla tej strony"
+    step: "{current}/{total}"
+    tour_label: "Wskazówki"
+    nav-project:
+      body: "Szybko przełączaj się między swoimi projektami."
     nav-appearance:
       body: "Dostosuj motyw i kolory do swoich preferencji."
       cta: "Zmień wygląd"
-    nav-admin:
-      body: "Otwórz panel administracyjny, by zarządzać projektami, użytkownikami i ustawieniami portalu."
-      cta: "Przejdź do admina"
-    nav-project:
-      body: "Szybko przełączaj się między swoimi projektami."
     feed-create:
       body: "Masz sprawę? Zgłoś nowy ticket tutaj."
     feed-needs-us:
       body: "Zgłoszenia czekające na odpowiedź zespołu."
-    feed-waiting-on-me:
-      body: "Zgłoszenia, w których oczekiwana jest Twoja odpowiedź."
-    feed-unassigned:
-      body: "Otwarte zgłoszenia bez przypisanej osoby."
-    feed-mine:
-      body: "Ogranicz listę do zgłoszeń przypisanych do Ciebie."
     feed-filters:
       body: "Zawęż listę według typu, priorytetu lub tagu."
     ticket-status:
       body: "Kliknij, by zmienić status zgłoszenia."
     ticket-done:
-      body: "Oznacz zgłoszenie jako zakończone, gdy sprawa jest załatwiona."
-    ticket-reopen:
-      body: "Możesz ponownie otworzyć to zgłoszenie w dozwolonym czasie."
-    ticket-priority:
-      body: "Ustaw, jak pilne jest to zgłoszenie dla zespołu."
+      body: "Oznacz zgłoszenie jako zakończone, gdy sprawa jest załatwiona — później możesz je ponownie otworzyć."
     ticket-assignee:
       body: "Przypisz osobę z zespołu do obsługi tego zgłoszenia."
-    ticket-self-assign:
-      body: "Przejmij to zgłoszenie jednym kliknięciem."
-    ticket-add-participant:
-      body: "Dodaj kogoś z projektu, aby otrzymywał powiadomienia o tym zgłoszeniu."
-    ticket-participants:
-      body: "Możesz odłączyć się z uczestników, by nie otrzymywać powiadomień o tym zgłoszeniu."
-    ticket-tags:
-      body: "Dodaj tagi, by porządkować zgłoszenia i filtrować je na liście."
-    profile-notifications:
-      body: "Zarządzaj powiadomieniami e-mail o aktywności w Twoich zgłoszeniach."
     admin-projects:
       body: "Utwórz nowy projekt i zaproś do niego zespół."
-    admin-project-tags:
-      body: "Przeglądaj i usuwaj tagi utworzone przy zgłoszeniach w tym projekcie."
     admin-project-members:
       body: "Dodaj osoby do projektu, aby widziały jego zgłoszenia i mogły nad nimi pracować."
     admin-users-new:
       body: "Utwórz konto użytkownika — dostanie link aktywacyjny e-mailem."
-    admin-settings-tickets:
-      body: "Ustaw okno ponownego otwarcia i ważność linków z e-maila."
-    admin-settings-uploads:
-      body: "Ogranicz liczbę i rozmiar załączników."
-    admin-mail:
-      body: "Wskazówka: Skonfiguruj serwer SMTP, aby system mógł wysyłać powiadomienia e-mail."
     compose-attach:
       body: "Dodaj pliki wybierając je z dysku, przeciągając w to miejsce lub wklejając ze schowka (Ctrl+V)."
     compose-quote:

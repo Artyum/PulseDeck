@@ -78,12 +78,15 @@
        @click.outside="open = false"
        :class="{'is-menu-open': open}"
        class="issue-menu relative">
-    <button type="button"
-            @click="open = !open"
-            :aria-expanded="open"
-            class="issue-menu-trigger"
-            aria-label="{{ aria_label }}"
-            title="{{ aria_label }}">{{ caller() }}</button>
+    <div class="issue-field-editable">
+      <span class="issue-field-face">{{ caller() }}</span>
+      <button type="button"
+              @click="open = !open"
+              :aria-expanded="open"
+              class="issue-field-edit-btn"
+              aria-label="{{ aria_label }}"
+              title="{{ aria_label }}">{{ icon("edit") }}</button>
+    </div>
     <div x-show="open"
          x-transition
          x-cloak

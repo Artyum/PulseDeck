@@ -1,0 +1,8 @@
+{% from "partials/icons.html" import icon %}
+{% macro coachmark_replay(scope) -%}
+  <button type="button"
+          class="coachmark-replay"
+          data-coachmark-replay="{{ scope }}"
+          aria-label="{{ t('js.coachmarks.replay') }}"
+          title="{{ t('js.coachmarks.replay') }}">{{ icon("help") }}</button>
+{%- endmacro %}

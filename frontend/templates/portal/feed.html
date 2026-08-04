@@ -2,6 +2,7 @@
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import ticket_row, attach_picker, modal_header, modal_cancel, filter_field_menu, form_select_menu with context %}
 {% from "partials/rich_editor.html" import rich_editor with context %}
+{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 {% block title %}{{ app_name }} - {{ t("ui.portal.feed.tickets") }}{% endblock title %}
 {% block content %}
   {% if user.is_staff %}
@@ -33,7 +34,10 @@
       </div>
       <section class="issue-section issue-section-flush">
         <div class="issue-section-bar">
-          <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.portal.feed.tickets") }}</h2>
+          <div class="issue-section-title-row">
+            <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.portal.feed.tickets") }}</h2>
+            {{ coachmark_replay("feed") }}
+          </div>
           <div class="issue-section-actions">
             <span class="label-tight">{{ t("ui.portal.feed.sort") }}</span>
             {{ form_select_menu('sort', t('ui.portal.feed.sort') , [
@@ -97,8 +101,7 @@
         <section class="issue-side-block">
           <div class="issue-section-bar">
             <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.portal.feed.view") }}</h2>
-            <label class="feed-mine-toggle{% if current_view == 'unassigned' %} is-disabled{% endif %}"
-                   {% if user.is_staff %}data-coachmark="feed-mine"{% endif %}>
+            <label class="feed-mine-toggle{% if current_view == 'unassigned' %} is-disabled{% endif %}">
               <input type="checkbox"
                      name="mine"
                      value="1"
@@ -113,7 +116,7 @@
             {% for key, label in views %}
               <a href="{{ url_for('project_feed', key=project.key) }}?{{ chip_query(key) }}"
                  class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"
-                 {% if key == 'needs_us' %}data-coachmark="feed-needs-us"{% elif key == 'waiting_on_me' %}data-coachmark="feed-waiting-on-me"{% elif key == 'unassigned' %}data-coachmark="feed-unassigned"{% endif %}><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
+                 {% if key == 'needs_us' %}data-coachmark="feed-needs-us"{% endif %}><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
             {% endfor %}
           </div>
         </section>

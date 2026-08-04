@@ -1760,7 +1760,7 @@
       white-space: normal;
       overflow: visible;
       text-overflow: unset;
-      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .admin-list.admin-status-table {
@@ -2773,6 +2773,13 @@
     align-items: center;
     gap: 0.35rem;
     font-size: 0.65rem;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+  .issue-sidebar .issue-participant-label-col > .label-tight {
+    white-space: nowrap;
+    overflow: visible;
   }
 
   .issue-field {
@@ -2873,16 +2880,55 @@
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-pulse) 35%, transparent);
   }
 
+  .issue-field-editable {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  .issue-field-face {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .issue-field-face .chip,
+  .issue-field-face .issue-menu-value {
+    white-space: nowrap;
+  }
+
+  .issue-sidebar .issue-menu:has(.issue-field-editable),
+  .issue-sidebar .issue-assignee-value > .issue-menu:has(.issue-field-editable) {
+    width: max-content;
+    max-width: none;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .issue-sidebar .issue-field > .field-value:not(.field-value-participants) {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+  .issue-sidebar .issue-field > .field-value .chip,
+  .issue-sidebar .issue-field > .issue-menu .chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
   .issue-menu-value {
     display: inline-flex;
     align-items: center;
     min-height: 1.5rem;
-    padding: 0.1rem 0.35rem;
-    margin: -0.1rem -0.35rem;
-    border-radius: 0.3rem;
     font-size: 0.875rem;
     line-height: 1.45;
     color: var(--color-ink);
+    white-space: nowrap;
   }
 
   .issue-menu-trigger:hover .issue-menu-value,
@@ -3126,10 +3172,12 @@
     flex-shrink: 0;
   }
 
-  .issue-unwatch-btn {
+  .issue-unwatch-btn,
+  .issue-field-edit-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     width: 1.25rem;
     height: 1.25rem;
     padding: 0;
@@ -3140,12 +3188,15 @@
     cursor: pointer;
   }
 
-  .issue-unwatch-btn:hover {
+  .issue-unwatch-btn:hover,
+  .issue-field-edit-btn:hover,
+  .issue-field-edit-btn[aria-expanded="true"] {
     color: var(--color-ink);
     background: color-mix(in oklab, var(--color-soft-blue) 45%, var(--color-surface));
   }
 
-  .issue-unwatch-btn .icon {
+  .issue-unwatch-btn .icon,
+  .issue-field-edit-btn .icon {
     width: 0.8rem;
     height: 0.8rem;
   }
@@ -3763,18 +3814,48 @@
   }
 
   /* === Coachmarks === */
+  .coachmark-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 85;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+  }
+
+  .coachmark-overlay--dialog {
+    position: absolute;
+  }
+
+  .modal:has(> .coachmark-overlay--dialog),
+  dialog:has(> .coachmark-overlay--dialog) {
+    position: relative;
+  }
+
+  .coachmark-spotlight {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 0.55rem;
+    box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.48);
+    outline: 2px solid color-mix(in oklab, var(--coachmark-accent) 70%, transparent);
+    outline-offset: 1px;
+  }
+
   .coachmark {
     --coachmark-arrow: 0.55rem;
     position: fixed;
     inset: auto;
     margin: 0;
-    z-index: 90;
+    z-index: 91;
     box-sizing: border-box;
     width: max-content;
     max-width: min(22rem, calc(100vw - 1.5rem));
-    padding: 1.05rem 2.45rem 1.1rem 1.15rem;
-    border-radius: 0.9rem;
+    padding: 1.05rem 2.45rem 0.85rem 1.15rem;
     border: 1px solid var(--coachmark-border);
+    border-radius: 0.9rem;
+    outline: none;
     background: var(--coachmark-bg);
     box-shadow: var(--shadow-coachmark);
     color: var(--color-ink);
@@ -3784,6 +3865,19 @@
     pointer-events: auto;
     overflow: visible;
     opacity: 0;
+  }
+
+  .coachmark[popover],
+  .coachmark:popover-open {
+    inset: unset;
+    margin: 0;
+    border: 1px solid var(--coachmark-border);
+    outline: none;
+  }
+
+  .coachmark:focus,
+  .coachmark:focus-visible {
+    outline: none;
   }
 
   .coachmark--dialog {
@@ -3856,6 +3950,44 @@
     color: var(--coachmark-accent-deep);
   }
 
+  .coachmark-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem 0.75rem;
+    margin-top: 0.85rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid color-mix(in oklab, var(--coachmark-border) 55%, transparent);
+  }
+
+  .coachmark-step {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--color-steel);
+  }
+
+  .coachmark-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin-left: auto;
+  }
+
+  .coachmark-nav-btn {
+    min-height: 2rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8125rem;
+  }
+
+  .coachmark-nav-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
   .coachmark-close {
     position: absolute;
     top: 0.4rem;
@@ -3906,6 +4038,48 @@
     background: color-mix(in oklab, var(--coachmark-accent) 14%, var(--color-surface));
     border-color: var(--coachmark-border);
     color: var(--color-ink);
+  }
+
+  .coachmark-replay {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 0.45rem;
+    background: transparent;
+    color: var(--color-steel);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .coachmark-replay .icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .coachmark-replay:hover {
+    background: color-mix(in oklab, var(--coachmark-accent) 12%, var(--color-surface));
+    border-color: var(--coachmark-border);
+    color: var(--color-ink);
+  }
+
+  .issue-section-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .issue-section-title-row .issue-section-title {
+    margin: 0;
   }
 
   .field-feedback {
@@ -5203,6 +5377,11 @@
   @media (prefers-reduced-motion: reduce) {
     .btn {
       transform: none;
+    }
+
+    .coachmark.is-shown {
+      animation: none;
+      opacity: 1;
     }
 
     .issue-head[data-issue-sticky-head],
