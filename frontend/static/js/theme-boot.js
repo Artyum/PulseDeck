@@ -40,4 +40,5 @@
   } catch (e) {}
   applyPref(root.getAttribute("data-density-storage-key") || "", parseList(root.getAttribute("data-density-ids")), "data-density");
   applyPref(root.getAttribute("data-font-size-storage-key") || "", parseList(root.getAttribute("data-font-size-ids")), "data-font-size");
+  applyPref(root.getAttribute("data-thread-order-storage-key") || "", parseList(root.getAttribute("data-thread-order-ids")), "data-thread-order");
 })();

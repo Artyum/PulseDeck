@@ -2,7 +2,7 @@
 {% from "partials/icons.html" import icon %}
 {% from "partials/avatar.html" import user_avatar %}
 {% from "partials/rich_editor.html" import rich_editor with context %}
-{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
+{% from "partials/thread_order_controls.html" import thread_order_controls with context %}
 <div class="issue-thread">
   {% if user.is_staff %}
     {% set comments = ticket.comments %}
@@ -10,94 +10,101 @@
     {% set comments = ticket.comments|rejectattr('is_internal')|list %}
   {% endif %}
   {% if comments %}
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
-    {% for group in comments|group_comments %}
-      {% set lead = group[0] %}
-      <article class="comment {% if lead.author and lead.author.is_staff %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
-        {% for comment in group %}
-          <div class="comment-segment">
-            <header class="comment-meta">
-              {% if loop.first %}
-                <span class="comment-head">
-                  {{ user_avatar(comment.author) }}
-                  <span class="comment-author">{{ comment.author.display_name if comment.author else '' }}</span>
-                  {% if comment.edited_by %}
-                    <span class="comment-edited">({{ t("ui.ticket.edited_by", name=comment.edited_by.display_name) }})</span>
-                  {% endif %}
-                  {% if comment.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
-                </span>
-              {% elif comment.edited_by %}
-                <span class="comment-edited">({{ t("ui.ticket.edited_by", name=comment.edited_by.display_name) }})</span>
-              {% endif %}
-              <span class="comment-meta-aside">
-                <span class="comment-meta-row">
-                  {% if can_edit_comments or can_delete_comments %}
-                    <span class="comment-actions">
-                      {% if can_edit_comments %}
-                        <button type="button"
-                                class="btn btn-ghost comment-action"
-                                hx-get="{{ url_for('comment_edit_form', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
-                                hx-target="#comment-panel-{{ comment.id }}"
-                                hx-swap="innerHTML"
-                                aria-label="{{ t('ui.ticket.edit_comment') }}">{{ icon("edit") }}</button>
-                      {% endif %}
-                      {% if can_delete_comments %}
-                        <form hx-post="{{ url_for('delete_comment', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
-                              hx-target="#ticket-view"
-                              hx-swap="innerHTML show:none"
-                              class="comment-delete-form"
-                              data-confirm-title="{{ t('ui.confirm.delete_comment.title') }}"
-                              data-confirm="{{ t('ui.confirm.delete_comment.message') }}"
-                              data-confirm-action="{{ t('ui.confirm.delete_comment.action') }}"
-                              data-confirm-danger>
-                          <button type="submit"
+    {% include "partials/thread_activity_head.html" with context %}
+    <div class="issue-thread-messages">
+      {% for group in comments|group_comments %}
+        {% set lead = group[0] %}
+        <article class="comment {% if lead.author and lead.author.is_staff %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
+          {% for comment in group %}
+            <div class="comment-segment">
+              <header class="comment-meta">
+                {% if loop.first %}
+                  <span class="comment-head">
+                    {{ user_avatar(comment.author) }}
+                    <span class="comment-author">{{ comment.author.display_name if comment.author else '' }}</span>
+                    {% if comment.edited_by %}
+                      <span class="comment-edited">({{ t("ui.ticket.edited_by", name=comment.edited_by.display_name) }})</span>
+                    {% endif %}
+                    {% if comment.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
+                  </span>
+                {% elif comment.edited_by %}
+                  <span class="comment-edited">({{ t("ui.ticket.edited_by", name=comment.edited_by.display_name) }})</span>
+                {% endif %}
+                <span class="comment-meta-aside">
+                  <span class="comment-meta-row">
+                    {% if can_edit_comments or can_delete_comments %}
+                      <span class="comment-actions">
+                        {% if can_edit_comments %}
+                          <button type="button"
                                   class="btn btn-ghost comment-action"
-                                  aria-label="{{ t('ui.ticket.delete_comment') }}">{{ icon("trash") }}</button>
-                        </form>
-                      {% endif %}
-                    </span>
-                  {% endif %}
-                  <span class="comment-when">{{ comment.created_at|format_dt if comment.created_at else '' }}</span>
+                                  hx-get="{{ url_for('comment_edit_form', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
+                                  hx-target="#comment-panel-{{ comment.id }}"
+                                  hx-swap="innerHTML"
+                                  aria-label="{{ t('ui.ticket.edit_comment') }}">{{ icon("edit") }}</button>
+                        {% endif %}
+                        {% if can_delete_comments %}
+                          <form hx-post="{{ url_for('delete_comment', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
+                                hx-target="#ticket-view"
+                                hx-swap="innerHTML show:none"
+                                class="comment-delete-form"
+                                data-confirm-title="{{ t('ui.confirm.delete_comment.title') }}"
+                                data-confirm="{{ t('ui.confirm.delete_comment.message') }}"
+                                data-confirm-action="{{ t('ui.confirm.delete_comment.action') }}"
+                                data-confirm-danger>
+                            <button type="submit"
+                                    class="btn btn-ghost comment-action"
+                                    aria-label="{{ t('ui.ticket.delete_comment') }}">{{ icon("trash") }}</button>
+                          </form>
+                        {% endif %}
+                      </span>
+                    {% endif %}
+                    <span class="comment-when">{{ comment.created_at|format_dt if comment.created_at else '' }}</span>
+                  </span>
                 </span>
-              </span>
-            </header>
-            <div id="comment-panel-{{ comment.id }}">{% include "partials/comment_body.html" %}</div>
-          </div>
-        {% endfor %}
-      </article>
-    {% endfor %}
+              </header>
+              <div id="comment-panel-{{ comment.id }}">{% include "partials/comment_body.html" %}</div>
+            </div>
+          {% endfor %}
+        </article>
+      {% endfor %}
+    </div>
   {% endif %}
-  {% if can_comment %}
-    <form hx-post="{{ url_for('add_comment', ticket_ref=ticket|ticket_label) }}"
-          hx-target="#ticket-view"
-          hx-swap="innerHTML"
-          enctype="multipart/form-data"
-          class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
-      {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') , quote_coachmark=true) }}
-      <div class="issue-composer-bar">
-        {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
-        <div class="issue-composer-actions">
-          {% if user.is_staff %}
-            <label class="issue-composer-opt" data-coachmark="compose-internal">
-              <input type="checkbox" name="is_internal" value="1" class="checkbox">
-              {{ t("ui.ticket.internal_note") }}
-            </label>
-          {% endif %}
-          <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
-          {{ coachmark_replay("ticket-compose") }}
-        </div>
+  <div class="issue-thread-foot">
+    {% if can_comment %}
+      <div class="issue-section-bar issue-thread-reply-head">
+        <h2 class="issue-section-title issue-thread-reply-title"><span class="section-icon" aria-hidden="true">{{ icon("reply") }}</span>{{ t("ui.ticket.reply") }}</h2>
+        {% if comments %}<div class="issue-thread-reply-order">{{ thread_order_controls() }}</div>{% endif %}
       </div>
-    </form>
-  {% elif ticket.status.value == 'DONE' %}
-    <p class="alert alert-muted">
-      {{ t("ui.ticket.closed_notice") }}
-      {% if can_reopen is defined and can_reopen %}
-        {{ t("ui.ticket.reopen_hint_staff") }}
-      {% elif not user.is_staff %}
-        {{ t('ui.ticket.reopen_hint_client', days=ticket_reopen_days) }}
-      {% endif %}
-    </p>
-  {% else %}
-    <p class="alert alert-muted">{{ t("ui.ticket.no_comment_permission") }}</p>
-  {% endif %}
+      <form hx-post="{{ url_for('add_comment', ticket_ref=ticket|ticket_label) }}"
+            hx-target="#ticket-view"
+            hx-swap="innerHTML"
+            enctype="multipart/form-data"
+            class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
+        {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') , quote_coachmark=true) }}
+        <div class="issue-composer-bar">
+          {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
+          <div class="issue-composer-actions">
+            {% if user.is_staff %}
+              <label class="issue-composer-opt" data-coachmark="compose-internal">
+                <input type="checkbox" name="is_internal" value="1" class="checkbox">
+                {{ t("ui.ticket.internal_note") }}
+              </label>
+            {% endif %}
+            <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
+          </div>
+        </div>
+      </form>
+    {% elif ticket.status.value == 'DONE' %}
+      <p class="alert alert-muted">
+        {{ t("ui.ticket.closed_notice") }}
+        {% if can_reopen is defined and can_reopen %}
+          {{ t("ui.ticket.reopen_hint_staff") }}
+        {% elif not user.is_staff %}
+          {{ t('ui.ticket.reopen_hint_client', days=ticket_reopen_days) }}
+        {% endif %}
+      </p>
+    {% else %}
+      <p class="alert alert-muted">{{ t("ui.ticket.no_comment_permission") }}</p>
+    {% endif %}
+  </div>
 </div>

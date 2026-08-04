@@ -1,0 +1,5 @@
+{% from "partials/thread_order_controls.html" import thread_order_controls with context %}
+<div class="issue-section-bar issue-thread-activity">
+  <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
+  {{ thread_order_controls() }}
+</div>

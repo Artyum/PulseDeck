@@ -14,6 +14,10 @@ DEFAULT_DENSITY = "balanced"
 FONT_SIZE_STORAGE_KEY = "pulsedeck_font_size"
 DEFAULT_FONT_SIZE = "natural"
 
+THREAD_ORDER_STORAGE_KEY = "pulsedeck_thread_order"
+DEFAULT_THREAD_ORDER = "oldest"
+THREAD_ORDER_IDS = ("oldest", "newest")
+
 
 @dataclass(frozen=True, slots=True)
 class ThemePreview:

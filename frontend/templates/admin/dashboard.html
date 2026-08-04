@@ -89,10 +89,10 @@
           {% if project_stats and selected_project %}
             {% set feed = url_for('project_feed', key=selected_project.key) %}
             <div class="admin-count-cards">
-              {{ count_card(t('ui.admin.dashboard.stat_members'), project_stats.members, url_for('project_detail', key=selected_project.key)) }}
-              {{ count_card(t('ui.admin.dashboard.stat_open_tickets'), project_stats.open_tickets, feed ~ '?view=open') }}
-              {{ count_card(t('ui.admin.dashboard.stat_tickets'), project_stats.tickets, feed ~ '?view=all') }}
-              {{ count_card(t('ui.admin.dashboard.stat_messages'), project_stats.messages) }}
+              {{ count_card(t('ui.admin.dashboard.stat_members') , project_stats.members, url_for('project_detail', key=selected_project.key)) }}
+              {{ count_card(t('ui.admin.dashboard.stat_open_tickets') , project_stats.open_tickets, feed ~ '?view=open') }}
+              {{ count_card(t('ui.admin.dashboard.stat_tickets') , project_stats.tickets, feed ~ '?view=all') }}
+              {{ count_card(t('ui.admin.dashboard.stat_messages') , project_stats.messages) }}
             </div>
             <div class="admin-count-group">
               <p class="label-tight">{{ t("ui.admin.dashboard.by_status") }}</p>
@@ -120,9 +120,7 @@
                           <a href="{{ feed }}?view=all&q={{ row.user.display_name|urlencode }}">{{ row.user.display_name }}</a>
                         </td>
                         <td>{{ row.tickets_created }}</td>
-                        <td>
-                          {% if row.user.last_login_at %}{{ row.user.last_login_at|format_dt }}{% endif %}
-                        </td>
+                        <td>{% if row.user.last_login_at %}{{ row.user.last_login_at|format_dt }}{% endif %}</td>
                       </tr>
                     {% endfor %}
                   </tbody>

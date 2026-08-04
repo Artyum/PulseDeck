@@ -12,7 +12,10 @@
       data-density-ids="{{ density_choices|map(attribute='id') |list|tojson|forceescape }}"
       data-density-storage-key="{{ density_storage_key }}"
       data-font-size-ids="{{ font_size_choices|map(attribute='id') |list|tojson|forceescape }}"
-      data-font-size-storage-key="{{ font_size_storage_key }}">
+      data-font-size-storage-key="{{ font_size_storage_key }}"
+      data-thread-order="{{ ui_thread_order }}"
+      data-thread-order-ids="{{ thread_order_ids|tojson|forceescape }}"
+      data-thread-order-storage-key="{{ thread_order_storage_key }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

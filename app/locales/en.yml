@@ -265,6 +265,10 @@ ui:
     tags: "Tags"
     add_tag_placeholder: "Add tag…"
     activity: "Activity"
+    reply: "Reply"
+    thread_order_aria: "Message order"
+    thread_oldest: "Oldest first"
+    thread_newest: "Newest first"
     internal: "Internal"
     edited_by: "edited by: {name}"
     edit_comment: "Edit comment"
@@ -764,6 +768,8 @@ js:
       body: "Mark the ticket as done when the issue is resolved — you can reopen it later if needed."
     ticket-assignee:
       body: "Assign a team member to handle this ticket."
+    ticket-thread-order:
+      body: "Up arrow — oldest message first; down — newest first (reply box at the top)."
     admin-projects:
       body: "Create a new project and invite your team."
     admin-project-members:

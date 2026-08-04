@@ -4,6 +4,7 @@
 {% from "partials/ticket_macros.html" import status_chip, priority_chip, type_chip with context %}
 {% from "partials/app_flash.html" import app_flash %}
 {% from "partials/rich_editor.html" import rich_editor with context %}
+{% from "partials/thread_order_controls.html" import thread_order_controls with context %}
 {% block title %}{{ app_name }} - {{ t("ui.ticket.doc_title", label=ticket|ticket_label) }}{% endblock title %}
 {% block body %}
   {{ app_flash(error=error, field="content" if error else none) }}
@@ -50,46 +51,54 @@
               </p>
             {% endif %}
             {% if comment_groups %}
-              <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
-              {% for group in comment_groups %}
-                {% set lead = group[0] %}
-                <article class="comment {% if lead.author and lead.author.is_staff %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
-                  {% for c in group %}
-                    <div class="comment-segment">
-                      <header class="comment-meta">
-                        {% if loop.first %}
-                          <span class="comment-head">
-                            {{ user_avatar(c.author) }}
-                            <span class="comment-author">{{ c.author.short_display_name if c.author else '' }}</span>
-                            {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
-                          </span>
-                        {% endif %}
-                        <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
-                      </header>
-                      <div class="comment-body rich-content">{{ c.content | markdown_safe }}</div>
-                      {% if c.attachments %}<p class="alert alert-muted mt-3">{{ t("ui.reply.attachments_hidden") }}</p>{% endif %}
-                    </div>
-                  {% endfor %}
-                </article>
-              {% endfor %}
+              {% include "partials/thread_activity_head.html" with context %}
+              <div class="issue-thread-messages">
+                {% for group in comment_groups %}
+                  {% set lead = group[0] %}
+                  <article class="comment {% if lead.author and lead.author.is_staff %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
+                    {% for c in group %}
+                      <div class="comment-segment">
+                        <header class="comment-meta">
+                          {% if loop.first %}
+                            <span class="comment-head">
+                              {{ user_avatar(c.author) }}
+                              <span class="comment-author">{{ c.author.short_display_name if c.author else '' }}</span>
+                              {% if c.is_internal %}<span class="chip chip-internal">{{ t("ui.ticket.internal") }}</span>{% endif %}
+                            </span>
+                          {% endif %}
+                          <span class="comment-when">{{ c.created_at|format_dt if c.created_at else '' }}</span>
+                        </header>
+                        <div class="comment-body rich-content">{{ c.content | markdown_safe }}</div>
+                        {% if c.attachments %}<p class="alert alert-muted mt-3">{{ t("ui.reply.attachments_hidden") }}</p>{% endif %}
+                      </div>
+                    {% endfor %}
+                  </article>
+                {% endfor %}
+              </div>
             {% endif %}
-            {% if can_comment %}
-              <form method="post"
-                    action="{{ url_for('open_reply_post', token=token) }}"
-                    class="issue-composer{% if not comment_groups %} issue-composer-solo{% endif %}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') ) }}
-                <div class="issue-composer-bar">
-                  <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
-                     class="issue-composer-opt link-quiet">{{ t("ui.reply.attach_login_hint") }}</a>
-                  <div class="issue-composer-actions">
-                    <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
-                  </div>
+            <div class="issue-thread-foot">
+              {% if can_comment %}
+                <div class="issue-section-bar issue-thread-reply-head">
+                  <h2 class="issue-section-title issue-thread-reply-title"><span class="section-icon" aria-hidden="true">{{ icon("reply") }}</span>{{ t("ui.ticket.reply") }}</h2>
+                  {% if comment_groups %}<div class="issue-thread-reply-order">{{ thread_order_controls() }}</div>{% endif %}
                 </div>
-              </form>
-            {% else %}
-              <p class="alert alert-muted">{{ t("ui.ticket.closed_notice") }}</p>
-            {% endif %}
+                <form method="post"
+                      action="{{ url_for('open_reply_post', token=token) }}"
+                      class="issue-composer{% if not comment_groups %} issue-composer-solo{% endif %}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') ) }}
+                  <div class="issue-composer-bar">
+                    <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
+                       class="issue-composer-opt link-quiet">{{ t("ui.reply.attach_login_hint") }}</a>
+                    <div class="issue-composer-actions">
+                      <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
+                    </div>
+                  </div>
+                </form>
+              {% else %}
+                <p class="alert alert-muted">{{ t("ui.ticket.closed_notice") }}</p>
+              {% endif %}
+            </div>
           </div>
         </section>
       </div>

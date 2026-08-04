@@ -1323,12 +1323,7 @@
   }
 
   .admin-users-table {
-    --admin-users-cols:
-      minmax(0, 1.2fr)
-      minmax(0, 1.45fr)
-      minmax(0, 0.9fr)
-      minmax(0, 1.1fr)
-      4.75rem;
+    --admin-users-cols: minmax(0, 1.2fr) minmax(0, 1.45fr) minmax(0, 0.9fr) minmax(0, 1.1fr) 4.75rem;
     overflow-x: auto;
   }
 
@@ -3390,8 +3385,112 @@
     gap: calc(0.85rem * var(--space-scale));
   }
 
-  .issue-thread > .issue-section-title {
-    margin-bottom: 0.15rem;
+  .issue-thread-activity,
+  .issue-thread-reply-head {
+    margin-bottom: 0;
+  }
+
+  .issue-thread-activity .issue-section-title,
+  .issue-thread-reply-head .issue-section-title {
+    margin-bottom: 0;
+  }
+
+  .issue-thread-reply-order {
+    display: contents;
+  }
+
+  html:not([data-thread-order="newest"]) .issue-thread-reply-order {
+    display: none;
+  }
+
+  html[data-thread-order="newest"] .issue-thread:has(.issue-thread-reply-head) > .issue-thread-activity .thread-order-wrap {
+    display: none;
+  }
+
+  .issue-thread-messages {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.85rem * var(--space-scale));
+  }
+
+  .issue-thread-foot {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.85rem * var(--space-scale));
+    min-width: 0;
+  }
+
+  .issue-thread-reply-head + .issue-composer {
+    margin-top: 0;
+  }
+
+  html[data-thread-order="newest"] .issue-thread:has(> .issue-thread-messages) > .issue-thread-foot {
+    order: 1;
+  }
+
+  html[data-thread-order="newest"] .issue-thread:has(> .issue-thread-messages) > .issue-thread-activity {
+    order: 2;
+  }
+
+  html[data-thread-order="newest"] .issue-thread:has(> .issue-thread-messages) > .issue-thread-messages {
+    order: 3;
+    flex-direction: column-reverse;
+  }
+
+  html:not([data-thread-order="newest"]) .issue-thread:has(> .issue-thread-messages) > .issue-thread-foot:has(.issue-thread-reply-head) {
+    margin-top: calc(1.15rem * var(--space-scale));
+  }
+
+  .thread-order-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .thread-order {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.1rem;
+    padding: 0.15rem;
+    border: 1px solid var(--color-frame);
+    border-radius: 0.55rem;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .thread-order-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0.4rem;
+    background: transparent;
+    color: var(--color-steel);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .thread-order-option .icon {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .thread-order-option:hover {
+    color: var(--color-ink);
+    background: color-mix(in oklab, var(--color-soft-blue) 55%, transparent);
+  }
+
+  .thread-order-option.is-active {
+    color: var(--color-ink);
+    background: color-mix(in oklab, var(--color-soft-blue) 72%, var(--color-surface));
   }
 
   .comment-meta {
@@ -3627,15 +3726,6 @@
     display: flex;
     flex-direction: column;
     gap: calc(0.55rem * var(--space-scale));
-    margin-top: calc(0.35rem * var(--space-scale));
-    padding-top: calc(0.85rem * var(--space-scale));
-    border-top: 1px solid var(--color-line);
-  }
-
-  .issue-composer-solo {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
   }
 
   .issue-composer .rich-editor-surface {

@@ -35,6 +35,7 @@ from app.utils.themes import (
     DEFAULT_FONT_SIZE,
     DEFAULT_THEME,
     DEFAULT_THEME_GRADIENT,
+    DEFAULT_THREAD_ORDER,
     DENSITY_CHOICES,
     DENSITY_STORAGE_KEY,
     FONT_SIZE_CHOICES,
@@ -43,6 +44,8 @@ from app.utils.themes import (
     THEME_GRADIENT_STORAGE_KEY,
     THEME_PAIRS,
     THEME_STORAGE_KEY,
+    THREAD_ORDER_IDS,
+    THREAD_ORDER_STORAGE_KEY,
     theme_scheme,
 )
 from app.utils.timefmt import (
@@ -161,6 +164,9 @@ def common_context(request: Request, **extra) -> dict:
         "ui_font_size": DEFAULT_FONT_SIZE,
         "font_size_choices": _appearance_choices(lang, "font_size", FONT_SIZE_CHOICES),
         "font_size_storage_key": FONT_SIZE_STORAGE_KEY,
+        "ui_thread_order": DEFAULT_THREAD_ORDER,
+        "thread_order_ids": list(THREAD_ORDER_IDS),
+        "thread_order_storage_key": THREAD_ORDER_STORAGE_KEY,
         "ui_datetime_format": DEFAULT_DATETIME_FORMAT,
         "ui_timezone": DEFAULT_TIMEZONE,
         "datetime_prefs_locked": True,

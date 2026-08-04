@@ -265,6 +265,10 @@ ui:
     tags: "Tagi"
     add_tag_placeholder: "Dodaj tag…"
     activity: "Aktywność"
+    reply: "Odpowiedź"
+    thread_order_aria: "Kolejność wiadomości"
+    thread_oldest: "Od najstarszej"
+    thread_newest: "Od najnowszej"
     internal: "Wewnętrzny"
     edited_by: "edytowany przez: {name}"
     edit_comment: "Edytuj komentarz"
@@ -764,6 +768,8 @@ js:
       body: "Oznacz zgłoszenie jako zakończone, gdy sprawa jest załatwiona — później możesz je ponownie otworzyć."
     ticket-assignee:
       body: "Przypisz osobę z zespołu do obsługi tego zgłoszenia."
+    ticket-thread-order:
+      body: "Strzałka w górę — od najstarszej wiadomości; w dół — od najnowszej (pole odpowiedzi u góry)."
     admin-projects:
       body: "Utwórz nowy projekt i zaproś do niego zespół."
     admin-project-members:

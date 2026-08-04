@@ -262,6 +262,22 @@
     armAutoResize(root);
     armIssueStickyHeads(root);
     syncSidebarToggles(root);
+    syncUiPrefPickers(root);
+  }
+
+  function syncUiPrefPickers(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var nodes = [];
+    if (scope.matches && scope.matches("[data-ui-storage-key]")) nodes.push(scope);
+    if (scope.querySelectorAll) {
+      scope.querySelectorAll("[data-ui-storage-key]").forEach(function (el) {
+        nodes.push(el);
+      });
+    }
+    nodes.forEach(function (el) {
+      if (el.matches("select") || el.hasAttribute("data-form-select-input")) return;
+      syncPrefPicker(el);
+    });
   }
 
   function syncSidebarToggles(root) {
@@ -991,6 +1007,16 @@
     applyThemeGradient(active, gradientKey);
   }
 
+  function syncAllPrefPickers(key, attr) {
+    if (!key) return;
+    document.querySelectorAll("[data-ui-storage-key]").forEach(function (root) {
+      if (root.getAttribute("data-ui-storage-key") !== key) return;
+      if (attr && root.getAttribute("data-ui-attr") !== attr) return;
+      if (root.matches("select") || root.hasAttribute("data-form-select-input")) return;
+      syncPrefPicker(root);
+    });
+  }
+
   document.addEventListener("click", function (ev) {
     if (ev.target.closest(".theme-gradient-switch")) return;
     var btn = ev.target.closest("[data-ui-value]");
@@ -1008,7 +1034,7 @@
     if (attr === "data-theme") applyThemeScheme(value, root);
     var gradientKey = root.getAttribute("data-ui-gradient-key");
     if (gradientKey) applyThemeGradient(value, gradientKey);
-    syncPrefPicker(root);
+    syncAllPrefPickers(key, attr);
   });
 
   document.addEventListener("keydown", function (ev) {
