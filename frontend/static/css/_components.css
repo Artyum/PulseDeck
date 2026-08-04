@@ -5404,6 +5404,10 @@
       box-shadow: var(--edge-shadow-start);
     }
 
+    .issue-sidebar:has(.is-menu-open) {
+      z-index: 40;
+    }
+
     .admin-aside {
       left: 0;
       right: auto;
