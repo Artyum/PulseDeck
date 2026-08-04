@@ -107,6 +107,24 @@ class TestListTicketsFilters:
         )
         assert any(r.id == high.id for r in rows)
 
+    def test_status_filter(self, db_session, project_with_members, client_user):
+        done = _ticket(db_session, project_with_members, client_user, title="Done one")
+        done.status = TicketStatus.DONE
+        open_one = _ticket(
+            db_session, project_with_members, client_user, title="Open one"
+        )
+        db_session.commit()
+        rows = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=client_user,
+            view="all",
+            status_filter="DONE",
+        )
+        ids = {r.id for r in rows}
+        assert done.id in ids
+        assert open_one.id not in ids
+
     def test_invalid_filters_ignored(
         self, db_session, project_with_members, client_user
     ):
@@ -117,6 +135,7 @@ class TestListTicketsFilters:
             user=client_user,
             priority_filter="NOPE",
             type_filter="NOPE",
+            status_filter="NOPE",
             sort="created_at",
         )
         assert len(rows) >= 1

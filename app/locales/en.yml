@@ -203,6 +203,7 @@ ui:
       search_submit: "Find"
       search_clear: "Clear search"
       type: "Type"
+      status: "Status"
       priority: "Priority"
       tag: "Tag"
       mine_only: "Only mine"
@@ -362,6 +363,8 @@ ui:
       sort_name_desc: "Sort by name descending"
       sort_tickets_asc: "Sort by tickets created ascending"
       sort_tickets_desc: "Sort by tickets created descending"
+      sort_last_login_asc: "Sort by last login ascending"
+      sort_last_login_desc: "Sort by last login descending"
       by_status: "By status"
       by_type: "By type"
       empty_projects: "No projects."
@@ -411,6 +414,7 @@ ui:
       filter_all: "All"
       filter_clear: "Clear"
       col_name: "Name"
+      col_status: "Status"
       sort_name_asc: "Sort by first name ascending"
       sort_name_desc: "Sort by first name descending"
       sort_email_asc: "Sort by email ascending"
@@ -419,8 +423,8 @@ ui:
       sort_phone_desc: "Sort by phone descending"
       sort_role_asc: "Sort by role ascending"
       sort_role_desc: "Sort by role descending"
-      sort_last_login_asc: "Sort by last login ascending"
-      sort_last_login_desc: "Sort by last login descending"
+      sort_status_asc: "Sort by status ascending"
+      sort_status_desc: "Sort by status descending"
       col_last_login: "Last login"
     user_new:
       title: "New user"
@@ -753,7 +757,7 @@ js:
     feed-needs-us:
       body: "Tickets waiting for your team’s reply."
     feed-filters:
-      body: "Narrow the list by type, priority, or tag."
+      body: "Narrow the list by type, status, priority, or tag."
     ticket-status:
       body: "Click to change the ticket status."
     ticket-done:

@@ -25,9 +25,6 @@ def format_phone(raw: str | None) -> str:
     if not _E164_RE.fullmatch(compact):
         return text
     digits = compact[1:]
-    if digits.startswith("48") and len(digits) == 11:
-        n = digits[2:]
-        return f"+48 {n[:3]} {n[3:6]} {n[6:]}"
     if digits.startswith("1") and len(digits) == 11:
         n = digits[1:]
         return f"+1 {n[:3]} {n[3:6]} {n[6:]}"

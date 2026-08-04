@@ -203,6 +203,7 @@ ui:
       search_submit: "Znajdź"
       search_clear: "Wyczyść wyszukiwanie"
       type: "Typ"
+      status: "Status"
       priority: "Priorytet"
       tag: "Tag"
       mine_only: "Tylko moje"
@@ -362,6 +363,8 @@ ui:
       sort_name_desc: "Sortuj według imienia malejąco"
       sort_tickets_asc: "Sortuj według utworzonych zgłoszeń rosnąco"
       sort_tickets_desc: "Sortuj według utworzonych zgłoszeń malejąco"
+      sort_last_login_asc: "Sortuj według ostatniego logowania rosnąco"
+      sort_last_login_desc: "Sortuj według ostatniego logowania malejąco"
       by_status: "Według statusu"
       by_type: "Według typu"
       empty_projects: "Brak projektów."
@@ -411,6 +414,7 @@ ui:
       filter_all: "Wszystkie"
       filter_clear: "Wyczyść"
       col_name: "Imię i nazwisko"
+      col_status: "Status"
       sort_name_asc: "Sortuj według imienia rosnąco"
       sort_name_desc: "Sortuj według imienia malejąco"
       sort_email_asc: "Sortuj według e-maila rosnąco"
@@ -419,8 +423,8 @@ ui:
       sort_phone_desc: "Sortuj według telefonu malejąco"
       sort_role_asc: "Sortuj według roli rosnąco"
       sort_role_desc: "Sortuj według roli malejąco"
-      sort_last_login_asc: "Sortuj według ostatniego logowania rosnąco"
-      sort_last_login_desc: "Sortuj według ostatniego logowania malejąco"
+      sort_status_asc: "Sortuj według statusu rosnąco"
+      sort_status_desc: "Sortuj według statusu malejąco"
       col_last_login: "Ostatnie logowanie"
     user_new:
       title: "Nowy użytkownik"
@@ -753,7 +757,7 @@ js:
     feed-needs-us:
       body: "Zgłoszenia czekające na odpowiedź zespołu."
     feed-filters:
-      body: "Zawęż listę według typu, priorytetu lub tagu."
+      body: "Zawęż listę według typu, statusu, priorytetu lub tagu."
     ticket-status:
       body: "Kliknij, by zmienić status zgłoszenia."
     ticket-done:

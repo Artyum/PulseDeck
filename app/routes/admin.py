@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
-from app.deps.auth import AdminUser, DbSession
+from app.deps.auth import AdminUser, DbSession, get_last_project_key
 from app.models.enums import UserRole
 from app.models.ticket import Tag
 from app.models.user import Project, User
@@ -28,8 +28,8 @@ def _admin_user_create_limit() -> str:
     return get_settings().auth_admin_user_create_rate_limit
 
 
-_USER_SORT_COLS = ("name", "email", "phone", "role", "last_login")
-_ACTIVITY_SORT_COLS = ("name", "tickets")
+_USER_SORT_COLS = ("name", "email", "phone", "role", "status")
+_ACTIVITY_SORT_COLS = ("name", "tickets", "last_login")
 _USER_STATUS_FILTERS = ("active", "blocked")
 
 
@@ -168,7 +168,10 @@ def admin_home(
         if raw.isdigit():
             selected_project = next((p for p in projects if p.id == int(raw)), None)
         if selected_project is None:
-            selected_project = projects[0]
+            last_key = get_last_project_key(request)
+            selected_project = next(
+                (p for p in projects if p.key == last_key), projects[0]
+            )
         result = project_service.admin_project_stats(
             db,
             selected_project.id,

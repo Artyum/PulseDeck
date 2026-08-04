@@ -167,7 +167,7 @@ def admin_project_stats(
         for member in members
     ]
     descending = (sort_dir or "").strip().lower() == "desc"
-    by_tickets = (sort or "").strip().lower() == "tickets"
+    col = (sort or "").strip().lower()
 
     def _activity_key(row: AdminProjectUserActivity):
         name = (
@@ -175,7 +175,12 @@ def admin_project_stats(
             (row.user.first_name or "").casefold(),
             row.user.id,
         )
-        return (row.tickets_created, *name) if by_tickets else name
+        if col == "tickets":
+            return (row.tickets_created, *name)
+        if col == "last_login":
+            ts = row.user.last_login_at
+            return (ts.timestamp() if ts is not None else 0.0, *name)
+        return name
 
     activity.sort(key=_activity_key, reverse=descending)
     return stats, activity
@@ -242,9 +247,11 @@ def list_users(
         stmt = stmt.order_by(
             primary, User.first_name.asc(), User.last_name.asc(), User.id
         )
-    elif col == "last_login":
-        primary = User.last_login_at.desc() if descending else User.last_login_at.asc()
-        stmt = stmt.order_by(primary.nulls_last(), User.id)
+    elif col == "status":
+        primary = User.is_active.desc() if descending else User.is_active.asc()
+        stmt = stmt.order_by(
+            primary, User.first_name.asc(), User.last_name.asc(), User.id
+        )
     else:
         first = User.first_name.desc() if descending else User.first_name.asc()
         last = User.last_name.desc() if descending else User.last_name.asc()

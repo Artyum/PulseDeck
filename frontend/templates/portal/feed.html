@@ -22,7 +22,7 @@
         ] %}
   {% endif %}
   {% macro chip_query(key) -%}
-    view={{ key }}{%- if key == 'unassigned' -%}{%- if filter_mine or filter_mine_paused -%}&mine_paused=1{%- endif -%}{%- elif filter_mine or filter_mine_paused -%}&mine=1{%- endif -%}{%- if filter_type -%}&type={{ filter_type }}{%- endif -%}{%- if filter_priority -%}&priority={{ filter_priority }}{%- endif -%}{%- if filter_tag -%}&tag={{ filter_tag }}{%- endif -%}{%- if filter_sort and filter_sort != 'created_at' -%}&sort={{ filter_sort }}{%- endif -%}
+    view={{ key }}{%- if key == 'unassigned' -%}{%- if filter_mine or filter_mine_paused -%}&mine_paused=1{%- endif -%}{%- elif filter_mine or filter_mine_paused -%}&mine=1{%- endif -%}{%- if filter_type -%}&type={{ filter_type }}{%- endif -%}{%- if filter_status -%}&status={{ filter_status }}{%- endif -%}{%- if filter_priority -%}&priority={{ filter_priority }}{%- endif -%}{%- if filter_tag -%}&tag={{ filter_tag }}{%- endif -%}{%- if filter_sort and filter_sort != 'created_at' -%}&sort={{ filter_sort }}{%- endif -%}
   {%- endmacro %}
   <div id="feed-header-and-results" class="issue-page" data-sidebar>
     <div class="issue-page-body">
@@ -128,6 +128,10 @@
               {{ filter_field_menu('type', t('ui.portal.feed.type') , ticket_types, filter_type, type_labels, empty_label=t('ui.portal.feed.filter_any')) }}
             </div>
             <div class="issue-field">
+              <span class="label-tight">{{ t("ui.portal.feed.status") }}</span>
+              {{ filter_field_menu('status', t('ui.portal.feed.status') , ticket_statuses, filter_status, status_labels, empty_label=t('ui.portal.feed.filter_any')) }}
+            </div>
+            <div class="issue-field">
               <span class="label-tight">{{ t("ui.portal.feed.priority") }}</span>
               {{ filter_field_menu('priority', t('ui.portal.feed.priority') , ticket_priorities, filter_priority, priority_labels, empty_label=t('ui.portal.feed.filter_any')) }}
             </div>
@@ -157,7 +161,7 @@
     {% include "partials/sidebar_toggle.html" %}
     {% include "partials/sidebar_backdrop.html" %}
   </div>
-  <dialog id="new-ticket" class="modal" data-confirm-close>
+  <dialog id="new-ticket" class="modal modal-fill" data-confirm-close>
     <form method="post"
           action="{{ url_for('create_ticket', key=project.key) }}"
           enctype="multipart/form-data"

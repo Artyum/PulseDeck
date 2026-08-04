@@ -228,6 +228,7 @@ def list_tickets(
     mine: bool = False,
     priority_filter: str | None = None,
     type_filter: str | None = None,
+    status_filter: str | None = None,
     tag: str | None = None,
     q: str | None = None,
     sort: str | None = None,
@@ -244,6 +245,11 @@ def list_tickets(
     if type_filter:
         try:
             stmt = stmt.where(Ticket.type == TicketType(type_filter))
+        except ValueError:
+            pass
+    if status_filter:
+        try:
+            stmt = stmt.where(Ticket.status == TicketStatus(status_filter))
         except ValueError:
             pass
     if tag:

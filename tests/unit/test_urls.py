@@ -93,11 +93,12 @@ class TestBuildFeedPath:
                 "DEMO",
                 priority="HIGH",
                 type="BUG",
+                status="NEW",
                 tag="x",
                 q="foo",
                 sort="updated_at",
             )
-            == "/p/DEMO?priority=HIGH&type=BUG&tag=x&q=foo&sort=updated_at"
+            == "/p/DEMO?priority=HIGH&type=BUG&status=NEW&tag=x&q=foo&sort=updated_at"
         )
 
     def test_mine_paused_without_mine(self):

@@ -61,6 +61,7 @@ def build_feed_path(
     mine_paused: bool = False,
     priority: str | None = None,
     type: str | None = None,
+    status: str | None = None,
     tag: str | None = None,
     q: str | None = None,
     sort: str | None = None,
@@ -77,6 +78,8 @@ def build_feed_path(
         params.append(("priority", priority))
     if type:
         params.append(("type", type))
+    if status:
+        params.append(("status", status))
     if tag:
         params.append(("tag", tag))
     if q:

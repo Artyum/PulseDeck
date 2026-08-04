@@ -78,7 +78,7 @@
           {{ users_sort_th('email', t('ui.profile.field.email') ) }}
           {{ users_sort_th('phone', t('ui.profile.field.phone') ) }}
           {{ users_sort_th('role', t('ui.admin.users.filter_role') ) }}
-          {{ users_sort_th('last_login', t('ui.admin.users.col_last_login') ) }}
+          {{ users_sort_th('status', t('ui.admin.users.col_status') ) }}
         </li>
       {% endif %}
       {% for u in users %}
@@ -93,14 +93,17 @@
                 {% if u.phone %}title="{{ u.phone|format_phone }}"{% endif %}>{{ u.phone|format_phone }}</span>
           <span class="admin-entity-badges">
             <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
-            {% if not u.is_active %}
-              <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
-            {% elif u.is_pending %}
+            {% if u.is_pending %}
               <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
             {% endif %}
           </span>
-          <span class="admin-users-cell admin-users-meta admin-users-login">
-            {% if u.last_login_at %}{{ u.last_login_at|format_dt }}{% endif %}
+          <span class="admin-users-cell admin-users-status">
+            <input type="checkbox"
+                   class="checkbox"
+                   disabled
+                   tabindex="-1"
+                   {% if u.is_active %}checked{% endif %}
+                   aria-label="{{ t('ui.common.active') if u.is_active else t('ui.admin.users.blocked') }}">
           </span>
         </li>
       {% else %}
@@ -108,7 +111,7 @@
       {% endfor %}
     </ul>
   </section>
-  <dialog id="new-user" class="modal">
+  <dialog id="new-user" class="modal modal-fill">
     <form method="post"
           action="{{ url_for('admin_user_create') }}"
           class="modal-form">

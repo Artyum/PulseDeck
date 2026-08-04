@@ -1,22 +1,23 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import form_select_menu with context %}
-{% macro count_cards(counts, members, labels, filter_key, feed) -%}
+{% macro count_card(label, value, href=none) -%}
+  {% if href %}
+    <a href="{{ href }}" class="admin-count-card">
+      <span class="admin-count-label">{{ label }}</span>
+      <span class="admin-count-value">{{ value }}</span>
+    </a>
+  {% else %}
+    <div class="admin-count-card">
+      <span class="admin-count-label">{{ label }}</span>
+      <span class="admin-count-value">{{ value }}</span>
+    </div>
+  {% endif %}
+{%- endmacro %}
+{% macro enum_count_cards(counts, members, labels, feed, query_key) -%}
   <div class="admin-count-cards">
     {% for member in members %}
-      {% set n = counts[member] %}
-      {% if n %}
-        <a href="{{ feed }}?{{ filter_key }}={{ member.value }}"
-           class="admin-count-card">
-          <span class="admin-count-label">{{ labels[member] }}</span>
-          <span class="admin-count-value">{{ n }}</span>
-        </a>
-      {% else %}
-        <div class="admin-count-card">
-          <span class="admin-count-label">{{ labels[member] }}</span>
-          <span class="admin-count-value">0</span>
-        </div>
-      {% endif %}
+      {{ count_card(labels[member], counts[member], feed ~ '?view=all&' ~ query_key ~ '=' ~ member.value) }}
     {% endfor %}
   </div>
 {%- endmacro %}
@@ -88,31 +89,18 @@
           {% if project_stats and selected_project %}
             {% set feed = url_for('project_feed', key=selected_project.key) %}
             <div class="admin-count-cards">
-              <a href="{{ url_for('project_detail', key=selected_project.key) }}"
-                 class="admin-count-card">
-                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_members") }}</span>
-                <span class="admin-count-value">{{ project_stats.members }}</span>
-              </a>
-              <div class="admin-count-card">
-                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_open_tickets") }}</span>
-                <span class="admin-count-value">{{ project_stats.open_tickets }}</span>
-              </div>
-              <a href="{{ feed }}" class="admin-count-card">
-                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_tickets") }}</span>
-                <span class="admin-count-value">{{ project_stats.tickets }}</span>
-              </a>
-              <div class="admin-count-card">
-                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_messages") }}</span>
-                <span class="admin-count-value">{{ project_stats.messages }}</span>
-              </div>
+              {{ count_card(t('ui.admin.dashboard.stat_members'), project_stats.members, url_for('project_detail', key=selected_project.key)) }}
+              {{ count_card(t('ui.admin.dashboard.stat_open_tickets'), project_stats.open_tickets, feed ~ '?view=open') }}
+              {{ count_card(t('ui.admin.dashboard.stat_tickets'), project_stats.tickets, feed ~ '?view=all') }}
+              {{ count_card(t('ui.admin.dashboard.stat_messages'), project_stats.messages) }}
             </div>
             <div class="admin-count-group">
               <p class="label-tight">{{ t("ui.admin.dashboard.by_status") }}</p>
-              {{ count_cards(project_stats.status_counts, ticket_statuses, status_labels, 'status', feed) }}
+              {{ enum_count_cards(project_stats.status_counts, ticket_statuses, status_labels, feed, 'status') }}
             </div>
             <div class="admin-count-group">
               <p class="label-tight">{{ t("ui.admin.dashboard.by_type") }}</p>
-              {{ count_cards(project_stats.type_counts, ticket_types, type_labels, 'type', feed) }}
+              {{ enum_count_cards(project_stats.type_counts, ticket_types, type_labels, feed, 'type') }}
             </div>
             <div class="admin-count-group">
               <p class="label-tight">{{ t("ui.admin.dashboard.user_activity") }}</p>
@@ -122,6 +110,7 @@
                     <tr>
                       <th>{{ activity_sort_th('name', t('ui.admin.users.col_name') ) }}</th>
                       <th>{{ activity_sort_th('tickets', t('ui.admin.dashboard.col_tickets_created') ) }}</th>
+                      <th>{{ activity_sort_th('last_login', t('ui.admin.users.col_last_login') ) }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -131,6 +120,9 @@
                           <a href="{{ feed }}?view=all&q={{ row.user.display_name|urlencode }}">{{ row.user.display_name }}</a>
                         </td>
                         <td>{{ row.tickets_created }}</td>
+                        <td>
+                          {% if row.user.last_login_at %}{{ row.user.last_login_at|format_dt }}{% endif %}
+                        </td>
                       </tr>
                     {% endfor %}
                   </tbody>

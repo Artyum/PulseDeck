@@ -238,6 +238,7 @@ def project_feed(
     mine_paused: str | None = None,
     priority: str | None = None,
     type: str | None = None,
+    status: str | None = None,
     tag: str | None = None,
     q: str | None = None,
     sort: str | None = None,
@@ -253,6 +254,7 @@ def project_feed(
     projects = project_service.list_user_projects(db, user)
     priority_filter = (priority or "").strip() or None
     type_filter = (type or "").strip() or None
+    status_filter = (status or "").strip() or None
     tag_filter = (tag or "").strip() or None
     q_filter = (q or "").strip() or None
     sort_filter = (sort or "").strip() or None
@@ -280,6 +282,7 @@ def project_feed(
         mine=filter_mine,
         priority_filter=priority_filter,
         type_filter=type_filter,
+        status_filter=status_filter,
         tag=tag_filter,
         q=q_filter,
         sort=filter_sort,
@@ -291,6 +294,7 @@ def project_feed(
         mine_paused=filter_mine_paused,
         priority=priority_filter,
         type=type_filter,
+        status=status_filter,
         tag=tag_filter,
         q=q_filter,
         sort=filter_sort,
@@ -308,6 +312,7 @@ def project_feed(
         filter_mine_paused=filter_mine_paused,
         filter_priority=priority_filter or "",
         filter_type=type_filter or "",
+        filter_status=status_filter or "",
         filter_tag=tag_filter or "",
         filter_q=q_filter or "",
         filter_sort=filter_sort,
