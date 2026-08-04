@@ -61,7 +61,26 @@ class TestRenderMarkdownSafe:
         assert "<img" not in html
         assert "<strong>x</strong>" in html
 
-    def test_no_links(self):
-        html = render_markdown_safe("[click](https://evil.example)")
+    def test_autolink_bare_url(self):
+        html = render_markdown_safe("see https://example.com now")
+        assert 'href="https://example.com"' in html
+        assert 'target="_blank"' in html
+        assert 'rel="noopener noreferrer"' in html
+        assert ">https://example.com</a>" in html
+
+    def test_markdown_link(self):
+        html = render_markdown_safe("[click](https://example.com/path)")
+        assert 'href="https://example.com/path"' in html
+        assert ">click</a>" in html
+        assert 'target="_blank"' in html
+        assert 'rel="noopener noreferrer"' in html
+
+    def test_rejects_javascript_scheme(self):
+        html = render_markdown_safe("[x](javascript:alert(1))")
+        assert 'href="javascript:' not in html
         assert "<a " not in html
-        assert "click" in html
+
+    def test_rejects_data_scheme(self):
+        html = render_markdown_safe("[x](data:text/html,hi)")
+        assert 'href="data:' not in html
+        assert "<a " not in html

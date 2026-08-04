@@ -287,6 +287,8 @@ ui:
     toolbar: "Formatting"
     bold: "Bold"
     italic: "Italic"
+    link: "Link"
+    link_apply: "Add link"
     bullet_list: "Bullet list"
     ordered_list: "Numbered list"
     code_block: "Code block"

@@ -287,6 +287,8 @@ ui:
     toolbar: "Formatowanie"
     bold: "Pogrubienie"
     italic: "Kursywa"
+    link: "Link"
+    link_apply: "Dodaj link"
     bullet_list: "Lista punktowana"
     ordered_list: "Lista numerowana"
     code_block: "Blok kodu"

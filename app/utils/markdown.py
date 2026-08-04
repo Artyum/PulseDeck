@@ -15,22 +15,29 @@ _ALLOWED_TAGS = {
     "code",
     "pre",
     "blockquote",
+    "a",
 }
+
+_ALLOWED_ATTRIBUTES = {
+    "a": {"href"},
+}
+
+_URL_SCHEMES = {"http", "https"}
 
 _DISABLED_RULES = (
     "heading",
     "lheading",
-    "link",
     "image",
-    "autolink",
     "html_inline",
     "html_block",
     "reference",
     "entity",
 )
 
-_md = MarkdownIt("commonmark", {"html": False, "linkify": False}).disable(
-    _DISABLED_RULES
+_md = (
+    MarkdownIt("commonmark", {"html": False, "linkify": True})
+    .enable("linkify")
+    .disable(_DISABLED_RULES)
 )
 
 
@@ -38,4 +45,13 @@ def render_markdown_safe(text: str | None) -> Markup:
     if not text or not str(text).strip():
         return Markup("")
     html = _md.render(str(text))
-    return Markup(nh3.clean(html, tags=_ALLOWED_TAGS, attributes={}))
+    return Markup(
+        nh3.clean(
+            html,
+            tags=_ALLOWED_TAGS,
+            attributes=_ALLOWED_ATTRIBUTES,
+            url_schemes=_URL_SCHEMES,
+            link_rel="noopener noreferrer",
+            set_tag_attribute_values={"a": {"target": "_blank"}},
+        )
+    )

@@ -3241,6 +3241,7 @@
 
   .issue-description {
     margin: 0;
+    min-width: 0;
     font-size: 0.9375rem;
     line-height: 1.65;
     color: var(--color-ink);
@@ -3603,6 +3604,7 @@
 
   .comment-body {
     margin: calc(0.55rem * var(--space-scale)) 0 0;
+    min-width: 0;
     font-size: 0.9375rem;
     line-height: 1.55;
     color: var(--color-ink);
@@ -3642,6 +3644,7 @@
   /* === Rich text editor / markdown content === */
 
   .rich-editor {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -3693,6 +3696,41 @@
     background: var(--color-line);
   }
 
+  .rich-editor-link-pop {
+    position: absolute;
+    z-index: 20;
+    top: 2.55rem;
+    left: 0.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    width: min(100% - 0.7rem, 32rem);
+    padding: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-menu);
+  }
+
+  .rich-editor-link-pop[hidden] {
+    display: none;
+  }
+
+  .rich-editor-link-pop .input {
+    flex: 1 1 10rem;
+    min-width: 0;
+    height: 2rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .rich-editor-link-pop-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
   .rich-editor-surface,
   .rich-editor-surface.textarea,
   .modal-body .rich-editor-surface.textarea {
@@ -3737,6 +3775,12 @@
 
   .rich-content > :last-child {
     margin-bottom: 0;
+  }
+
+  .rich-content,
+  .rich-editor-prose {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .rich-content p,
@@ -3803,6 +3847,19 @@
     font-size: 0.8125rem;
     line-height: 1.5;
     color: var(--color-ink);
+  }
+
+  .rich-content a,
+  .rich-editor-prose a {
+    color: var(--color-pulse);
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .rich-content a:hover,
+  .rich-editor-prose a:hover {
+    color: var(--color-pulse-deep);
   }
 
   textarea[data-auto-resize] {
@@ -4975,6 +5032,7 @@
   .comment {
     width: 100%;
     max-width: calc(100% - 1.75rem);
+    min-width: 0;
     align-self: flex-start;
     border-radius: 0.4rem;
     border: 1px solid var(--color-line);

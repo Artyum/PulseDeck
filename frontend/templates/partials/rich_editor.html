@@ -22,6 +22,11 @@
               data-rich-cmd="toggleItalic"
               aria-label="{{ t('ui.editor.italic') }}"
               title="{{ t('ui.editor.italic') }}"><em>I</em></button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="setLink"
+              aria-label="{{ t('ui.editor.link') }}"
+              title="{{ t('ui.editor.link') }}">Link</button>
       <span class="rich-editor-sep" aria-hidden="true"></span>
       <button type="button"
               class="rich-editor-btn"
@@ -48,6 +53,19 @@
     </div>
     <div class="rich-editor-surface textarea">
       <div data-rich-surface></div>
+    </div>
+    <div class="rich-editor-link-pop" data-rich-link-pop hidden>
+      <input type="url"
+             class="input"
+             data-rich-link-input
+             placeholder="https://"
+             aria-label="{{ t('ui.editor.link') }}"
+             autocomplete="url"
+             inputmode="url">
+      <div class="rich-editor-link-pop-actions">
+        <button type="button" class="btn btn-secondary btn-sm" data-rich-link-cancel>{{ t('ui.common.cancel') }}</button>
+        <button type="button" class="btn btn-primary btn-sm" data-rich-link-apply>{{ t('ui.editor.link_apply') }}</button>
+      </div>
     </div>
   </div>
 {%- endmacro %}

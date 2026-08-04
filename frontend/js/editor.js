@@ -9,7 +9,76 @@ var CMD_ACTIVE = {
   toggleOrderedList: "orderedList",
   toggleCodeBlock: "codeBlock",
   toggleBlockquote: "blockquote",
+  setLink: "link",
 };
+
+function parseHttpUrl(url, defaultProtocol) {
+  try {
+    var raw = String(url || "").trim();
+    if (!raw) return null;
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = (defaultProtocol || "https") + "://" + raw;
+    var parsed = new URL(raw);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+    return parsed.href;
+  } catch (_e) {
+    return null;
+  }
+}
+
+function closeLinkPop(root) {
+  var pop = root && root.querySelector("[data-rich-link-pop]");
+  if (!pop) return;
+  pop.hidden = true;
+  if (root._richLinkDoc) {
+    document.removeEventListener("mousedown", root._richLinkDoc, true);
+    document.removeEventListener("keydown", root._richLinkDoc, true);
+    root._richLinkDoc = null;
+  }
+}
+
+function openLinkPop(root, editor) {
+  var pop = root.querySelector("[data-rich-link-pop]");
+  var input = root.querySelector("[data-rich-link-input]");
+  if (!pop || !input) return;
+  closeLinkPop(root);
+  input.value = editor.getAttributes("link").href || "";
+  pop.hidden = false;
+  root._richLinkDoc = function (ev) {
+    if (ev.type === "keydown") {
+      if (ev.key !== "Escape") return;
+      ev.preventDefault();
+    } else if (pop.contains(ev.target) || (ev.target.closest && ev.target.closest('[data-rich-cmd="setLink"]'))) {
+      return;
+    }
+    closeLinkPop(root);
+    editor.chain().focus().run();
+  };
+  document.addEventListener("mousedown", root._richLinkDoc, true);
+  document.addEventListener("keydown", root._richLinkDoc, true);
+  setTimeout(function () {
+    input.focus();
+    input.select();
+  }, 0);
+}
+
+function commitLinkPop(root, editor) {
+  var input = root.querySelector("[data-rich-link-input]");
+  var href = parseHttpUrl(input && input.value, "https");
+  closeLinkPop(root);
+  var chain = editor.chain().focus().extendMarkRange("link");
+  if (href) chain.setLink({ href: href }).run();
+  else chain.unsetLink().run();
+}
+
+function applyLinkCommand(root, editor) {
+  var pop = root.querySelector("[data-rich-link-pop]");
+  if (pop && !pop.hidden) {
+    closeLinkPop(root);
+    editor.chain().focus().run();
+    return;
+  }
+  openLinkPop(root, editor);
+}
 
 function i18n(key, vars) {
   var dict = window.__i18n || {};
@@ -100,8 +169,20 @@ function initEditor(root) {
         strike: false,
         dropcursor: false,
         gapcursor: false,
-        link: false,
         underline: false,
+        link: {
+          autolink: true,
+          linkOnPaste: true,
+          openOnClick: false,
+          defaultProtocol: "https",
+          HTMLAttributes: {
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+          isAllowedUri: function (url, ctx) {
+            return !!parseHttpUrl(url, ctx.defaultProtocol);
+          },
+        },
       }),
       Markdown.configure({
         indentation: { style: "space", size: 4 },
@@ -141,11 +222,40 @@ function initEditor(root) {
         return;
       }
       pendingQuote = "";
+      if (cmd === "setLink") {
+        applyLinkCommand(root, editor);
+        return;
+      }
+      closeLinkPop(root);
       var chain = editor.chain().focus();
       if (!cmd || typeof chain[cmd] !== "function") return;
       chain[cmd]().run();
     });
   });
+
+  var linkApply = root.querySelector("[data-rich-link-apply]");
+  var linkCancel = root.querySelector("[data-rich-link-cancel]");
+  var linkInput = root.querySelector("[data-rich-link-input]");
+  if (linkApply) {
+    linkApply.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      commitLinkPop(root, editor);
+    });
+  }
+  if (linkCancel) {
+    linkCancel.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      closeLinkPop(root);
+      editor.chain().focus().run();
+    });
+  }
+  if (linkInput) {
+    linkInput.addEventListener("keydown", function (ev) {
+      if (ev.key !== "Enter") return;
+      ev.preventDefault();
+      commitLinkPop(root, editor);
+    });
+  }
 
   root._richEditor = editor;
   root._richInput = input;
@@ -157,6 +267,7 @@ function scan(scope) {
 
 function destroyIn(scope) {
   (scope || document).querySelectorAll("[data-rich-editor]").forEach(function (root) {
+    closeLinkPop(root);
     if (!root._richEditor) return;
     try {
       root._richEditor.destroy();
