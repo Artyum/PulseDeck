@@ -1,4 +1,5 @@
 {% extends "base_app.html" %}
+{% set coachmark_scope = "ticket" %}
 {% from "partials/ticket_macros.html" import modal_header, modal_cancel, attach_picker with context %}
 {% from "partials/rich_editor.html" import rich_editor with context %}
 {% block title %}{{ app_name }} - {{ t("ui.ticket.doc_title", label=ticket|ticket_label) }}{% endblock title %}

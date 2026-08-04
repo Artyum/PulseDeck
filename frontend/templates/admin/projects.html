@@ -1,7 +1,7 @@
 {% extends "admin/base_admin.html" %}
+{% set coachmark_scope = "admin-projects" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/app_flash.html" import app_flash %}
-{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.projects.title") }}{% endblock title %}
 {% block content %}
   {{ app_flash(error=error) }}
@@ -12,7 +12,6 @@
     <div class="issue-section-bar">
       <div class="issue-section-title-row">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
-        {{ coachmark_replay("admin-projects") }}
       </div>
     </div>
     <form method="post"

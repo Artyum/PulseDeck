@@ -211,6 +211,12 @@
     flex-shrink: 0;
   }
 
+  .app-header-nav-mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
   .nav-chrome {
     display: inline-flex;
     align-items: center;

@@ -1,8 +1,8 @@
 {% extends "base_app.html" %}
+{% set coachmark_scope = "feed" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import ticket_row, attach_picker, modal_header, modal_cancel, filter_field_menu, form_select_menu with context %}
 {% from "partials/rich_editor.html" import rich_editor with context %}
-{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 {% block title %}{{ app_name }} - {{ t("ui.portal.feed.tickets") }}{% endblock title %}
 {% block content %}
   {% if user.is_staff %}
@@ -36,7 +36,6 @@
         <div class="issue-section-bar">
           <div class="issue-section-title-row">
             <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.portal.feed.tickets") }}</h2>
-            {{ coachmark_replay("feed") }}
           </div>
           <div class="issue-section-actions">
             <span class="label-tight">{{ t("ui.portal.feed.sort") }}</span>

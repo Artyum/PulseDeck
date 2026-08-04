@@ -1,4 +1,5 @@
 {% from "partials/icons.html" import icon, brand_logo with context %}
+{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 {% set show_project_picker = (not hide_project_picker|default(false)) and projects is defined and projects and (projects|length > 1 or not (project is defined and project.key is defined and project.key)) %}
 {% set show_project_section = (not hide_project_picker|default(false)) and project is defined and project and project.key is defined and project.key %}
 {% macro nav_project_links() -%}
@@ -106,22 +107,26 @@
              class="issue-menu-panel"
              role="menu">{{ nav_account_links() }}</div>
       </div>
+      {% if coachmark_scope|default('') %}{{ coachmark_replay(coachmark_scope) }}{% endif %}
     </nav>
     <div class="app-header-nav-mobile"
          x-data="{ open: false }"
          @keydown.escape.window="open = false"
          @click.outside="open = false"
          :class="{'is-menu-open': open}">
-      <button type="button"
-              class="nav-chrome nav-hamburger"
-              data-coachmark="nav-appearance"
-              @click="open = !open"
-              :aria-expanded="open"
-              aria-controls="app-nav-mobile-panel"
-              aria-label="{{ t('ui.nav.menu') }}">
-        <span x-show="!open">{{ icon("menu") }}</span>
-        <span x-show="open" x-cloak>{{ icon("close") }}</span>
-      </button>
+      <div class="app-header-nav-mobile-actions">
+        <button type="button"
+                class="nav-chrome nav-hamburger"
+                data-coachmark="nav-appearance"
+                @click="open = !open"
+                :aria-expanded="open"
+                aria-controls="app-nav-mobile-panel"
+                aria-label="{{ t('ui.nav.menu') }}">
+          <span x-show="!open">{{ icon("menu") }}</span>
+          <span x-show="open" x-cloak>{{ icon("close") }}</span>
+        </button>
+        {% if coachmark_scope|default('') %}{{ coachmark_replay(coachmark_scope) }}{% endif %}
+      </div>
       <nav id="app-nav-mobile-panel"
            class="issue-menu-panel nav-mobile-panel"
            x-show="open"

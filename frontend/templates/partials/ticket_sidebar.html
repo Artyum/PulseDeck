@@ -1,12 +1,10 @@
 {% from "partials/ticket_macros.html" import priority_chip, status_chip, type_chip, issue_field_menu with context %}
 {% from "partials/icons.html" import icon %}
-{% from "partials/coachmark_replay.html" import coachmark_replay with context %}
 {% set tref = ticket|ticket_label %}
 <section class="issue-side-block">
   <div class="issue-section-bar">
     <div class="issue-section-title-row">
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
-      {{ coachmark_replay("ticket") }}
     </div>
     <a href="{{ back_to_feed_url }}" class="nav-back">
       <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
