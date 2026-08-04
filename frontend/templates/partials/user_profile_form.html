@@ -110,6 +110,7 @@
   {% if is_admin_edit %}
     <section class="admin-section">
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>{{ t("ui.profile.password.section") }}</h2>
+      <p class="admin-section-note">{{ t("ui.profile.password.hint", min=password_min_len) }}</p>
       <div class="admin-narrow">
         <form method="post"
               action="{{ url_for('admin_user_password', user_id=edit_user.id) }}"
@@ -122,7 +123,6 @@
                      {{ field_attrs('user.password', required=False) }}
                      class="input"
                      autocomplete="new-password">
-              <p class="admin-field-hint">{{ t("ui.profile.password.hint") }}</p>
             </div>
             <div class="admin-field">
               <label class="label" for="admin-confirm-password">{{ t("ui.profile.password.confirm") }}</label>
@@ -168,7 +168,7 @@
                name="new_password"
                class="input"
                autocomplete="new-password">
-        <p class="admin-field-hint">{{ t("ui.profile.password.hint") }}</p>
+        <p class="admin-field-hint">{{ t("ui.profile.password.hint", min=password_min_len) }}</p>
       </div>
       <div class="admin-field">
         <label class="label" for="confirm_password">{{ t("ui.profile.password.confirm") }}</label>

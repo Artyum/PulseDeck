@@ -17,7 +17,9 @@ from app.validation.engine import validate
 
 def _limits():
     return {
-        fid: spec.max_len for fid, spec in FIELDS.items() if spec.max_len is not None
+        fid: field_spec(fid).max_len
+        for fid in FIELDS
+        if field_spec(fid).max_len is not None
     }
 
 

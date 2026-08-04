@@ -174,6 +174,7 @@ def common_context(request: Request, **extra) -> dict:
         "role_labels": _enum_label_map(lang, "user_role", UserRole),
         "ticket_reopen_days": portal.ticket_reopen_days,
         "upload_max_files": max(1, portal.upload_max_files),
+        "password_min_len": settings.password_min_len,
         "js_i18n": translations_prefix(lang, "js"),
     }
 

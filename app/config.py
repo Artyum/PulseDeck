@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     auth_forgot_password_rate_limit: str = "5/minute"
     auth_activate_rate_limit: str = "10/minute"
     auth_admin_user_create_rate_limit: str = "20/minute"
+    password_min_len: int = Field(default=12, ge=1, validation_alias="PASSWORD_MIN_LEN")
+    password_max_len: int = Field(
+        default=72, ge=1, le=72, validation_alias="PASSWORD_MAX_LEN"
+    )
     upload_rate_limit: str = "20/minute"
     trusted_hosts: str = Field(
         default="localhost,127.0.0.1,pulsedeck.lan", validation_alias="ALLOWED_HOSTS"
@@ -119,6 +123,10 @@ class Settings(BaseSettings):
             not self.storage_secret or self.storage_secret == _DEV_STORAGE_SECRET
         ):
             msg = "STORAGE_SECRET must be set to a strong value when ENVIRONMENT=prod"
+            raise ValueError(msg)
+
+        if self.password_min_len > self.password_max_len:
+            msg = "PASSWORD_MIN_LEN must be <= PASSWORD_MAX_LEN"
             raise ValueError(msg)
 
         self.app_base_url = self.app_base_url.strip().rstrip("/")

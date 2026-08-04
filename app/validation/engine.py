@@ -27,9 +27,14 @@ __all__ = [
 
 def field_spec(field_id: str) -> FieldSpec:
     try:
-        return FIELDS[field_id]
+        spec = FIELDS[field_id]
     except KeyError as exc:
         raise KeyError(f"Unknown field: {field_id}") from exc
+    if field_id == "user.password":
+        from app.validation.spec import password as password_field
+
+        return password_field(required=spec.required)
+    return spec
 
 
 def validate(field_id: str, value: Any) -> Any:

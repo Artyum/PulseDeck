@@ -83,12 +83,14 @@ def phone(*, required: bool = False) -> FieldSpec:
 
 
 def password(*, required: bool = True) -> FieldSpec:
+    from app.config import get_settings
+
+    settings = get_settings()
     return FieldSpec(
         field_type="password",
         required=required,
-        min_len=12,
-        max_len=72,
-        max_bytes=72,
+        min_len=settings.password_min_len,
+        max_len=settings.password_max_len,
         strip=False,
         html_input_type="password",
     )

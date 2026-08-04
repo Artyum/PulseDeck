@@ -7,9 +7,6 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from app.validation.spec import FieldSpec
 
-PASSWORD_MIN_LEN = 12
-PASSWORD_MAX_BYTES = 72
-
 _SPECIAL_RE = re.compile(rf"[{re.escape(string.punctuation)}]")
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _BLANK_EDGE_LINE_RE = re.compile(r"^(?:&nbsp;|\u00a0|\s)*$")
@@ -133,19 +130,22 @@ def _validate_timezone(field_id: str, value: str, spec: FieldSpec) -> str:
 
 
 def _validate_password(field_id: str, value: str, spec: FieldSpec) -> str:
-    min_len = spec.min_len if spec.min_len is not None else PASSWORD_MIN_LEN
-    max_bytes = spec.max_bytes if spec.max_bytes is not None else PASSWORD_MAX_BYTES
+    from app.config import get_settings
+
+    settings = get_settings()
+    min_len = spec.min_len if spec.min_len is not None else settings.password_min_len
+    max_len = spec.max_len if spec.max_len is not None else settings.password_max_len
     if len(value) < min_len:
         raise FieldValidationError(
             "too_short",
             field_id,
-            params={"min": min_len, "max": max_bytes, "reason": "min_length"},
+            params={"min": min_len, "max": max_len, "reason": "min_length"},
         )
-    if len(value.encode("utf-8")) > max_bytes:
+    if len(value.encode("utf-8")) > max_len:
         raise FieldValidationError(
             "too_long",
             field_id,
-            params={"min": min_len, "max": max_bytes, "reason": "too_long"},
+            params={"min": min_len, "max": max_len, "reason": "too_long"},
         )
     if not re.search(r"[a-z]", value):
         raise FieldValidationError("invalid", field_id, params={"reason": "need_lower"})

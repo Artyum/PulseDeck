@@ -1,7 +1,7 @@
 import bcrypt
 
+from app.config import get_settings
 from app.utils.i18n import DEFAULT_LANG, t
-from app.validation.types import PASSWORD_MAX_BYTES
 
 BCRYPT_ROUNDS = 12
 
@@ -14,7 +14,7 @@ def validate_password_strength(password: str, *, lang: str | None = None) -> str
 
 def _password_bytes(password: str, *, lang: str | None = None) -> bytes:
     pwd_bytes = password.encode("utf-8")
-    if len(pwd_bytes) > PASSWORD_MAX_BYTES:
+    if len(pwd_bytes) > get_settings().password_max_len:
         raise ValueError(t(lang or DEFAULT_LANG, "messages.password.too_long"))
     return pwd_bytes
 
@@ -26,7 +26,7 @@ def hash_password(password: str, *, lang: str | None = None) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    if len(plain_password.encode("utf-8")) > PASSWORD_MAX_BYTES:
+    if len(plain_password.encode("utf-8")) > get_settings().password_max_len:
         return False
     try:
         return bcrypt.checkpw(
