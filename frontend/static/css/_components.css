@@ -3138,8 +3138,8 @@
   }
 
   .issue-sidebar .issue-menu-value {
-    font-size: 0.9375rem;
-    line-height: 1.55;
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
 
   .issue-sidebar .field-value-participants {
@@ -3148,6 +3148,8 @@
     align-self: start;
     flex-wrap: nowrap;
     gap: calc(0.3rem * var(--space-scale));
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
 
   .issue-participant-primary {
@@ -3272,8 +3274,6 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 0.9375rem;
-    line-height: 1.55;
     color: var(--color-ink);
     width: 100%;
   }
@@ -3310,6 +3310,7 @@
     border-radius: 0.3rem;
     background: transparent;
     color: var(--color-steel);
+    opacity: 0.65;
     cursor: pointer;
   }
 
@@ -3318,6 +3319,11 @@
   .issue-field-edit-btn[aria-expanded="true"] {
     color: var(--color-ink);
     background: color-mix(in oklab, var(--color-soft-blue) 45%, var(--color-surface));
+  }
+
+  .issue-field-edit-btn:hover,
+  .issue-field-edit-btn[aria-expanded="true"] {
+    opacity: 1;
   }
 
   .issue-unwatch-btn .icon,
