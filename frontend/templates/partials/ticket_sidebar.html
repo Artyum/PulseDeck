@@ -30,7 +30,8 @@
         <div class="field-value">{{ type_chip(ticket.type) }}</div>
       {% endif %}
     </div>
-    <div class="issue-field">
+    <div class="issue-field"
+         {% if user.is_staff %} data-coachmark="ticket-priority"{% endif %}>
       <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
       {% if user.is_staff %}
         {% call issue_field_menu(t('ui.ticket.change_priority'), url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
@@ -40,7 +41,8 @@
         <div class="field-value">{{ priority_chip(ticket.priority) }}</div>
       {% endif %}
     </div>
-    <div class="issue-field" data-coachmark="ticket-status">
+    <div class="issue-field"
+         {% if user.is_staff %}data-coachmark="ticket-status"{% endif %}>
       <span class="label-tight">{{ t("ui.ticket.status") }}</span>
       {% if user.is_staff %}
         {% call issue_field_menu(t('ui.ticket.change_status'), url_for('change_status', ticket_ref=tref), 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}
@@ -55,6 +57,7 @@
                   @click="open = !open"
                   :aria-expanded="open"
                   class="issue-menu-trigger"
+                  data-coachmark="ticket-done"
                   aria-label="{{ t('ui.ticket.change_status') }}"
                   title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
           <div x-show="open"
@@ -79,6 +82,7 @@
                   @click="open = !open"
                   :aria-expanded="open"
                   class="issue-menu-trigger"
+                  data-coachmark="ticket-reopen"
                   aria-label="{{ t('ui.ticket.change_status') }}"
                   title="{{ t('ui.ticket.change_status') }}">{{ status_chip(ticket.status) }}</button>
           <div x-show="open"
@@ -112,7 +116,8 @@
         <div class="field-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</div>
       {% endif %}
     </div>
-    <div class="issue-field">
+    <div class="issue-field"
+         {% if can_assign %}data-coachmark="ticket-assignee"{% endif %}>
       <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>
       {% if can_assign %}
         <div class="issue-assignee-value">
@@ -123,7 +128,9 @@
             <form hx-post="{{ url_for('self_assign', ticket_ref=tref) }}"
                   hx-target="#ticket-view"
                   hx-swap="innerHTML">
-              <button type="submit" class="issue-self-assign-btn">{{ t("ui.ticket.self_assign") }}</button>
+              <button type="submit"
+                      class="issue-self-assign-btn"
+                      data-coachmark="ticket-self-assign">{{ t("ui.ticket.self_assign") }}</button>
             </form>
           {% endif %}
         </div>
@@ -146,6 +153,7 @@
                       @click="open = !open"
                       :aria-expanded="open"
                       class="issue-menu-trigger"
+                      data-coachmark="ticket-add-participant"
                       aria-label="{{ t('ui.ticket.add_participant') }}"
                       title="{{ t('ui.ticket.add_participant') }}">
                 <span class="issue-add-btn">{{ icon("add") }}</span>
@@ -170,9 +178,7 @@
                               class="issue-menu-item">{{ m.display_name }}</button>
                     {% endif %}
                   {% endfor %}
-                  {% if ns.n == 0 %}
-                    <p class="issue-menu-empty">{{ t("ui.ticket.no_participants_to_add") }}</p>
-                  {% endif %}
+                  {% if ns.n == 0 %}<p class="issue-menu-empty">{{ t("ui.ticket.no_participants_to_add") }}</p>{% endif %}
                 </form>
               </div>
             </div>
@@ -185,8 +191,9 @@
             {% set p = sorted_participants[0] %}
             {% set pname = p.user.display_name if p.user else p.user_id %}
             {% set as_admin = user.is_admin %}
+            {% set self_unwatch = p.user_id == user.id %}
             <span class="issue-participant-name">{{ pname }}</span>
-            {% if as_admin or (not user.is_staff and p.user_id == user.id) %}
+            {% if as_admin or (not user.is_staff and self_unwatch) %}
               <form method="post"
                     action="{{ url_for('stop_watching', ticket_ref=tref) }}"
                     class="issue-participant-unwatch"
@@ -196,6 +203,7 @@
                 <input type="hidden" name="user_id" value="{{ p.user_id }}">
                 <button type="submit"
                         class="issue-unwatch-btn"
+                        {% if self_unwatch %}data-coachmark="ticket-participants"{% endif %}
                         title="{{ t('ui.ticket.remove_participant' if as_admin else 'ui.ticket.stop_watching') }}"
                         aria-label="{{ t('ui.ticket.remove_participant_aria', name=pname) if as_admin else t('ui.ticket.stop_watching') }}">{{ icon("bell-off") }}</button>
               </form>
@@ -209,9 +217,10 @@
             {% for p in sorted_participants[1:] %}
               {% set pname = p.user.display_name if p.user else p.user_id %}
               {% set as_admin = user.is_admin %}
+              {% set self_unwatch = p.user_id == user.id %}
               <li class="issue-participant-row">
                 <span class="issue-participant-name">{{ pname }}</span>
-                {% if as_admin or (not user.is_staff and p.user_id == user.id) %}
+                {% if as_admin or (not user.is_staff and self_unwatch) %}
                   <form method="post"
                         action="{{ url_for('stop_watching', ticket_ref=tref) }}"
                         class="issue-participant-unwatch"
@@ -221,6 +230,7 @@
                     <input type="hidden" name="user_id" value="{{ p.user_id }}">
                     <button type="submit"
                             class="issue-unwatch-btn"
+                            {% if self_unwatch %}data-coachmark="ticket-participants"{% endif %}
                             title="{{ t('ui.ticket.remove_participant' if as_admin else 'ui.ticket.stop_watching') }}"
                             aria-label="{{ t('ui.ticket.remove_participant_aria', name=pname) if as_admin else t('ui.ticket.stop_watching') }}">{{ icon("bell-off") }}</button>
                   </form>
@@ -233,7 +243,8 @@
     </div>
   </div>
 </section>
-<section class="issue-side-block">
+<section class="issue-side-block"
+         {% if can_manage_tags %}data-coachmark="ticket-tags"{% endif %}>
   <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.ticket.tags") }}</h2>
   <div class="issue-side-fields">
     <div class="field-value">
@@ -267,9 +278,7 @@
                  placeholder="{{ t('ui.ticket.add_tag_placeholder') }}"
                  class="input input-compact">
           <datalist id="project-tag-list">
-            {% for tag in project_tags %}
-              <option value="{{ tag.name }}"></option>
-            {% endfor %}
+            {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
           </datalist>
           <button type="submit" class="btn btn-secondary">{{ t("ui.common.add") }}</button>
         </form>

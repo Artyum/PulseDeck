@@ -97,7 +97,8 @@
         <section class="issue-side-block">
           <div class="issue-section-bar">
             <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.portal.feed.view") }}</h2>
-            <label class="feed-mine-toggle{% if current_view == 'unassigned' %} is-disabled{% endif %}">
+            <label class="feed-mine-toggle{% if current_view == 'unassigned' %} is-disabled{% endif %}"
+                   {% if user.is_staff %}data-coachmark="feed-mine"{% endif %}>
               <input type="checkbox"
                      name="mine"
                      value="1"
@@ -111,11 +112,12 @@
           <div class="feed-views">
             {% for key, label in views %}
               <a href="{{ url_for('project_feed', key=project.key) }}?{{ chip_query(key) }}"
-                 class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
+                 class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"
+                 {% if key == 'needs_us' %}data-coachmark="feed-needs-us"{% elif key == 'waiting_on_me' %}data-coachmark="feed-waiting-on-me"{% elif key == 'unassigned' %}data-coachmark="feed-unassigned"{% endif %}><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
             {% endfor %}
           </div>
         </section>
-        <section class="issue-side-block">
+        <section class="issue-side-block" data-coachmark="feed-filters">
           <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("filter") }}</span>{{ t("ui.portal.feed.filters") }}</h2>
           <div class="issue-side-fields">
             <div class="issue-field">

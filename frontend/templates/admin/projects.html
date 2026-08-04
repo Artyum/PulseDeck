@@ -100,7 +100,7 @@
               {% endif %}
             </form>
           </div>
-          <details class="admin-entity-details">
+          <details class="admin-entity-details" data-coachmark="admin-project-tags">
             <summary>{{ t("ui.admin.projects.tags", count=item.tags|length) }}</summary>
             <div id="project-{{ p.id }}-tags">
               {% with project=p, tags=item.tags %}

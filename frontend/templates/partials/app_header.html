@@ -94,7 +94,7 @@
                 @click="open = !open"
                 :aria-expanded="open"
                 class="nav-chrome nav-user"
-                data-coachmark="nav-appearance"
+                data-coachmark="{%- if user.is_admin -%}nav-admin{%- else -%}nav-appearance{%- endif -%}"
                 aria-label="{{ t('ui.nav.user_menu') }}"
                 title="{{ user.display_name }}">
           <span class="nav-user-name">{{ user.display_name }}</span>
@@ -114,7 +114,7 @@
          :class="{'is-menu-open': open}">
       <button type="button"
               class="nav-chrome nav-hamburger"
-              data-coachmark="nav-appearance"
+              data-coachmark="{%- if user.is_admin -%}nav-admin{%- else -%}nav-appearance{%- endif -%}"
               @click="open = !open"
               :aria-expanded="open"
               aria-controls="app-nav-mobile-panel"

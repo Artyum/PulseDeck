@@ -70,9 +70,7 @@ function insertQuotedText(editor, text) {
   var content = String(text || "")
     .split(/\r\n|\n|\r/)
     .map(function (line) {
-      return line
-        ? { type: "paragraph", content: [{ type: "text", text: line }] }
-        : { type: "paragraph" };
+      return line ? { type: "paragraph", content: [{ type: "text", text: line }] } : { type: "paragraph" };
     });
   editor
     .chain()
