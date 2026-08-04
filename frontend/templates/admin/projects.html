@@ -52,61 +52,61 @@
   <section class="admin-section">
     <div class="issue-section-bar">
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
-      <form method="get" action="{{ url_for('admin_projects') }}">
-        <label class="checkbox-row">
-          <input type="checkbox"
-                 name="disabled"
-                 value="1"
-                 class="checkbox"
-                 {%- if show_disabled -%}
-                 checked
-                 {%- endif -%}
-                 onchange="this.form.requestSubmit()">
-          {{ t("ui.admin.projects.show_disabled") }}
-        </label>
-      </form>
     </div>
-    <ul class="admin-list">
+    <nav class="admin-tabs admin-section-tabs"
+         aria-label="{{ t('ui.admin.projects.list') }}">
+      <a href="{{ url_for('admin_projects') }}"
+         class="admin-tab{% if not show_disabled %} is-active{% endif %}"
+         {% if not show_disabled %}aria-current="page"{% endif %}>{{ t("ui.admin.projects.filter_active") }}</a>
+      <a href="{{ url_for('admin_projects') }}?disabled=1"
+         class="admin-tab{% if show_disabled %} is-active{% endif %}"
+         {% if show_disabled %}aria-current="page"{% endif %}>{{ t("ui.admin.projects.filter_disabled") }}</a>
+    </nav>
+    <div class="issue-list">
       {% for item in projects %}
         {% set p = item.project %}
-        <li class="admin-entity">
-          <div class="admin-entity-main">
-            <p class="admin-entity-title">
-              <span class="admin-entity-name">{{ p.name }}</span>
-              <span class="admin-key">{{ p.key }}</span>
-              {% if not p.is_active %}
-                <span class="admin-entity-badges">
-                  <span class="chip chip-blocked">{{ t("ui.admin.projects.disabled") }}</span>
+        <article class="ticket-row admin-project-row"
+                 data-active="{{ '1' if p.is_active else '0' }}">
+          <div class="ticket-row-main">
+            <a href="{{ url_for('project_detail', key=p.key) }}"
+               class="ticket-row-title">{{ p.name }}</a>
+            <div class="ticket-row-meta">
+              <span class="issue-key">{{ p.key }}</span>
+              {% if not p.is_active %}<span class="chip chip-blocked">{{ t("ui.admin.projects.disabled") }}</span>{% endif %}
+              {% if p.description %}
+                <span class="ticket-row-reporter">
+                  <span>{{ p.description }}</span>
                 </span>
               {% endif %}
-            </p>
-            <p class="admin-entity-meta">
-              {% if p.description %}{{ p.description }} ·{% endif %}
-              {{ t('ui.admin.projects.meta', members=item.member_count, tickets=item.ticket_count) }}
-            </p>
+              <span class="ticket-row-reporter">
+                <span>{{ t('ui.admin.projects.meta', members=item.member_count, tickets=item.ticket_count) }}</span>
+              </span>
+            </div>
           </div>
-          <div class="admin-entity-actions">
-            <a href="{{ url_for('project_detail', key=p.key) }}"
-               class="btn btn-secondary">{{ t("ui.common.edit") }}</a>
-            <form method="post"
-                  action="{{ url_for('admin_project_active', key=p.key) }}"
-                  {%- if p.is_active %}
-                  data-confirm-title="{{ t('ui.confirm.disable_project.title') }}"
-                  data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}"
-                  data-confirm-action="{{ t('ui.confirm.disable_project.action') }}"
-                  data-confirm-danger
-                  {%- endif -%}>
-              {% if show_disabled %}<input type="hidden" name="disabled" value="1">{% endif %}
-              {% if p.is_active %}
-                <input type="hidden" name="active" value="0">
-                <button type="submit" class="btn btn-danger">{{ t("ui.admin.projects.disable") }}</button>
-              {% else %}
-                <input type="hidden" name="active" value="1">
-                <button type="submit" class="btn btn-primary">{{ t("ui.admin.projects.enable") }}</button>
-              {% endif %}
-            </form>
+          <div class="ticket-row-side">
+            <div class="admin-project-row-actions">
+              <a href="{{ url_for('project_detail', key=p.key) }}"
+                 class="btn btn-secondary btn-sm">{{ t("ui.common.edit") }}</a>
+              <form method="post"
+                    action="{{ url_for('admin_project_active', key=p.key) }}"
+                    {%- if p.is_active %}
+                    data-confirm-title="{{ t('ui.confirm.disable_project.title') }}"
+                    data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}"
+                    data-confirm-action="{{ t('ui.confirm.disable_project.action') }}"
+                    data-confirm-danger
+                    {%- endif -%}>
+                {% if show_disabled %}<input type="hidden" name="disabled" value="1">{% endif %}
+                {% if p.is_active %}
+                  <input type="hidden" name="active" value="0">
+                  <button type="submit" class="btn btn-danger btn-sm">{{ t("ui.admin.projects.disable") }}</button>
+                {% else %}
+                  <input type="hidden" name="active" value="1">
+                  <button type="submit" class="btn btn-primary btn-sm">{{ t("ui.admin.projects.enable") }}</button>
+                {% endif %}
+              </form>
+            </div>
           </div>
-          <details class="admin-entity-details">
+          <details class="admin-project-row-tags">
             <summary>{{ t("ui.admin.projects.tags", count=item.tags|length) }}</summary>
             <div id="project-{{ p.id }}-tags">
               {% with project=p, tags=item.tags %}
@@ -114,10 +114,10 @@
               {% endwith %}
             </div>
           </details>
-        </li>
+        </article>
       {% else %}
-        <li class="empty">{{ t("ui.admin.projects.empty_disabled" if show_disabled else "ui.admin.projects.empty") }}</li>
+        <p class="empty">{{ t("ui.admin.projects.empty_disabled" if show_disabled else "ui.admin.projects.empty") }}</p>
       {% endfor %}
-    </ul>
+    </div>
   </section>
 {% endblock content %}

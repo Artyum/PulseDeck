@@ -6,7 +6,13 @@
   {% set next = 'desc' if sort == col and sort_dir == 'asc' else 'asc' %}
   <a href="{{ sort_links[col] }}"
      class="admin-users-sort{% if sort == col %} is-active is-{{ sort_dir }}{% endif %}"
-     aria-label="{{ t('ui.admin.users.sort_' ~ col ~ '_' ~ next) }}">{{ label }}</a>
+     aria-label="{{ t('ui.admin.users.sort_' ~ col ~ '_' ~ next) }}"
+     hx-get="{{ sort_links[col] }}"
+     hx-target="#users-results"
+     hx-select="#users-results"
+     hx-swap="outerHTML"
+     hx-push-url="true"
+     hx-on:click="var f=this.closest('section'),s=f&&f.querySelector('input[name=sort]'),o=f&&f.querySelector('input[name=order]');if(s)s.value='{{ col }}';if(o)o.value='{{ next }}'">{{ label }}</a>
 {%- endmacro %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.users.title") }}{% endblock title %}
 {% block content %}
@@ -46,6 +52,10 @@
                autocomplete="off">
       </div>
       <div class="admin-form-field">
+        <label class="label-tight">{{ t("ui.admin.users.filter_status") }}</label>
+        {{ form_select_menu('status', t('ui.admin.users.filter_status') , status_choices, filter_status, submit_on_pick=true, empty_label=t('ui.admin.users.filter_status_all')) }}
+      </div>
+      <div class="admin-form-field">
         <label class="label-tight">{{ t("ui.admin.users.filter_role") }}</label>
         {{ form_select_menu('role', t('ui.admin.users.filter_role') , user_roles, filter_role, role_labels, submit_on_pick=true, empty_label=t('ui.admin.users.filter_all')) }}
       </div>
@@ -55,7 +65,10 @@
       </div>
       <div class="admin-form-field">
         <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-        <button type="button" class="btn btn-ghost" data-feed-filter-clear>{{ t("ui.admin.users.filter_clear") }}</button>
+        <button type="button"
+                class="btn btn-ghost"
+                data-feed-filter-clear
+                data-feed-filter-clear-url="{{ url_for('admin_users') }}">{{ t("ui.admin.users.filter_clear") }}</button>
       </div>
     </form>
     <ul id="users-results" class="admin-list admin-users-table">
@@ -65,14 +78,16 @@
           {{ users_sort_th('email', t('ui.profile.field.email') ) }}
           {{ users_sort_th('phone', t('ui.profile.field.phone') ) }}
           {{ users_sort_th('role', t('ui.admin.users.filter_role') ) }}
-          <span class="admin-users-actions-head" aria-hidden="true">{{ t("ui.admin.users.col_actions") }}</span>
+          {{ users_sort_th('last_login', t('ui.admin.users.col_last_login') ) }}
         </li>
       {% endif %}
       {% for u in users %}
-        <li class="admin-entity admin-users-row">
+        <li class="admin-entity admin-users-row admin-entity-clickable">
           <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
-             class="admin-users-cell admin-users-name"
-             title="{{ u.display_name }}">{{ u.display_name }}</a>
+             class="admin-entity-hit"
+             aria-label="{{ t('ui.admin.users.edit_aria', name=u.display_name) }}"></a>
+          <span class="admin-users-cell admin-users-name"
+                title="{{ u.display_name }}">{{ u.display_name }}</span>
           <span class="admin-users-cell admin-users-meta" title="{{ u.email }}">{{ u.email }}</span>
           <span class="admin-users-cell admin-users-meta"
                 {% if u.phone %}title="{{ u.phone }}"{% endif %}>
@@ -90,36 +105,13 @@
               <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
             {% endif %}
           </span>
-          <div class="admin-entity-actions">
-            <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
-               class="btn btn-secondary btn-sm"
-               aria-label="{{ t('ui.admin.users.edit_aria', name=u.display_name) }}">{{ t("ui.common.edit") }}</a>
-            {% if u.is_pending and u.is_active %}
-              <form method="post"
-                    action="{{ url_for('admin_user_resend_activation', user_id=u.id) }}">
-                <button type="submit" class="btn btn-secondary btn-sm">{{ t("ui.admin.users.resend") }}</button>
-              </form>
+          <span class="admin-users-cell admin-users-meta admin-users-login">
+            {% if u.last_login_at %}
+              {{ u.last_login_at|format_dt }}
             {% else %}
-              <button type="button" class="btn btn-secondary btn-sm" disabled>{{ t("ui.admin.users.resend") }}</button>
+              {{ t("ui.common.empty_dash") }}
             {% endif %}
-            {% if u.id == user.id %}
-              <button type="button"
-                      class="btn btn-danger btn-sm"
-                      disabled
-                      title="{{ t('messages.auth.cannot_block_self') }}">{{ t("ui.admin.users.block") }}</button>
-            {% else %}
-              <form method="post"
-                    action="{{ url_for('admin_user_active', user_id=u.id) }}">
-                {% if u.is_active %}
-                  <input type="hidden" name="active" value="0">
-                  <button type="submit" class="btn btn-danger btn-sm">{{ t("ui.admin.users.block") }}</button>
-                {% else %}
-                  <input type="hidden" name="active" value="1">
-                  <button type="submit" class="btn btn-primary btn-sm">{{ t("ui.admin.users.unblock") }}</button>
-                {% endif %}
-              </form>
-            {% endif %}
-          </div>
+          </span>
         </li>
       {% else %}
         <li class="empty">{{ t("ui.admin.users.empty") }}</li>
@@ -177,7 +169,7 @@
         </div>
         <div class="admin-field"
              data-projects-field
-             data-required-msg="{{ t('ui.admin.projects_required') }}">{{ project_checkboxes(projects, form_project_ids) }}</div>
+             data-required-msg="{{ t('ui.admin.projects_required') }}">{{ project_checkboxes(form_projects, form_project_ids) }}</div>
         <p class="admin-field-hint" data-admin-projects-hint hidden>{{ t("ui.profile.admin_all_projects_hint") }}</p>
       </div>
       <div class="modal-footer">

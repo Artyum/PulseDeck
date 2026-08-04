@@ -28,7 +28,12 @@ def _admin_user_create_limit() -> str:
     return get_settings().auth_admin_user_create_rate_limit
 
 
-def _admin_users_path(**params: str) -> str:
+_USER_SORT_COLS = ("name", "email", "phone", "role", "last_login")
+_ACTIVITY_SORT_COLS = ("name", "tickets")
+_USER_STATUS_FILTERS = ("active", "blocked")
+
+
+def _admin_path(base: str, **params: str) -> str:
     clean: dict[str, str] = {}
     for key, value in params.items():
         if not value:
@@ -39,38 +44,48 @@ def _admin_users_path(**params: str) -> str:
             continue
         clean[key] = value
     qs = urlencode(clean)
-    return f"/admin/users?{qs}" if qs else "/admin/users"
+    return f"{base}?{qs}" if qs else base
 
 
-_USER_SORT_COLS = ("name", "email", "phone", "role")
-
-
-def _parse_user_sort(sort: str | None, order: str | None) -> tuple[str, str]:
+def _parse_sort(
+    sort: str | None,
+    order: str | None,
+    *,
+    allowed: tuple[str, ...],
+) -> tuple[str, str]:
     col = (sort or "").strip().lower()
-    if col not in _USER_SORT_COLS:
-        col = "name"
+    if col not in allowed:
+        col = allowed[0]
     direction = "desc" if (order or "").strip().lower() == "desc" else "asc"
     return col, direction
 
 
-def _user_sort_links(
+def _sort_links(
+    base: str,
+    cols: tuple[str, ...],
     *,
     sort: str,
     order: str,
-    q: str,
-    role: str,
-    project: str,
+    **filters: str,
 ) -> dict[str, str]:
     return {
-        col: _admin_users_path(
+        col: _admin_path(
+            base,
             sort=col,
             order=("desc" if col == sort and order == "asc" else "asc"),
-            q=q,
-            role=role,
-            project=project,
+            **filters,
         )
-        for col in _USER_SORT_COLS
+        for col in cols
     }
+
+
+def _parse_user_status(status: str | None) -> tuple[str, bool | None]:
+    raw = (status or "").strip().lower()
+    if raw == "active":
+        return "active", True
+    if raw == "blocked":
+        return "blocked", False
+    return "", None
 
 
 def _admin_project(db: Session, key: str, *, lang: str | None = None) -> Project:
@@ -83,6 +98,16 @@ def _form_truthy(value: str) -> bool:
 
 def _admin_projects_path(*, disabled: bool = False) -> str:
     return "/admin/projects?disabled=1" if disabled else "/admin/projects"
+
+
+def _admin_projects_ctx(db: Session, *, show_disabled: bool, **extra) -> dict:
+    return {
+        "show_disabled": show_disabled,
+        "projects": project_service.list_project_summaries(
+            db, disabled_only=show_disabled
+        ),
+        **extra,
+    }
 
 
 def _form_text(form, key: str) -> str:
@@ -125,15 +150,51 @@ def _get_user_or_404(db: Session, user_id: int, *, lang: str | None = None) -> U
 
 
 @router.get("", response_class=HTMLResponse)
-def admin_home(request: Request, user: AdminUser, db: DbSession):
-    by_status, by_type = project_service.admin_project_ticket_breakdowns(db)
+def admin_home(
+    request: Request,
+    user: AdminUser,
+    db: DbSession,
+    project: Annotated[str, Query()] = "",
+    sort: Annotated[str, Query()] = "",
+    order: Annotated[str, Query()] = "",
+):
+    projects = project_service.list_projects(db, active_only=True)
+    selected_project = None
+    project_stats = None
+    project_activity = []
+    sort_col, sort_dir = _parse_sort(sort, order, allowed=_ACTIVITY_SORT_COLS)
+    if projects:
+        raw = (project or "").strip()
+        if raw.isdigit():
+            selected_project = next((p for p in projects if p.id == int(raw)), None)
+        if selected_project is None:
+            selected_project = projects[0]
+        result = project_service.admin_project_stats(
+            db,
+            selected_project.id,
+            sort=sort_col,
+            sort_dir=sort_dir,
+        )
+        if result is not None:
+            project_stats, project_activity = result
     return render(
         request,
         "admin/dashboard.html",
         user=user,
         stats=project_service.admin_dashboard_stats(db),
-        project_ticket_stats=by_status,
-        project_ticket_type_stats=by_type,
+        projects=projects,
+        selected_project=selected_project,
+        project_stats=project_stats,
+        project_activity=project_activity,
+        activity_sort=sort_col,
+        activity_sort_dir=sort_dir,
+        activity_sort_links=_sort_links(
+            "/admin",
+            _ACTIVITY_SORT_COLS,
+            sort=sort_col,
+            order=sort_dir,
+            project=str(selected_project.id) if selected_project else "",
+        ),
     )
 
 
@@ -149,10 +210,7 @@ def admin_projects(
         request,
         "admin/projects.html",
         user=user,
-        show_disabled=show_disabled,
-        projects=project_service.list_project_summaries(
-            db, disabled_only=show_disabled
-        ),
+        **_admin_projects_ctx(db, show_disabled=show_disabled),
     )
 
 
@@ -174,14 +232,14 @@ def create_project(
             request,
             "admin/projects.html",
             user=user,
-            show_disabled=show_disabled,
-            projects=project_service.list_project_summaries(
-                db, disabled_only=show_disabled
+            **_admin_projects_ctx(
+                db,
+                show_disabled=show_disabled,
+                error=str(exc),
+                form_name=name,
+                form_key=key,
+                form_description=description,
             ),
-            error=str(exc),
-            form_name=name,
-            form_key=key,
-            form_description=description,
         )
     return RedirectResponse(_admin_projects_path(), status_code=303)
 
@@ -303,6 +361,8 @@ _USER_OK_FLASH = {
     "password_set": "flash.admin.password_set",
     "activation_resent": "flash.admin.activation_resent",
     "notifications": "flash.admin.notifications_updated",
+    "blocked": "flash.admin.user_blocked",
+    "unblocked": "flash.admin.user_unblocked",
 }
 
 
@@ -319,7 +379,7 @@ def _user_edit_redirect(user_id: int, *, ok: str | None = None) -> RedirectRespo
 def _user_edit_ctx(db: Session, target: User, *, flash: str | None = None) -> dict:
     return {
         "edit_user": target,
-        "projects": project_service.list_projects(db),
+        "projects": project_service.list_projects(db, active_only=True),
         "form_project_ids": [m.project_id for m in target.memberships],
         "is_admin_edit": True,
         "flash": flash,
@@ -334,6 +394,7 @@ def admin_users(
     role: str | None = None,
     project: str | None = None,
     q: str | None = None,
+    status: str | None = None,
     sort: str | None = None,
     order: str | None = None,
 ):
@@ -362,7 +423,8 @@ def admin_users(
             filter_project = str(pid)
 
     filter_q = (q or "").strip()
-    sort_col, sort_dir = _parse_user_sort(sort, order)
+    filter_status, active_filter = _parse_user_status(status)
+    sort_col, sort_dir = _parse_sort(sort, order, allowed=_USER_SORT_COLS)
 
     error = None
     try:
@@ -371,6 +433,7 @@ def admin_users(
             role=role_filter,
             project_id=project_id,
             q=filter_q or None,
+            active=active_filter,
             sort=sort_col,
             sort_dir=sort_dir,
             lang=lang,
@@ -385,18 +448,30 @@ def admin_users(
         user=user,
         users=users,
         projects=project_service.list_projects(db),
+        form_projects=project_service.list_projects(db, active_only=True),
         form_project_ids=[],
         filter_role=filter_role,
         filter_project=filter_project,
         filter_q=filter_q,
+        filter_status=filter_status,
+        status_choices=tuple(
+            {
+                "value": key,
+                "label": t(lang, f"ui.admin.users.filter_status_{key}"),
+            }
+            for key in _USER_STATUS_FILTERS
+        ),
         sort=sort_col,
         sort_dir=sort_dir,
-        sort_links=_user_sort_links(
+        sort_links=_sort_links(
+            "/admin/users",
+            _USER_SORT_COLS,
             sort=sort_col,
             order=sort_dir,
             q=filter_q,
             role=filter_role,
             project=filter_project,
+            status=filter_status,
         ),
         error=error,
         flash=t(lang, flash_key) if flash_key else None,
@@ -502,20 +577,30 @@ def admin_user_active(
     return_to: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
-    target = db.get(User, user_id)
-    if target:
-        try:
-            auth_service.set_active(
-                db,
-                target,
-                actor=user,
-                active=_form_truthy(active),
-                lang=lang,
+    target = _get_user_or_404(db, user_id, lang=lang)
+    want_active = _form_truthy(active)
+    try:
+        auth_service.set_active(
+            db,
+            target,
+            actor=user,
+            active=want_active,
+            lang=lang,
+        )
+    except ValueError as exc:
+        if return_to == "edit":
+            return render(
+                request,
+                "admin/user_edit.html",
+                user=user,
+                **_user_edit_ctx(db, target, flash=None),
+                error=str(exc),
             )
-        except ValueError:
-            pass
+        return _users_redirect()
     if return_to == "edit":
-        return _user_edit_redirect(user_id)
+        return _user_edit_redirect(
+            user_id, ok="unblocked" if want_active else "blocked"
+        )
     return _users_redirect()
 
 

@@ -179,6 +179,7 @@ def login_submit(
         return _render_login(request, error=blocked, next_path=dest)
     clear_user_session(request, preserve_last_project=True)
     set_user_session(request, user)
+    auth_service.record_login(db, user)
     ensure_csrf_token(request)
     cookie_lang = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
     response = RedirectResponse(dest, status_code=303)
@@ -477,6 +478,7 @@ def activate_submit(
             request, error=t(lang, "flash.auth.activation_link_invalid")
         )
     set_user_session(request, user)
+    auth_service.record_login(db, user)
     logger.info(
         "Activation ok user_id=%s email=%s pending_was=%s",
         user.id,

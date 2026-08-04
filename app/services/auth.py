@@ -59,6 +59,15 @@ def authenticate_password(db: Session, email: str, password: str) -> User | None
     return user
 
 
+def record_login(db: Session, user: User) -> None:
+    user.last_login_at = datetime.now(timezone.utc)
+    try:
+        db.commit()
+    except Exception:
+        logger.exception("Failed to record login user_id=%s", user.id)
+        db.rollback()
+
+
 def login_blocked_reason(user: User, *, lang: str | None = None) -> str | None:
     lang = lang or DEFAULT_LANG
     if not user.is_active:

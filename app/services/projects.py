@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from typing import TypeVar
 
 from fastapi import HTTPException
 from sqlalchemy import func, or_, select
@@ -13,6 +14,8 @@ from app.models.ticket import Comment, Tag, Ticket, TicketTag
 from app.models.user import Project, ProjectMember, User
 from app.utils.i18n import DEFAULT_LANG, t
 from app.validation import clean, clean_many
+
+_E = TypeVar("_E", bound=Enum)
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,13 +37,19 @@ class AdminDashboardStats:
 
 
 @dataclass(frozen=True, slots=True)
-class ProjectTicketStats:
-    project: Project
-    counts: dict[Enum, int]
+class AdminProjectStats:
+    members: int
+    open_tickets: int
+    tickets: int
+    messages: int
+    status_counts: dict[TicketStatus, int]
+    type_counts: dict[TicketType, int]
 
-    @property
-    def total(self) -> int:
-        return sum(self.counts.values())
+
+@dataclass(frozen=True, slots=True)
+class AdminProjectUserActivity:
+    user: User
+    tickets_created: int
 
 
 def list_projects(
@@ -80,42 +89,96 @@ def admin_dashboard_stats(db: Session) -> AdminDashboardStats:
     )
 
 
-def _admin_project_ticket_breakdown(
+def _ticket_enum_counts(
     db: Session,
-    projects: list[Project],
+    project_id: int,
     column,
-    enum_cls: type[Enum],
-) -> list[ProjectTicketStats]:
-    tallies: dict[int, dict[Enum, int]] = {
-        p.id: {member: 0 for member in enum_cls} for p in projects
-    }
-    for project_id, raw, count in db.execute(
-        select(Ticket.project_id, column, func.count())
-        .where(Ticket.project_id.in_(tuple(tallies)))
-        .group_by(Ticket.project_id, column)
+    enum_cls: type[_E],
+) -> dict[_E, int]:
+    counts: dict[_E, int] = {member: 0 for member in enum_cls}
+    for raw, count in db.execute(
+        select(column, func.count())
+        .where(Ticket.project_id == project_id)
+        .group_by(column)
     ):
-        bucket = tallies.get(int(project_id))
-        if bucket is None:
-            continue
         key = raw if isinstance(raw, enum_cls) else enum_cls(raw)
-        bucket[key] = int(count)
-
-    return [
-        ProjectTicketStats(project=project, counts=tallies[project.id])
-        for project in projects
-    ]
+        counts[key] = int(count)
+    return counts
 
 
-def admin_project_ticket_breakdowns(
+def admin_project_stats(
     db: Session,
-) -> tuple[list[ProjectTicketStats], list[ProjectTicketStats]]:
-    projects = list_projects(db, active_only=True)
-    if not projects:
-        return [], []
-    return (
-        _admin_project_ticket_breakdown(db, projects, Ticket.status, TicketStatus),
-        _admin_project_ticket_breakdown(db, projects, Ticket.type, TicketType),
+    project_id: int,
+    *,
+    sort: str | None = None,
+    sort_dir: str | None = None,
+) -> tuple[AdminProjectStats, list[AdminProjectUserActivity]] | None:
+    if db.get(Project, project_id) is None:
+        return None
+
+    def _count(stmt) -> int:
+        return int(db.scalar(stmt) or 0)
+
+    members = list(
+        db.scalars(
+            select(User)
+            .join(ProjectMember, ProjectMember.user_id == User.id)
+            .where(ProjectMember.project_id == project_id)
+            .order_by(User.last_name, User.first_name)
+        ).all()
     )
+    ticket_counts = {
+        int(user_id): int(count)
+        for user_id, count in db.execute(
+            select(Ticket.author_id, func.count())
+            .where(Ticket.project_id == project_id)
+            .group_by(Ticket.author_id)
+        )
+    }
+    stats = AdminProjectStats(
+        members=len(members),
+        open_tickets=_count(
+            select(func.count())
+            .select_from(Ticket)
+            .where(
+                Ticket.project_id == project_id,
+                Ticket.status != TicketStatus.DONE,
+            )
+        ),
+        tickets=_count(
+            select(func.count())
+            .select_from(Ticket)
+            .where(Ticket.project_id == project_id)
+        ),
+        messages=_count(
+            select(func.count())
+            .select_from(Comment)
+            .join(Ticket, Ticket.id == Comment.ticket_id)
+            .where(Ticket.project_id == project_id)
+        ),
+        status_counts=_ticket_enum_counts(db, project_id, Ticket.status, TicketStatus),
+        type_counts=_ticket_enum_counts(db, project_id, Ticket.type, TicketType),
+    )
+    activity = [
+        AdminProjectUserActivity(
+            user=member,
+            tickets_created=ticket_counts.get(member.id, 0),
+        )
+        for member in members
+    ]
+    descending = (sort_dir or "").strip().lower() == "desc"
+    by_tickets = (sort or "").strip().lower() == "tickets"
+
+    def _activity_key(row: AdminProjectUserActivity):
+        name = (
+            (row.user.last_name or "").casefold(),
+            (row.user.first_name or "").casefold(),
+            row.user.id,
+        )
+        return (row.tickets_created, *name) if by_tickets else name
+
+    activity.sort(key=_activity_key, reverse=descending)
+    return stats, activity
 
 
 def list_admins(db: Session) -> list[User]:
@@ -134,12 +197,15 @@ def list_users(
     role: UserRole | None = None,
     project_id: int | None = None,
     q: str | None = None,
+    active: bool | None = None,
     sort: str | None = None,
     sort_dir: str | None = None,
     lang: str | None = None,
 ) -> list[User]:
     lang = lang or DEFAULT_LANG
     stmt = select(User).options(selectinload(User.memberships))
+    if active is not None:
+        stmt = stmt.where(User.is_active.is_(active))
     if role is not None:
         stmt = stmt.where(User.role == role)
     if project_id is not None:
@@ -176,6 +242,9 @@ def list_users(
         stmt = stmt.order_by(
             primary, User.first_name.asc(), User.last_name.asc(), User.id
         )
+    elif col == "last_login":
+        primary = User.last_login_at.desc() if descending else User.last_login_at.asc()
+        stmt = stmt.order_by(primary.nulls_last(), User.id)
     else:
         first = User.first_name.desc() if descending else User.first_name.asc()
         last = User.last_name.desc() if descending else User.last_name.asc()
@@ -464,11 +533,23 @@ def set_user_projects(
     if user and user.is_admin:
         clear_user_memberships(db, user_id)
         return
-    wanted = set(resolve_project_ids(db, project_ids, lang=lang))
     current = list(
         db.scalars(select(ProjectMember).where(ProjectMember.user_id == user_id)).all()
     )
     current_ids = {m.project_id for m in current}
+    inactive_ids = set(
+        db.scalars(
+            select(Project.id).where(
+                Project.id.in_(tuple(current_ids) or (0,)),
+                Project.is_active.is_(False),
+            )
+        ).all()
+    )
+    wanted = inactive_ids | (
+        set(resolve_project_ids(db, project_ids, lang=lang)) if project_ids else set()
+    )
+    if not wanted:
+        raise ValueError(t(lang or DEFAULT_LANG, "messages.projects.at_least_one"))
     for row in current:
         if row.project_id not in wanted:
             db.delete(row)

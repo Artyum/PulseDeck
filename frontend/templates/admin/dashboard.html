@@ -1,42 +1,35 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% macro project_breakdown_table(rows, members, labels, filter_key) -%}
-  <ul class="admin-list admin-status-table">
-    {% if rows %}
-      <li class="admin-status-head" aria-hidden="true">
-        <span>{{ t("ui.admin.projects.name") }}</span>
-        {% for member in members %}
-          <span class="admin-status-num">{{ labels[member] }}</span>
-        {% endfor %}
-        <span class="admin-status-num">{{ t("ui.admin.dashboard.col_total") }}</span>
-      </li>
-      {% for row in rows %}
-        {% set feed = url_for('project_feed', key=row.project.key) %}
-        <li class="admin-status-row">
-          <a href="{{ url_for('project_detail', key=row.project.key) }}"
-             class="admin-status-project"
-             title="{{ row.project.name }}">
-            <span class="admin-status-project-name">{{ row.project.name }}</span>
-          </a>
-          {% for member in members %}
-            {% if row.counts[member] %}
-              <a href="{{ feed }}?{{ filter_key }}={{ member.value }}"
-                 class="admin-status-num is-filled">{{ row.counts[member] }}</a>
-            {% else %}
-              <span class="admin-status-num">0</span>
-            {% endif %}
-          {% endfor %}
-          {% if row.total %}
-            <a href="{{ feed }}" class="admin-status-num admin-status-total">{{ row.total }}</a>
-          {% else %}
-            <span class="admin-status-num admin-status-total">0</span>
-          {% endif %}
-        </li>
-      {% endfor %}
-    {% else %}
-      <li class="empty">{{ t("ui.admin.dashboard.empty_projects") }}</li>
-    {% endif %}
-  </ul>
+{% from "partials/ticket_macros.html" import form_select_menu with context %}
+{% macro count_cards(counts, members, labels, filter_key, feed) -%}
+  <div class="admin-count-cards">
+    {% for member in members %}
+      {% set n = counts[member] %}
+      {% if n %}
+        <a href="{{ feed }}?{{ filter_key }}={{ member.value }}"
+           class="admin-count-card">
+          <span class="admin-count-label">{{ labels[member] }}</span>
+          <span class="admin-count-value">{{ n }}</span>
+        </a>
+      {% else %}
+        <div class="admin-count-card">
+          <span class="admin-count-label">{{ labels[member] }}</span>
+          <span class="admin-count-value">0</span>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{%- endmacro %}
+{% macro activity_sort_th(col, label) -%}
+  {% set next = 'desc' if activity_sort == col and activity_sort_dir == 'asc' else 'asc' %}
+  <a href="{{ activity_sort_links[col] }}"
+     class="admin-users-sort{% if activity_sort == col %} is-active is-{{ activity_sort_dir }}{% endif %}"
+     aria-label="{{ t('ui.admin.dashboard.sort_' ~ col ~ '_' ~ next) }}"
+     hx-get="{{ activity_sort_links[col] }}"
+     hx-target="#project-panel"
+     hx-select="#project-panel"
+     hx-swap="outerHTML"
+     hx-push-url="true">{{ label }}</a>
 {%- endmacro %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.dashboard.title") }}{% endblock title %}
 {% block content %}
@@ -72,11 +65,87 @@
     </div>
   </section>
   <section class="admin-section">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.dashboard.by_project") }}</h2>
-    {{ project_breakdown_table(project_ticket_stats, ticket_statuses, status_labels, 'status') }}
-  </section>
-  <section class="admin-section">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.admin.dashboard.by_type") }}</h2>
-    {{ project_breakdown_table(project_ticket_type_stats, ticket_types, type_labels, 'type') }}
+    <div class="issue-section-bar">
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.dashboard.per_project") }}</h2>
+    </div>
+    {% if projects %}
+      <div id="project-panel">
+        <form method="get"
+              action="{{ url_for('admin_home') }}"
+              class="admin-project-pick"
+              hx-get="{{ url_for('admin_home') }}"
+              hx-target="#project-panel"
+              hx-select="#project-panel"
+              hx-swap="outerHTML"
+              hx-push-url="true"
+              hx-trigger="submit">
+          <input type="hidden" name="sort" value="{{ activity_sort }}">
+          <input type="hidden" name="order" value="{{ activity_sort_dir }}">
+          <label class="label-tight" for="admin-project-select">{{ t("ui.admin.dashboard.select_project") }}</label>
+          {{ form_select_menu('project', t('ui.admin.dashboard.select_project') , projects, selected_project.id if selected_project else none, value_attr='id', id='admin-project-select', submit_on_pick=true) }}
+        </form>
+        <div class="admin-project-stats">
+          {% if project_stats and selected_project %}
+            {% set feed = url_for('project_feed', key=selected_project.key) %}
+            <div class="admin-count-cards">
+              <a href="{{ url_for('project_detail', key=selected_project.key) }}"
+                 class="admin-count-card">
+                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_members") }}</span>
+                <span class="admin-count-value">{{ project_stats.members }}</span>
+              </a>
+              <div class="admin-count-card">
+                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_open_tickets") }}</span>
+                <span class="admin-count-value">{{ project_stats.open_tickets }}</span>
+              </div>
+              <a href="{{ feed }}" class="admin-count-card">
+                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_tickets") }}</span>
+                <span class="admin-count-value">{{ project_stats.tickets }}</span>
+              </a>
+              <div class="admin-count-card">
+                <span class="admin-count-label">{{ t("ui.admin.dashboard.stat_messages") }}</span>
+                <span class="admin-count-value">{{ project_stats.messages }}</span>
+              </div>
+            </div>
+            <div class="admin-count-group">
+              <p class="label-tight">{{ t("ui.admin.dashboard.by_status") }}</p>
+              {{ count_cards(project_stats.status_counts, ticket_statuses, status_labels, 'status', feed) }}
+            </div>
+            <div class="admin-count-group">
+              <p class="label-tight">{{ t("ui.admin.dashboard.by_type") }}</p>
+              {{ count_cards(project_stats.type_counts, ticket_types, type_labels, 'type', feed) }}
+            </div>
+            <div class="admin-count-group">
+              <p class="label-tight">{{ t("ui.admin.dashboard.user_activity") }}</p>
+              {% if project_activity %}
+                <table class="admin-mini-table admin-mini-table-activity">
+                  <thead>
+                    <tr>
+                      <th>{{ activity_sort_th('name', t('ui.admin.users.col_name') ) }}</th>
+                      <th>{{ activity_sort_th('tickets', t('ui.admin.dashboard.col_tickets_created') ) }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in project_activity %}
+                      <tr>
+                        <td>
+                          <a href="{{ feed }}?view=all&q={{ row.user.display_name|urlencode }}">{{ row.user.display_name }}</a>
+                        </td>
+                        <td>{{ row.tickets_created }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              {% else %}
+                <p class="admin-entity-meta">{{ t("ui.admin.project.members_empty") }}</p>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <ul class="admin-list">
+        <li class="empty">{{ t("ui.admin.dashboard.empty_projects") }}</li>
+      </ul>
+    {% endif %}
   </section>
 {% endblock content %}

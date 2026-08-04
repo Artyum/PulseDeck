@@ -1,39 +1,53 @@
 {% extends "admin/base_admin.html" %}
-{% from "partials/icons.html" import icon %}
+{% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.user_edit.title") }}{% endblock title %}
 {% block content %}
   <div class="admin-page-head">
-    <h1 class="issue-title">{{ t("ui.admin.user_edit.heading") }}</h1>
-    {% if edit_user.id != user.id %}
-      <form method="post"
-            action="{{ url_for('admin_user_active', user_id=edit_user.id) }}">
-        <input type="hidden" name="return_to" value="edit">
-        {% if edit_user.is_active %}
+    <div class="admin-page-head-title">
+      <h1 class="issue-title">{{ t("ui.admin.user_edit.heading") }}</h1>
+      {% if not edit_user.is_active %}
+        <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
+      {% elif edit_user.is_pending %}
+        <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
+      {% endif %}
+    </div>
+    <div class="admin-page-head-actions">
+      {% if edit_user.is_pending and edit_user.is_active %}
+        <form method="post"
+              action="{{ url_for('admin_user_resend_activation', user_id=edit_user.id) }}">
+          <input type="hidden" name="return_to" value="edit">
+          <button type="submit" class="btn btn-secondary">{{ t("ui.admin.users.resend") }}</button>
+        </form>
+      {% else %}
+        <button type="button" class="btn btn-secondary" disabled>{{ t("ui.admin.users.resend") }}</button>
+      {% endif %}
+      {% if edit_user.id == user.id %}
+        <button type="button"
+                class="btn btn-danger"
+                disabled
+                title="{{ t('messages.auth.cannot_block_self') }}">{{ t("ui.admin.users.block") }}</button>
+      {% elif edit_user.is_active %}
+        <form method="post"
+              action="{{ url_for('admin_user_active', user_id=edit_user.id) }}"
+              data-confirm-title="{{ t('ui.confirm.block_user.title') }}"
+              data-confirm="{{ t('ui.confirm.block_user.message', name=edit_user.display_name) }}"
+              data-confirm-action="{{ t('ui.confirm.block_user.action') }}"
+              data-confirm-danger>
+          <input type="hidden" name="return_to" value="edit">
           <input type="hidden" name="active" value="0">
           <button type="submit" class="btn btn-danger">{{ t("ui.admin.users.block") }}</button>
-        {% else %}
+        </form>
+      {% else %}
+        <form method="post"
+              action="{{ url_for('admin_user_active', user_id=edit_user.id) }}">
+          <input type="hidden" name="return_to" value="edit">
           <input type="hidden" name="active" value="1">
           <button type="submit" class="btn btn-primary">{{ t("ui.admin.users.unblock") }}</button>
-        {% endif %}
-      </form>
-    {% endif %}
-  </div>
-  {% if edit_user.is_pending and edit_user.is_active %}
-    <section class="admin-section">
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>{{ t("ui.admin.user_edit.activation") }}</h2>
-      <p class="admin-section-note">{{ t("ui.admin.user_edit.activation_hint") }}</p>
-      <div class="admin-narrow">
-        <form method="post"
-              action="{{ url_for('admin_user_resend_activation', user_id=edit_user.id) }}"
-              class="admin-form-actions">
-          <input type="hidden" name="return_to" value="edit">
-          <button type="submit" class="btn btn-secondary">{{ t("ui.admin.user_edit.resend") }}</button>
         </form>
-      </div>
-    </section>
-  {% endif %}
+      {% endif %}
+    </div>
+  </div>
   {% include "partials/user_profile_form.html" %}
-  {% from "partials/app_flash.html" import app_flash %}
-  {{ app_flash(flash=flash) }}
+  {{ app_flash(flash=flash, error=error) }}
   <script src="{{ static_url('js/admin-user-form.js') }}" defer></script>
 {% endblock content %}
