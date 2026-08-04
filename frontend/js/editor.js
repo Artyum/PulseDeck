@@ -119,6 +119,56 @@ function maxLenFromInput(input) {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+function measureContent(editor, input) {
+  syncMarkdown(editor, input);
+  var text = (editor.getText() || "").replace(/\u00a0/g, " ").trim();
+  var mdLen = (input && input.value ? input.value : "").length;
+  return { text: text, used: Math.max(text.length, mdLen) };
+}
+
+function formatCharCount(used, max) {
+  return used.toLocaleString() + " / " + max.toLocaleString();
+}
+
+function updateCharMeter(root, editor, input, measured) {
+  var meter = root.querySelector("[data-rich-meter]");
+  if (!meter) return;
+  var maxLen = maxLenFromInput(input);
+  if (maxLen == null) {
+    meter.hidden = true;
+    return;
+  }
+  var used = (measured || measureContent(editor, input)).used;
+  var pct = maxLen > 0 ? (used / maxLen) * 100 : 0;
+  var warn = used >= maxLen * 0.9 && used <= maxLen;
+  var over = used > maxLen;
+  var fill = meter.querySelector("[data-rich-meter-fill]");
+  var track = meter.querySelector("[data-rich-meter-track]");
+  var label = meter.querySelector("[data-rich-meter-label]");
+  if (fill) fill.style.width = Math.min(100, pct) + "%";
+  meter.hidden = false;
+  meter.classList.toggle("is-warn", warn);
+  meter.classList.toggle("is-over", over);
+  if (track) {
+    track.setAttribute("aria-valuenow", String(used));
+    track.setAttribute("aria-valuemax", String(maxLen));
+    track.setAttribute(
+      "aria-valuetext",
+      i18n("editor.char_count", { used: used, max: maxLen }) || formatCharCount(used, maxLen)
+    );
+  }
+  if (label) label.textContent = formatCharCount(used, maxLen);
+}
+
+function maybeClearRichFieldError(editor, input, measured) {
+  if (!input || input.getAttribute("aria-invalid") !== "true") return;
+  var state = measured || measureContent(editor, input);
+  if (!state.text) return;
+  var maxLen = maxLenFromInput(input);
+  if (maxLen != null && state.used > maxLen) return;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
 function inClosedDialog(root) {
   var dlg = root && root.closest ? root.closest("dialog") : null;
   return !!(dlg && !dlg.open);
@@ -192,12 +242,15 @@ function initEditor(root) {
     contentType: "markdown",
     editorProps: { attributes: attrs },
     onCreate: function ({ editor: ed }) {
-      syncMarkdown(ed, input);
+      var measured = measureContent(ed, input);
       updateToolbar(root, ed);
+      updateCharMeter(root, ed, input, measured);
     },
     onUpdate: function ({ editor: ed }) {
-      syncMarkdown(ed, input);
+      var measured = measureContent(ed, input);
       updateToolbar(root, ed);
+      updateCharMeter(root, ed, input, measured);
+      maybeClearRichFieldError(ed, input, measured);
     },
     onSelectionUpdate: function ({ editor: ed }) {
       updateToolbar(root, ed);
@@ -287,8 +340,8 @@ window.richEditorValidate = function (formOrRoot) {
   if (!root || !root._richEditor) return true;
   var editor = root._richEditor;
   var input = root._richInput;
-  syncMarkdown(editor, input);
-  var text = (editor.getText() || "").replace(/\u00a0/g, " ").trim();
+  var measured = measureContent(editor, input);
+  var text = measured.text;
   var name = (input && input.getAttribute("name")) || "content";
   var form = root.closest("form") || formOrRoot;
   if (!text) {
@@ -304,7 +357,7 @@ window.richEditorValidate = function (formOrRoot) {
     return false;
   }
   var maxLen = maxLenFromInput(input);
-  if (maxLen != null && (text.length > maxLen || (input.value || "").length > maxLen)) {
+  if (maxLen != null && measured.used > maxLen) {
     if (typeof window.showFieldError === "function") {
       window.showFieldError(form, name, i18n("errors.content_too_long", { max: maxLen }) || "");
     }

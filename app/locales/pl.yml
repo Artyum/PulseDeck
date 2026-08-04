@@ -711,6 +711,8 @@ js:
     network: "Brak połączenia z serwerem."
     comment_empty: "Napisz coś w komentarzu"
     content_too_long: "Tekst jest za długi (maks. {max} znaków)"
+  editor:
+    char_count: "{used} z {max} znaków"
   validation:
     missing_user: "Wybierz użytkownika"
     missing_field: "Uzupełnij {label}"

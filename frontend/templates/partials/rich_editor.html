@@ -51,8 +51,22 @@
               aria-label="{{ t('ui.editor.blockquote') }}"
               title="{{ t('ui.editor.blockquote') }}">❝</button>
     </div>
-    <div class="rich-editor-surface textarea">
-      <div data-rich-surface></div>
+    <div class="rich-editor-input-frame">
+      <div class="rich-editor-surface textarea">
+        <div data-rich-surface></div>
+      </div>
+      <div class="rich-editor-meter"
+           data-rich-meter
+           hidden>
+        <div class="rich-editor-meter-track"
+             role="progressbar"
+             aria-valuemin="0"
+             aria-valuenow="0"
+             aria-valuemax="0">
+          <div class="rich-editor-meter-fill" data-rich-meter-fill></div>
+        </div>
+        <span class="rich-editor-meter-label" data-rich-meter-label aria-hidden="true"></span>
+      </div>
     </div>
     <div class="rich-editor-link-pop" data-rich-link-pop hidden>
       <input type="url"

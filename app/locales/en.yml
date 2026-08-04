@@ -711,6 +711,8 @@ js:
     network: "Couldn't reach the server."
     comment_empty: "Write something in the comment"
     content_too_long: "Text is too long (max {max} characters)"
+  editor:
+    char_count: "{used} of {max} characters"
   validation:
     missing_user: "Select a user"
     missing_field: "Fill in {label}"
