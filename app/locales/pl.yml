@@ -92,7 +92,7 @@ ui:
       password: "Hasło"
       password_confirm: "Powtórz hasło"
       phone: "Telefon (opcjonalnie)"
-      phone_placeholder: "+48123456789"
+      phone_placeholder: "+48 123 456 789"
       submit_pending: "Aktywuj konto"
       submit_reset: "Zapisz hasło"
     confirm_email:
@@ -687,7 +687,7 @@ messages:
     need_digit: "Dodaj do hasła cyfrę."
     need_special: "Dodaj do hasła znak specjalny."
   phone:
-    e164: "Podaj numer w formacie +48123456789."
+    e164: "Podaj numer w formacie +48 123 456 789."
   project_key:
     invalid: "Klucz: {min}–{max} znaków A–Z / 0–9 (bez myślników)"
 

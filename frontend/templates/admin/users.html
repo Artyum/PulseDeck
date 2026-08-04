@@ -90,13 +90,7 @@
                 title="{{ u.display_name }}">{{ u.display_name }}</span>
           <span class="admin-users-cell admin-users-meta" title="{{ u.email }}">{{ u.email }}</span>
           <span class="admin-users-cell admin-users-meta"
-                {% if u.phone %}title="{{ u.phone }}"{% endif %}>
-            {% if u.phone %}
-              {{ u.phone }}
-            {% else %}
-              {{ t("ui.common.empty_dash") }}
-            {% endif %}
-          </span>
+                {% if u.phone %}title="{{ u.phone|format_phone }}"{% endif %}>{{ u.phone|format_phone }}</span>
           <span class="admin-entity-badges">
             <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
             {% if not u.is_active %}
@@ -106,11 +100,7 @@
             {% endif %}
           </span>
           <span class="admin-users-cell admin-users-meta admin-users-login">
-            {% if u.last_login_at %}
-              {{ u.last_login_at|format_dt }}
-            {% else %}
-              {{ t("ui.common.empty_dash") }}
-            {% endif %}
+            {% if u.last_login_at %}{{ u.last_login_at|format_dt }}{% endif %}
           </span>
         </li>
       {% else %}
@@ -153,7 +143,7 @@
             <input id="new-user-phone"
                    name="phone"
                    {{ field_attrs("user.phone") }}
-                   placeholder="+48123456789"
+                   placeholder="+48 123 456 789"
                    class="input">
           </div>
         </div>

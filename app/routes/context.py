@@ -28,6 +28,7 @@ from app.utils.i18n import (
     translations_prefix,
 )
 from app.utils.markdown import render_markdown_safe
+from app.utils.phone import format_phone
 from app.utils.static_assets import static_url
 from app.utils.themes import (
     DEFAULT_DENSITY,
@@ -92,6 +93,7 @@ def group_comments(comments) -> list[list]:
 
 
 _templates.env.filters["format_dt"] = _format_dt_filter
+_templates.env.filters["format_phone"] = format_phone
 _templates.env.filters["group_comments"] = group_comments
 _templates.env.filters["project_path"] = project_path
 _templates.env.filters["ticket_path"] = ticket_path

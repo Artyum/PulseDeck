@@ -1329,18 +1329,19 @@
   }
 
   .admin-users-table {
+    --admin-users-cols:
+      minmax(0, 1.2fr)
+      minmax(0, 1.45fr)
+      minmax(0, 0.9fr)
+      minmax(0, 1.1fr)
+      minmax(0, 1fr);
     overflow-x: auto;
   }
 
   .admin-users-head,
   .admin-users-row {
     display: grid;
-    grid-template-columns:
-      minmax(9rem, 1.15fr)
-      minmax(11rem, 1.4fr)
-      minmax(7rem, 0.8fr)
-      minmax(7.5rem, auto)
-      minmax(8rem, 0.9fr);
+    grid-template-columns: var(--admin-users-cols);
     column-gap: 1rem;
     align-items: center;
   }
@@ -1436,7 +1437,8 @@
   }
 
   .admin-users-row .admin-entity-badges {
-    flex-wrap: nowrap;
+    min-width: 0;
+    flex-wrap: wrap;
   }
 
   .admin-entity-actions {
@@ -3751,6 +3753,56 @@
   #edit-ticket.modal {
     width: min(100% - 2rem, 48rem);
     max-height: min(94vh, 58rem);
+  }
+
+  @media (max-width: 1023px) {
+    #new-ticket.modal,
+    #new-user.modal {
+      inset: 0;
+      width: auto;
+      max-width: none;
+      height: auto;
+      max-height: none;
+      margin: 0;
+    }
+
+    #new-ticket.modal .modal-form,
+    #new-user.modal .modal-form {
+      height: 100%;
+      min-height: 100%;
+      max-height: none;
+      border-radius: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    #new-ticket.modal .modal-header,
+    #new-ticket.modal .modal-footer,
+    #new-user.modal .modal-header,
+    #new-user.modal .modal-footer {
+      border-radius: 0;
+    }
+
+    #new-ticket.modal .modal-body,
+    #new-user.modal .modal-body {
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+    #new-ticket.modal .modal-footer,
+    #new-user.modal .modal-footer {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+
+    #new-ticket.modal .modal-footer > .btn,
+    #new-user.modal .modal-footer > .btn {
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+    }
   }
 
   .modal-body .rich-editor-surface {

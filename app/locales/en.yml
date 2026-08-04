@@ -92,7 +92,7 @@ ui:
       password: "Password"
       password_confirm: "Repeat password"
       phone: "Phone (optional)"
-      phone_placeholder: "+48123456789"
+      phone_placeholder: "+48 123 456 789"
       submit_pending: "Activate account"
       submit_reset: "Save password"
     confirm_email:
@@ -687,7 +687,7 @@ messages:
     need_digit: "Add a digit."
     need_special: "Add a special character."
   phone:
-    e164: "Enter the number like +48123456789."
+    e164: "Enter the number like +48 123 456 789."
   project_key:
     invalid: "Key: {min}–{max} characters A–Z / 0–9 (no hyphens)"
 

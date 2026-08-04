@@ -76,8 +76,8 @@
             <input id="phone"
                    name="phone"
                    {{ field_attrs("user.phone") }}
-                   value="{{ edit_user.phone or '' }}"
-                   placeholder="+48123456789"
+                   value="{{ edit_user.phone|format_phone }}"
+                   placeholder="+48 123 456 789"
                    class="input">
           </div>
           {% if is_admin_edit %}
