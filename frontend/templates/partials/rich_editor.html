@@ -1,4 +1,4 @@
-{% macro rich_editor(name, field_id, value='', placeholder='', id=none, extra_class='') -%}
+{% macro rich_editor(name, field_id, value='', placeholder='', id=none, extra_class='', quote_coachmark=false) -%}
   <div class="rich-editor {{ extra_class }}"
        data-rich-editor
        data-field-wrap
@@ -36,17 +36,13 @@
       <span class="rich-editor-sep" aria-hidden="true"></span>
       <button type="button"
               class="rich-editor-btn"
-              data-rich-cmd="toggleCode"
-              aria-label="{{ t('ui.editor.inline_code') }}"
-              title="{{ t('ui.editor.inline_code') }}">`c`</button>
-      <button type="button"
-              class="rich-editor-btn"
               data-rich-cmd="toggleCodeBlock"
               aria-label="{{ t('ui.editor.code_block') }}"
               title="{{ t('ui.editor.code_block') }}">{ }</button>
       <button type="button"
               class="rich-editor-btn"
               data-rich-cmd="toggleBlockquote"
+              {% if quote_coachmark %}data-coachmark="compose-quote"{% endif %}
               aria-label="{{ t('ui.editor.blockquote') }}"
               title="{{ t('ui.editor.blockquote') }}">❝</button>
     </div>

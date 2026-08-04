@@ -283,7 +283,6 @@ ui:
     italic: "Italic"
     bullet_list: "Bullet list"
     ordered_list: "Numbered list"
-    inline_code: "Inline code"
     code_block: "Code block"
     blockquote: "Quote"
   admin:
@@ -732,6 +731,8 @@ js:
       body: "Tip: Configure the SMTP server so the system can send email notifications."
     compose-attach:
       body: "Add files by choosing them from disk, dragging them here, or pasting from the clipboard (Ctrl+V)."
+    compose-quote:
+      body: "Select text in a message, then click Quote."
 
 email:
   confirm:

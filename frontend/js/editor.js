@@ -7,7 +7,6 @@ var CMD_ACTIVE = {
   toggleItalic: "italic",
   toggleBulletList: "bulletList",
   toggleOrderedList: "orderedList",
-  toggleCode: "code",
   toggleCodeBlock: "codeBlock",
   toggleBlockquote: "blockquote",
 };
@@ -56,6 +55,32 @@ function inClosedDialog(root) {
   return !!(dlg && !dlg.open);
 }
 
+function quoteTextFromSelection(root) {
+  var sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return "";
+  var node = sel.anchorNode;
+  var el = node && (node.nodeType === 1 ? node : node.parentElement);
+  if (!el || !el.closest(".rich-content") || root.contains(el)) return "";
+  return String(sel.toString() || "")
+    .replace(/\u00a0/g, " ")
+    .trim();
+}
+
+function insertQuotedText(editor, text) {
+  var content = String(text || "")
+    .split(/\r\n|\n|\r/)
+    .map(function (line) {
+      return line
+        ? { type: "paragraph", content: [{ type: "text", text: line }] }
+        : { type: "paragraph" };
+    });
+  editor
+    .chain()
+    .focus()
+    .insertContent([{ type: "blockquote", content: content }, { type: "paragraph" }])
+    .run();
+}
+
 function initEditor(root) {
   if (!root || root._richEditor) return;
   if (inClosedDialog(root)) return;
@@ -100,10 +125,24 @@ function initEditor(root) {
     },
   });
 
+  var pendingQuote = "";
+  var quoteBtn = root.querySelector('[data-rich-cmd="toggleBlockquote"]');
+  if (quoteBtn) {
+    quoteBtn.addEventListener("mousedown", function () {
+      pendingQuote = quoteTextFromSelection(root);
+    });
+  }
+
   root.querySelectorAll("[data-rich-cmd]").forEach(function (btn) {
     btn.addEventListener("click", function (ev) {
       ev.preventDefault();
       var cmd = btn.getAttribute("data-rich-cmd");
+      if (cmd === "toggleBlockquote" && pendingQuote) {
+        insertQuotedText(editor, pendingQuote);
+        pendingQuote = "";
+        return;
+      }
+      pendingQuote = "";
       var chain = editor.chain().focus();
       if (!cmd || typeof chain[cmd] !== "function") return;
       chain[cmd]().run();

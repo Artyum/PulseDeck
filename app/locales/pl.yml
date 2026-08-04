@@ -283,7 +283,6 @@ ui:
     italic: "Kursywa"
     bullet_list: "Lista punktowana"
     ordered_list: "Lista numerowana"
-    inline_code: "Kod w linii"
     code_block: "Blok kodu"
     blockquote: "Cytat"
   admin:
@@ -732,6 +731,8 @@ js:
       body: "Wskazówka: Skonfiguruj serwer SMTP, aby system mógł wysyłać powiadomienia e-mail."
     compose-attach:
       body: "Dodaj pliki wybierając je z dysku, przeciągając w to miejsce lub wklejając ze schowka (Ctrl+V)."
+    compose-quote:
+      body: "Zaznacz tekst w wiadomości i kliknij cytat."
 
 email:
   confirm:

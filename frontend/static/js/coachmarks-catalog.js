@@ -40,5 +40,6 @@
       },
     },
     { id: "compose-attach" },
+    { id: "compose-quote" },
   ];
 })();
