@@ -43,6 +43,12 @@
       <div class="ticket-row-meta">
         <span class="issue-key">{{ tkt|ticket_label }}</span>
         {{ type_chip(tkt.type) }}
+        {% if tkt.author %}
+          <span class="ticket-row-reporter">
+            <span class="ticket-row-reporter-label">{{ t("ui.ticket.reporter") }}</span>
+            <span>{{ tkt.author.display_name }}</span>
+          </span>
+        {% endif %}
         {% if show_tags and tkt.ticket_tags %}
           <span class="ticket-row-tags">
             <span class="ticket-row-tags-label">{{ t("ui.ticket.tags") }}</span>

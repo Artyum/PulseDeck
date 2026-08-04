@@ -71,11 +71,8 @@ class TestSafeNextPath:
 
 
 class TestDefaultFeedPath:
-    def test_staff(self):
-        assert default_feed_path("demo", is_staff=True) == "/p/DEMO?view=needs_us"
-
-    def test_client(self):
-        assert default_feed_path("demo", is_staff=False) == "/p/DEMO?view=open&mine=1"
+    def test_default(self):
+        assert default_feed_path("demo") == "/p/DEMO?view=all&mine=1"
 
 
 class TestBuildFeedPath:
@@ -87,22 +84,32 @@ class TestBuildFeedPath:
 
     def test_omits_default_sort(self):
         assert (
-            build_feed_path("DEMO", view="all", sort="updated_at") == "/p/DEMO?view=all"
+            build_feed_path("DEMO", view="all", sort="created_at") == "/p/DEMO?view=all"
         )
 
     def test_includes_non_default_sort_and_filters(self):
         assert (
             build_feed_path(
                 "DEMO",
-                status="OPEN",
                 priority="HIGH",
                 type="BUG",
                 tag="x",
                 q="foo",
-                sort="created_at",
-                assignee="unassigned",
+                sort="updated_at",
             )
-            == "/p/DEMO?assignee=unassigned&status=OPEN&priority=HIGH&type=BUG&tag=x&q=foo&sort=created_at"
+            == "/p/DEMO?priority=HIGH&type=BUG&tag=x&q=foo&sort=updated_at"
+        )
+
+    def test_mine_paused_without_mine(self):
+        assert (
+            build_feed_path("DEMO", view="unassigned", mine_paused=True)
+            == "/p/DEMO?view=unassigned&mine_paused=1"
+        )
+
+    def test_mine_wins_over_paused(self):
+        assert (
+            build_feed_path("DEMO", view="unassigned", mine=True, mine_paused=True)
+            == "/p/DEMO?view=unassigned&mine=1"
         )
 
 

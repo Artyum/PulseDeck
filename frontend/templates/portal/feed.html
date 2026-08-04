@@ -8,9 +8,9 @@
     {% set views = [
           ('all', t('ui.portal.view.all')),
           ('needs_us', t('ui.portal.view.staff.needs_us')),
-          ('waiting_on_client', t('ui.portal.view.staff.waiting_on_client')),
           ('open', t('ui.portal.view.open')),
-          ('done', t('ui.portal.view.done'))
+          ('done', t('ui.portal.view.done')),
+          ('unassigned', t('ui.portal.view.staff.unassigned'))
         ] %}
   {% else %}
     {% set views = [
@@ -21,7 +21,7 @@
         ] %}
   {% endif %}
   {% macro chip_query(key) -%}
-    view={{ key }}{%- if filter_mine -%}&mine=1{%- endif -%}{%- if filter_assignee -%}&assignee={{ filter_assignee }}{%- endif -%}{%- if filter_sort and filter_sort != 'updated_at' -%}&sort={{ filter_sort }}{%- endif -%}
+    view={{ key }}{%- if key == 'unassigned' -%}{%- if filter_mine or filter_mine_paused -%}&mine_paused=1{%- endif -%}{%- elif filter_mine or filter_mine_paused -%}&mine=1{%- endif -%}{%- if filter_type -%}&type={{ filter_type }}{%- endif -%}{%- if filter_priority -%}&priority={{ filter_priority }}{%- endif -%}{%- if filter_tag -%}&tag={{ filter_tag }}{%- endif -%}{%- if filter_sort and filter_sort != 'created_at' -%}&sort={{ filter_sort }}{%- endif -%}
   {%- endmacro %}
   <div id="feed-header-and-results" class="issue-page">
     <div class="issue-page-body">
@@ -34,10 +34,18 @@
       <section class="issue-section issue-section-flush">
         <div class="issue-section-bar">
           <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.portal.feed.tickets") }}</h2>
-          <button type="button"
-                  onclick="document.getElementById('new-ticket').showModal()"
-                  class="btn btn-primary"
-                  data-coachmark="feed-create">{{ t("ui.portal.feed.create") }}</button>
+          <div class="issue-section-actions">
+            <span class="label-tight">{{ t("ui.portal.feed.sort") }}</span>
+            {{ form_select_menu('sort', t('ui.portal.feed.sort') , [
+            namespace(value='created_at', label=t('ui.portal.feed.sort_options.created')),
+            namespace(value='updated_at', label=t('ui.portal.feed.sort_options.updated')),
+            namespace(value='priority', label=t('ui.portal.feed.sort_options.priority')),
+            ], filter_sort, compact=true, submit_on_pick=true, input_attrs='form="feed-filters"') }}
+            <button type="button"
+                    onclick="document.getElementById('new-ticket').showModal()"
+                    class="btn btn-primary"
+                    data-coachmark="feed-create">{{ t("ui.portal.feed.create") }}</button>
+          </div>
         </div>
         <div class="issue-list">
           {% for tkt in tickets %}
@@ -49,99 +57,97 @@
       </section>
     </div>
     <aside class="issue-sidebar">
-      <section class="issue-side-block">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.portal.feed.view") }}</h2>
-        <div class="feed-views">
-          {% for key, label in views %}
-            <a href="{{ url_for('project_feed', key=project.key) }}?{{ chip_query(key) }}"
-               class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
-          {% endfor %}
-        </div>
-        <label class="flex items-center gap-2 text-sm mt-3">
-          <input type="checkbox"
-                 form="feed-filters"
-                 name="mine"
-                 value="1"
-                 class="checkbox"
-                 {% if filter_mine %}checked{% endif %}
-                 onchange="document.getElementById('feed-filters').requestSubmit()">
-          {{ t("ui.portal.feed.mine_only") }}
-        </label>
-      </section>
-      <section class="issue-side-block">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.portal.feed.filters") }}</h2>
-        <form id="feed-filters"
-              method="get"
-              action="{{ url_for('project_feed', key=project.key) }}"
-              class="issue-side-fields"
-              hx-get="{{ url_for('project_feed', key=project.key) }}"
-              hx-target="#feed-header-and-results"
-              hx-select="#feed-header-and-results"
-              hx-swap="outerHTML"
-              hx-push-url="true">
-          {% if current_view %}
-            <input type="hidden" name="view" value="{{ current_view }}">
-          {% endif %}
-          <div class="issue-field">
-            <label class="label-tight" for="feed-q">{{ t("ui.portal.feed.search") }}</label>
-            <input id="feed-q"
-                   name="q"
-                   {{ field_attrs("search.q") }}
-                   value="{{ filter_q }}"
-                   placeholder="{{ t('ui.portal.feed.search_placeholder') }}"
-                   class="input input-compact">
-          </div>
-          <div class="issue-field">
-            <span class="label-tight">{{ t("ui.portal.feed.status") }}</span>
-            {{ filter_field_menu('status', t('ui.portal.feed.status') , ticket_statuses, filter_status, status_labels, empty_label=t('ui.common.empty_dash')) }}
-          </div>
-          {% if user.is_staff %}
-            <div class="issue-field">
-              <span class="label-tight">{{ t("ui.portal.feed.assignee") }}</span>
-              {{ filter_field_menu('assignee', t('ui.portal.feed.assignee') , [
-              namespace(value='unassigned', label=t('ui.portal.feed.assignee_unassigned')),
-              ], filter_assignee, empty_label=t('ui.portal.feed.assignee_any')) }}
+      <form id="feed-filters"
+            method="get"
+            action="{{ url_for('project_feed', key=project.key) }}"
+            hx-get="{{ url_for('project_feed', key=project.key) }}"
+            hx-target="#feed-header-and-results"
+            hx-select="#feed-header-and-results"
+            hx-swap="outerHTML"
+            hx-push-url="true">
+        {% if current_view %}
+          <input type="hidden" name="view" value="{{ current_view }}">
+        {% endif %}
+        {% if filter_mine_paused %}
+          <input type="hidden" name="mine_paused" value="1">
+        {% endif %}
+        <section class="issue-side-block">
+          <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("search") }}</span>{{ t("ui.portal.feed.search") }}</h2>
+          <div class="feed-search-row">
+            <div class="feed-search-field">
+              <input id="feed-q"
+                     name="q"
+                     {{ field_attrs("search.q") }}
+                     value="{{ filter_q }}"
+                     placeholder="{{ t('ui.portal.feed.search_placeholder') }}"
+                     class="input input-compact"
+                     aria-label="{{ t('ui.portal.feed.search') }}">
+              <button type="button"
+                      class="feed-search-clear"
+                      data-feed-search-clear
+                      aria-label="{{ t('ui.portal.feed.search_clear') }}"
+                      title="{{ t('ui.portal.feed.search_clear') }}"
+                      {% if not filter_q %}hidden{% endif %}>
+                <span class="section-icon" aria-hidden="true">{{ icon("close") }}</span>
+              </button>
             </div>
-          {% endif %}
-          <div class="issue-field">
-            <span class="label-tight">{{ t("ui.portal.feed.type") }}</span>
-            {{ filter_field_menu('type', t('ui.portal.feed.type') , ticket_types, filter_type, type_labels, empty_label=t('ui.common.empty_dash')) }}
+            <button type="submit" class="btn btn-secondary">{{ t("ui.portal.feed.search_submit") }}</button>
           </div>
-          <div class="issue-field">
-            <span class="label-tight">{{ t("ui.portal.feed.priority") }}</span>
-            {{ filter_field_menu('priority', t('ui.portal.feed.priority') , ticket_priorities, filter_priority, priority_labels, empty_label=t('ui.common.empty_dash')) }}
+        </section>
+        <section class="issue-side-block">
+          <div class="issue-section-bar">
+            <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.portal.feed.view") }}</h2>
+            <label class="feed-mine-toggle{% if current_view == 'unassigned' %} is-disabled{% endif %}">
+              <input type="checkbox"
+                     name="mine"
+                     value="1"
+                     class="checkbox"
+                     {% if filter_mine %}checked{% endif %}
+                     {% if current_view == 'unassigned' %}disabled{% endif %}
+                     onchange="this.form.requestSubmit()">
+              {{ t("ui.portal.feed.mine_only") }}
+            </label>
           </div>
-          <div class="issue-field">
-            <label class="label-tight" for="feed-tag">{{ t("ui.portal.feed.tag") }}</label>
-            <input id="feed-tag"
-                   list="feed-tag-list"
-                   name="tag"
-                   {{ field_attrs("filter.tag") }}
-                   value="{{ filter_tag }}"
-                   class="input input-compact">
-          </div>
-          <datalist id="feed-tag-list">
-            {% for tag in project_tags %}
-              <option value="{{ tag.name }}"></option>
+          <div class="feed-views">
+            {% for key, label in views %}
+              <a href="{{ url_for('project_feed', key=project.key) }}?{{ chip_query(key) }}"
+                 class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
             {% endfor %}
-          </datalist>
-          <div class="issue-field">
-            <span class="label-tight">{{ t("ui.portal.feed.sort") }}</span>
-            {{ filter_field_menu('sort', t('ui.portal.feed.sort') , [
-            namespace(value='updated_at', label=t('ui.portal.feed.sort_options.updated')),
-            namespace(value='created_at', label=t('ui.portal.feed.sort_options.created')),
-            namespace(value='priority', label=t('ui.portal.feed.sort_options.priority')),
-            ], filter_sort) }}
           </div>
-          <div class="feed-filter-actions">
-            <button type="button"
-                    class="btn btn-ghost"
-                    data-feed-filter-clear
-                    data-feed-filter-clear-url="{{ default_feed_url }}">{{ t("ui.portal.feed.filter_clear") }}</button>
-            <button type="submit" class="btn btn-secondary">{{ t("ui.portal.feed.filter_submit") }}</button>
+        </section>
+        <section class="issue-side-block">
+          <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("filter") }}</span>{{ t("ui.portal.feed.filters") }}</h2>
+          <div class="issue-side-fields">
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.portal.feed.type") }}</span>
+              {{ filter_field_menu('type', t('ui.portal.feed.type') , ticket_types, filter_type, type_labels, empty_label=t('ui.portal.feed.filter_any')) }}
+            </div>
+            <div class="issue-field">
+              <span class="label-tight">{{ t("ui.portal.feed.priority") }}</span>
+              {{ filter_field_menu('priority', t('ui.portal.feed.priority') , ticket_priorities, filter_priority, priority_labels, empty_label=t('ui.portal.feed.filter_any')) }}
+            </div>
+            <div class="issue-field">
+              <label class="label-tight" for="feed-tag">{{ t("ui.portal.feed.tag") }}</label>
+              <input id="feed-tag"
+                     list="feed-tag-list"
+                     name="tag"
+                     {{ field_attrs("filter.tag") }}
+                     value="{{ filter_tag }}"
+                     class="input input-compact">
+            </div>
+            <datalist id="feed-tag-list">
+              {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
+            </datalist>
+            <div class="feed-filter-actions">
+              <button type="button"
+                      class="btn btn-ghost"
+                      data-feed-filter-clear
+                      data-feed-filter-clear-url="{{ default_feed_url }}">{{ t("ui.portal.feed.filter_clear") }}</button>
+              <button type="submit" class="btn btn-secondary">{{ t("ui.portal.feed.filter_submit") }}</button>
+            </div>
           </div>
-        </form>
-      </section>
+        </section>
+      </form>
     </aside>
   </div>
   <dialog id="new-ticket" class="modal" data-confirm-close>

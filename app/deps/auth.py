@@ -78,8 +78,8 @@ def get_last_feed(request: Request, key: str) -> str | None:
     return validate_feed_path(raw, clean)
 
 
-def resolve_last_feed_url(request: Request, key: str, *, is_staff: bool) -> str:
-    return get_last_feed(request, key) or default_feed_path(key, is_staff=is_staff)
+def resolve_last_feed_url(request: Request, key: str) -> str:
+    return get_last_feed(request, key) or default_feed_path(key)
 
 
 def get_optional_user_id(request: Request) -> int | None:

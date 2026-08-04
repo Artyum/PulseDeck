@@ -48,11 +48,9 @@ def normalize_project_key(key: str) -> str:
     return (key or "").strip().upper()
 
 
-def default_feed_path(key: str, *, is_staff: bool) -> str:
+def default_feed_path(key: str) -> str:
     clean = normalize_project_key(key)
-    if is_staff:
-        return f"/p/{clean}?view=needs_us"
-    return f"/p/{clean}?view=open&mine=1"
+    return f"/p/{clean}?view=all&mine=1"
 
 
 def build_feed_path(
@@ -60,8 +58,7 @@ def build_feed_path(
     *,
     view: str | None = None,
     mine: bool = False,
-    assignee: str | None = None,
-    status: str | None = None,
+    mine_paused: bool = False,
     priority: str | None = None,
     type: str | None = None,
     tag: str | None = None,
@@ -74,10 +71,8 @@ def build_feed_path(
         params.append(("view", view))
     if mine:
         params.append(("mine", "1"))
-    if assignee:
-        params.append(("assignee", assignee))
-    if status:
-        params.append(("status", status))
+    elif mine_paused:
+        params.append(("mine_paused", "1"))
     if priority:
         params.append(("priority", priority))
     if type:
@@ -86,7 +81,7 @@ def build_feed_path(
         params.append(("tag", tag))
     if q:
         params.append(("q", q))
-    if sort and sort != "updated_at":
+    if sort and sort != "created_at":
         params.append(("sort", sort))
     base = f"/p/{clean}"
     if not params:

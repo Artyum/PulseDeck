@@ -49,12 +49,12 @@ class TestSessionHelpers:
         assert deps_auth.get_last_feed(request, "DEMO") == "/p/DEMO?view=open&mine=1"
         assert deps_auth.get_last_feed(request, "OTHER") == "/p/OTHER?view=all"
         assert (
-            deps_auth.resolve_last_feed_url(request, "DEMO", is_staff=False)
+            deps_auth.resolve_last_feed_url(request, "DEMO")
             == "/p/DEMO?view=open&mine=1"
         )
         assert (
-            deps_auth.resolve_last_feed_url(_request({}), "DEMO", is_staff=True)
-            == "/p/DEMO?view=needs_us"
+            deps_auth.resolve_last_feed_url(_request({}), "DEMO")
+            == "/p/DEMO?view=all&mine=1"
         )
 
     def test_last_feed_rejects_invalid(self):

@@ -173,12 +173,14 @@ def require_project_access(
 
 
 def _apply_view_filter(stmt, *, view: str | None):
-    if not view or view in ("all", "all_open"):
+    if not view or view == "all":
         return stmt
     if view == "open":
         return stmt.where(Ticket.status.in_(_OPEN_STATUSES))
     if view == "needs_us":
         return stmt.where(Ticket.status.in_(_NEEDS_US_STATUSES))
+    if view == "unassigned":
+        return stmt.where(Ticket.assignee_id.is_(None))
     if view in ("waiting_on_client", "waiting_on_me"):
         return stmt.where(Ticket.status == TicketStatus.WAITING_ON_CLIENT)
     if view == "done":
@@ -224,8 +226,6 @@ def list_tickets(
     user: User,
     view: str | None = None,
     mine: bool = False,
-    assignee_filter: str | None = None,
-    status_filter: str | None = None,
     priority_filter: str | None = None,
     type_filter: str | None = None,
     tag: str | None = None,
@@ -233,17 +233,9 @@ def list_tickets(
     sort: str | None = None,
 ) -> list[Ticket]:
     stmt = select(Ticket).where(Ticket.project_id == project_id)
-    effective_view = None if status_filter else view
-    stmt = _apply_view_filter(stmt, view=effective_view)
+    stmt = _apply_view_filter(stmt, view=None if q else view)
     if mine:
         stmt = _apply_mine_scope(stmt, user)
-    if assignee_filter == "unassigned":
-        stmt = stmt.where(Ticket.assignee_id.is_(None))
-    if status_filter:
-        try:
-            stmt = stmt.where(Ticket.status == TicketStatus(status_filter))
-        except ValueError:
-            pass
     if priority_filter:
         try:
             stmt = stmt.where(Ticket.priority == TicketPriority(priority_filter))
@@ -265,12 +257,23 @@ def list_tickets(
     if q:
         raw = _clean_or_400("search.q", q, lang=DEFAULT_LANG)
         if raw:
-            title_match = Ticket.title.ilike(f"%{raw}%")
+            pattern = f"%{raw}%"
+            author_match = (
+                select(User.id)
+                .where(
+                    User.id == Ticket.author_id,
+                    func.concat(User.first_name, " ", User.last_name).ilike(pattern),
+                )
+                .exists()
+            )
+            matches = [
+                Ticket.title.ilike(pattern),
+                author_match,
+            ]
             ref = re.fullmatch(r"(?:[A-Za-z0-9]{1,5}-)?(\d+)", raw, flags=re.IGNORECASE)
             if ref:
-                stmt = stmt.where(or_(title_match, Ticket.number == int(ref.group(1))))
-            else:
-                stmt = stmt.where(title_match)
+                matches.append(Ticket.number == int(ref.group(1)))
+            stmt = stmt.where(or_(*matches))
     stmt = stmt.options(
         selectinload(Ticket.author),
         selectinload(Ticket.assignee),

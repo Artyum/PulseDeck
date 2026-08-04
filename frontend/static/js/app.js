@@ -816,17 +816,26 @@
     });
   }
 
-  document.addEventListener("submit", function (ev) {
-    var form = ev.target;
-    if (!form || form.id !== "feed-filters") return;
-    var statusInput = form.querySelector('[data-form-select-input][name="status"]');
-    var viewInput = form.querySelector('input[type="hidden"][name="view"]');
-    if (statusInput && statusInput.value && viewInput) {
-      viewInput.remove();
-    }
+  document.addEventListener("input", function (ev) {
+    if (!ev.target || ev.target.id !== "feed-q") return;
+    var field = ev.target.closest(".feed-search-field");
+    var clear = field && field.querySelector("[data-feed-search-clear]");
+    if (clear) clear.hidden = !ev.target.value;
   });
 
   document.addEventListener("click", function (ev) {
+    var searchClear = ev.target.closest("[data-feed-search-clear]");
+    if (searchClear) {
+      ev.preventDefault();
+      var searchField = searchClear.closest(".feed-search-field");
+      var searchInput = searchField && searchField.querySelector("input[name='q']");
+      var searchForm = searchClear.closest("form");
+      if (!searchInput || !searchForm) return;
+      searchInput.value = "";
+      searchClear.hidden = true;
+      searchForm.requestSubmit();
+      return;
+    }
     var clearBtn = ev.target.closest("[data-feed-filter-clear]");
     if (clearBtn) {
       ev.preventDefault();
@@ -843,7 +852,10 @@
       clearForm.querySelectorAll("[data-form-select]").forEach(function (root) {
         var input = root.querySelector("[data-form-select-input]");
         var name = input ? input.getAttribute("name") : "";
-        setFormSelectValue(root, name === "sort" ? "updated_at" : "");
+        setFormSelectValue(root, name === "sort" ? "created_at" : "");
+      });
+      clearForm.querySelectorAll('input[type="checkbox"]').forEach(function (el) {
+        el.checked = false;
       });
       var formId = clearForm.getAttribute("id");
       if (formId) {
@@ -869,7 +881,12 @@
       Alpine.$data(alpineRoot).open = false;
     }
     if (root.hasAttribute("data-submit-on-pick")) {
+      var input = root.querySelector("[data-form-select-input]");
       var form = root.closest("form");
+      if (!form && input) {
+        var formId = input.getAttribute("form");
+        if (formId) form = document.getElementById(formId);
+      }
       if (form) form.requestSubmit();
     }
   });

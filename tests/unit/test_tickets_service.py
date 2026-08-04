@@ -45,16 +45,13 @@ class TestListTicketsFilters:
         assert mine.id in mine_ids
         assert other.id not in mine_ids
 
-    def test_staff_assignee_unassigned(
-        self, db_session, project_with_members, staff_user
-    ):
+    def test_staff_view_unassigned(self, db_session, project_with_members, staff_user):
         t = _ticket(db_session, project_with_members, staff_user, title="Unassigned")
         rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
             user=staff_user,
-            view="all",
-            assignee_filter="unassigned",
+            view="unassigned",
         )
         assert any(r.id == t.id for r in rows)
         ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
@@ -62,8 +59,7 @@ class TestListTicketsFilters:
             db_session,
             project_with_members.id,
             user=staff_user,
-            view="all",
-            assignee_filter="unassigned",
+            view="unassigned",
         )
         assert all(r.id != t.id for r in rows_after)
 
@@ -90,19 +86,7 @@ class TestListTicketsFilters:
         assert assigned.id in ids
         assert other.id not in ids
 
-    def test_status_overrides_view(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user, title="Done")
-        ticket_service.set_status(db_session, t, staff_user, TicketStatus.DONE)
-        rows = ticket_service.list_tickets(
-            db_session,
-            project_with_members.id,
-            user=staff_user,
-            view="needs_us",
-            status_filter="DONE",
-        )
-        assert any(r.id == t.id for r in rows)
-
-    def test_status_and_priority_filters(
+    def test_priority_and_type_filters(
         self, db_session, project_with_members, client_user
     ):
         high = _ticket(
@@ -116,7 +100,7 @@ class TestListTicketsFilters:
             db_session,
             project_with_members.id,
             user=client_user,
-            status_filter="NEW",
+            view="open",
             priority_filter="HIGH",
             type_filter="BUG",
             sort="priority",
@@ -131,7 +115,6 @@ class TestListTicketsFilters:
             db_session,
             project_with_members.id,
             user=client_user,
-            status_filter="NOPE",
             priority_filter="NOPE",
             type_filter="NOPE",
             sort="created_at",
@@ -157,6 +140,45 @@ class TestListTicketsFilters:
         )
         assert any(r.id == t.id for r in by_num)
 
+    def test_search_by_author_name(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        t = _ticket(db_session, project_with_members, client_user, title="ByAuthor")
+        by_first = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            q=client_user.first_name,
+        )
+        assert any(r.id == t.id for r in by_first)
+        by_last = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            q=client_user.last_name,
+        )
+        assert any(r.id == t.id for r in by_last)
+        by_full = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            q=f"{client_user.first_name} {client_user.last_name}",
+        )
+        assert any(r.id == t.id for r in by_full)
+
+    def test_search_ignores_view_when_q_set(
+        self, db_session, project_with_members, staff_user
+    ):
+        t = _ticket(db_session, project_with_members, staff_user, title="OpenNeedle")
+        rows = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="done",
+            q="OpenNeedle",
+        )
+        assert any(r.id == t.id for r in rows)
+
     def test_filter_by_tag(self, db_session, project_with_members, staff_user):
         t = _ticket(db_session, project_with_members, staff_user)
         ticket_service.add_ticket_tag(db_session, t, staff_user, "alpha")
@@ -174,7 +196,7 @@ class TestListTicketsFilters:
         for view in (
             "all",
             "needs_us",
-            "waiting_on_client",
+            "unassigned",
             "open",
             "done",
         ):

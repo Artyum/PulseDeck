@@ -193,16 +193,15 @@ ui:
       view: "Widok"
       filters: "Filtry"
       search: "Szukaj"
-      search_placeholder: "Tytuł lub numer…"
-      status: "Status"
+      search_placeholder: "Tytuł, numer lub zgłaszający…"
+      search_submit: "Znajdź"
+      search_clear: "Wyczyść wyszukiwanie"
       type: "Typ"
       priority: "Priorytet"
       tag: "Tag"
-      assignee: "Przypisanie"
-      assignee_any: "Dowolne"
-      assignee_unassigned: "Nieprzypisane"
       mine_only: "Tylko moje"
-      sort: "Sortuj"
+      sort: "Sortowanie"
+      filter_any: "Dowolny"
       sort_options:
         updated: "Ostatnia aktywność"
         created: "Data utworzenia"
@@ -222,7 +221,7 @@ ui:
       done: "Zakończone"
       staff:
         needs_us: "Do obsługi"
-        waiting_on_client: "U klienta"
+        unassigned: "Nieprzypisane"
       client:
         waiting_on_me: "Oczekuje na odpowiedź"
   ticket:

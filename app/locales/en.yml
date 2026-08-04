@@ -193,16 +193,15 @@ ui:
       view: "View"
       filters: "Filters"
       search: "Search"
-      search_placeholder: "Title or number…"
-      status: "Status"
+      search_placeholder: "Title, number or reporter…"
+      search_submit: "Find"
+      search_clear: "Clear search"
       type: "Type"
       priority: "Priority"
       tag: "Tag"
-      assignee: "Assignee"
-      assignee_any: "Any"
-      assignee_unassigned: "Unassigned"
       mine_only: "Only mine"
-      sort: "Sort"
+      sort: "Sorting"
+      filter_any: "Any"
       sort_options:
         updated: "Last activity"
         created: "Creation date"
@@ -222,7 +221,7 @@ ui:
       done: "Closed"
       staff:
         needs_us: "To handle"
-        waiting_on_client: "At client"
+        unassigned: "Unassigned"
       client:
         waiting_on_me: "Awaiting reply"
   ticket:

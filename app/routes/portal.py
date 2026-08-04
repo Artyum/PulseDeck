@@ -103,9 +103,7 @@ def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> di
     )
     project_key = ticket.project.key if ticket.project else ""
     back_to_feed_url = (
-        resolve_last_feed_url(request, project_key, is_staff=user.is_staff)
-        if project_key
-        else "/"
+        resolve_last_feed_url(request, project_key) if project_key else "/"
     )
     return {
         "user": user,
@@ -224,7 +222,7 @@ def home(request: Request, db: DbSession):
     last_key = get_last_project_key(request)
     target = next((p for p in projects if p.key == last_key), projects[0])
     return RedirectResponse(
-        resolve_last_feed_url(request, target.key, is_staff=user.is_staff),
+        resolve_last_feed_url(request, target.key),
         status_code=303,
     )
 
@@ -237,8 +235,7 @@ def project_feed(
     db: DbSession,
     view: str | None = None,
     mine: str | None = None,
-    assignee: str | None = None,
-    status: str | None = None,
+    mine_paused: str | None = None,
     priority: str | None = None,
     type: str | None = None,
     tag: str | None = None,
@@ -254,51 +251,49 @@ def project_feed(
         if saved and saved != bare:
             return RedirectResponse(saved, status_code=303)
     projects = project_service.list_user_projects(db, user)
-    status_filter = (status or "").strip() or None
     priority_filter = (priority or "").strip() or None
     type_filter = (type or "").strip() or None
     tag_filter = (tag or "").strip() or None
     q_filter = (q or "").strip() or None
     sort_filter = (sort or "").strip() or None
     has_query = bool(request.query_params)
-    filter_mine = (mine or "").strip().lower() in ("1", "true", "on") or (
-        not has_query and not user.is_staff
-    )
-    assignee_filter = "unassigned" if (assignee or "").strip() == "unassigned" else ""
-    default_view = "needs_us" if user.is_staff else "open"
-    if status_filter:
-        current_view = ""
-    elif view:
+    mine_on = (mine or "").strip().lower() in ("1", "true", "on")
+    paused_on = (mine_paused or "").strip().lower() in ("1", "true", "on")
+    if view:
         current_view = view
     elif not has_query:
-        current_view = default_view
+        current_view = "all"
     else:
         current_view = ""
+    if current_view == "unassigned":
+        filter_mine = mine_on
+        filter_mine_paused = paused_on and not mine_on
+    else:
+        filter_mine = mine_on or paused_on or (not has_query)
+        filter_mine_paused = False
+    filter_sort = sort_filter or "created_at"
     tickets = ticket_service.list_tickets(
         db,
         project.id,
         user=user,
         view=current_view or None,
         mine=filter_mine,
-        assignee_filter=assignee_filter or None,
-        status_filter=status_filter,
         priority_filter=priority_filter,
         type_filter=type_filter,
         tag=tag_filter,
         q=q_filter,
-        sort=sort_filter,
+        sort=filter_sort,
     )
     feed_url = build_feed_path(
         project.key,
         view=current_view or None,
         mine=filter_mine,
-        assignee=assignee_filter or None,
-        status=status_filter,
+        mine_paused=filter_mine_paused,
         priority=priority_filter,
         type=type_filter,
         tag=tag_filter,
         q=q_filter,
-        sort=sort_filter,
+        sort=filter_sort,
     )
     set_last_feed(request, project.key, feed_url)
     return render(
@@ -310,15 +305,14 @@ def project_feed(
         tickets=tickets,
         current_view=current_view,
         filter_mine=filter_mine,
-        filter_assignee=assignee_filter,
-        filter_status=status_filter or "",
+        filter_mine_paused=filter_mine_paused,
         filter_priority=priority_filter or "",
         filter_type=type_filter or "",
         filter_tag=tag_filter or "",
         filter_q=q_filter or "",
-        filter_sort=sort_filter or "updated_at",
+        filter_sort=filter_sort,
         project_tags=project_service.list_used_project_tags(db, project.id),
-        default_feed_url=default_feed_path(project.key, is_staff=user.is_staff),
+        default_feed_url=default_feed_path(project.key),
     )
 
 
