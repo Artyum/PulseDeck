@@ -157,7 +157,7 @@ ui:
       current: "Obecne hasło"
       new: "Nowe hasło"
       confirm: "Powtórz nowe hasło"
-      hint: "Minimum 8 znaków, w tym mała litera, wielka litera, cyfra oraz znak specjalny."
+      hint: "Minimum {min} znaków, w tym mała litera, wielka litera, cyfra oraz znak specjalny."
       save: "Zapisz hasło"
       set: "Ustaw hasło"
       send_activation: "Wyślij link aktywacyjny"
@@ -736,27 +736,27 @@ js:
 
 email:
   confirm:
-    subject: "Potwierdź nowy adres e-mail — {app}"
+    subject: "Potwierdź nowy adres e-mail"
     body: "Otrzymaliśmy prośbę o zmianę adresu e-mail w {app}. Potwierdź nowy adres klikając poniższy przycisk. Link jest ważny przez {minutes} min. Jeśli to nie Ty, zignoruj tę wiadomość."
     cta: "Potwierdź e-mail"
   activate:
-    subject: "Aktywuj konto — {app}"
+    subject: "Aktywuj konto"
     body: "Zostało dla Ciebie utworzone konto w {app}. Ustaw hasło, aby je aktywować i zalogować się. Link jest ważny przez {days} dni."
     cta: "Ustaw hasło"
   reset:
-    subject: "Reset hasła — {app}"
+    subject: "Reset hasła"
     body: "Otrzymaliśmy prośbę o reset hasła do konta w {app}. Ustaw nowe hasło klikając poniższy przycisk. Link jest ważny przez {days} dni. Jeśli to nie Ty, zignoruj tę wiadomość."
     cta: "Ustaw nowe hasło"
   smtp_test:
-    subject: "{app} — wiadomość testowa"
+    subject: "Wiadomość testowa"
     body: "To jest wiadomość testowa z {app}. Jeśli widzisz ten tekst w szablonie z logo, SMTP działa poprawnie."
   new_ticket:
-    subject: "Nowe zgłoszenie — {label}: {title}"
+    subject: "Nowe zgłoszenie"
     body_before: "Utworzono nowe zgłoszenie "
     body_after: ". Otwórz je w {app}, aby zobaczyć szczegóły i podjąć działania."
     cta: "Otwórz w {app}"
   new_comment:
-    subject: "Nowa odpowiedź — {label}: {title}"
+    subject: "Nowa odpowiedź w zgłoszeniu"
     body_before: "W zgłoszeniu "
     body_after: ", pojawiła się nowa odpowiedź. Otwórz wątek, aby przeczytać treść i ewentualnie zareagować."
     dual_hint: "Użyj linku szybkiej odpowiedzi lub zaloguj się."
@@ -764,18 +764,18 @@ email:
     cta_login: "Zaloguj się"
     cta_open: "Otwórz wątek"
   ticket_update:
-    subject: "Aktualizacja — {label}: {title}"
+    subject: "Aktualizacja w zgłoszeniu"
     body_before: "W zgłoszeniu "
     body_after: " zmieniono status, typ lub priorytet."
     new_value: "Nowa wartość: {value}"
     cta: "Otwórz w {app}"
   assignment:
-    subject: "Przypisanie — {label}: {title}"
+    subject: "Przypisanie zgłoszenia"
     body_before: "Przypisano Ci obsługę zgłoszenia "
     body_after: ". Otwórz je w {app}, aby zapoznać się ze szczegółami."
     cta: "Otwórz w {app}"
   unassignment:
-    subject: "Odpięcie — {label}: {title}"
+    subject: "Odpięcie od zgłoszenia"
     body_before: "Nie jesteś już osobą obsługującą zgłoszenie "
     body_after: ". Jeśli to pomyłka, skontaktuj się z zespołem."
     cta: "Otwórz w {app}"

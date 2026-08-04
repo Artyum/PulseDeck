@@ -238,7 +238,7 @@ def render_email_html(template: str, context: dict, *, lang: str = DEFAULT_LANG)
 
 
 def send_smtp_test(*, to_email: str, lang: str, db: Session | None = None) -> bool:
-    subject = t(lang, "email.smtp_test.subject", app=APP_NAME)
+    subject = t(lang, "email.smtp_test.subject")
     html = render_email_html("smtp_test.html", {}, lang=lang)
     return send_email_sync(to_email, subject, html, db=db)
 
@@ -273,10 +273,8 @@ def _enqueue_users(
     context: dict,
     *,
     pref: str,
-    subject_kwargs: dict | None = None,
 ) -> None:
     seen: set[str] = set()
-    subject_kwargs = subject_kwargs or {}
     for user in recipients:
         email = (user.email or "").strip().lower()
         if not email or email in seen:
@@ -292,7 +290,7 @@ def _enqueue_users(
         enqueue_email(
             db,
             to_email=email,
-            subject=t(lang, subject_key, **subject_kwargs),
+            subject=t(lang, subject_key),
             html_body=html,
             list_unsubscribe_url=unsub,
         )
@@ -387,7 +385,6 @@ def _send_pref_mails(
 ) -> None:
     if not recipients:
         return
-    ticket = ctx["ticket"]
     _enqueue_users(
         db,
         recipients,
@@ -395,7 +392,6 @@ def _send_pref_mails(
         f"{key}.html",
         ctx,
         pref=pref,
-        subject_kwargs={"label": ctx["label"], "title": ticket.title},
     )
 
 
@@ -424,7 +420,7 @@ def notify_email_confirm(
     _enqueue_auth(
         db,
         to_email=to_email,
-        subject=t(lang, "email.confirm.subject", app=APP_NAME),
+        subject=t(lang, "email.confirm.subject"),
         template="email_confirm.html",
         context={
             "user": user,
@@ -450,7 +446,6 @@ def notify_password_set(
         subject=t(
             lang,
             "email.activate.subject" if activation else "email.reset.subject",
-            app=APP_NAME,
         ),
         template="account_activate.html" if activation else "password_reset.html",
         context={
@@ -528,12 +523,7 @@ def notify_new_comment(
         enqueue_email(
             db,
             to_email=email,
-            subject=t(
-                lang,
-                "email.new_comment.subject",
-                label=base_ctx["label"],
-                title=loaded.title,
-            ),
+            subject=t(lang, "email.new_comment.subject"),
             html_body=html,
             list_unsubscribe_url=unsub,
         )
@@ -581,12 +571,7 @@ def notify_assignment(
         enqueue_email(
             db,
             to_email=user.email,
-            subject=t(
-                lang,
-                f"email.{key}.subject",
-                label=ctx["label"],
-                title=loaded.title,
-            ),
+            subject=t(lang, f"email.{key}.subject"),
             html_body=render_email_html(
                 f"{key}.html", {**ctx, "user": user}, lang=lang
             ),

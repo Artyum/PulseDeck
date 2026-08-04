@@ -15,7 +15,6 @@ DEFAULT_ENV = ROOT / "deploy" / ".env.dev"
 DEFAULT_MAILPIT_HOST = "192.168.50.50"
 DEFAULT_MAILPIT_PORT = 1025
 LANG = "pl"
-APP = "PulseDeck"
 
 
 def main() -> int:
@@ -109,7 +108,7 @@ def main() -> int:
 
     samples = [
         (
-            t(LANG, "email.confirm.subject", app=APP),
+            t(LANG, "email.confirm.subject"),
             "email_confirm.html",
             {
                 "user": user,
@@ -119,7 +118,7 @@ def main() -> int:
             None,
         ),
         (
-            t(LANG, "email.activate.subject", app=APP),
+            t(LANG, "email.activate.subject"),
             "account_activate.html",
             {
                 "user": user,
@@ -129,7 +128,7 @@ def main() -> int:
             None,
         ),
         (
-            t(LANG, "email.reset.subject", app=APP),
+            t(LANG, "email.reset.subject"),
             "password_reset.html",
             {
                 "user": user,
@@ -139,25 +138,25 @@ def main() -> int:
             None,
         ),
         (
-            t(LANG, "email.new_ticket.subject", label="DEMO-1", title=ticket.title),
+            t(LANG, "email.new_ticket.subject"),
             "new_ticket.html",
             new_ticket_ctx,
             new_ticket_unsub,
         ),
         (
-            t(LANG, "email.new_comment.subject", label="DEMO-1", title=ticket.title),
+            t(LANG, "email.new_comment.subject"),
             "new_comment.html",
             comment_ctx,
             comment_unsub,
         ),
         (
-            t(LANG, "email.ticket_update.subject", label="DEMO-1", title=ticket.title),
+            t(LANG, "email.ticket_update.subject"),
             "ticket_update.html",
             update_ctx,
             update_unsub,
         ),
         (
-            t(LANG, "email.assignment.subject", label="DEMO-1", title=ticket.title),
+            t(LANG, "email.assignment.subject"),
             "assignment.html",
             {
                 "ticket": ticket,
@@ -169,7 +168,7 @@ def main() -> int:
             None,
         ),
         (
-            t(LANG, "email.unassignment.subject", label="DEMO-1", title=ticket.title),
+            t(LANG, "email.unassignment.subject"),
             "unassignment.html",
             {
                 "ticket": ticket,

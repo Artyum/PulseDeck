@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 {% from "_macros.html" import ticket_mail with context %}
-{% block title %}{{ t('email.assignment.subject', label=label, title=ticket.title) }}{% endblock title %}
+{% block title %}{{ t('email.assignment.subject') }}{% endblock title %}
 {% block body %}
   {{ ticket_mail('assignment', user.first_name, label, ticket.title, url) }}
 {% endblock body %}

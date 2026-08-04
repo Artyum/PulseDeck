@@ -157,7 +157,7 @@ ui:
       current: "Current password"
       new: "New password"
       confirm: "Repeat new password"
-      hint: "At least 8 characters, with a lowercase letter, an uppercase letter, a digit, and a special character."
+      hint: "At least {min} characters, with a lowercase letter, an uppercase letter, a digit, and a special character."
       save: "Save password"
       set: "Set password"
       send_activation: "Send activation link"
@@ -736,27 +736,27 @@ js:
 
 email:
   confirm:
-    subject: "Confirm your new email — {app}"
+    subject: "Confirm your new email"
     body: "We received a request to change your email address in {app}. Confirm the new address using the button below. The link is valid for {minutes} min. If this wasn’t you, you can ignore this message."
     cta: "Confirm email"
   activate:
-    subject: "Activate your account — {app}"
+    subject: "Activate your account"
     body: "An account has been created for you in {app}. Set a password to activate it and sign in. The link is valid for {days} days."
     cta: "Set password"
   reset:
-    subject: "Password reset — {app}"
+    subject: "Password reset"
     body: "We received a request to reset your password for {app}. Set a new password using the button below. The link is valid for {days} days. If this wasn’t you, you can ignore this message."
     cta: "Set new password"
   smtp_test:
-    subject: "{app} — test email"
+    subject: "Test email"
     body: "This is a test message from {app}. If you can read this in the branded layout, SMTP is working."
   new_ticket:
-    subject: "New ticket — {label}: {title}"
+    subject: "New ticket"
     body_before: "A new ticket was created: "
     body_after: ". Open it in {app} to review the details and take action."
     cta: "Open in {app}"
   new_comment:
-    subject: "New reply — {label}: {title}"
+    subject: "New reply on a ticket"
     body_before: "A new reply was added to ticket "
     body_after: ". Open the thread to read it and respond if needed."
     dual_hint: "Use the quick reply link or sign in."
@@ -764,18 +764,18 @@ email:
     cta_login: "Sign in"
     cta_open: "Open the thread"
   ticket_update:
-    subject: "Update — {label}: {title}"
+    subject: "Ticket update"
     body_before: "The status, type, or priority of ticket "
     body_after: " was changed."
     new_value: "New value: {value}"
     cta: "Open in {app}"
   assignment:
-    subject: "Assignment — {label}: {title}"
+    subject: "Ticket assignment"
     body_before: "You’ve been assigned ticket "
     body_after: ". Open it in {app} to review the details."
     cta: "Open in {app}"
   unassignment:
-    subject: "Unassignment — {label}: {title}"
+    subject: "Ticket unassignment"
     body_before: "You’re no longer the assignee for ticket "
     body_after: ". If this seems wrong, contact your team."
     cta: "Open in {app}"
