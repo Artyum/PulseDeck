@@ -23,7 +23,7 @@
   {% macro chip_query(key) -%}
     view={{ key }}{%- if key == 'unassigned' -%}{%- if filter_mine or filter_mine_paused -%}&mine_paused=1{%- endif -%}{%- elif filter_mine or filter_mine_paused -%}&mine=1{%- endif -%}{%- if filter_type -%}&type={{ filter_type }}{%- endif -%}{%- if filter_priority -%}&priority={{ filter_priority }}{%- endif -%}{%- if filter_tag -%}&tag={{ filter_tag }}{%- endif -%}{%- if filter_sort and filter_sort != 'created_at' -%}&sort={{ filter_sort }}{%- endif -%}
   {%- endmacro %}
-  <div id="feed-header-and-results" class="issue-page">
+  <div id="feed-header-and-results" class="issue-page" data-sidebar>
     <div class="issue-page-body">
       <div class="issue-head">
         <h1 class="issue-title">{{ project.name }}</h1>
@@ -151,6 +151,8 @@
         </section>
       </form>
     </aside>
+    {% include "partials/sidebar_toggle.html" %}
+    {% include "partials/sidebar_backdrop.html" %}
   </div>
   <dialog id="new-ticket" class="modal" data-confirm-close>
     <form method="post"

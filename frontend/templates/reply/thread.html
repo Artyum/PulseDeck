@@ -23,7 +23,7 @@
     </div>
   </header>
   <main class="app-main">
-    <div class="issue-page">
+    <div class="issue-page" data-sidebar>
       <div class="issue-page-body">
         <nav class="issue-crumb">
           <span class="link-quiet">{{ project.name }}</span>
@@ -116,6 +116,8 @@
           </div>
         </section>
       </aside>
+      {% include "partials/sidebar_toggle.html" %}
+      {% include "partials/sidebar_backdrop.html" %}
     </div>
   </main>
 {% endblock body %}

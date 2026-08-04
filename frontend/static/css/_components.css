@@ -135,6 +135,14 @@
     max-width: min(22rem, 48vw);
   }
 
+  .sidebar-toggle {
+    display: none;
+  }
+
+  .sidebar-backdrop {
+    display: none;
+  }
+
   .app-header-section::before {
     content: "";
     position: absolute;
@@ -258,6 +266,10 @@
     min-width: 0;
   }
 
+  .nav-mobile-project {
+    display: none;
+  }
+
   .nav-mobile-label,
   .nav-mobile-user {
     margin: 0;
@@ -375,7 +387,7 @@
     display: grid;
     grid-template-columns: calc(14.5 * var(--layout-rem)) minmax(0, 1fr);
     min-height: calc(100vh - var(--app-header-h));
-    min-width: var(--bp-desktop-min);
+    min-width: 0;
     margin-inline: auto;
     max-width: calc(84 * var(--layout-rem));
   }
@@ -1604,6 +1616,184 @@
     pointer-events: none;
   }
 
+  @media (max-width: 1023px) {
+    .admin-main {
+      padding: calc(1.35rem * var(--space-scale)) calc(1.15rem * var(--space-scale)) calc(2.5rem * var(--space-scale));
+    }
+
+    .admin-page-head .issue-title {
+      padding-left: calc(var(--sidebar-toggle-w, 1.65rem) + 0.65rem);
+    }
+
+    .admin-form-row:not(.admin-form-row-filters) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: none;
+      grid-auto-flow: row;
+      gap: 0.75rem;
+    }
+
+    .admin-form-row:not(.admin-form-row-filters) > .admin-form-field:nth-child(n + 3) {
+      grid-column: 1 / -1;
+    }
+
+    .admin-form-row-filters {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: none;
+      grid-auto-flow: row;
+      gap: 0.75rem;
+    }
+
+    .admin-form-row-filters > .admin-form-field:first-of-type,
+    .admin-form-row-filters > .admin-form-field:last-of-type {
+      grid-column: 1 / -1;
+    }
+
+    .admin-form-field {
+      display: flex;
+      flex-direction: column;
+      grid-row: auto;
+      gap: 0.35rem;
+    }
+
+    .admin-form-field > .label-tight {
+      align-items: center;
+    }
+
+    .admin-form-field > .input,
+    .admin-form-field > .select,
+    .admin-form-field > .form-select-menu {
+      height: auto;
+      min-height: 2.35rem;
+    }
+
+    .admin-form-field > .form-select-menu > .issue-menu-trigger,
+    .admin-form-field > .form-select-menu .issue-filter-face {
+      height: auto;
+      min-height: 2.35rem;
+    }
+
+    .admin-form-field > .btn {
+      width: 100%;
+      height: auto;
+      min-height: 2.35rem;
+      align-self: stretch;
+    }
+
+    .admin-form-field:has(> .admin-form-spacer) > .admin-form-spacer {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .admin-main {
+      padding: calc(1.15rem * var(--space-scale)) calc(0.85rem * var(--space-scale)) calc(2.25rem * var(--space-scale));
+    }
+
+    .admin-page-head {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .admin-page-head > .btn,
+    .admin-page-head > form > .btn {
+      width: 100%;
+    }
+
+    .admin-shell .issue-section-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.65rem;
+    }
+
+    .admin-shell .issue-section-bar > .btn,
+    .admin-shell .issue-section-bar > form {
+      width: 100%;
+    }
+
+    .admin-shell .issue-section-bar > form .checkbox-row {
+      justify-content: flex-start;
+    }
+
+    .admin-entity {
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+    }
+
+    .admin-entity-actions {
+      width: 100%;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      gap: 0.35rem;
+    }
+
+    .admin-entity-actions > .btn,
+    .admin-entity-actions > form {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .admin-entity-actions .btn {
+      min-width: 0;
+      width: 100%;
+      padding-inline: 0.45rem;
+    }
+
+    .admin-users-head {
+      display: none;
+    }
+
+    .admin-users-row {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.45rem;
+      padding: 0.85rem 1rem;
+      min-height: 0;
+    }
+
+    .admin-users-row .admin-entity-badges {
+      flex-wrap: wrap;
+    }
+
+    .admin-users-meta {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      word-break: break-word;
+    }
+
+    .admin-list.admin-status-table {
+      margin-inline: calc(-0.85rem * var(--space-scale));
+      padding-inline: calc(0.85rem * var(--space-scale));
+    }
+
+    .modal-footer {
+      flex-direction: column-reverse;
+      align-items: stretch;
+    }
+
+    .modal-footer > .btn {
+      width: 100%;
+    }
+
+    .admin-shell .form-grid,
+    .admin-shell .form-grid-3 {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-settings-form > .admin-field,
+    .admin-settings-smtp-host,
+    .admin-settings-smtp-auth {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-settings-form > .admin-field > .input,
+    .admin-settings-form > .admin-field > .input[type="number"] {
+      max-width: none;
+    }
+  }
+
   /* === Buttons === */
   .btn {
     display: inline-flex;
@@ -2469,6 +2659,7 @@
 
   .issue-section-bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: calc(0.75rem * var(--space-scale));
@@ -2477,18 +2668,22 @@
 
   .issue-section-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: 0.5rem;
-    flex-shrink: 0;
+    min-width: 0;
   }
 
   .issue-section-actions .form-select-menu {
     width: auto;
     min-width: 10.5rem;
+    max-width: 100%;
   }
 
   .issue-section-bar .issue-section-title {
     margin: 0;
+    min-width: 0;
   }
 
   .issue-section {
@@ -4672,6 +4867,171 @@
     text-decoration: underline;
   }
 
+  @media (max-width: 1023px) {
+    [data-sidebar] {
+      --sidebar-toggle-w: 1.65rem;
+    }
+
+    .admin-layout {
+      --sidebar-panel-w: min(calc(16 * var(--layout-rem)), 88vw);
+    }
+
+    .issue-page {
+      --sidebar-panel-w: min(var(--issue-sidebar-w), 92vw);
+    }
+
+    .sidebar-toggle {
+      position: fixed;
+      top: calc(var(--app-header-h) + 1rem);
+      z-index: 45;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--sidebar-toggle-w);
+      height: 3rem;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--color-frame);
+      background: var(--color-surface);
+      color: var(--color-steel);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      transition:
+        left 0.28s ease,
+        right 0.28s ease,
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+
+    .sidebar-toggle:hover,
+    .sidebar-toggle:focus-visible {
+      color: var(--color-pulse);
+      background: color-mix(in oklab, var(--color-surface) 78%, var(--color-soft-blue));
+      border-color: color-mix(in oklab, var(--color-pulse) 35%, var(--color-frame));
+      outline: none;
+    }
+
+    .sidebar-toggle .icon {
+      width: 1rem;
+      height: 1rem;
+      transition: transform 0.28s ease;
+    }
+
+    .admin-layout > .sidebar-toggle {
+      left: 0;
+      right: auto;
+      border-left: none;
+      border-radius: 0 0.7rem 0.7rem 0;
+    }
+
+    .admin-layout > .sidebar-toggle .icon {
+      transform: rotate(-90deg);
+    }
+
+    .admin-layout.is-sidebar-open > .sidebar-toggle {
+      left: var(--sidebar-panel-w);
+    }
+
+    .admin-layout.is-sidebar-open > .sidebar-toggle .icon {
+      transform: rotate(90deg);
+    }
+
+    .issue-page > .sidebar-toggle {
+      right: 0;
+      left: auto;
+      border-right: none;
+      border-radius: 0.7rem 0 0 0.7rem;
+    }
+
+    .issue-page > .sidebar-toggle .icon {
+      transform: rotate(90deg);
+    }
+
+    .issue-page.is-sidebar-open > .sidebar-toggle {
+      right: var(--sidebar-panel-w);
+    }
+
+    .issue-page.is-sidebar-open > .sidebar-toggle .icon {
+      transform: rotate(-90deg);
+    }
+
+    .issue-page,
+    .admin-shell {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .issue-sidebar,
+    .admin-aside {
+      position: fixed;
+      top: var(--app-header-h);
+      z-index: 40;
+      width: var(--sidebar-panel-w);
+      height: calc(100vh - var(--app-header-h));
+      overflow-x: hidden;
+      overflow-y: auto;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        transform 0.28s ease,
+        visibility 0s linear 0.28s;
+    }
+
+    .issue-sidebar {
+      right: 0;
+      left: auto;
+      transform: translateX(100%);
+      border-left: var(--aside-border);
+      border-top: none;
+      box-shadow: var(--edge-shadow-start);
+    }
+
+    .admin-aside {
+      left: 0;
+      right: auto;
+      transform: translateX(-100%);
+      box-shadow: var(--aside-shadow);
+    }
+
+    .issue-page.is-sidebar-open .issue-sidebar,
+    .admin-layout.is-sidebar-open .admin-aside {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        transform 0.28s ease,
+        visibility 0s;
+    }
+
+    .sidebar-backdrop {
+      display: block;
+      position: fixed;
+      inset: var(--app-header-h) 0 0 0;
+      z-index: 35;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: color-mix(in oklab, var(--color-ink) 40%, transparent);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 0.28s ease,
+        visibility 0s linear 0.28s;
+    }
+
+    [data-sidebar].is-sidebar-open .sidebar-backdrop {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        opacity 0.28s ease,
+        visibility 0s;
+    }
+  }
+
   @media (max-width: 768px) {
     .app-shell,
     .app-main {
@@ -4684,6 +5044,31 @@
 
     .app-header-nav-mobile {
       display: block;
+    }
+
+    .app-header {
+      --nav-brand-max: 7.5rem;
+      --nav-hamburger-size: 2.25rem;
+    }
+
+    .app-header,
+    .admin-layout,
+    .issue-page {
+      --app-header-h: calc(1.85rem + 1.1rem * var(--space-scale) + var(--app-header-border-w, 0px));
+    }
+
+    .app-header-bar {
+      gap: calc(0.65rem * var(--space-scale));
+      padding-block: calc(0.55rem * var(--space-scale));
+    }
+
+    .brand-mark {
+      gap: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .brand-mark-logo {
+      height: 1.85rem;
     }
 
     .brand-mark-name {
@@ -4725,8 +5110,28 @@
       justify-content: flex-start;
     }
 
+    .issue-section-bar:has(.issue-section-actions) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .issue-section-actions {
+      flex: 1 1 auto;
+      width: 100%;
+      justify-content: stretch;
+    }
+
+    .issue-section-actions .form-select-menu {
+      flex: 1 1 9rem;
+      min-width: 0;
+    }
+
+    .issue-section-actions .btn {
+      flex: 0 1 auto;
+      max-width: 100%;
+    }
+
     .issue-page {
-      grid-template-columns: 1fr;
       min-height: 0;
       margin: -1.75rem -1rem -3.5rem;
       background-color: transparent;
@@ -4735,18 +5140,11 @@
     .issue-page-body {
       --issue-body-pad-x: 1rem;
       padding: 1.5rem var(--issue-body-pad-x) 1.25rem;
-      order: 0;
     }
 
     .issue-sidebar {
-      position: static;
-      min-height: 0;
-      order: 1;
       padding: 1.25rem 1rem 2.5rem;
-      border-left: none;
-      border-top: 1px solid var(--color-line);
       background-image: none;
-      box-shadow: none;
     }
 
     .issue-sidebar::before {
@@ -4755,8 +5153,50 @@
   }
 
   @media (max-width: 479px) {
+    .app-header {
+      --nav-brand-max: 6.25rem;
+      --nav-hamburger-size: 2.1rem;
+    }
+
+    .app-header,
+    .admin-layout,
+    .issue-page {
+      --app-header-h: calc(1.65rem + 0.9rem * var(--space-scale) + var(--app-header-border-w, 0px));
+    }
+
+    .app-header-bar {
+      gap: calc(0.5rem * var(--space-scale));
+      padding-block: calc(0.45rem * var(--space-scale));
+    }
+
+    .brand-mark {
+      gap: 0.35rem;
+      font-size: 0.875rem;
+    }
+
+    .brand-mark-logo {
+      height: 1.65rem;
+    }
+
+    .app-header-section {
+      display: none;
+    }
+
+    .nav-mobile-project {
+      display: contents;
+    }
+
     .issue-tag-add {
       grid-template-columns: 1fr;
+    }
+
+    .issue-section-actions {
+      flex: 1 1 100%;
+    }
+
+    .issue-section-actions .form-select-menu,
+    .issue-section-actions .btn {
+      flex: 1 1 100%;
     }
   }
 
@@ -4768,6 +5208,14 @@
     .issue-head[data-issue-sticky-head],
     .issue-head[data-issue-sticky-head] .issue-title,
     .issue-title-key {
+      transition: none;
+    }
+
+    .issue-sidebar,
+    .admin-aside,
+    .sidebar-backdrop,
+    .sidebar-toggle,
+    .sidebar-toggle .icon {
       transition: none;
     }
 

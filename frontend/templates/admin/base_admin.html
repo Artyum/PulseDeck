@@ -5,7 +5,7 @@
   {% set hide_project_picker = true %}
   {% set show_portal_back = true %}
   {% set header_section_label = t("ui.admin.aside_label") %}
-  <div class="admin-layout">
+  <div class="admin-layout" data-sidebar>
     {% include "partials/app_header.html" %}
     <div class="admin-shell">
       <aside class="admin-aside">
@@ -37,5 +37,7 @@
         {% endblock content %}
       </main>
     </div>
+    {% include "partials/sidebar_toggle.html" %}
+    {% include "partials/sidebar_backdrop.html" %}
   </div>
 {% endblock body %}

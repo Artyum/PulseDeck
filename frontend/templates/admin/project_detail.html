@@ -33,7 +33,7 @@
                name="name"
                {{ field_attrs("project.name") }}
                value="{{ form_name if form_name is defined else project.name }}"
-               class="input min-w-[12rem]">
+               class="input">
       </div>
       <div class="admin-form-field">
         <label class="label-tight" for="edit-key">{{ t("ui.admin.projects.key") }}</label>
@@ -42,7 +42,7 @@
                {{ field_attrs("project.key") }}
                value="{{ form_key if form_key is defined else project.key }}"
                title="{{ t('ui.admin.projects.key_title') }}"
-               class="input min-w-[8rem] uppercase">
+               class="input uppercase">
       </div>
       <div class="admin-form-field">
         <label class="label-tight" for="edit-desc">{{ t("ui.admin.projects.description") }}</label>

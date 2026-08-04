@@ -3,7 +3,7 @@
 {% from "partials/rich_editor.html" import rich_editor with context %}
 {% block title %}{{ app_name }} - {{ t("ui.ticket.doc_title", label=ticket|ticket_label) }}{% endblock title %}
 {% block content %}
-  <div id="ticket-view" class="issue-page">{% include "partials/ticket_view.html" %}</div>
+  <div id="ticket-view" class="issue-page" data-sidebar>{% include "partials/ticket_view.html" %}</div>
   {% if can_edit %}
     <dialog id="edit-ticket" class="modal">
       <form method="post"

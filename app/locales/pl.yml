@@ -19,6 +19,8 @@ ui:
     logout: "Wyloguj"
     optional: "Opcjonalnie"
     active: "Aktywny"
+    sidebar_show: "Pokaż panel"
+    sidebar_hide: "Ukryj panel"
   errors:
     not_found:
       title: "Nie znaleziono"

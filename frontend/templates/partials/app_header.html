@@ -134,6 +134,19 @@
           </a>
           <hr class="issue-menu-sep">
         {% endif %}
+        {% if show_project_picker or show_project_section %}
+          <div class="nav-mobile-project">
+            {% if show_project_picker %}
+              <p class="nav-mobile-label" data-coachmark="nav-project">{{ t("ui.nav.project") }}</p>
+              {{ nav_project_links() }}
+              <hr class="issue-menu-sep">
+            {% else %}
+              <p class="nav-mobile-label">{{ t("ui.nav.project") }}</p>
+              <p class="nav-mobile-user">{{ project.name }}</p>
+              <hr class="issue-menu-sep">
+            {% endif %}
+          </div>
+        {% endif %}
         <p class="nav-mobile-user">{{ user.display_name }}</p>
         {{ nav_account_links() }}
       </nav>

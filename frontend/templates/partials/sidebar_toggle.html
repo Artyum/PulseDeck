@@ -1,0 +1,9 @@
+{% from "partials/icons.html" import icon %}
+<button type="button"
+        class="sidebar-toggle"
+        data-sidebar-toggle
+        data-label-show="{{ t('ui.common.sidebar_show') }}"
+        data-label-hide="{{ t('ui.common.sidebar_hide') }}"
+        aria-expanded="false"
+        aria-label="{{ t('ui.common.sidebar_show') }}"
+        title="{{ t('ui.common.sidebar_show') }}">{{ icon("chevron") }}</button>

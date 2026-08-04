@@ -261,7 +261,38 @@
     armFormValidation(root);
     armAutoResize(root);
     armIssueStickyHeads(root);
+    syncSidebarToggles(root);
   }
+
+  function syncSidebarToggles(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var shells =
+      scope.matches && scope.matches("[data-sidebar]")
+        ? [scope]
+        : Array.prototype.slice.call(scope.querySelectorAll("[data-sidebar]"));
+    shells.forEach(function (shell) {
+      var open = shell.classList.contains("is-sidebar-open");
+      shell.querySelectorAll("[data-sidebar-toggle]").forEach(function (btn) {
+        var label = open
+          ? btn.getAttribute("data-label-hide")
+          : btn.getAttribute("data-label-show");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        if (label) {
+          btn.setAttribute("aria-label", label);
+          btn.setAttribute("title", label);
+        }
+      });
+    });
+  }
+
+  document.body.addEventListener("click", function (ev) {
+    var btn = ev.target.closest("[data-sidebar-toggle], [data-sidebar-backdrop]");
+    if (!btn) return;
+    var shell = btn.closest("[data-sidebar]");
+    if (!shell) return;
+    shell.classList.toggle("is-sidebar-open");
+    syncSidebarToggles(shell);
+  });
 
   function appHeaderOffsetPx() {
     var header = document.querySelector(".app-header");
