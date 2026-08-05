@@ -49,15 +49,15 @@
             <span>{{ tkt.author.display_name }}</span>
           </span>
         {% endif %}
-        {% if show_tags and tkt.ticket_tags %}
-          <span class="ticket-row-tags">
-            <span class="ticket-row-tags-label">{{ t("ui.ticket.tags") }}</span>
-            {% for tt in tkt.ticket_tags %}
-              <span class="chip chip-outline">{{ tt.tag.name }}</span>
-            {% endfor %}
-          </span>
-        {% endif %}
       </div>
+      {% if show_tags and tkt.ticket_tags %}
+        <div class="ticket-row-tags">
+          <span class="ticket-row-tags-label">{{ t("ui.ticket.tags") }}</span>
+          {% for tt in tkt.ticket_tags %}
+            <span class="chip chip-outline">{{ tt.tag.name }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
     <div class="ticket-row-side">
       <div class="ticket-row-badges">

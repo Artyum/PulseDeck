@@ -97,7 +97,7 @@
             <p class="empty">{{ t("ui.portal.feed.empty") }}</p>
           {% endfor %}
         </div>
-        {% if ticket_list.total > 0 %}
+        {% if ticket_list.total > 10 %}
           <nav class="feed-pagination"
                aria-label="{{ t('ui.portal.feed.pagination.label') }}"
                hx-boost="true"
