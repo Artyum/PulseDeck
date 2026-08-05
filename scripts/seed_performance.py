@@ -5,7 +5,7 @@ import logging
 import random
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,15 +37,73 @@ from scripts.perf_seed_lib import (
 logger = logging.getLogger("pulsedeck.seed_performance")
 
 
-def markdown_message(fake, min_len: int, max_len: int) -> str:
-    target = random.randint(min_len, max_len)
+def sample_content_length(
+    rng: random.Random,
+    *,
+    kind: str,
+    min_len: int,
+    max_len: int,
+) -> int:
+    def clamp(lo: int, hi: int) -> int:
+        lo = max(min_len, lo)
+        hi = min(max_len, hi)
+        if lo > hi:
+            return min(max(min_len, (lo + hi) // 2), max_len)
+        return rng.randint(lo, hi)
+
+    r = rng.random()
+    if kind == "comment":
+        if r < 0.90:
+            return clamp(200, 800)
+        if r < 0.99:
+            return clamp(900, 2200)
+        return clamp(3500, 5500)
+    if r < 0.30:
+        return clamp(200, 700)
+    if r < 0.65:
+        return clamp(700, 2000)
+    if r < 0.90:
+        return clamp(2000, 4500)
+    return clamp(4500, 8000)
+
+
+def sample_comment_count(rng: random.Random, *, max_comments: int) -> int:
+    if max_comments <= 0:
+        return 0
+
+    def clamp(lo: int, hi: int) -> int:
+        lo = max(1, lo)
+        hi = min(max_comments, hi)
+        if lo > hi:
+            return min(max(1, lo), max_comments)
+        return rng.randint(lo, hi)
+
+    r = rng.random()
+    if r < 0.18:
+        return clamp(1, 1)
+    if r < 0.42:
+        return clamp(2, 3)
+    if r < 0.70:
+        return clamp(4, 7)
+    if r < 0.88:
+        return clamp(8, 14)
+    if r < 0.97:
+        return clamp(15, 25)
+    return clamp(26, min(50, max_comments))
+
+
+def markdown_message(
+    fake, min_len: int, max_len: int, rng: random.Random | None = None
+) -> str:
+    rng = rng or random.Random()
+    target = rng.randint(min_len, max_len)
     generators = [
         lambda: f"**{fake.sentence()}**",
         lambda: f"*{fake.sentence()}*",
         lambda: fake.paragraph(),
-        lambda: "\n".join(f"- {fake.sentence()}" for _ in range(random.randint(2, 7))),
+        lambda: "\n".join(f"- {fake.sentence()}" for _ in range(rng.randint(2, 7))),
         lambda: "\n".join(
-            f"{i}. {fake.sentence()}" for i in range(1, random.randint(3, 6))
+            f"{i}. {fake.sentence()}" for i in range(1, rng.randint(3, 6))
         ),
         lambda: f"> {fake.paragraph(nb_sentences=2)}",
         lambda: f"`{fake.word()}` — {fake.sentence()}",
@@ -55,7 +113,7 @@ def markdown_message(fake, min_len: int, max_len: int) -> str:
     blocks: list[str] = []
     total = 0
     while total < target:
-        block = random.choice(generators)()
+        block = rng.choice(generators)()
         blocks.append(block)
         total = len("\n\n".join(blocks))
     text = "\n\n".join(blocks)
@@ -67,6 +125,11 @@ def markdown_message(fake, min_len: int, max_len: int) -> str:
     return text
 
 
+def _content(fake, rng: random.Random, *, kind: str, min_len: int, max_len: int) -> str:
+    n = sample_content_length(rng, kind=kind, min_len=min_len, max_len=max_len)
+    return markdown_message(fake, n, n, rng=rng)
+
+
 def seed(
     db,
     *,
@@ -76,7 +139,7 @@ def seed(
     viewers: list,
     tag_pool: list,
     tickets: int,
-    comments_per_ticket: int,
+    max_comments: int,
     min_len: int,
     max_len: int,
     batch_size: int,
@@ -113,30 +176,35 @@ def seed(
     ticket_count = 0
     comment_count = 0
     pending_tickets = 0
+    clock = datetime.now(timezone.utc) - timedelta(
+        milliseconds=tickets * (1 + max(max_comments, 0))
+    )
 
     for seq in range(1, tickets + 1):
         author = pick_author(client_users)
-        assignee = pick_assignee(viewers, seq)
+        assignee = None if rng.random() < 0.05 else pick_assignee(viewers, seq)
         title = clean("ticket.title", f"{prefix} {seq}", lang="pl")
         description = clean(
             "ticket.description",
-            markdown_message(fake, min(min_len, 200), min(max_len, 2000)),
+            _content(fake, rng, kind="description", min_len=min_len, max_len=max_len),
             lang="pl",
         )
         status = pick_ticket_status(rng)
+        clock += timedelta(milliseconds=1)
+        ticket_ts = clock
         ticket = Ticket(
             project_id=project.id,
             number=base_number + seq,
             author_id=author.id,
-            assignee_id=assignee.id,
+            assignee_id=assignee.id if assignee else None,
             title=title,
             description=description,
             type=pick_ticket_type(rng),
             status=status,
             priority=pick_ticket_priority(rng),
-            closed_at=(
-                datetime.now(timezone.utc) if status == TicketStatus.DONE else None
-            ),
+            closed_at=ticket_ts if status == TicketStatus.DONE else None,
+            created_at=ticket_ts,
+            updated_at=ticket_ts,
         )
         db.add(ticket)
         db.flush()
@@ -144,24 +212,33 @@ def seed(
         for tag in pick_ticket_tags(tag_pool, rng):
             db.add(TicketTag(ticket_id=ticket.id, tag_id=tag.id))
 
-        role_plan = plan_conversation_roles(comments_per_ticket, rng)
+        role_plan = plan_conversation_roles(
+            sample_comment_count(rng, max_comments=max_comments), rng
+        )
         for is_staff in role_plan:
             pool = staff_users if is_staff else client_users
             comment_author = pick_author(pool)
             content = clean(
                 "comment.content",
-                markdown_message(fake, min_len, max_len),
+                _content(fake, rng, kind="comment", min_len=min_len, max_len=max_len),
                 lang="pl",
             )
+            clock += timedelta(milliseconds=1)
             db.add(
                 Comment(
                     ticket_id=ticket.id,
                     author_id=comment_author.id,
                     content=content,
                     is_internal=False,
+                    created_at=clock,
                 )
             )
             comment_count += 1
+
+        if role_plan:
+            ticket.updated_at = clock
+            if status == TicketStatus.DONE:
+                ticket.closed_at = clock
 
         ticket_count += 1
         pending_tickets += 1
@@ -205,7 +282,7 @@ def main() -> int:
         "--comments",
         type=int,
         default=30,
-        help="Komentarzy na wątek",
+        help="Max. komentarzy na wątek (liczba losowana z rozkładu 1…N)",
     )
     parser.add_argument(
         "--users",
@@ -226,13 +303,16 @@ def main() -> int:
         help="Liczba tagów w puli (perf-NNN); na wątek losowo 0–5",
     )
     parser.add_argument(
-        "--min-len", type=int, default=10, help="Min. długość komentarza"
+        "--min-len",
+        type=int,
+        default=10,
+        help="Dolny limit długości treści (rozkład komentarzy/opisów)",
     )
     parser.add_argument(
         "--max-len",
         type=int,
         default=8000,
-        help="Max. długość komentarza",
+        help="Górny limit długości treści (rozkład komentarzy/opisów)",
     )
     parser.add_argument(
         "--batch",
@@ -327,7 +407,7 @@ def main() -> int:
         )
 
         logger.info(
-            "Seed: projekt=%r (key=%s), wątki=%d, komentarze/wątek=%d, długość %d–%d",
+            "Seed: projekt=%r (key=%s), wątki=%d, max komentarzy/wątek=%d, długość %d–%d",
             args.project,
             project.key,
             args.tickets,
@@ -343,7 +423,7 @@ def main() -> int:
             viewers=viewers,
             tag_pool=tag_pool,
             tickets=args.tickets,
-            comments_per_ticket=args.comments,
+            max_comments=args.comments,
             min_len=args.min_len,
             max_len=args.max_len,
             batch_size=max(1, args.batch),

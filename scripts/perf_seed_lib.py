@@ -427,7 +427,14 @@ def pick_author(users: list[User]) -> User:
 def plan_conversation_roles(count: int, rng: random.Random) -> list[bool]:
     if count <= 0:
         return []
-    roles: list[bool] = []
+    if rng.random() < 0.95:
+        is_staff = rng.choice((True, False))
+        roles: list[bool] = []
+        for _ in range(count):
+            roles.append(is_staff)
+            is_staff = not is_staff
+        return roles
+    roles = []
     is_staff = True
     streak_left = 0
     while len(roles) < count:
