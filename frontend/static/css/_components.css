@@ -4011,7 +4011,7 @@
     min-width: 0;
     overflow: hidden;
     border: 1px solid var(--color-frame);
-    border-radius: 0.55rem;
+    border-radius: 0 0 0.55rem 0.55rem;
     background: var(--color-surface);
     box-shadow: var(--shadow-field);
     transition:
