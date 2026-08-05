@@ -125,6 +125,37 @@ class TestListTicketsFilters:
         assert done.id in ids
         assert open_one.id not in ids
 
+    def test_view_status_filters_exclusive(
+        self, db_session, project_with_members, client_user
+    ):
+        waiting = _ticket(
+            db_session, project_with_members, client_user, title="Waiting one"
+        )
+        waiting.status = TicketStatus.WAITING_ON_CLIENT
+        done = _ticket(db_session, project_with_members, client_user, title="Done one")
+        done.status = TicketStatus.DONE
+        db_session.commit()
+        by_view = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=client_user,
+            view="done",
+            status_filter="WAITING_ON_CLIENT",
+        )
+        by_view_ids = {r.id for r in by_view}
+        assert waiting.id in by_view_ids
+        assert done.id not in by_view_ids
+        by_status = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=client_user,
+            view="open",
+            status_filter="DONE",
+        )
+        by_status_ids = {r.id for r in by_status}
+        assert done.id in by_status_ids
+        assert waiting.id not in by_status_ids
+
     def test_invalid_filters_ignored(
         self, db_session, project_with_members, client_user
     ):

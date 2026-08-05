@@ -261,12 +261,16 @@ def project_feed(
     has_query = bool(request.query_params)
     mine_on = (mine or "").strip().lower() in ("1", "true", "on")
     paused_on = (mine_paused or "").strip().lower() in ("1", "true", "on")
-    if view:
+    if status_filter:
+        current_view = "all"
+    elif view:
         current_view = view
     elif not has_query:
         current_view = "all"
     else:
         current_view = ""
+    if current_view not in ("", "all"):
+        status_filter = None
     if current_view == "unassigned":
         filter_mine = mine_on
         filter_mine_paused = paused_on and not mine_on

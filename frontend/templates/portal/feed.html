@@ -16,13 +16,13 @@
   {% else %}
     {% set views = [
           ('all', t('ui.portal.view.all')),
-          ('open', t('ui.portal.view.open')),
           ('waiting_on_me', t('ui.portal.view.client.waiting_on_me')),
+          ('open', t('ui.portal.view.open')),
           ('done', t('ui.portal.view.done'))
         ] %}
   {% endif %}
   {% macro chip_query(key) -%}
-    view={{ key }}{%- if key == 'unassigned' -%}{%- if filter_mine or filter_mine_paused -%}&mine_paused=1{%- endif -%}{%- elif filter_mine or filter_mine_paused -%}&mine=1{%- endif -%}{%- if filter_type -%}&type={{ filter_type }}{%- endif -%}{%- if filter_status -%}&status={{ filter_status }}{%- endif -%}{%- if filter_priority -%}&priority={{ filter_priority }}{%- endif -%}{%- if filter_tag -%}&tag={{ filter_tag }}{%- endif -%}{%- if filter_sort and filter_sort != 'created_at' -%}&sort={{ filter_sort }}{%- endif -%}
+    view={{ key }}{%- if key == 'unassigned' -%}{%- if filter_mine or filter_mine_paused -%}&mine_paused=1{%- endif -%}{%- elif filter_mine or filter_mine_paused -%}&mine=1{%- endif -%}{%- if filter_type -%}&type={{ filter_type }}{%- endif -%}{%- if filter_priority -%}&priority={{ filter_priority }}{%- endif -%}{%- if filter_tag -%}&tag={{ filter_tag }}{%- endif -%}{%- if filter_sort and filter_sort != 'created_at' -%}&sort={{ filter_sort }}{%- endif -%}
   {%- endmacro %}
   <div id="feed-header-and-results" class="issue-page" data-sidebar>
     <div class="issue-page-body">
@@ -69,7 +69,7 @@
             hx-swap="outerHTML"
             hx-push-url="true">
         {% if current_view %}
-          <input type="hidden" name="view" value="{{ current_view }}">
+          <input type="hidden" name="view" value="{{ current_view }}" data-feed-view>
         {% endif %}
         {% if filter_mine_paused %}
           <input type="hidden" name="mine_paused" value="1">

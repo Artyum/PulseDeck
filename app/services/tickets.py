@@ -233,6 +233,10 @@ def list_tickets(
     q: str | None = None,
     sort: str | None = None,
 ) -> list[Ticket]:
+    if status_filter:
+        view = None
+    elif view and view != "all":
+        status_filter = None
     stmt = select(Ticket).where(Ticket.project_id == project_id)
     stmt = _apply_view_filter(stmt, view=None if q else view)
     if mine:

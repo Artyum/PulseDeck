@@ -230,7 +230,7 @@ ui:
         needs_us: "Do obsługi"
         unassigned: "Nieprzypisane"
       client:
-        waiting_on_me: "Oczekuje na odpowiedź"
+        waiting_on_me: "Czeka na odpowiedź"
   ticket:
     doc_title: "Zgłoszenie {label}"
     description: "Opis"

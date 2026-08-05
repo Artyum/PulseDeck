@@ -858,6 +858,26 @@
     });
   }
 
+  document.addEventListener("submit", function (ev) {
+    var form = ev.target;
+    if (!form || form.id !== "feed-filters") return;
+    var submitter = ev.submitter;
+    if (!submitter || !submitter.closest(".feed-filter-actions")) return;
+    var statusInput = form.querySelector("[name='status']");
+    if (!statusInput || !statusInput.value) return;
+    var viewInput = form.querySelector("[data-feed-view]");
+    if (viewInput) {
+      viewInput.value = "all";
+      return;
+    }
+    viewInput = document.createElement("input");
+    viewInput.type = "hidden";
+    viewInput.name = "view";
+    viewInput.value = "all";
+    viewInput.setAttribute("data-feed-view", "");
+    form.appendChild(viewInput);
+  });
+
   document.addEventListener("input", function (ev) {
     if (!ev.target || ev.target.id !== "feed-q") return;
     var field = ev.target.closest(".feed-search-field");
