@@ -30,7 +30,7 @@ def _admin_user_create_limit() -> str:
 
 _USER_SORT_COLS = ("name", "email", "phone", "role", "status")
 _ACTIVITY_SORT_COLS = ("name", "tickets", "last_login")
-_USER_STATUS_FILTERS = ("active", "blocked")
+_USER_STATUS_FILTERS = ("active", "blocked", "pending")
 
 
 def _admin_path(base: str, **params: str) -> str:
@@ -79,13 +79,9 @@ def _sort_links(
     }
 
 
-def _parse_user_status(status: str | None) -> tuple[str, bool | None]:
+def _parse_user_status(status: str | None) -> str:
     raw = (status or "").strip().lower()
-    if raw == "active":
-        return "active", True
-    if raw == "blocked":
-        return "blocked", False
-    return "", None
+    return raw if raw in _USER_STATUS_FILTERS else ""
 
 
 def _admin_project(db: Session, key: str, *, lang: str | None = None) -> Project:
@@ -426,7 +422,7 @@ def admin_users(
             filter_project = str(pid)
 
     filter_q = (q or "").strip()
-    filter_status, active_filter = _parse_user_status(status)
+    filter_status = _parse_user_status(status)
     sort_col, sort_dir = _parse_sort(sort, order, allowed=_USER_SORT_COLS)
 
     error = None
@@ -436,7 +432,7 @@ def admin_users(
             role=role_filter,
             project_id=project_id,
             q=filter_q or None,
-            active=active_filter,
+            status=filter_status or None,
             sort=sort_col,
             sort_dir=sort_dir,
             lang=lang,

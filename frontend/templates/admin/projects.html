@@ -8,7 +8,7 @@
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
   </div>
-  <section class="admin-section" data-coachmark="admin-projects">
+  <section class="admin-section">
     <div class="issue-section-bar">
       <div class="issue-section-title-row">
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
@@ -17,7 +17,7 @@
     <form method="post"
           action="{{ url_for('create_project') }}{%- if show_disabled -%}?disabled=1{%- endif -%}"
           class="admin-form-row">
-      <div class="admin-form-field">
+      <div class="admin-form-field" data-coachmark="admin-projects-name">
         <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
         <input id="project-name"
                name="name"
@@ -25,7 +25,7 @@
                value="{{ form_name or '' }}"
                class="input">
       </div>
-      <div class="admin-form-field">
+      <div class="admin-form-field" data-coachmark="admin-projects-key">
         <label class="label-tight" for="project-key">{{ t("ui.admin.projects.key") }}</label>
         <input id="project-key"
                name="key"
@@ -34,7 +34,7 @@
                value="{{ form_key or '' }}"
                class="input uppercase">
       </div>
-      <div class="admin-form-field">
+      <div class="admin-form-field" data-coachmark="admin-projects-description">
         <label class="label-tight" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
         <input id="project-desc"
                name="description"

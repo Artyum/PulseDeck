@@ -1,5 +1,4 @@
 {% extends "admin/base_admin.html" %}
-{% set coachmark_scope = "admin-users" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import project_checkboxes, modal_header, form_select_menu with context %}
 {% macro users_sort_th(col, label) -%}
@@ -26,7 +25,6 @@
       </div>
       <button type="button"
               class="btn btn-primary"
-              data-coachmark="admin-users-new"
               onclick="document.getElementById('new-user').showModal()">{{ t("ui.admin.users.new") }}</button>
     </div>
     <form method="get"
@@ -86,23 +84,30 @@
              class="admin-entity-hit"
              aria-label="{{ t('ui.admin.users.edit_aria', name=u.display_name) }}"></a>
           <span class="admin-users-cell admin-users-name"
+                data-label="{{ t('ui.admin.users.col_name') }}"
                 title="{{ u.display_name }}">{{ u.display_name }}</span>
-          <span class="admin-users-cell admin-users-meta" title="{{ u.email }}">{{ u.email }}</span>
           <span class="admin-users-cell admin-users-meta"
+                data-label="{{ t('ui.profile.field.email') }}"
+                title="{{ u.email }}">{{ u.email }}</span>
+          <span class="admin-users-cell admin-users-meta"
+                data-label="{{ t('ui.profile.field.phone') }}"
                 {% if u.phone %}title="{{ u.phone|format_phone }}"{% endif %}>{{ u.phone|format_phone }}</span>
-          <span class="admin-entity-badges">
+          <span class="admin-users-cell"
+                data-label="{{ t('ui.admin.users.filter_role') }}">
             <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
-            {% if u.is_pending %}
-              <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
-            {% endif %}
           </span>
-          <span class="admin-users-cell admin-users-status">
-            <input type="checkbox"
-                   class="checkbox"
-                   disabled
-                   tabindex="-1"
-                   {% if u.is_active %}checked{% endif %}
-                   aria-label="{{ t('ui.common.active') if u.is_active else t('ui.admin.users.blocked') }}">
+          <span class="admin-users-cell admin-users-status"
+                data-label="{{ t('ui.admin.users.col_status') }}">
+            <span class="admin-users-status-value">
+              {% if u.is_active %}
+                <span class="chip chip-active">{{ t("ui.common.active") }}</span>
+              {% else %}
+                <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
+              {% endif %}
+              {% if u.is_pending %}
+                <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
+              {% endif %}
+            </span>
           </span>
         </li>
       {% else %}

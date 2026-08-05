@@ -116,11 +116,17 @@
                   <tbody>
                     {% for row in project_activity %}
                       <tr>
-                        <td>
-                          <a href="{{ feed }}?view=all&q={{ row.user.display_name|urlencode }}">{{ row.user.display_name }}</a>
+                        <td data-label="{{ t('ui.admin.users.col_name') }}">
+                          <span class="admin-kv-value">
+                            <a href="{{ feed }}?view=all&q={{ row.user.display_name|urlencode }}">{{ row.user.display_name }}</a>
+                          </span>
                         </td>
-                        <td>{{ row.tickets_created }}</td>
-                        <td>{% if row.user.last_login_at %}{{ row.user.last_login_at|format_dt }}{% endif %}</td>
+                        <td data-label="{{ t('ui.admin.dashboard.col_tickets_created') }}">
+                          <span class="admin-kv-value">{{ row.tickets_created }}</span>
+                        </td>
+                        <td data-label="{{ t('ui.admin.users.col_last_login') }}">
+                          <span class="admin-kv-value">{% if row.user.last_login_at %}{{ row.user.last_login_at|format_dt }}{% endif %}</span>
+                        </td>
                       </tr>
                     {% endfor %}
                   </tbody>

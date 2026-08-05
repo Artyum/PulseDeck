@@ -202,15 +202,20 @@ def list_users(
     role: UserRole | None = None,
     project_id: int | None = None,
     q: str | None = None,
-    active: bool | None = None,
+    status: str | None = None,
     sort: str | None = None,
     sort_dir: str | None = None,
     lang: str | None = None,
 ) -> list[User]:
     lang = lang or DEFAULT_LANG
     stmt = select(User).options(selectinload(User.memberships))
-    if active is not None:
-        stmt = stmt.where(User.is_active.is_(active))
+    status_key = (status or "").strip().lower()
+    if status_key == "active":
+        stmt = stmt.where(User.is_active.is_(True))
+    elif status_key == "blocked":
+        stmt = stmt.where(User.is_active.is_(False))
+    elif status_key == "pending":
+        stmt = stmt.where(User.activated_at.is_(None))
     if role is not None:
         stmt = stmt.where(User.role == role)
     if project_id is not None:

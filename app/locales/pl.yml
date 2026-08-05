@@ -218,8 +218,10 @@ ui:
       filter_clear: "Wyczyść"
       pagination:
         label: "Paginacja listy zgłoszeń"
+        first: "Pierwsza strona"
         prev: "Poprzednia"
         next: "Następna"
+        last: "Ostatnia strona"
         range: "{start}–{end} z {total}"
         per_page_label: "Na stronie"
       modal_title: "Utwórz zgłoszenie"
@@ -418,6 +420,7 @@ ui:
       filter_status: "Status"
       filter_status_active: "Odblokowani"
       filter_status_blocked: "Zablokowani"
+      filter_status_pending: "Oczekuje"
       filter_status_all: "Wszyscy"
       filter_search: "Szukaj"
       filter_search_placeholder: "Imię, nazwisko, e-mail lub telefon…"
@@ -778,12 +781,14 @@ js:
       body: "Przypisz osobę z zespołu do obsługi tego zgłoszenia."
     ticket-thread-order:
       body: "Strzałka w górę — od najstarszej wiadomości; w dół — od najnowszej (pole odpowiedzi u góry)."
-    admin-projects:
-      body: "Utwórz nowy projekt i zaproś do niego zespół."
+    admin-projects-name:
+      body: "Nazwa wyświetlana projektu."
+    admin-projects-key:
+      body: "Unikalny klucz wchodzący w skład numeru zgłoszenia."
+    admin-projects-description:
+      body: "Opcjonalny krótki opis widoczny na liście projektów."
     admin-project-members:
       body: "Dodaj osoby do projektu, aby widziały jego zgłoszenia i mogły nad nimi pracować."
-    admin-users-new:
-      body: "Utwórz konto użytkownika — dostanie link aktywacyjny e-mailem."
     compose-attach:
       body: "Dodaj pliki wybierając je z dysku, przeciągając w to miejsce lub wklejając ze schowka (Ctrl+V)."
     compose-quote:

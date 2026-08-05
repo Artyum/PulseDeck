@@ -218,8 +218,10 @@ ui:
       filter_clear: "Clear"
       pagination:
         label: "Ticket list pagination"
+        first: "First page"
         prev: "Previous"
         next: "Next"
+        last: "Last page"
         range: "{start}–{end} of {total}"
         per_page_label: "Per page"
       modal_title: "Create ticket"
@@ -418,6 +420,7 @@ ui:
       filter_status: "Status"
       filter_status_active: "Unblocked"
       filter_status_blocked: "Blocked"
+      filter_status_pending: "Pending"
       filter_status_all: "All"
       filter_search: "Search"
       filter_search_placeholder: "Name, email or phone…"
@@ -778,12 +781,14 @@ js:
       body: "Assign a team member to handle this ticket."
     ticket-thread-order:
       body: "Up arrow — oldest message first; down — newest first (reply box at the top)."
-    admin-projects:
-      body: "Create a new project and invite your team."
+    admin-projects-name:
+      body: "Display name of the project."
+    admin-projects-key:
+      body: "Unique key that forms part of the ticket number."
+    admin-projects-description:
+      body: "Optional short summary shown in the project list."
     admin-project-members:
       body: "Add people to the project so they can see and work on its tickets."
-    admin-users-new:
-      body: "Create a user account — they’ll get an activation link by email."
     compose-attach:
       body: "Add files by choosing them from disk, dragging them here, or pasting from the clipboard (Ctrl+V)."
     compose-quote:

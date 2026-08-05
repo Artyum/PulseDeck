@@ -47,7 +47,7 @@
     per_page=feed_query.per_page
     ) }}
   {%- endmacro %}
-  {% macro feed_page_btn(enabled, href, label, icon_side) -%}
+  {% macro feed_page_btn(enabled, href, label, icon_name) -%}
     {% if enabled %}
       <a href="{{ href }}"
          class="feed-pagination-btn"
@@ -57,8 +57,7 @@
               aria-disabled="true"
               aria-label="{{ label }}">
         {% endif %}
-        <span class="section-icon feed-pagination-icon feed-pagination-icon-{{ icon_side }}"
-              aria-hidden="true">{{ icon("chevron") }}</span>
+        <span class="section-icon feed-pagination-icon" aria-hidden="true">{{ icon(icon_name) }}</span>
         {% if enabled %}
         </a>
       {% else %}
@@ -116,9 +115,11 @@
               </div>
             </div>
             <div class="feed-pagination-nav">
-              {{ feed_page_btn(ticket_list.has_prev, feed_link(ticket_list.page - 1) , t('ui.portal.feed.pagination.prev'), 'prev') }}
+              {{ feed_page_btn(ticket_list.has_prev, feed_link(1) , t('ui.portal.feed.pagination.first'), 'page_first') }}
+              {{ feed_page_btn(ticket_list.has_prev, feed_link(ticket_list.page - 1) , t('ui.portal.feed.pagination.prev'), 'page_prev') }}
               <span class="feed-pagination-range">{{ t("ui.portal.feed.pagination.range", start=ticket_list.range_start, end=ticket_list.range_end, total=ticket_list.total) }}</span>
-              {{ feed_page_btn(ticket_list.has_next, feed_link(ticket_list.page + 1) , t('ui.portal.feed.pagination.next'), 'next') }}
+              {{ feed_page_btn(ticket_list.has_next, feed_link(ticket_list.page + 1) , t('ui.portal.feed.pagination.next'), 'page_next') }}
+              {{ feed_page_btn(ticket_list.has_next, feed_link(ticket_list.last_page) , t('ui.portal.feed.pagination.last'), 'page_last') }}
             </div>
           </nav>
         {% endif %}

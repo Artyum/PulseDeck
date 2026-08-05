@@ -12,8 +12,9 @@
     { id: "compose-attach", scope: "ticket" },
     { id: "compose-quote", scope: "ticket" },
     { id: "compose-internal", scope: "ticket" },
-    { id: "admin-projects", scope: "admin-projects" },
+    { id: "admin-projects-name", scope: "admin-projects" },
+    { id: "admin-projects-key", scope: "admin-projects" },
+    { id: "admin-projects-description", scope: "admin-projects" },
     { id: "admin-project-members", scope: "admin-project" },
-    { id: "admin-users-new", scope: "admin-users" },
   ];
 })();
