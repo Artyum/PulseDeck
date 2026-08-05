@@ -31,7 +31,7 @@ class TestListTicketsFilters:
             user=client_user,
             view="open",
         )
-        open_ids = {t.id for t in open_rows}
+        open_ids = {t.id for t in open_rows.items}
         assert mine.id in open_ids
         assert other.id in open_ids
         mine_rows = ticket_service.list_tickets(
@@ -41,7 +41,7 @@ class TestListTicketsFilters:
             view="open",
             mine=True,
         )
-        mine_ids = {t.id for t in mine_rows}
+        mine_ids = {t.id for t in mine_rows.items}
         assert mine.id in mine_ids
         assert other.id not in mine_ids
 
@@ -53,7 +53,7 @@ class TestListTicketsFilters:
             user=staff_user,
             view="unassigned",
         )
-        assert any(r.id == t.id for r in rows)
+        assert any(r.id == t.id for r in rows.items)
         ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
         rows_after = ticket_service.list_tickets(
             db_session,
@@ -61,7 +61,7 @@ class TestListTicketsFilters:
             user=staff_user,
             view="unassigned",
         )
-        assert all(r.id != t.id for r in rows_after)
+        assert all(r.id != t.id for r in rows_after.items)
 
     def test_staff_mine_assignee_or_author(
         self, db_session, project_with_members, staff_user, client_user
@@ -81,7 +81,7 @@ class TestListTicketsFilters:
             view="all",
             mine=True,
         )
-        ids = {t.id for t in rows}
+        ids = {t.id for t in rows.items}
         assert authored.id in ids
         assert assigned.id in ids
         assert other.id not in ids
@@ -105,7 +105,7 @@ class TestListTicketsFilters:
             type_filter="BUG",
             sort="priority",
         )
-        assert any(r.id == high.id for r in rows)
+        assert any(r.id == high.id for r in rows.items)
 
     def test_status_filter(self, db_session, project_with_members, client_user):
         done = _ticket(db_session, project_with_members, client_user, title="Done one")
@@ -121,7 +121,7 @@ class TestListTicketsFilters:
             view="all",
             status_filter="DONE",
         )
-        ids = {r.id for r in rows}
+        ids = {r.id for r in rows.items}
         assert done.id in ids
         assert open_one.id not in ids
 
@@ -142,7 +142,7 @@ class TestListTicketsFilters:
             view="done",
             status_filter="WAITING_ON_CLIENT",
         )
-        by_view_ids = {r.id for r in by_view}
+        by_view_ids = {r.id for r in by_view.items}
         assert waiting.id in by_view_ids
         assert done.id not in by_view_ids
         by_status = ticket_service.list_tickets(
@@ -152,7 +152,7 @@ class TestListTicketsFilters:
             view="open",
             status_filter="DONE",
         )
-        by_status_ids = {r.id for r in by_status}
+        by_status_ids = {r.id for r in by_status.items}
         assert done.id in by_status_ids
         assert waiting.id not in by_status_ids
 
@@ -169,7 +169,7 @@ class TestListTicketsFilters:
             status_filter="NOPE",
             sort="created_at",
         )
-        assert len(rows) >= 1
+        assert len(rows.items) >= 1
 
     def test_search_by_title_and_number(
         self, db_session, project_with_members, client_user
@@ -181,14 +181,14 @@ class TestListTicketsFilters:
             user=client_user,
             q="UniqueNeedle",
         )
-        assert any(r.id == t.id for r in by_title)
+        assert any(r.id == t.id for r in by_title.items)
         by_num = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
             user=client_user,
             q=f"{project_with_members.key}-{t.number}",
         )
-        assert any(r.id == t.id for r in by_num)
+        assert any(r.id == t.id for r in by_num.items)
 
     def test_search_by_author_name(
         self, db_session, project_with_members, client_user, staff_user
@@ -200,21 +200,21 @@ class TestListTicketsFilters:
             user=staff_user,
             q=client_user.first_name,
         )
-        assert any(r.id == t.id for r in by_first)
+        assert any(r.id == t.id for r in by_first.items)
         by_last = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
             user=staff_user,
             q=client_user.last_name,
         )
-        assert any(r.id == t.id for r in by_last)
+        assert any(r.id == t.id for r in by_last.items)
         by_full = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
             user=staff_user,
             q=f"{client_user.first_name} {client_user.last_name}",
         )
-        assert any(r.id == t.id for r in by_full)
+        assert any(r.id == t.id for r in by_full.items)
 
     def test_search_ignores_view_when_q_set(
         self, db_session, project_with_members, staff_user
@@ -227,7 +227,7 @@ class TestListTicketsFilters:
             view="done",
             q="OpenNeedle",
         )
-        assert any(r.id == t.id for r in rows)
+        assert any(r.id == t.id for r in rows.items)
 
     def test_filter_by_tag(self, db_session, project_with_members, staff_user):
         t = _ticket(db_session, project_with_members, staff_user)
@@ -238,7 +238,7 @@ class TestListTicketsFilters:
             user=staff_user,
             tag="alpha",
         )
-        assert any(r.id == t.id for r in rows)
+        assert any(r.id == t.id for r in rows.items)
 
     def test_staff_views(self, db_session, project_with_members, staff_user):
         t = _ticket(db_session, project_with_members, staff_user)
@@ -256,7 +256,7 @@ class TestListTicketsFilters:
                 user=staff_user,
                 view=view,
             )
-            assert isinstance(rows, list)
+            assert isinstance(rows, ticket_service.TicketListResult)
 
     def test_client_waiting_and_done_views(
         self, db_session, project_with_members, client_user
@@ -270,7 +270,7 @@ class TestListTicketsFilters:
                 user=client_user,
                 view=view,
             )
-            assert isinstance(rows, list)
+            assert isinstance(rows, ticket_service.TicketListResult)
 
     def test_client_mine_includes_participant(
         self, db_session, project_with_members, client_user
@@ -283,7 +283,118 @@ class TestListTicketsFilters:
             view="open",
             mine=True,
         )
-        assert any(r.id == t.id for r in rows)
+        assert any(r.id == t.id for r in rows.items)
+
+
+class TestListTicketsPagination:
+    def test_page_size_and_total(self, db_session, project_with_members, staff_user):
+        for i in range(30):
+            _ticket(db_session, project_with_members, staff_user, title=f"T{i}")
+        result = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="all",
+            page=2,
+            page_size=10,
+        )
+        assert result.total == 30
+        assert result.page == 2
+        assert result.page_size == 10
+        assert len(result.items) == 10
+        assert result.last_page == 3
+        assert result.has_prev
+        assert result.has_next
+        assert result.range_start == 11
+        assert result.range_end == 20
+
+    def test_empty_total_last_page_and_range(
+        self, db_session, project_with_members, staff_user
+    ):
+        result = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="all",
+        )
+        assert result.total == 0
+        assert result.last_page == 1
+        assert result.range_start == 0
+        assert result.range_end == 0
+        assert not result.has_prev
+        assert not result.has_next
+
+    def test_clamp_high_page(self, db_session, project_with_members, staff_user):
+        for i in range(5):
+            _ticket(db_session, project_with_members, staff_user, title=f"C{i}")
+        result = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="all",
+            page=99,
+            page_size=10,
+        )
+        assert result.page == 1
+        assert len(result.items) == 5
+
+    def test_count_matches_items_with_tag_and_mine(
+        self, db_session, project_with_members, staff_user, client_user
+    ):
+        mine = _ticket(db_session, project_with_members, staff_user, title="Mine tag")
+        other = _ticket(
+            db_session, project_with_members, client_user, title="Other tag"
+        )
+        ticket_service.add_ticket_tag(db_session, mine, staff_user, "pager")
+        ticket_service.add_ticket_tag(db_session, other, staff_user, "pager")
+        result = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            mine=True,
+            tag="pager",
+            page_size=10,
+        )
+        assert result.total == 1
+        assert len(result.items) == result.total
+
+    def test_shrink_dataset_clamps_page(
+        self, db_session, project_with_members, staff_user
+    ):
+        tickets = [
+            _ticket(db_session, project_with_members, staff_user, title=f"S{i}")
+            for i in range(100)
+        ]
+        first = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="all",
+            page=4,
+            page_size=25,
+        )
+        assert first.page == 4
+        assert len(first.items) == 25
+        for t in tickets[:80]:
+            db_session.delete(t)
+        db_session.commit()
+        second = ticket_service.list_tickets(
+            db_session,
+            project_with_members.id,
+            user=staff_user,
+            view="all",
+            page=4,
+            page_size=25,
+        )
+        assert second.total == 20
+        assert second.page == 1
+        assert len(second.items) == 20
+
+    def test_normalize_feed_page_size(self):
+        assert ticket_service.normalize_feed_page_size(None) == 25
+        assert ticket_service.normalize_feed_page_size(50) == 50
+        assert ticket_service.normalize_feed_page_size(99) == 25
+        assert ticket_service.normalize_feed_page_size("10") == 10
 
 
 def _peer_participant(db, project, author):

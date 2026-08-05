@@ -348,7 +348,9 @@ def pick_ticket_type(rng: random.Random):
     return rng.choice(list(TicketType))
 
 
-def pick_ticket_tags(tags: list[Tag], rng: random.Random, max_count: int = 5) -> list[Tag]:
+def pick_ticket_tags(
+    tags: list[Tag], rng: random.Random, max_count: int = 5
+) -> list[Tag]:
     if not tags:
         return []
     count = rng.randint(0, max_count)

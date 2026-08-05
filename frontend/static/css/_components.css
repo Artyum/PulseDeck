@@ -958,6 +958,19 @@
     .admin-stats {
       grid-template-columns: 1fr;
     }
+
+    .feed-pagination {
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feed-pagination-nav,
+    .feed-pagination-sizes {
+      margin-left: 0;
+      justify-content: center;
+    }
   }
 
   .admin-project-pick {
@@ -2202,6 +2215,133 @@
     display: flex;
     flex-direction: column;
     gap: calc(0.55rem * var(--space-scale));
+  }
+
+  .feed-pagination {
+    container-type: inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(0.65rem * var(--space-scale)) calc(0.85rem * var(--space-scale));
+    margin-top: calc(1rem * var(--space-scale));
+    padding: calc(0.75rem * var(--space-scale)) calc(0.9rem * var(--space-scale));
+    border: 1px solid color-mix(in oklab, var(--color-frame) 55%, transparent);
+    border-radius: 0.65rem;
+    background: color-mix(in oklab, var(--color-surface-2) 42%, var(--color-surface));
+    box-shadow: var(--shadow-card);
+  }
+
+  .feed-pagination-sizes {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: calc(0.45rem * var(--space-scale));
+    flex-shrink: 0;
+  }
+
+  .feed-pagination-nav {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: calc(0.45rem * var(--space-scale)) calc(0.55rem * var(--space-scale));
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .feed-pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0.3rem 0.45rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    color: var(--color-ink);
+    background: var(--btn-bg-secondary);
+    border: 1px solid var(--color-frame);
+    border-radius: 0.5rem;
+    box-shadow: var(--btn-shadow-rest);
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  a.feed-pagination-btn:hover {
+    background: var(--btn-bg-secondary-hover);
+    border-color: color-mix(in oklab, var(--color-pulse) 42%, var(--color-frame));
+    color: var(--color-chip-blue-fg);
+    box-shadow: var(--btn-shadow-hover);
+  }
+
+  .feed-pagination-btn.is-disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    box-shadow: none;
+    background: color-mix(in oklab, var(--color-surface) 82%, var(--color-mist));
+  }
+
+  .feed-pagination-icon {
+    width: 0.85rem;
+    height: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .feed-pagination-icon-prev {
+    transform: rotate(90deg);
+  }
+
+  .feed-pagination-icon-next {
+    transform: rotate(-90deg);
+  }
+
+  .feed-pagination-range {
+    padding-inline: 0.35rem;
+    color: var(--color-steel);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .feed-pagination-sizes > .label-tight {
+    white-space: nowrap;
+  }
+
+  .feed-pagination-chips {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.18rem;
+    border: 1px solid color-mix(in oklab, var(--color-frame) 70%, transparent);
+    border-radius: 0.55rem;
+    background: color-mix(in oklab, var(--color-surface) 88%, var(--color-mist));
+  }
+
+  .feed-pagination-chips .filter-chip {
+    min-width: 2.1rem;
+    justify-content: center;
+    padding: 0.28rem 0.55rem;
+    font-size: 0.8125rem;
+    border-radius: 0.42rem;
+  }
+
+  .feed-pagination-chips .filter-chip-active {
+    box-shadow: var(--btn-shadow-rest);
+  }
+
+  @container (max-width: 28rem) {
+    .feed-pagination-nav,
+    .feed-pagination-sizes {
+      flex: 1 1 100%;
+      margin-left: 0;
+      justify-content: center;
+    }
   }
 
   .ticket-row {
@@ -5617,6 +5757,11 @@
       transition:
         opacity 0.28s ease,
         visibility 0s;
+    }
+
+    .feed-pagination {
+      flex-wrap: nowrap;
+      gap: calc(0.5rem * var(--space-scale)) calc(0.65rem * var(--space-scale));
     }
   }
 

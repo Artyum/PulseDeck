@@ -216,6 +216,12 @@ ui:
       updated: "Updated"
       filter_submit: "Filter"
       filter_clear: "Clear"
+      pagination:
+        label: "Ticket list pagination"
+        prev: "Previous"
+        next: "Next"
+        range: "{start}–{end} of {total}"
+        per_page_label: "Per page"
       modal_title: "Create ticket"
       field:
         title: "Title"

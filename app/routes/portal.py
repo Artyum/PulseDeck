@@ -46,7 +46,8 @@ from app.services.uploads import (
     save_upload,
 )
 from app.utils.i18n import resolve_lang, t
-from app.utils.urls import build_feed_path, default_feed_path, ticket_path
+from app.utils.parse import parse_positive_int
+from app.utils.urls import build_feed_path, ticket_path
 
 router = APIRouter(tags=["portal"])
 
@@ -242,6 +243,8 @@ def project_feed(
     tag: str | None = None,
     q: str | None = None,
     sort: str | None = None,
+    page: str | None = None,
+    per_page: str | None = None,
 ):
     lang = resolve_lang(request)
     project = _load_project(db, key, user, lang=lang)
@@ -278,7 +281,8 @@ def project_feed(
         filter_mine = mine_on or paused_on or (not has_query)
         filter_mine_paused = False
     filter_sort = sort_filter or "created_at"
-    tickets = ticket_service.list_tickets(
+    page_size = ticket_service.normalize_feed_page_size(per_page)
+    ticket_list = ticket_service.list_tickets(
         db,
         project.id,
         user=user,
@@ -290,27 +294,35 @@ def project_feed(
         tag=tag_filter,
         q=q_filter,
         sort=filter_sort,
+        page=parse_positive_int(page),
+        page_size=page_size,
     )
-    feed_url = build_feed_path(
+    feed_query = {
+        "view": current_view or None,
+        "mine": filter_mine,
+        "mine_paused": filter_mine_paused,
+        "priority": priority_filter,
+        "type": type_filter,
+        "status": status_filter,
+        "tag": tag_filter,
+        "q": q_filter,
+        "sort": filter_sort,
+        "per_page": page_size,
+    }
+    set_last_feed(
+        request,
         project.key,
-        view=current_view or None,
-        mine=filter_mine,
-        mine_paused=filter_mine_paused,
-        priority=priority_filter,
-        type=type_filter,
-        status=status_filter,
-        tag=tag_filter,
-        q=q_filter,
-        sort=filter_sort,
+        build_feed_path(project.key, **feed_query, page=ticket_list.page),
     )
-    set_last_feed(request, project.key, feed_url)
     return render(
         request,
         "portal/feed.html",
         user=user,
         project=project,
         projects=projects,
-        tickets=tickets,
+        ticket_list=ticket_list,
+        feed_query=feed_query,
+        feed_page_sizes=ticket_service.FEED_PAGE_SIZES,
         current_view=current_view,
         filter_mine=filter_mine,
         filter_mine_paused=filter_mine_paused,
@@ -321,7 +333,9 @@ def project_feed(
         filter_q=q_filter or "",
         filter_sort=filter_sort,
         project_tags=project_service.list_used_project_tags(db, project.id),
-        default_feed_url=default_feed_path(project.key),
+        default_feed_url=build_feed_path(
+            project.key, view="all", mine=True, per_page=page_size
+        ),
     )
 
 

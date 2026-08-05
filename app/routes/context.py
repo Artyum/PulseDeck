@@ -60,6 +60,7 @@ from app.utils.timefmt import (
 from app.utils.urls import (
     admin_project_path,
     attachment_path,
+    build_feed_path,
     project_path,
     ticket_label,
     ticket_path,
@@ -108,6 +109,7 @@ _templates.env.filters["avatar_tone"] = avatar_tone
 _templates.env.filters["markdown_safe"] = render_markdown_safe
 _templates.env.globals["static_url"] = static_url
 _templates.env.globals["field_attrs"] = field_attrs
+_templates.env.globals["build_feed_path"] = build_feed_path
 
 
 def _enum_label_map(lang: str, group: str, enum_cls: type[Enum]) -> dict:

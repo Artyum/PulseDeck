@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import logging
+import math
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
-from sqlalchemy import case, func, or_, select
+from sqlalchemy import Select, case, func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.enums import TicketPriority, TicketStatus, TicketType
@@ -22,9 +23,21 @@ from app.models.user import Project, ProjectMember, User
 from app.services.portal_settings import get_portal_settings
 from app.services.projects import is_project_member
 from app.utils.i18n import DEFAULT_LANG, t
+from app.utils.parse import parse_positive_int
+from app.utils.urls import FEED_PER_PAGE_DEFAULT
 from app.validation import clean, clean_many
 
 logger = logging.getLogger("pulsedeck.app.tickets")
+
+FEED_PAGE_SIZE_DEFAULT = FEED_PER_PAGE_DEFAULT
+FEED_PAGE_SIZES = (10, FEED_PAGE_SIZE_DEFAULT, 50)
+
+_FEED_LIST_LOAD = (
+    selectinload(Ticket.author),
+    selectinload(Ticket.assignee),
+    selectinload(Ticket.project),
+    selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
+)
 
 
 def _clean_or_400(field_id: str, value, *, lang: str):
@@ -61,6 +74,42 @@ _TICKET_LOAD = (
     .selectinload(ProjectMember.user),
     selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
 )
+
+
+def normalize_feed_page_size(value: int | str | None) -> int:
+    try:
+        n = int(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return FEED_PAGE_SIZE_DEFAULT
+    return n if n in FEED_PAGE_SIZES else FEED_PAGE_SIZE_DEFAULT
+
+
+@dataclass(frozen=True)
+class TicketListResult:
+    items: list[Ticket]
+    total: int
+    page: int
+    page_size: int
+
+    @property
+    def last_page(self) -> int:
+        return max(1, math.ceil(self.total / self.page_size))
+
+    @property
+    def has_prev(self) -> bool:
+        return self.page > 1
+
+    @property
+    def has_next(self) -> bool:
+        return self.page < self.last_page
+
+    @property
+    def range_start(self) -> int:
+        return 0 if self.total == 0 else (self.page - 1) * self.page_size + 1
+
+    @property
+    def range_end(self) -> int:
+        return min(self.page * self.page_size, self.total)
 
 
 @dataclass(frozen=True)
@@ -206,7 +255,7 @@ def _apply_mine_scope(stmt, user: User):
 
 def _apply_sort(stmt, sort: str | None):
     if sort == "created_at":
-        return stmt.order_by(Ticket.created_at.desc())
+        return stmt.order_by(Ticket.created_at.desc(), Ticket.id.desc())
     if sort == "priority":
         priority_order = case(
             (Ticket.priority == TicketPriority.HIGH, 0),
@@ -214,13 +263,12 @@ def _apply_sort(stmt, sort: str | None):
             else_=2,
         )
         return stmt.add_columns(priority_order).order_by(
-            priority_order, Ticket.updated_at.desc()
+            priority_order, Ticket.updated_at.desc(), Ticket.id.desc()
         )
-    return stmt.order_by(Ticket.updated_at.desc())
+    return stmt.order_by(Ticket.updated_at.desc(), Ticket.id.desc())
 
 
-def list_tickets(
-    db: Session,
+def _build_feed_query(
     project_id: int,
     *,
     user: User,
@@ -231,12 +279,7 @@ def list_tickets(
     status_filter: str | None = None,
     tag: str | None = None,
     q: str | None = None,
-    sort: str | None = None,
-) -> list[Ticket]:
-    if status_filter:
-        view = None
-    elif view and view != "all":
-        status_filter = None
+) -> Select[tuple[Ticket]]:
     stmt = select(Ticket).where(Ticket.project_id == project_id)
     stmt = _apply_view_filter(stmt, view=None if q else view)
     if mine:
@@ -258,12 +301,12 @@ def list_tickets(
             pass
     if tag:
         tag = _clean_or_400("filter.tag", tag, lang=DEFAULT_LANG)
-    if tag:
-        stmt = (
-            stmt.join(TicketTag, TicketTag.ticket_id == Ticket.id)
-            .join(Tag, Tag.id == TicketTag.tag_id)
-            .where(func.lower(Tag.name) == tag.lower())
-        )
+        if tag:
+            stmt = (
+                stmt.join(TicketTag, TicketTag.ticket_id == Ticket.id)
+                .join(Tag, Tag.id == TicketTag.tag_id)
+                .where(func.lower(Tag.name) == tag.lower())
+            )
     if q:
         raw = _clean_or_400("search.q", q, lang=DEFAULT_LANG)
         if raw:
@@ -284,14 +327,58 @@ def list_tickets(
             if ref:
                 matches.append(Ticket.number == int(ref.group(1)))
             stmt = stmt.where(or_(*matches))
-    stmt = stmt.options(
-        selectinload(Ticket.author),
-        selectinload(Ticket.assignee),
-        selectinload(Ticket.project),
-        selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
-    ).distinct()
-    stmt = _apply_sort(stmt, sort)
-    return list(db.scalars(stmt).all())
+    return stmt.distinct()
+
+
+def list_tickets(
+    db: Session,
+    project_id: int,
+    *,
+    user: User,
+    view: str | None = None,
+    mine: bool = False,
+    priority_filter: str | None = None,
+    type_filter: str | None = None,
+    status_filter: str | None = None,
+    tag: str | None = None,
+    q: str | None = None,
+    sort: str | None = None,
+    page: int = 1,
+    page_size: int = FEED_PAGE_SIZE_DEFAULT,
+) -> TicketListResult:
+    if status_filter:
+        view = None
+    elif view and view != "all":
+        status_filter = None
+    page_size = normalize_feed_page_size(page_size)
+    base_stmt = _build_feed_query(
+        project_id,
+        user=user,
+        view=view,
+        mine=mine,
+        priority_filter=priority_filter,
+        type_filter=type_filter,
+        status_filter=status_filter,
+        tag=tag,
+        q=q,
+    )
+    total = (
+        db.scalar(
+            select(func.count()).select_from(
+                base_stmt.with_only_columns(Ticket.id).subquery()
+            )
+        )
+        or 0
+    )
+    page = min(parse_positive_int(page), max(1, math.ceil(total / page_size)))
+    items = list(
+        db.scalars(
+            _apply_sort(base_stmt.options(*_FEED_LIST_LOAD), sort)
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        ).all()
+    )
+    return TicketListResult(items=items, total=total, page=page, page_size=page_size)
 
 
 def get_ticket(db: Session, ticket_id: int) -> Ticket | None:

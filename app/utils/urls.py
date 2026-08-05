@@ -7,6 +7,8 @@ if TYPE_CHECKING:
     from app.models.ticket import Attachment, Ticket
     from app.models.user import Project
 
+FEED_PER_PAGE_DEFAULT = 25
+
 
 def project_path(project: Project) -> str:
     return f"/p/{project.key}"
@@ -65,6 +67,8 @@ def build_feed_path(
     tag: str | None = None,
     q: str | None = None,
     sort: str | None = None,
+    page: int | None = None,
+    per_page: int | None = None,
 ) -> str:
     clean = normalize_project_key(key)
     params: list[tuple[str, str]] = []
@@ -86,6 +90,10 @@ def build_feed_path(
         params.append(("q", q))
     if sort and sort != "created_at":
         params.append(("sort", sort))
+    if page is not None and page > 1:
+        params.append(("page", str(page)))
+    if per_page is not None and per_page != FEED_PER_PAGE_DEFAULT:
+        params.append(("per_page", str(per_page)))
     base = f"/p/{clean}"
     if not params:
         return base

@@ -21,8 +21,49 @@
           ('done', t('ui.portal.view.done'))
         ] %}
   {% endif %}
-  {% macro chip_query(key) -%}
-    view={{ key }}{%- if key == 'unassigned' -%}{%- if filter_mine or filter_mine_paused -%}&mine_paused=1{%- endif -%}{%- elif filter_mine or filter_mine_paused -%}&mine=1{%- endif -%}{%- if filter_type -%}&type={{ filter_type }}{%- endif -%}{%- if filter_priority -%}&priority={{ filter_priority }}{%- endif -%}{%- if filter_tag -%}&tag={{ filter_tag }}{%- endif -%}{%- if filter_sort and filter_sort != 'created_at' -%}&sort={{ filter_sort }}{%- endif -%}
+  {% macro feed_link(page=1, per_page=none) -%}
+    {{ build_feed_path(project.key,
+        view=feed_query.view,
+        mine=feed_query.mine,
+        mine_paused=feed_query.mine_paused,
+        priority=feed_query.priority,
+        type=feed_query.type,
+        status=feed_query.status,
+        tag=feed_query.tag,
+        q=feed_query.q,
+        sort=feed_query.sort,
+        page=page,
+        per_page=per_page if per_page is not none else feed_query.per_page) }}
+  {%- endmacro %}
+  {% macro feed_view_link(key) -%}
+    {{ build_feed_path(project.key,
+        view=key,
+        mine=(key != 'unassigned') and (filter_mine or filter_mine_paused),
+    mine_paused=(key == 'unassigned') and (filter_mine or filter_mine_paused),
+    priority=feed_query.priority,
+    type=feed_query.type,
+    tag=feed_query.tag,
+    sort=feed_query.sort,
+    per_page=feed_query.per_page
+    ) }}
+  {%- endmacro %}
+  {% macro feed_page_btn(enabled, href, label, icon_side) -%}
+    {% if enabled %}
+      <a href="{{ href }}"
+         class="feed-pagination-btn"
+         aria-label="{{ label }}">
+      {% else %}
+        <span class="feed-pagination-btn is-disabled"
+              aria-disabled="true"
+              aria-label="{{ label }}">
+        {% endif %}
+        <span class="section-icon feed-pagination-icon feed-pagination-icon-{{ icon_side }}"
+              aria-hidden="true">{{ icon("chevron") }}</span>
+        {% if enabled %}
+        </a>
+      {% else %}
+      </span>
+    {% endif %}
   {%- endmacro %}
   <div id="feed-header-and-results" class="issue-page" data-sidebar>
     <div class="issue-page-body">
@@ -51,12 +92,36 @@
           </div>
         </div>
         <div class="issue-list">
-          {% for tkt in tickets %}
+          {% for tkt in ticket_list.items %}
             {{ ticket_row(tkt) }}
           {% else %}
             <p class="empty">{{ t("ui.portal.feed.empty") }}</p>
           {% endfor %}
         </div>
+        {% if ticket_list.total > 0 %}
+          <nav class="feed-pagination"
+               aria-label="{{ t('ui.portal.feed.pagination.label') }}"
+               hx-boost="true"
+               hx-target="#feed-header-and-results"
+               hx-select="#feed-header-and-results"
+               hx-swap="outerHTML show:top"
+               hx-push-url="true">
+            <div class="feed-pagination-sizes">
+              <span class="label-tight">{{ t("ui.portal.feed.pagination.per_page_label") }}</span>
+              <div class="feed-pagination-chips">
+                {% for size in feed_page_sizes %}
+                  <a href="{{ feed_link(page=1, per_page=size) }}"
+                     class="filter-chip {% if ticket_list.page_size == size %}filter-chip-active{% endif %}">{{ size }}</a>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="feed-pagination-nav">
+              {{ feed_page_btn(ticket_list.has_prev, feed_link(ticket_list.page - 1) , t('ui.portal.feed.pagination.prev'), 'prev') }}
+              <span class="feed-pagination-range">{{ t("ui.portal.feed.pagination.range", start=ticket_list.range_start, end=ticket_list.range_end, total=ticket_list.total) }}</span>
+              {{ feed_page_btn(ticket_list.has_next, feed_link(ticket_list.page + 1) , t('ui.portal.feed.pagination.next'), 'next') }}
+            </div>
+          </nav>
+        {% endif %}
       </section>
     </div>
     <aside class="issue-sidebar">
@@ -71,9 +136,8 @@
         {% if current_view %}
           <input type="hidden" name="view" value="{{ current_view }}" data-feed-view>
         {% endif %}
-        {% if filter_mine_paused %}
-          <input type="hidden" name="mine_paused" value="1">
-        {% endif %}
+        {% if filter_mine_paused %}<input type="hidden" name="mine_paused" value="1">{% endif %}
+        <input type="hidden" name="per_page" value="{{ feed_query.per_page }}">
         <section class="issue-side-block">
           <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("search") }}</span>{{ t("ui.portal.feed.search") }}</h2>
           <div class="feed-search-row">
@@ -113,7 +177,7 @@
           </div>
           <div class="feed-views">
             {% for key, label in views %}
-              <a href="{{ url_for('project_feed', key=project.key) }}?{{ chip_query(key) }}"
+              <a href="{{ feed_view_link(key) }}"
                  class="filter-chip {% if current_view == key %}filter-chip-active{% endif %}"
                  {% if key == 'needs_us' %}data-coachmark="feed-needs-us"{% endif %}><span class="section-icon" aria-hidden="true">{{ icon(key) }}</span>{{ label }}</a>
             {% endfor %}

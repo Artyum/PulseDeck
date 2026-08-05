@@ -113,6 +113,18 @@ class TestBuildFeedPath:
             == "/p/DEMO?view=unassigned&mine=1"
         )
 
+    def test_page_and_per_page(self):
+        assert (
+            build_feed_path("DEMO", view="open", page=2, per_page=50)
+            == "/p/DEMO?view=open&page=2&per_page=50"
+        )
+
+    def test_omits_default_page_and_per_page(self):
+        assert (
+            build_feed_path("DEMO", view="open", page=1, per_page=25)
+            == "/p/DEMO?view=open"
+        )
+
 
 class TestValidateFeedPath:
     def test_accepts_same_project(self):

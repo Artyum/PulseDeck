@@ -216,6 +216,12 @@ ui:
       updated: "Aktualizacja"
       filter_submit: "Filtruj"
       filter_clear: "Wyczyść"
+      pagination:
+        label: "Paginacja listy zgłoszeń"
+        prev: "Poprzednia"
+        next: "Następna"
+        range: "{start}–{end} z {total}"
+        per_page_label: "Na stronie"
       modal_title: "Utwórz zgłoszenie"
       field:
         title: "Tytuł"
