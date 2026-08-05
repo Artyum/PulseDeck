@@ -2588,7 +2588,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.4rem;
-    margin-top: 0.15rem;
   }
 
   .input-compact,
@@ -2892,19 +2891,8 @@
     gap: calc(1.15rem * var(--space-scale));
   }
 
-  .issue-sidebar #feed-filters .issue-side-fields {
-    gap: 0.65rem;
-  }
-
-  .issue-sidebar #feed-filters .issue-side-fields .issue-field {
-    grid-template-columns: 1fr;
-    row-gap: 0.25rem;
-    align-items: stretch;
-  }
-
-  .issue-sidebar #feed-filters .issue-side-fields .issue-field > .label-tight {
-    align-self: stretch;
-    padding-top: 0;
+  .issue-sidebar #feed-filters .issue-side-fields .feed-filter-actions {
+    margin-top: calc(0.15rem * var(--space-scale));
   }
 
   .issue-sidebar .issue-field > .label-tight {
@@ -3902,23 +3890,25 @@
     height: 0.22rem;
     overflow: hidden;
     border-radius: 999px;
-    background: color-mix(in oklab, var(--color-line) 65%, transparent);
+    background: color-mix(in oklab, var(--color-line) 42%, transparent);
   }
 
   .rich-editor-meter-fill {
     height: 100%;
     width: 0;
     border-radius: inherit;
-    background: var(--color-pulse);
-    transition: width 0.15s ease, background-color 0.15s ease;
+    background: color-mix(in oklab, var(--color-pulse) 55%, transparent);
+    transition:
+      width 0.15s ease,
+      background-color 0.15s ease;
   }
 
   .rich-editor-meter.is-warn .rich-editor-meter-fill {
-    background: var(--color-chip-orange-fg);
+    background: color-mix(in oklab, var(--color-chip-orange-fg) 60%, transparent);
   }
 
   .rich-editor-meter.is-over .rich-editor-meter-fill {
-    background: var(--color-danger);
+    background: color-mix(in oklab, var(--color-danger) 58%, transparent);
   }
 
   .rich-editor-meter-label {
@@ -3927,12 +3917,12 @@
     font-weight: 400;
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    color: color-mix(in oklab, var(--color-steel) 72%, transparent);
+    color: color-mix(in oklab, var(--color-steel) 48%, transparent);
     white-space: nowrap;
   }
 
   .rich-editor-meter.is-over .rich-editor-meter-label {
-    color: color-mix(in oklab, var(--color-danger) 55%, var(--color-steel));
+    color: color-mix(in oklab, var(--color-danger) 42%, transparent);
   }
 
   @media (min-width: 1024px) {

@@ -152,10 +152,7 @@ function updateCharMeter(root, editor, input, measured) {
   if (track) {
     track.setAttribute("aria-valuenow", String(used));
     track.setAttribute("aria-valuemax", String(maxLen));
-    track.setAttribute(
-      "aria-valuetext",
-      i18n("editor.char_count", { used: used, max: maxLen }) || formatCharCount(used, maxLen)
-    );
+    track.setAttribute("aria-valuetext", i18n("editor.char_count", { used: used, max: maxLen }) || formatCharCount(used, maxLen));
   }
   if (label) label.textContent = formatCharCount(used, maxLen);
 }

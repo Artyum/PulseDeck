@@ -143,9 +143,6 @@
                      value="{{ filter_tag }}"
                      class="input input-compact">
             </div>
-            <datalist id="feed-tag-list">
-              {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
-            </datalist>
             <div class="feed-filter-actions">
               <button type="button"
                       class="btn btn-ghost"
@@ -154,6 +151,9 @@
               <button type="submit" class="btn btn-secondary">{{ t("ui.portal.feed.filter_submit") }}</button>
             </div>
           </div>
+          <datalist id="feed-tag-list">
+            {% for tag in project_tags %}<option value="{{ tag.name }}"></option>{% endfor %}
+          </datalist>
         </section>
       </form>
     </aside>
