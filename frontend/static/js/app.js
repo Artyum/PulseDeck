@@ -296,14 +296,59 @@
     });
   }
 
+  function setSidebarOpen(shell, open) {
+    if (!shell) return;
+    shell.classList.toggle("is-sidebar-open", !!open);
+    syncSidebarToggles(shell);
+  }
+
   document.body.addEventListener("click", function (ev) {
     var btn = ev.target.closest("[data-sidebar-toggle], [data-sidebar-backdrop]");
     if (!btn) return;
     var shell = btn.closest("[data-sidebar]");
-    if (!shell) return;
-    shell.classList.toggle("is-sidebar-open");
-    syncSidebarToggles(shell);
+    if (shell) setSidebarOpen(shell, !shell.classList.contains("is-sidebar-open"));
   });
+
+  var sidebarSwipe = null;
+  document.addEventListener(
+    "touchstart",
+    function (ev) {
+      sidebarSwipe = null;
+      if (!window.matchMedia("(max-width: 1023px)").matches || ev.touches.length !== 1) return;
+      if (ev.target.closest("input, textarea, select, [contenteditable='true']")) return;
+      var shell = ev.target.closest("[data-sidebar]") || document.querySelector("[data-sidebar]");
+      if (!shell) return;
+      var t = ev.touches[0];
+      var left = shell.classList.contains("admin-layout");
+      var open = shell.classList.contains("is-sidebar-open");
+      var fromEdge = left ? t.clientX <= 28 : t.clientX >= window.innerWidth - 28;
+      if (!open && !fromEdge) return;
+      sidebarSwipe = { shell: shell, left: left, open: open, x: t.clientX, y: t.clientY };
+    },
+    { passive: true }
+  );
+  document.addEventListener(
+    "touchend",
+    function (ev) {
+      var s = sidebarSwipe;
+      sidebarSwipe = null;
+      if (!s || !ev.changedTouches.length) return;
+      var t = ev.changedTouches[0];
+      var dx = t.clientX - s.x;
+      var dy = t.clientY - s.y;
+      if (Math.abs(dy) > 56 || Math.abs(dx) < 52) return;
+      var towardOpen = s.left ? dx > 0 : dx < 0;
+      if (towardOpen !== s.open) setSidebarOpen(s.shell, towardOpen);
+    },
+    { passive: true }
+  );
+  document.addEventListener(
+    "touchcancel",
+    function () {
+      sidebarSwipe = null;
+    },
+    { passive: true }
+  );
 
   function appHeaderOffsetPx() {
     var header = document.querySelector(".app-header");
@@ -675,21 +720,11 @@
   });
 
   function isStaleThreadResponse(xhr) {
-    return (
-      !!xhr &&
-      xhr.status === 409 &&
-      xhr.getResponseHeader("X-PD-Stale-Thread") === "1"
-    );
+    return !!xhr && xhr.status === 409 && xhr.getResponseHeader("X-PD-Stale-Thread") === "1";
   }
 
   function toastStaleThread() {
-    window.showToast(
-      i18n(
-        "ticket.stale_reply",
-        "A new message appeared — check the thread before sending."
-      ),
-      "info"
-    );
+    window.showToast(i18n("ticket.stale_reply", "A new message appeared — check the thread before sending."), "info");
   }
 
   document.addEventListener("htmx:beforeSwap", function (ev) {

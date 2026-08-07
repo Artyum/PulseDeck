@@ -202,24 +202,24 @@
                 {% if not ns.current %}aria-current="true"{% endif %}>{{ empty_label }}</button>
       {% endif %}
       {% if show_role_badge %}<div class="issue-menu-scroll">{% endif %}
-      {% for item in choices %}
-        {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
-        {% set item_label = _form_select_item_label(item, labels, value_attr, show_role_badge) %}
-        <button type="button"
-                class="issue-menu-item{% if show_role_badge and value_attr == 'id' %} issue-menu-item-split{% endif %}{% if item_value == ns.current %} is-active{% endif %}"
-                data-form-select-option
-                data-value="{{ item_value }}"
-                data-label="{{ item_label }}"
-                {% if item_value == ns.current %}aria-current="true"{% endif %}>
-          {% if show_role_badge and value_attr == 'id' %}
-            <span class="issue-menu-item-name">{{ item_label }}</span>
-            <span class="chip chip-role-{{ item.role.value|lower }}">{{ role_labels[item.role] }}</span>
-          {% else %}
-            {{ item_label }}
-          {% endif %}
-        </button>
-      {% endfor %}
-      {% if show_role_badge %}</div>{% endif %}
+        {% for item in choices %}
+          {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
+          {% set item_label = _form_select_item_label(item, labels, value_attr, show_role_badge) %}
+          <button type="button"
+                  class="issue-menu-item{% if show_role_badge and value_attr == 'id' %} issue-menu-item-split{% endif %}{% if item_value == ns.current %} is-active{% endif %}"
+                  data-form-select-option
+                  data-value="{{ item_value }}"
+                  data-label="{{ item_label }}"
+                  {% if item_value == ns.current %}aria-current="true"{% endif %}>
+            {% if show_role_badge and value_attr == 'id' %}
+              <span class="issue-menu-item-name">{{ item_label }}</span>
+              <span class="chip chip-role-{{ item.role.value|lower }}">{{ role_labels[item.role] }}</span>
+            {% else %}
+              {{ item_label }}
+            {% endif %}
+          </button>
+        {% endfor %}
+        {% if show_role_badge %}</div>{% endif %}
     </div>
   </div>
 {%- endmacro %}

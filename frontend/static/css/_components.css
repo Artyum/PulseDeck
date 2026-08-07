@@ -2798,10 +2798,9 @@
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--issue-sidebar-w);
-    align-items: start;
     min-height: calc(100vh - var(--app-header-h));
     margin: calc(-1.75rem * var(--space-scale)) calc(-1.5rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
-    background-color: color-mix(in oklab, var(--color-aside) 14%, var(--color-surface));
+    background-color: var(--color-surface);
   }
 
   .issue-page-body {
@@ -2815,6 +2814,7 @@
     position: sticky;
     top: var(--app-header-h);
     z-index: 2;
+    align-self: start;
     min-width: 0;
     min-height: calc(100vh - var(--app-header-h));
     display: flex;
@@ -5699,7 +5699,7 @@
 
   @media (max-width: 1023px) {
     [data-sidebar] {
-      --sidebar-toggle-w: 1.65rem;
+      --sidebar-toggle-w: 2rem;
     }
 
     .admin-layout {
@@ -5708,6 +5708,14 @@
 
     .issue-page {
       --sidebar-panel-w: min(var(--issue-sidebar-w), 92vw);
+      grid-template-rows: minmax(calc(100vh - var(--app-header-h)), auto);
+    }
+
+    .issue-page > .issue-page-body,
+    .issue-page > .issue-sidebar,
+    .issue-page > .sidebar-toggle,
+    .issue-page > .sidebar-backdrop {
+      grid-area: 1 / 1;
     }
 
     .sidebar-toggle {
@@ -5718,12 +5726,12 @@
       align-items: center;
       justify-content: center;
       width: var(--sidebar-toggle-w);
-      height: 3rem;
+      height: 3.5rem;
       margin: 0;
       padding: 0;
-      border: 1px solid var(--color-frame);
-      background: var(--color-surface);
-      color: var(--color-steel);
+      border: 1px solid color-mix(in oklab, var(--color-pulse) 34%, var(--color-frame));
+      background: color-mix(in oklab, var(--color-soft-blue) 70%, var(--color-surface));
+      color: var(--color-pulse);
       box-shadow: var(--shadow-card);
       cursor: pointer;
       transition:
@@ -5737,15 +5745,15 @@
 
     .sidebar-toggle:hover,
     .sidebar-toggle:focus-visible {
-      color: var(--color-pulse);
-      background: color-mix(in oklab, var(--color-surface) 78%, var(--color-soft-blue));
-      border-color: color-mix(in oklab, var(--color-pulse) 35%, var(--color-frame));
+      color: var(--color-pulse-deep);
+      background: color-mix(in oklab, var(--color-soft-blue) 48%, var(--color-surface));
+      border-color: color-mix(in oklab, var(--color-pulse) 52%, var(--color-frame));
       outline: none;
     }
 
     .sidebar-toggle .icon {
-      width: 1rem;
-      height: 1rem;
+      width: 1.15rem;
+      height: 1.15rem;
       transition: transform 0.28s ease;
     }
 
@@ -5983,18 +5991,16 @@
     }
 
     .issue-page {
-      min-height: 0;
-      margin: -1.75rem -1rem -3.5rem;
-      background-color: transparent;
+      margin: calc(-1.75rem * var(--space-scale)) calc(-1rem * var(--space-scale)) calc(-3.5rem * var(--space-scale));
     }
 
     .issue-page-body {
-      --issue-body-pad-x: 1rem;
-      padding: 1.5rem var(--issue-body-pad-x) 1.25rem;
+      --issue-body-pad-x: calc(1rem * var(--space-scale));
+      padding: calc(1.5rem * var(--space-scale)) var(--issue-body-pad-x) calc(1.25rem * var(--space-scale));
     }
 
     .issue-sidebar {
-      padding: 1.25rem 1rem 2.5rem;
+      padding: calc(1.25rem * var(--space-scale)) calc(1rem * var(--space-scale)) calc(2.5rem * var(--space-scale));
       background-image: none;
     }
 

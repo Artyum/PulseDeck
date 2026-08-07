@@ -200,7 +200,9 @@ class TestComments:
         assert "First reply" in r.text
         assert f'name="seen_comment_id" value="{first.id}"' in r.text
         count = db_session.scalar(
-            select(func.count()).select_from(Comment).where(Comment.ticket_id == ticket.id)
+            select(func.count())
+            .select_from(Comment)
+            .where(Comment.ticket_id == ticket.id)
         )
         assert count == 1
 
@@ -213,7 +215,9 @@ class TestComments:
         assert r2.status_code == 200
         assert "My draft reply" in r2.text
         count = db_session.scalar(
-            select(func.count()).select_from(Comment).where(Comment.ticket_id == ticket.id)
+            select(func.count())
+            .select_from(Comment)
+            .where(Comment.ticket_id == ticket.id)
         )
         assert count == 2
 
@@ -245,7 +249,9 @@ class TestComments:
         assert "Client reply" in r.text
         assert "Secret staff note" not in r.text
         count = db_session.scalar(
-            select(func.count()).select_from(Comment).where(Comment.ticket_id == ticket.id)
+            select(func.count())
+            .select_from(Comment)
+            .where(Comment.ticket_id == ticket.id)
         )
         assert count == 2
 
