@@ -170,6 +170,8 @@ class TestComments:
     def test_stale_reply_returns_409_keeps_draft(
         self, client, db_session, client_user, project_with_members
     ):
+        import re
+
         from sqlalchemy import func, select
 
         from app.models.ticket import Comment
@@ -186,6 +188,7 @@ class TestComments:
             "other-stale@test.local",
             project=project_with_members,
         )
+        ticket_service.add_participant(db_session, ticket, client_user, other.id)
         login(client, other.email, "Client123!ab")
         path = f"/t/{project_with_members.key}-{ticket.number}/comments"
         r = client.post(
@@ -198,7 +201,10 @@ class TestComments:
         assert r.headers.get("X-PD-Stale-Thread") == "1"
         assert "My draft reply" in r.text
         assert "First reply" in r.text
-        assert f'name="seen_comment_id" value="{first.id}"' in r.text
+        assert re.search(
+            rf'name="seen_comment_id"\s+value="{first.id}"',
+            r.text,
+        )
         count = db_session.scalar(
             select(func.count())
             .select_from(Comment)

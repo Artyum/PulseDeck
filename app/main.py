@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from typing import cast
 
 from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -91,6 +92,26 @@ def build_fastapi_app() -> FastAPI:
     mimetypes.add_type("application/manifest+json", ".webmanifest")
     static_dir = project_root() / "frontend" / "static"
     static_dir.mkdir(parents=True, exist_ok=True)
+
+    @app.get("/sw.js", include_in_schema=False)
+    async def service_worker():
+        return FileResponse(
+            static_dir / "sw.js",
+            media_type="application/javascript",
+            headers={
+                "Cache-Control": "no-cache",
+                "Service-Worker-Allowed": "/",
+            },
+        )
+
+    @app.get("/offline", include_in_schema=False)
+    async def offline_page():
+        return FileResponse(
+            static_dir / "offline.html",
+            media_type="text/html; charset=utf-8",
+            headers={"Cache-Control": "no-cache"},
+        )
+
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
     app.include_router(health.router)

@@ -23,6 +23,9 @@
     <style>[x-cloak]{display:none!important}</style>
     <title>{% block title %}{{ app_name }}{% endblock title %}</title>
     <meta name="theme-color" content="#2f72e8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PulseDeck">
     <link rel="icon" href="{{ static_url('images/favicon.ico') }}" sizes="any">
     <link rel="icon"
           type="image/png"
@@ -100,5 +103,6 @@
       </div>
       <script src="{{ static_url('js/dev-page-copy.js') }}" defer></script>
     {% endif %}
+    <script src="{{ static_url('js/pwa.js') }}" defer></script>
   </body>
 </html>

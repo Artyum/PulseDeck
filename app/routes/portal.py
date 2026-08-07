@@ -495,6 +495,10 @@ async def add_comment(
 ):
     lang = resolve_lang(request)
     _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
+    if not ticket_service.can_comment(db, user, ticket):
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_comment")
+        )
     internal = bool(is_internal) and project_service.has_staff_capabilities(
         db, ticket.project_id, user
     )
