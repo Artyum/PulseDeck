@@ -75,13 +75,18 @@
 
   function findAnchor(id) {
     var nodes = document.querySelectorAll('[data-coachmark="' + id + '"]');
+    var visible = null;
     var fallback = null;
     for (var i = 0; i < nodes.length; i++) {
-      if (!isVisible(nodes[i])) continue;
-      if (nodes[i].closest("dialog[open]")) return nodes[i];
-      if (!fallback) fallback = nodes[i];
+      var node = nodes[i];
+      var dialog = node.closest("dialog");
+      if (dialog && !dialog.open) continue;
+      if (!fallback) fallback = node;
+      if (!isVisible(node)) continue;
+      if (node.closest("dialog[open]")) return node;
+      if (!visible) visible = node;
     }
-    return fallback;
+    return visible || fallback;
   }
 
   function hostFor(anchor) {
@@ -92,12 +97,18 @@
     return window.__coachmarkCatalog || [];
   }
 
+  function hintMatchesScope(hint, scope) {
+    if (!hint || !hint.scope) return false;
+    if (Array.isArray(hint.scope)) return hint.scope.indexOf(scope) >= 0;
+    return hint.scope === scope;
+  }
+
   function hintsForScope(scope) {
     if (!scope) return catalog();
     var list = [];
     var items = catalog();
     for (var i = 0; i < items.length; i++) {
-      if (items[i] && items[i].scope === scope) list.push(items[i]);
+      if (items[i] && hintMatchesScope(items[i], scope)) list.push(items[i]);
     }
     return list;
   }
@@ -124,6 +135,16 @@
 
   function ensureAnchorReachable(anchor) {
     if (!anchor || !anchor.closest) return;
+    var mobileShell = anchor.closest(".nav-mobile-panel")
+      && anchor.closest(".app-header-nav-mobile");
+    if (mobileShell) {
+      try {
+        if (window.Alpine && typeof window.Alpine.$data === "function") {
+          var mobileData = window.Alpine.$data(mobileShell);
+          if (mobileData && !mobileData.open) mobileData.open = true;
+        }
+      } catch (e) {}
+    }
     var panel = anchor.closest(".issue-sidebar, .admin-aside");
     if (!panel) return;
     var shell = panel.closest("[data-sidebar]");

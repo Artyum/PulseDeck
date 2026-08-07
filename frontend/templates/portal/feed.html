@@ -165,7 +165,8 @@
         <section class="issue-side-block">
           <div class="issue-section-bar">
             <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.portal.feed.view") }}</h2>
-            <label class="feed-mine-toggle{% if current_view == 'unassigned' %} is-disabled{% endif %}">
+            <label class="feed-mine-toggle{% if current_view == 'unassigned' %} is-disabled{% endif %}"
+                   data-coachmark="feed-mine">
               <input type="checkbox"
                      name="mine"
                      value="1"
@@ -212,7 +213,8 @@
               <button type="button"
                       class="btn btn-ghost"
                       data-feed-filter-clear
-                      data-feed-filter-clear-url="{{ default_feed_url }}">{{ t("ui.portal.feed.filter_clear") }}</button>
+                      data-feed-filter-clear-url="{{ default_feed_url }}"
+                      data-coachmark="feed-filter-clear">{{ t("ui.portal.feed.filter_clear") }}</button>
               <button type="submit" class="btn btn-secondary">{{ t("ui.portal.feed.filter_submit") }}</button>
             </div>
           </div>

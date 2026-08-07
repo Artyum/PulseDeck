@@ -802,8 +802,12 @@ js:
       body: "Masz sprawę? Utwórz nowe zgłoszenie w tym miejscu."
     feed-needs-us:
       body: "Zgłoszenia czekające na odpowiedź zespołu."
+    feed-mine:
+      body: "Pokaż zgłoszenia, gdzie jesteś zgłaszającym, wykonawcą lub obserwatorem."
     feed-filters:
       body: "Zawęż listę według typu, statusu, priorytetu lub tagu."
+    feed-filter-clear:
+      body: "Przywróć domyślne filtry i wyczyść wybrane kryteria."
     ticket-status:
       body: "Kliknij, by zmienić status zgłoszenia."
     ticket-done:

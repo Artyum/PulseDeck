@@ -464,11 +464,7 @@ def _apply_view_filter(stmt, *, view: str | None):
     return stmt
 
 
-def _apply_mine_scope(stmt, user: User, *, project_id: int, db: Session):
-    if is_project_staff(db, project_id, user):
-        return stmt.where(
-            or_(Ticket.assignee_id == user.id, Ticket.author_id == user.id)
-        )
+def _ticket_involvement_filter(user: User):
     participant_exists = (
         select(TicketParticipant.ticket_id)
         .where(
@@ -477,7 +473,15 @@ def _apply_mine_scope(stmt, user: User, *, project_id: int, db: Session):
         )
         .exists()
     )
-    return stmt.where(or_(Ticket.author_id == user.id, participant_exists))
+    return or_(
+        Ticket.author_id == user.id,
+        Ticket.assignee_id == user.id,
+        participant_exists,
+    )
+
+
+def _apply_mine_scope(stmt, user: User):
+    return stmt.where(_ticket_involvement_filter(user))
 
 
 def _apply_sort(stmt, sort: str | None):
@@ -514,7 +518,7 @@ def _build_feed_query(
         stmt = stmt.where(Ticket.deleted_at.is_(None))
     stmt = _apply_view_filter(stmt, view=None if q else view)
     if mine:
-        stmt = _apply_mine_scope(stmt, user, project_id=project_id, db=db)
+        stmt = _apply_mine_scope(stmt, user)
     if priority_filter:
         try:
             stmt = stmt.where(Ticket.priority == TicketPriority(priority_filter))

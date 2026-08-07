@@ -54,7 +54,7 @@ class TestListTicketsFilters:
         )
         assert all(r.id != t.id for r in rows_after.items)
 
-    def test_staff_mine_assignee_or_author(
+    def test_staff_mine_includes_author_assignee_and_participant(
         self, db_session, project_with_members, staff_user, client_user
     ):
         authored = make_ticket(
@@ -64,6 +64,12 @@ class TestListTicketsFilters:
             db_session, project_with_members, client_user, title="Assigned"
         )
         ticket_service.assign_ticket(db_session, assigned, staff_user, staff_user.id)
+        watched = make_ticket(
+            db_session, project_with_members, client_user, title="Watched"
+        )
+        ticket_service.add_participant(
+            db_session, watched, staff_user, staff_user.id
+        )
         other = make_ticket(
             db_session, project_with_members, client_user, title="Other"
         )
@@ -77,6 +83,7 @@ class TestListTicketsFilters:
         ids = {t.id for t in rows.items}
         assert authored.id in ids
         assert assigned.id in ids
+        assert watched.id in ids
         assert other.id not in ids
 
     def test_priority_and_type_filters(

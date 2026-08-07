@@ -1,10 +1,12 @@
 (function () {
   window.__coachmarkCatalog = [
-    { id: "nav-project", scope: "nav" },
+    { id: "nav-project", scope: ["nav", "feed"] },
     { id: "nav-appearance", scope: "nav", href: "/profile/appearance" },
     { id: "feed-create", scope: "feed" },
     { id: "feed-needs-us", scope: "feed" },
+    { id: "feed-mine", scope: "feed" },
     { id: "feed-filters", scope: "feed" },
+    { id: "feed-filter-clear", scope: "feed" },
     { id: "ticket-status", scope: "ticket" },
     { id: "ticket-assignee", scope: "ticket" },
     { id: "ticket-done", scope: "ticket" },

@@ -802,8 +802,12 @@ js:
       body: "Got an issue? Create a new ticket here."
     feed-needs-us:
       body: "Tickets waiting for your team’s reply."
+    feed-mine:
+      body: "Show tickets where you are the reporter, assignee, or watcher."
     feed-filters:
       body: "Narrow the list by type, status, priority, or tag."
+    feed-filter-clear:
+      body: "Reset filters and clear the criteria you selected."
     ticket-status:
       body: "Click to change the ticket status."
     ticket-done:
