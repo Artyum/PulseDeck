@@ -54,6 +54,7 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
   </head>
   <body class="min-h-screen antialiased"
+        {% if is_dev %}data-is-dev="1"{% endif %}
         {% if user is defined and user %}data-user-id="{{ user.id }}"{% endif %}
         data-datetime-prefs-locked="{{ '1' if datetime_prefs_locked else '0' }}"
         data-lang-storage-key="{{ lang_storage_key }}"
