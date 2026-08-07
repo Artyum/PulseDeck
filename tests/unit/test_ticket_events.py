@@ -20,8 +20,10 @@ class TestTicketEventLogging:
         assert types == [TicketEventType.CREATED]
         events = event_service.list_ticket_events(db_session, ticket, staff=False)
         assert events[0].actor_id == client_user.id
-        assert events[0].payload["type"] == ticket.type.value
-        assert events[0].payload["priority"] == ticket.priority.value
+        payload = events[0].payload
+        assert payload is not None
+        assert payload["type"] == ticket.type.value
+        assert payload["priority"] == ticket.priority.value
 
     def test_set_status_logs_change(
         self, db_session, project_with_members, staff_user, client_user
@@ -100,6 +102,7 @@ class TestTicketEventLogging:
         ticket_service.add_participant(db_session, ticket, staff_user, peer.id)
         ticket_service.add_ticket_tag(db_session, ticket, staff_user, "alpha")
         ticket = ticket_service.get_ticket(db_session, ticket.id)
+        assert ticket is not None
         tag_id = ticket.ticket_tags[0].tag_id
         ticket_service.remove_ticket_tag(db_session, ticket, staff_user, tag_id)
         ticket_service.remove_participant(db_session, ticket, peer)

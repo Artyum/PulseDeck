@@ -4072,6 +4072,15 @@
     color: var(--color-pulse);
   }
 
+  .rich-editor-btn.is-listening {
+    background: color-mix(in oklab, var(--color-pulse) 22%, transparent);
+    color: var(--color-pulse);
+  }
+
+  .rich-editor-mic {
+    display: block;
+  }
+
   .rich-editor-sep {
     width: 1px;
     height: 1.1rem;

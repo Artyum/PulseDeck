@@ -352,6 +352,8 @@ ui:
     ordered_list: "Numbered list"
     code_block: "Code block"
     blockquote: "Quote"
+    dictate: "Dictate"
+    dictate_stop: "Stop dictation"
   admin:
     aside_label: "Administration"
     nav_aria: "Admin"
@@ -780,6 +782,9 @@ js:
     stale_reply: "A new message appeared — check the thread before sending."
   editor:
     char_count: "{used} of {max} characters"
+    dictate_denied: "Microphone access denied"
+    dictate_no_mic: "No microphone found"
+    dictate_network: "Dictation is unavailable. Check your connection."
   validation:
     missing_user: "Select a user"
     missing_field: "Fill in {label}"

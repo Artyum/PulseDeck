@@ -352,6 +352,8 @@ ui:
     ordered_list: "Lista numerowana"
     code_block: "Blok kodu"
     blockquote: "Cytat"
+    dictate: "Dyktowanie"
+    dictate_stop: "Zatrzymaj dyktowanie"
   admin:
     aside_label: "Administracja"
     nav_aria: "Admin"
@@ -780,6 +782,9 @@ js:
     stale_reply: "Pojawiła się nowa wiadomość — sprawdź wątek przed wysłaniem."
   editor:
     char_count: "{used} z {max} znaków"
+    dictate_denied: "Brak dostępu do mikrofonu"
+    dictate_no_mic: "Nie znaleziono mikrofonu"
+    dictate_network: "Dyktowanie jest niedostępne. Sprawdź połączenie."
   validation:
     missing_user: "Wybierz użytkownika"
     missing_field: "Uzupełnij {label}"

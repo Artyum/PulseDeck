@@ -1,6 +1,7 @@
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "@tiptap/markdown";
+import { attachDictation, detachDictation, stopDictation } from "./dictation.js";
 
 var CMD_ACTIVE = {
   toggleBold: "bold",
@@ -237,7 +238,15 @@ function initEditor(root) {
     ],
     content: initial,
     contentType: "markdown",
-    editorProps: { attributes: attrs },
+    editorProps: {
+      attributes: attrs,
+      handleDOMEvents: {
+        paste: function () {
+          stopDictation(root);
+          return false;
+        },
+      },
+    },
     onCreate: function ({ editor: ed }) {
       var measured = measureContent(ed, input);
       updateToolbar(root, ed);
@@ -254,6 +263,8 @@ function initEditor(root) {
     },
   });
 
+  attachDictation(root, editor);
+
   var pendingQuote = "";
   var quoteBtn = root.querySelector('[data-rich-cmd="toggleBlockquote"]');
   if (quoteBtn) {
@@ -265,6 +276,7 @@ function initEditor(root) {
   root.querySelectorAll("[data-rich-cmd]").forEach(function (btn) {
     btn.addEventListener("click", function (ev) {
       ev.preventDefault();
+      stopDictation(root);
       var cmd = btn.getAttribute("data-rich-cmd");
       if (cmd === "toggleBlockquote" && pendingQuote) {
         insertQuotedText(editor, pendingQuote);
@@ -318,11 +330,13 @@ function scan(scope) {
 function destroyIn(scope) {
   (scope || document).querySelectorAll("[data-rich-editor]").forEach(function (root) {
     closeLinkPop(root);
+    detachDictation(root);
     if (!root._richEditor) return;
     try {
       root._richEditor.destroy();
     } catch (_e) {}
     root._richEditor = null;
+    root._richInput = null;
   });
 }
 
