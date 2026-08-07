@@ -372,7 +372,14 @@
           function (entries) {
             var entry = entries[0];
             if (!entry) return;
-            head.classList.toggle("is-compact", !entry.isIntersecting);
+            if (entry.isIntersecting) {
+              head.classList.remove("is-compact");
+              return;
+            }
+            var room = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (head.classList.contains("is-compact") || room > 160) {
+              head.classList.add("is-compact");
+            }
           },
           { rootMargin: "-" + top + "px 0px 0px 0px", threshold: 0 }
         );
