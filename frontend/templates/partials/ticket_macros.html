@@ -36,6 +36,7 @@
 {%- endmacro %}
 {% macro ticket_row(tkt, show_tags=true) -%}
   <a href="{{ url_for('ticket_detail', ticket_ref=tkt|ticket_label) }}"
+     id="{{ tkt|ticket_label }}"
      class="ticket-row{% if tkt.deleted_at %} ticket-row-deleted{% endif %}"
      data-status="{{ tkt.status.value }}">
     <div class="ticket-row-main">

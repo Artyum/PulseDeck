@@ -2273,6 +2273,10 @@
     color: var(--color-ink);
   }
 
+  html:has(#feed-header-and-results) {
+    scroll-behavior: auto;
+  }
+
   .issue-list {
     display: flex;
     flex-direction: column;
@@ -2396,6 +2400,7 @@
   }
 
   .ticket-row {
+    scroll-margin-top: calc(var(--app-header-h) + 0.75rem);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;

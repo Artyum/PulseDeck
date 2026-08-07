@@ -49,7 +49,7 @@ from app.services.uploads import (
 )
 from app.utils.i18n import resolve_lang, t
 from app.utils.parse import parse_positive_int
-from app.utils.urls import build_feed_path, ticket_path
+from app.utils.urls import build_feed_path, ticket_label, ticket_path
 
 router = APIRouter(tags=["portal"])
 
@@ -101,6 +101,8 @@ def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> di
     back_to_feed_url = (
         resolve_last_feed_url(request, project_key) if project_key else "/"
     )
+    if ticket.project:
+        back_to_feed_url = f"{back_to_feed_url}#{ticket_label(ticket)}"
     staff_members = [
         m
         for m in members
