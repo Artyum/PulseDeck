@@ -75,18 +75,13 @@
 
   function findAnchor(id) {
     var nodes = document.querySelectorAll('[data-coachmark="' + id + '"]');
-    var visible = null;
     var fallback = null;
     for (var i = 0; i < nodes.length; i++) {
-      var node = nodes[i];
-      var dialog = node.closest("dialog");
-      if (dialog && !dialog.open) continue;
-      if (!fallback) fallback = node;
-      if (!isVisible(node)) continue;
-      if (node.closest("dialog[open]")) return node;
-      if (!visible) visible = node;
+      if (!isVisible(nodes[i])) continue;
+      if (nodes[i].closest("dialog[open]")) return nodes[i];
+      if (!fallback) fallback = nodes[i];
     }
-    return visible || fallback;
+    return fallback;
   }
 
   function hostFor(anchor) {

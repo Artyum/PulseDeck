@@ -1,6 +1,6 @@
 (function () {
   window.__coachmarkCatalog = [
-    { id: "nav-project", scope: ["nav", "feed"] },
+    { id: "nav-project", scope: "nav" },
     { id: "nav-appearance", scope: "nav", href: "/profile/appearance" },
     { id: "feed-create", scope: "feed" },
     { id: "feed-needs-us", scope: "feed" },
