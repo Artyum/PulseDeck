@@ -1,16 +1,12 @@
 {% extends "_base.html" %}
-{% from "_macros.html" import ticket_ref, cta, dual_cta with context %}
+{% from "_macros.html" import cta, dual_cta with context %}
 {% block title %}{{ t("email.new_comment.subject") }}{% endblock title %}
 {% block body %}
   <p style="margin:0 0 18px;font-size:16px;font-weight:600;color:#0f172a;">{{ t('email.common.greeting', name=user.first_name) }}</p>
   <p style="margin:0 0 28px;
             font-size:15px;
             line-height:1.65;
-            color:#334155">
-    {{- t("email.new_comment.body_before") -}}
-    {{- ticket_ref(label, ticket.title) -}}
-    {{- t('email.new_comment.body_after', app=app_name) -}}
-  </p>
+            color:#334155">{{ ticket_email_body('new_comment', label, ticket.title) }}</p>
   {% if reply_url %}
     {{ dual_cta(reply_url, t('email.new_comment.cta') , login_url, t('email.new_comment.cta_login'), t('email.new_comment.dual_hint') ) }}
   {% else %}

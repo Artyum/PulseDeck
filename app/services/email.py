@@ -14,6 +14,7 @@ from html.parser import HTMLParser
 from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from markupsafe import Markup, escape
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -229,6 +230,16 @@ def _smtp_auth(smtp: smtplib.SMTP, user: str, password: str) -> None:
         smtp.login(user, password)
 
 
+def ticket_email_body(
+    lang: str, mail_key: str, label: str, title: str | None, **kwargs
+) -> Markup:
+    ref = Markup(
+        '<strong style="font-weight:600;color:#0f172a">'
+        f"{escape(label)}: {escape(title or '')}</strong>"
+    )
+    return Markup(t(lang, f"email.{mail_key}.body", ticket=ref, app=APP_NAME, **kwargs))
+
+
 def render_email_html(template: str, context: dict, *, lang: str = DEFAULT_LANG) -> str:
     return _env.get_template(template).render(
         **context,
@@ -236,6 +247,7 @@ def render_email_html(template: str, context: dict, *, lang: str = DEFAULT_LANG)
         ui_lang=lang,
         logo_src=f"cid:{LOGO_CID}",
         t=partial(t, lang),
+        ticket_email_body=partial(ticket_email_body, lang),
     )
 
 
