@@ -67,9 +67,7 @@ class TestListTicketsFilters:
         watched = make_ticket(
             db_session, project_with_members, client_user, title="Watched"
         )
-        ticket_service.add_participant(
-            db_session, watched, staff_user, staff_user.id
-        )
+        ticket_service.add_participant(db_session, watched, staff_user, staff_user.id)
         other = make_ticket(
             db_session, project_with_members, client_user, title="Other"
         )

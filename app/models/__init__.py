@@ -4,6 +4,7 @@ from app.models.email_outbox import EmailOutbox
 from app.models.enums import (
     EmailOutboxPriority,
     EmailOutboxStatus,
+    TicketEventType,
     TicketPriority,
     TicketStatus,
     TicketType,
@@ -16,6 +17,7 @@ from app.models.ticket import (
     MagicToken,
     Tag,
     Ticket,
+    TicketEvent,
     TicketParticipant,
     TicketTag,
 )
@@ -33,6 +35,8 @@ __all__ = [
     "ProjectMember",
     "Tag",
     "Ticket",
+    "TicketEvent",
+    "TicketEventType",
     "TicketParticipant",
     "TicketPriority",
     "TicketStatus",

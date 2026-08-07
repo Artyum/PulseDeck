@@ -34,6 +34,19 @@
       </form>
     </dialog>
   {% endif %}
+  <dialog id="ticket-history" class="modal modal-fill">
+    <div class="modal-form">
+      {{ modal_header('ticket-history', t('ui.ticket.history') ) }}
+      <div class="modal-body" id="ticket-history-body">
+        <p class="alert alert-muted">{{ t("ui.ticket.history_loading") }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button"
+                data-modal-dismiss="ticket-history"
+                class="btn btn-secondary">{{ t("ui.common.close") }}</button>
+      </div>
+    </div>
+  </dialog>
   <dialog id="img-lightbox"
           class="lightbox"
           aria-label="{{ t('ui.ticket.lightbox_aria') }}">

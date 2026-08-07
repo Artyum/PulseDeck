@@ -3701,6 +3701,78 @@
     background: color-mix(in oklab, var(--color-soft-blue) 72%, var(--color-surface));
   }
 
+  .thread-history-btn {
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+    color: var(--color-steel);
+  }
+
+  .thread-history-btn .icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .ticket-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.85rem * var(--space-scale));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ticket-history-item {
+    padding-bottom: calc(0.75rem * var(--space-scale));
+    border-bottom: 1px solid var(--color-frame);
+  }
+
+  .ticket-history-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .ticket-history-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(0.35rem * var(--space-scale)) calc(0.75rem * var(--space-scale));
+  }
+
+  .ticket-history-who {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  .ticket-history-actor {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .ticket-history-when {
+    color: var(--color-steel);
+    font-size: 0.85em;
+  }
+
+  .ticket-history-summary {
+    margin: 0;
+    padding: 0.15rem 0 0;
+    color: var(--color-ink);
+  }
+
+  .ticket-history-summaries {
+    margin: calc(0.35rem * var(--space-scale)) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ticket-history-summaries .ticket-history-summary + .ticket-history-summary {
+    color: var(--color-steel);
+  }
+
   .comment-meta {
     display: flex;
     flex-wrap: wrap;
@@ -4853,8 +4925,7 @@
       height: 100%;
       max-height: none;
       border-radius: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
     .modal-fill .modal-header,
@@ -4863,8 +4934,10 @@
     }
 
     .modal-fill .modal-body {
-      flex: 0 0 auto;
-      overflow: visible;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .modal-fill .modal-footer {

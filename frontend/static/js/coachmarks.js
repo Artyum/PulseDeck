@@ -135,8 +135,7 @@
 
   function ensureAnchorReachable(anchor) {
     if (!anchor || !anchor.closest) return;
-    var mobileShell = anchor.closest(".nav-mobile-panel")
-      && anchor.closest(".app-header-nav-mobile");
+    var mobileShell = anchor.closest(".nav-mobile-panel") && anchor.closest(".app-header-nav-mobile");
     if (mobileShell) {
       try {
         if (window.Alpine && typeof window.Alpine.$data === "function") {

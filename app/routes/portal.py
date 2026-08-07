@@ -32,6 +32,7 @@ from app.models.user import Project, User
 from app.rate_limit import limiter
 from app.routes.context import render
 from app.services import projects as project_service
+from app.services import ticket_events as ticket_event_service
 from app.services import tickets as ticket_service
 from app.services.email import (
     emit_comment,
@@ -179,6 +180,7 @@ async def _maybe_attach(
     *,
     ticket_id: int,
     comment_id: int | None = None,
+    actor_id: int | None = None,
     lang: str,
 ) -> None:
     if not attachment or not attachment.filename:
@@ -192,6 +194,7 @@ async def _maybe_attach(
         file_path=rel,
         ticket_id=None if comment_id else ticket_id,
         comment_id=comment_id,
+        actor_id=None if comment_id else actor_id,
     )
 
 
@@ -202,6 +205,7 @@ async def _attach_many(
     ticket_id: int,
     comment_id: int | None = None,
     max_files: int | None = None,
+    actor_id: int | None = None,
     lang: str,
 ) -> None:
     if not attachments:
@@ -214,7 +218,12 @@ async def _attach_many(
         if not attachment or not attachment.filename:
             continue
         await _maybe_attach(
-            db, attachment, ticket_id=ticket_id, comment_id=comment_id, lang=lang
+            db,
+            attachment,
+            ticket_id=ticket_id,
+            comment_id=comment_id,
+            actor_id=actor_id,
+            lang=lang,
         )
         count += 1
 
@@ -415,7 +424,9 @@ async def create_ticket(
         priority=prio,
         lang=lang,
     )
-    await _attach_many(db, attachments, ticket_id=ticket.id, lang=lang)
+    await _attach_many(
+        db, attachments, ticket_id=ticket.id, actor_id=user.id, lang=lang
+    )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     emit_ticket_created(db, ticket, actor_id=user.id)
     return RedirectResponse(ticket_path(ticket), status_code=303)
@@ -480,6 +491,25 @@ def comment_body(
         user,
         db,
         "partials/comment_body.html",
+    )
+
+
+@router.get("/t/{ticket_ref}/history", response_class=HTMLResponse)
+def ticket_history(
+    request: Request,
+    ticket_ref: str,
+    user: CurrentUser,
+    db: DbSession,
+):
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
+    staff = project_service.has_staff_capabilities(db, ticket.project_id, user)
+    events = ticket_event_service.list_ticket_events(db, ticket, staff=staff)
+    return render(
+        request,
+        "partials/ticket_history.html",
+        ticket=ticket,
+        history_events=ticket_event_service.format_ticket_events(db, events, lang=lang),
     )
 
 
@@ -663,7 +693,12 @@ async def edit_ticket(
         )
     remaining = max(0, _upload_max_files() - len(ticket.attachments or []))
     await _attach_many(
-        db, attachments, ticket_id=ticket.id, max_files=remaining, lang=lang
+        db,
+        attachments,
+        ticket_id=ticket.id,
+        max_files=remaining,
+        actor_id=user.id,
+        lang=lang,
     )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     return _ticket_mutation_response(request, db, user, ticket)

@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     DateTime,
     Enum,
@@ -17,7 +18,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, BigInt
-from app.models.enums import TicketPriority, TicketStatus, TicketType
+from app.models.enums import TicketEventType, TicketPriority, TicketStatus, TicketType
 
 if TYPE_CHECKING:
     from app.models.user import Project, User
@@ -114,6 +115,40 @@ class Ticket(Base):
     ticket_tags: Mapped[list[TicketTag]] = relationship(
         back_populates="ticket", cascade="all, delete-orphan"
     )
+    events: Mapped[list[TicketEvent]] = relationship(
+        back_populates="ticket",
+        cascade="all, delete-orphan",
+        order_by="TicketEvent.created_at.desc()",
+    )
+
+
+class TicketEvent(Base):
+    __tablename__ = "ticket_events"
+
+    id: Mapped[int] = mapped_column(BigInt, primary_key=True, autoincrement=True)
+    ticket_id: Mapped[int] = mapped_column(
+        BigInt,
+        ForeignKey("tickets.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    actor_id: Mapped[int | None] = mapped_column(
+        BigInt,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    event_type: Mapped[TicketEventType] = mapped_column(
+        Enum(TicketEventType, name="ticket_event_type", native_enum=False, length=40),
+        nullable=False,
+    )
+    payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    ticket: Mapped[Ticket] = relationship(back_populates="events")
+    actor: Mapped[User | None] = relationship(foreign_keys=[actor_id])
 
 
 class TicketParticipant(Base):

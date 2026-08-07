@@ -10,7 +10,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import Select, case, func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
-from app.models.enums import TicketPriority, TicketStatus, TicketType
+from app.models.enums import TicketEventType, TicketPriority, TicketStatus, TicketType
 from app.models.ticket import (
     Attachment,
     Comment,
@@ -27,6 +27,11 @@ from app.services.projects import (
     is_project_member,
     is_project_staff,
     list_project_member_users,
+)
+from app.services.ticket_events import (
+    log_enum_change,
+    log_user_change,
+    record_ticket_event,
 )
 from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.parse import parse_positive_int
@@ -680,6 +685,17 @@ def create_ticket(
         status=TicketStatus.NEW,
     )
     db.add(ticket)
+    db.flush()
+    record_ticket_event(
+        db,
+        ticket.id,
+        author.id,
+        TicketEventType.CREATED,
+        {
+            "type": ticket_type.value,
+            "priority": priority.value,
+        },
+    )
     db.commit()
     db.refresh(ticket)
     return get_ticket(db, ticket.id) or ticket
@@ -732,6 +748,8 @@ def add_comment(
             status_code=403, detail=t(lang, "messages.tickets.internal_staff_only")
         )
     text = _clean_or_400("comment.content", content, lang=lang)
+    prev_status = ticket.status
+    prev_assignee_id = ticket.assignee_id
     comment = Comment(
         ticket_id=ticket.id,
         author_id=author.id,
@@ -749,11 +767,36 @@ def add_comment(
         else:
             ticket.status = TicketStatus.IN_PROGRESS
     _sync_participant_watch(db, ticket, author.id)
+    db.flush()
+    record_ticket_event(
+        db,
+        ticket.id,
+        author.id,
+        (
+            TicketEventType.COMMENT_ADDED_INTERNAL
+            if is_internal
+            else TicketEventType.COMMENT_ADDED
+        ),
+    )
+    log_enum_change(
+        db,
+        ticket.id,
+        author.id,
+        TicketEventType.STATUS_CHANGED,
+        prev_status,
+        ticket.status,
+    )
+    log_user_change(
+        db,
+        ticket.id,
+        author.id,
+        TicketEventType.ASSIGNEE_CHANGED,
+        prev_assignee_id,
+        ticket.assignee_id,
+    )
     if commit:
         db.commit()
         db.refresh(comment)
-    else:
-        db.flush()
     return comment
 
 
@@ -804,6 +847,16 @@ def update_comment(
             ticket.id,
             actor.id,
         )
+    record_ticket_event(
+        db,
+        ticket.id,
+        actor.id,
+        (
+            TicketEventType.COMMENT_EDITED_INTERNAL
+            if comment.is_internal
+            else TicketEventType.COMMENT_EDITED
+        ),
+    )
     db.commit()
     db.refresh(comment)
     return comment
@@ -824,7 +877,13 @@ def delete_comment(
         )
     comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
     file_paths = [a.file_path for a in comment.attachments if a.file_path]
+    event_type = (
+        TicketEventType.COMMENT_DELETED_INTERNAL
+        if comment.is_internal
+        else TicketEventType.COMMENT_DELETED
+    )
     db.delete(comment)
+    record_ticket_event(db, ticket.id, actor.id, event_type)
     db.commit()
     from app.services.uploads import resolve_safe_upload_path
 
@@ -852,6 +911,7 @@ def assign_ticket(
             status_code=403, detail=t(lang, "messages.tickets.no_assign")
         )
     previous_id = ticket.assignee_id
+    prev_status = ticket.status
     if assignee_id is not None:
         assignee = db.get(User, assignee_id)
         if not assignee or not is_project_staff(db, ticket.project_id, assignee):
@@ -870,6 +930,22 @@ def assign_ticket(
         if previous_id is None:
             return get_ticket(db, ticket.id) or ticket
         ticket.assignee_id = None
+    log_user_change(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.ASSIGNEE_CHANGED,
+        previous_id,
+        ticket.assignee_id,
+    )
+    log_enum_change(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.STATUS_CHANGED,
+        prev_status,
+        ticket.status,
+    )
     db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -901,6 +977,7 @@ def change_reporter(
             status_code=400,
             detail=t(lang, "messages.tickets.reporter_must_be_member"),
         )
+    previous_id = ticket.author_id
     row = db.scalar(
         select(TicketParticipant).where(
             TicketParticipant.ticket_id == ticket.id,
@@ -910,6 +987,14 @@ def change_reporter(
     if row:
         db.delete(row)
     ticket.author_id = author.id
+    log_user_change(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.REPORTER_CHANGED,
+        previous_id,
+        author.id,
+    )
     db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -933,21 +1018,29 @@ def set_status(
     if status_value == ticket.status:
         return ticket
 
-    if has_staff_capabilities(db, ticket.project_id, actor):
-        ticket.status = status_value
-        ticket.closed_at = (
-            datetime.now(timezone.utc) if status_value == TicketStatus.DONE else None
+    prev = ticket.status
+    allowed = has_staff_capabilities(db, ticket.project_id, actor) or (
+        status_value == TicketStatus.DONE and can_set_done(actor, ticket, db)
+    )
+    if not allowed:
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_status")
         )
-        db.commit()
-        return get_ticket(db, ticket.id) or ticket
 
-    if status_value == TicketStatus.DONE and can_set_done(actor, ticket, db):
-        ticket.status = TicketStatus.DONE
-        ticket.closed_at = datetime.now(timezone.utc)
-        db.commit()
-        return get_ticket(db, ticket.id) or ticket
-
-    raise HTTPException(status_code=403, detail=t(lang, "messages.tickets.no_status"))
+    ticket.status = status_value
+    ticket.closed_at = (
+        datetime.now(timezone.utc) if status_value == TicketStatus.DONE else None
+    )
+    log_enum_change(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.STATUS_CHANGED,
+        prev,
+        status_value,
+    )
+    db.commit()
+    return get_ticket(db, ticket.id) or ticket
 
 
 def reopen_ticket(
@@ -958,8 +1051,17 @@ def reopen_ticket(
             status_code=403,
             detail=t(lang or DEFAULT_LANG, "messages.tickets.cannot_reopen"),
         )
+    prev = ticket.status
     ticket.status = TicketStatus.IN_PROGRESS
     ticket.closed_at = None
+    log_enum_change(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.STATUS_CHANGED,
+        prev,
+        ticket.status,
+    )
     db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -991,6 +1093,12 @@ def update_ticket(
         },
         lang=lang,
     )
+    if data["ticket.title"] != ticket.title:
+        record_ticket_event(db, ticket.id, actor.id, TicketEventType.TITLE_CHANGED)
+    if data["ticket.description"] != ticket.description:
+        record_ticket_event(
+            db, ticket.id, actor.id, TicketEventType.DESCRIPTION_CHANGED
+        )
     ticket.title = data["ticket.title"]
     ticket.description = data["ticket.description"]
     if can_moderate(actor) and not can_grace_edit_ticket(db, actor, ticket):
@@ -1011,7 +1119,18 @@ def set_priority(
             status_code=403,
             detail=t(lang or DEFAULT_LANG, "messages.tickets.no_priority"),
         )
+    if ticket.priority == priority:
+        return get_ticket(db, ticket.id) or ticket
+    prev = ticket.priority
     ticket.priority = priority
+    log_enum_change(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.PRIORITY_CHANGED,
+        prev,
+        priority,
+    )
     return _commit_reload(db, ticket)
 
 
@@ -1030,7 +1149,16 @@ def set_type(
         )
     if ticket_type == ticket.type:
         return ticket
+    prev = ticket.type
     ticket.type = ticket_type
+    log_enum_change(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.TYPE_CHANGED,
+        prev,
+        ticket_type,
+    )
     return _commit_reload(db, ticket)
 
 
@@ -1082,6 +1210,13 @@ def add_ticket_tag(
     )
     if not existing:
         db.add(TicketTag(ticket_id=ticket.id, tag_id=tag.id))
+        record_ticket_event(
+            db,
+            ticket.id,
+            actor.id,
+            TicketEventType.TAG_ADDED,
+            {"tag_id": tag.id, "tag_name": tag.name},
+        )
     db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -1105,7 +1240,16 @@ def remove_ticket_tag(
         )
     )
     if row:
+        tag = db.get(Tag, tag_id)
+        tag_name = tag.name if tag else ""
         db.delete(row)
+        record_ticket_event(
+            db,
+            ticket.id,
+            actor.id,
+            TicketEventType.TAG_REMOVED,
+            {"tag_id": tag_id, "tag_name": tag_name},
+        )
         db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -1131,7 +1275,20 @@ def add_participant(
             else t(lang, "messages.tickets.participant_not_allowed")
         )
         raise HTTPException(status_code=400, detail=detail)
-    _ensure_participant(db, ticket, user_id)
+    if (
+        ticket.author_id == user_id
+        or ticket.assignee_id == user_id
+        or _participant_row(db, ticket, user_id) is not None
+    ):
+        return get_ticket(db, ticket.id) or ticket
+    db.add(TicketParticipant(ticket_id=ticket.id, user_id=user_id))
+    record_ticket_event(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.PARTICIPANT_ADDED,
+        {"user_id": user_id},
+    )
     db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -1149,6 +1306,13 @@ def unwatch_ticket(db: Session, user_id: int, ticket_id: int) -> bool:
     row = _participant_row(db, ticket, user_id)
     if row:
         db.delete(row)
+        record_ticket_event(
+            db,
+            ticket.id,
+            user_id,
+            TicketEventType.PARTICIPANT_REMOVED,
+            {"user_id": user_id},
+        )
         db.commit()
     return True
 
@@ -1189,6 +1353,13 @@ def remove_participant(
             status_code=400, detail=t(lang, "messages.tickets.not_participant")
         )
     db.delete(row)
+    record_ticket_event(
+        db,
+        ticket.id,
+        actor.id,
+        TicketEventType.PARTICIPANT_REMOVED,
+        {"user_id": target_id},
+    )
     db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -1209,6 +1380,7 @@ def soft_delete_ticket(
         ticket.deleted_at = datetime.now(timezone.utc)
         ticket.deleted_by_id = actor.id
         logger.info("Soft-delete ticket id=%s by user_id=%s", ticket.id, actor.id)
+        record_ticket_event(db, ticket.id, actor.id, TicketEventType.DELETED)
         db.commit()
     return get_ticket(db, ticket.id) or ticket
 
@@ -1221,6 +1393,7 @@ def add_attachment(
     ticket_id: int | None = None,
     comment_id: int | None = None,
     commit: bool = True,
+    actor_id: int | None = None,
 ) -> Attachment:
     att = Attachment(
         ticket_id=ticket_id,
@@ -1229,6 +1402,14 @@ def add_attachment(
         file_path=file_path,
     )
     db.add(att)
+    if ticket_id is not None and comment_id is None and actor_id is not None:
+        record_ticket_event(
+            db,
+            ticket_id,
+            actor_id,
+            TicketEventType.ATTACHMENT_ADDED,
+            {"file_name": file_name},
+        )
     if commit:
         db.commit()
         db.refresh(att)
@@ -1255,6 +1436,13 @@ def remove_ticket_attachments(
         return ticket
     for att in list(ticket.attachments):
         if att.id in wanted:
+            record_ticket_event(
+                db,
+                ticket.id,
+                actor.id,
+                TicketEventType.ATTACHMENT_REMOVED,
+                {"file_name": att.file_name},
+            )
             db.delete(att)
     return _commit_reload(db, ticket)
 

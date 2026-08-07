@@ -1,0 +1,24 @@
+{% from "partials/avatar.html" import user_avatar %}
+{% if history_events %}
+  <ul class="ticket-history-list">
+    {% for row in history_events %}
+      <li class="ticket-history-item">
+        <header class="ticket-history-meta">
+          <span class="ticket-history-who">
+            {{ user_avatar(row.event.actor) }}
+            <span class="ticket-history-actor">{{ row.actor_name }}</span>
+          </span>
+          <time class="ticket-history-when"
+                datetime="{{ row.event.created_at.isoformat() if row.event.created_at else '' }}">{{ row.event.created_at|format_dt if row.event.created_at else '' }}</time>
+        </header>
+        <ul class="ticket-history-summaries">
+          {% for summary in row.summaries %}
+            <li class="ticket-history-summary">{{ summary }}</li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="alert alert-muted">{{ t("ui.ticket.history_empty") }}</p>
+{% endif %}
