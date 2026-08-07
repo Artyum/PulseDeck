@@ -13,6 +13,7 @@
     { id: "ticket-thread-order", scope: "ticket" },
     { id: "compose-attach", scope: "ticket" },
     { id: "compose-quote", scope: "ticket" },
+    { id: "compose-dictate", scope: "ticket" },
     { id: "compose-internal", scope: "ticket" },
     { id: "admin-projects-name", scope: "admin-projects" },
     { id: "admin-projects-key", scope: "admin-projects" },

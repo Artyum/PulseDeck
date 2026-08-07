@@ -860,6 +860,8 @@ js:
       body: "Add files by choosing them from disk, dragging them here, or pasting from the clipboard (Ctrl+V)."
     compose-quote:
       body: "Select text in a message, then click Quote."
+    compose-dictate:
+      body: "Click the microphone to dictate your reply."
     compose-internal:
       body: "Internal notes are visible only to staff — clients won’t see them."
 

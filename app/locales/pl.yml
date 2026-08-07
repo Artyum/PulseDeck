@@ -860,6 +860,8 @@ js:
       body: "Dodaj pliki wybierając je z dysku, przeciągając w to miejsce lub wklejając ze schowka (Ctrl+V)."
     compose-quote:
       body: "Zaznacz tekst w wiadomości i kliknij cytat."
+    compose-dictate:
+      body: "Kliknij mikrofon, aby dyktować odpowiedź."
     compose-internal:
       body: "Notatki wewnętrzne widzi tylko obsługa — klienci ich nie zobaczą."
 
