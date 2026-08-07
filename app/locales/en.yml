@@ -847,7 +847,9 @@ js:
     ticket-assignee:
       body: "Assign a team member to handle this ticket."
     ticket-thread-order:
-      body: "Up arrow — oldest message first; down — newest first (reply box at the top)."
+      body: "Message order: oldest first or newest first."
+    ticket-history:
+      body: "Open the ticket timeline — status, assignment, and other changes."
     admin-projects-name:
       body: "Display name of the project."
     admin-projects-key:
@@ -861,7 +863,7 @@ js:
     compose-quote:
       body: "Select text in a message, then click Quote."
     compose-dictate:
-      body: "Click the microphone to dictate your reply."
+      body: "Click the microphone to dictate your reply. Some browsers or devices may block microphone access."
     compose-internal:
       body: "Internal notes are visible only to staff — clients won’t see them."
 

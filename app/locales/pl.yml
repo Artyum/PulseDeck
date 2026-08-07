@@ -847,7 +847,9 @@ js:
     ticket-assignee:
       body: "Przypisz osobę z zespołu do obsługi tego zgłoszenia."
     ticket-thread-order:
-      body: "Strzałka w górę — od najstarszej wiadomości; w dół — od najnowszej (pole odpowiedzi u góry)."
+      body: "Kolejność wiadomości: od najstarszej lub od najnowszej."
+    ticket-history:
+      body: "Otwórz historię zgłoszenia — zmiany statusu, przypisania i inne zdarzenia."
     admin-projects-name:
       body: "Nazwa wyświetlana projektu."
     admin-projects-key:
@@ -861,7 +863,7 @@ js:
     compose-quote:
       body: "Zaznacz tekst w wiadomości i kliknij cytat."
     compose-dictate:
-      body: "Kliknij mikrofon, aby dyktować odpowiedź."
+      body: "Kliknij mikrofon, aby dyktować odpowiedź. Na niektórych urządzeniach lub w niektórych przeglądarkach dostęp do mikrofonu może być zablokowany."
     compose-internal:
       body: "Notatki wewnętrzne widzi tylko obsługa — klienci ich nie zobaczą."
 

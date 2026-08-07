@@ -54,9 +54,9 @@ def apply_security_headers(request: Request, response: Response) -> Response:
         response.headers.setdefault(
             "Referrer-Policy", "strict-origin-when-cross-origin"
         )
-    response.headers.setdefault(
-        "Permissions-Policy",
-        "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(self), payment=(), usb=()",
+    response.headers["Permissions-Policy"] = (
+        "accelerometer=(), camera=(), geolocation=(), gyroscope=(), "
+        "magnetometer=(), microphone=(self), payment=(), usb=()"
     )
     if _request_is_secure_context(request):
         response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")

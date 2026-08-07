@@ -2,6 +2,7 @@
 {% macro thread_history_button() %}
   <button type="button"
           class="btn btn-ghost thread-history-btn"
+          data-coachmark="ticket-history"
           hx-get="{{ url_for('ticket_history', ticket_ref=ticket|ticket_label) }}"
           hx-target="#ticket-history-body"
           hx-swap="innerHTML"
@@ -10,13 +11,17 @@
           aria-label="{{ t('ui.ticket.history_aria') }}">{{ icon("history") }}</button>
 {% endmacro %}
 {% macro thread_order_controls(show_order=true, show_history=true) %}
-  <div class="issue-section-actions thread-order-wrap"
-       {% if show_order %} data-coachmark="ticket-thread-order" data-ui-pref="thread-order" data-ui-attr="data-thread-order" data-ui-storage-key="{{ thread_order_storage_key }}" data-ui-fallback="{{ ui_thread_order }}" {% endif %}>
+  <div class="issue-section-actions thread-order-wrap">
     {% if show_history %}{{ thread_history_button() }}{% endif %}
     {% if show_order %}
       <div class="thread-order"
            role="radiogroup"
-           aria-label="{{ t('ui.ticket.thread_order_aria') }}">
+           aria-label="{{ t('ui.ticket.thread_order_aria') }}"
+           data-coachmark="ticket-thread-order"
+           data-ui-pref="thread-order"
+           data-ui-attr="data-thread-order"
+           data-ui-storage-key="{{ thread_order_storage_key }}"
+           data-ui-fallback="{{ ui_thread_order }}">
         <button type="button"
                 class="thread-order-option"
                 data-ui-value="oldest"

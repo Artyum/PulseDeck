@@ -11,6 +11,7 @@
     { id: "ticket-assignee", scope: "ticket" },
     { id: "ticket-done", scope: "ticket" },
     { id: "ticket-thread-order", scope: "ticket" },
+    { id: "ticket-history", scope: "ticket" },
     { id: "compose-attach", scope: "ticket" },
     { id: "compose-quote", scope: "ticket" },
     { id: "compose-dictate", scope: "ticket" },
