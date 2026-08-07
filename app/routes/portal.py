@@ -138,6 +138,7 @@ def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> di
         "project_members": members,
         "project_tags": ticket_service.list_project_tags(db, ticket.project_id),
         "back_to_feed_url": back_to_feed_url,
+        "seen_comment_id": ticket_service.latest_visible_comment_id(db, ticket, user),
     }
 
 
@@ -489,6 +490,7 @@ async def add_comment(
     db: DbSession,
     content: Annotated[str, Form()],
     is_internal: Annotated[str, Form()] = "",
+    seen_comment_id: Annotated[int, Form()] = 0,
     attachments: Annotated[list[UploadFile] | None, File()] = None,
 ):
     lang = resolve_lang(request)
@@ -496,6 +498,19 @@ async def add_comment(
     internal = bool(is_internal) and project_service.has_staff_capabilities(
         db, ticket.project_id, user
     )
+    latest = ticket_service.latest_visible_comment_id(db, ticket, user)
+    if latest > max(seen_comment_id, 0):
+        ticket = ticket_service.get_ticket(db, ticket.id) or ticket
+        response = render(
+            request,
+            "partials/ticket_view.html",
+            status_code=409,
+            reply_draft=content,
+            reply_internal=internal,
+            **_header_ctx(db, user, ticket, request),
+        )
+        response.headers["X-PD-Stale-Thread"] = "1"
+        return response
     comment = ticket_service.add_comment(
         db, ticket, user, content, is_internal=internal, lang=lang
     )

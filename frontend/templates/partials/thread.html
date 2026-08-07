@@ -82,13 +82,14 @@
             hx-swap="innerHTML"
             enctype="multipart/form-data"
             class="issue-composer{% if not comments %} issue-composer-solo{% endif %}">
-        {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') , quote_coachmark=true) }}
+        <input type="hidden" name="seen_comment_id" value="{{ seen_comment_id|default(0) }}">
+        {{ rich_editor('content', 'comment.content', reply_draft|default(''), placeholder=t('ui.ticket.reply_placeholder') , quote_coachmark=true) }}
         <div class="issue-composer-bar">
           {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
           <div class="issue-composer-actions">
             {% if is_project_staff %}
               <label class="issue-composer-opt" data-coachmark="compose-internal">
-                <input type="checkbox" name="is_internal" value="1" class="checkbox">
+                <input type="checkbox" name="is_internal" value="1" class="checkbox"{% if reply_internal|default(false) %} checked{% endif %}>
                 {{ t("ui.ticket.internal_note") }}
               </label>
             {% endif %}

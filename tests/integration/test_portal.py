@@ -167,6 +167,88 @@ class TestComments:
         # Should be blocked (403 or redirect)
         assert r.status_code in (303, 403)
 
+    def test_stale_reply_returns_409_keeps_draft(
+        self, client, db_session, client_user, project_with_members
+    ):
+        from sqlalchemy import func, select
+
+        from app.models.ticket import Comment
+        from tests.helpers import login
+
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Stale race"
+        )
+        first = ticket_service.add_comment(
+            db_session, ticket, client_user, "First reply"
+        )
+        other = make_user(
+            db_session,
+            "other-stale@test.local",
+            project=project_with_members,
+        )
+        login(client, other.email, "Client123!ab")
+        path = f"/t/{project_with_members.key}-{ticket.number}/comments"
+        r = client.post(
+            path,
+            data={"content": "My draft reply", "seen_comment_id": "0"},
+            headers={"HX-Request": "true"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 409
+        assert r.headers.get("X-PD-Stale-Thread") == "1"
+        assert "My draft reply" in r.text
+        assert "First reply" in r.text
+        assert f'name="seen_comment_id" value="{first.id}"' in r.text
+        count = db_session.scalar(
+            select(func.count()).select_from(Comment).where(Comment.ticket_id == ticket.id)
+        )
+        assert count == 1
+
+        r2 = client.post(
+            path,
+            data={"content": "My draft reply", "seen_comment_id": str(first.id)},
+            headers={"HX-Request": "true"},
+            follow_redirects=False,
+        )
+        assert r2.status_code == 200
+        assert "My draft reply" in r2.text
+        count = db_session.scalar(
+            select(func.count()).select_from(Comment).where(Comment.ticket_id == ticket.id)
+        )
+        assert count == 2
+
+    def test_internal_note_does_not_stale_client(
+        self, client, db_session, client_user, staff_user, project_with_members
+    ):
+        from sqlalchemy import func, select
+
+        from app.models.ticket import Comment
+
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Internal invisible"
+        )
+        ticket_service.add_comment(
+            db_session,
+            ticket,
+            staff_user,
+            "Secret staff note",
+            is_internal=True,
+        )
+        login_client(client)
+        r = client.post(
+            f"/t/{project_with_members.key}-{ticket.number}/comments",
+            data={"content": "Client reply", "seen_comment_id": "0"},
+            headers={"HX-Request": "true"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 200
+        assert "Client reply" in r.text
+        assert "Secret staff note" not in r.text
+        count = db_session.scalar(
+            select(func.count()).select_from(Comment).where(Comment.ticket_id == ticket.id)
+        )
+        assert count == 2
+
 
 class TestTicketStatus:
     def test_set_status_staff(

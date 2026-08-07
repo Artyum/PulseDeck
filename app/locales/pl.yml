@@ -749,6 +749,8 @@ js:
     network: "Brak połączenia z serwerem."
     comment_empty: "Napisz coś w komentarzu"
     content_too_long: "Tekst jest za długi (maks. {max} znaków)"
+  ticket:
+    stale_reply: "Pojawiła się nowa wiadomość — sprawdź wątek przed wysłaniem."
   editor:
     char_count: "{used} z {max} znaków"
   validation:

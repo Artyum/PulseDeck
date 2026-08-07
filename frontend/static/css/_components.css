@@ -4386,6 +4386,10 @@
     background: #0f7a4c;
   }
 
+  .toast-info {
+    background: var(--color-steel);
+  }
+
   .toast-out {
     animation: toast-out 0.18s ease-in forwards;
   }

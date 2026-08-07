@@ -131,11 +131,24 @@
     </div>
   </div>
 {%- endmacro %}
-{% macro form_select_menu(name, aria_label, choices, current_value, labels=none, id=none, compact=false, disabled=false, submit_on_pick=false, value_attr='value', input_attrs='', class_name='', empty_label=none) -%}
+{% macro _form_select_item_label(item, labels, value_attr, show_role_badge) -%}
+  {%- if show_role_badge and value_attr == 'id' -%}
+    {{- item.display_name -}}
+  {%- elif labels is not none -%}
+    {{- labels[item] -}}
+  {%- elif value_attr == 'id' and item.name is defined -%}
+    {{- item.name -}}
+  {%- elif value_attr == 'id' -%}
+    {{- item.display_name -}}
+  {%- else -%}
+    {{- item.label -}}
+  {%- endif -%}
+{%- endmacro %}
+{% macro form_select_menu(name, aria_label, choices, current_value, labels=none, id=none, compact=false, disabled=false, submit_on_pick=false, value_attr='value', input_attrs='', class_name='', empty_label=none, show_role_badge=false) -%}
   {% set ns = namespace(face=none, current=(current_value|string if current_value is not none else '')) %}
   {% for item in choices %}
     {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
-    {% set item_label = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
+    {% set item_label = _form_select_item_label(item, labels, value_attr, show_role_badge) %}
     {% if item_value == ns.current %}
       {% set ns.face = item_label %}
     {% endif %}
@@ -147,7 +160,7 @@
       {% for item in choices %}
         {% if loop.first %}
           {% set ns.current = item.id|string if value_attr == 'id' else item.value|string %}
-          {% set ns.face = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
+          {% set ns.face = _form_select_item_label(item, labels, value_attr, show_role_badge) %}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -188,16 +201,25 @@
                 data-label="{{ empty_label }}"
                 {% if not ns.current %}aria-current="true"{% endif %}>{{ empty_label }}</button>
       {% endif %}
+      {% if show_role_badge %}<div class="issue-menu-scroll">{% endif %}
       {% for item in choices %}
         {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
-        {% set item_label = labels[item] if labels is not none else (item.name if value_attr == 'id' and item.name is defined else (item.display_name ~ ' (' ~ item.email ~ ')' if value_attr == 'id' else item.label)) %}
+        {% set item_label = _form_select_item_label(item, labels, value_attr, show_role_badge) %}
         <button type="button"
-                class="issue-menu-item{% if item_value == ns.current %} is-active{% endif %}"
+                class="issue-menu-item{% if show_role_badge and value_attr == 'id' %} issue-menu-item-split{% endif %}{% if item_value == ns.current %} is-active{% endif %}"
                 data-form-select-option
                 data-value="{{ item_value }}"
                 data-label="{{ item_label }}"
-                {% if item_value == ns.current %}aria-current="true"{% endif %}>{{ item_label }}</button>
+                {% if item_value == ns.current %}aria-current="true"{% endif %}>
+          {% if show_role_badge and value_attr == 'id' %}
+            <span class="issue-menu-item-name">{{ item_label }}</span>
+            <span class="chip chip-role-{{ item.role.value|lower }}">{{ role_labels[item.role] }}</span>
+          {% else %}
+            {{ item_label }}
+          {% endif %}
+        </button>
       {% endfor %}
+      {% if show_role_badge %}</div>{% endif %}
     </div>
   </div>
 {%- endmacro %}

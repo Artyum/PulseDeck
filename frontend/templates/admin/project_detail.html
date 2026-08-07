@@ -71,7 +71,7 @@
             class="admin-form-row admin-form-row-2">
         <div class="admin-form-field">
           <label class="label-tight" for="add-member">{{ t("ui.admin.project.add_user") }}</label>
-          {{ form_select_menu('user_id', t('ui.admin.project.add_user') , all_users, all_users[0].id, value_attr='id', id='add-member') }}
+          {{ form_select_menu('user_id', t('ui.admin.project.add_user') , all_users, all_users[0].id, value_attr='id', id='add-member', show_role_badge=true) }}
         </div>
         <div class="admin-form-field">
           <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>

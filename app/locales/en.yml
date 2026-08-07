@@ -749,6 +749,8 @@ js:
     network: "Couldn't reach the server."
     comment_empty: "Write something in the comment"
     content_too_long: "Text is too long (max {max} characters)"
+  ticket:
+    stale_reply: "A new message appeared — check the thread before sending."
   editor:
     char_count: "{used} of {max} characters"
   validation:

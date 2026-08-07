@@ -145,7 +145,7 @@
   function renderToast(message, type) {
     var text = feedbackDisplayText(message);
     if (!text) return;
-    var level = type === "success" ? "success" : "error";
+    var level = type === "success" || type === "info" ? type : "error";
     var stack = ensureToastStack();
     promoteToastStack(stack);
     while (stack.children.length >= TOAST_MAX) stack.removeChild(stack.firstChild);
@@ -674,7 +674,31 @@
     });
   });
 
+  function isStaleThreadResponse(xhr) {
+    return (
+      !!xhr &&
+      xhr.status === 409 &&
+      xhr.getResponseHeader("X-PD-Stale-Thread") === "1"
+    );
+  }
+
+  function toastStaleThread() {
+    window.showToast(
+      i18n(
+        "ticket.stale_reply",
+        "A new message appeared — check the thread before sending."
+      ),
+      "info"
+    );
+  }
+
   document.addEventListener("htmx:beforeSwap", function (ev) {
+    if (isStaleThreadResponse(ev.detail && ev.detail.xhr)) {
+      ev.detail.shouldSwap = true;
+      ev.detail.isError = false;
+      toastStaleThread();
+      return;
+    }
     if (ev.detail.xhr.status >= 400) {
       ev.detail.shouldSwap = false;
     }
@@ -691,9 +715,11 @@
   });
 
   document.addEventListener("htmx:responseError", function (ev) {
+    var xhr = ev.detail && ev.detail.xhr;
+    if (isStaleThreadResponse(xhr)) return;
     var src = ev.detail && ev.detail.elt;
     var root = src && src.closest ? src.closest("form") || src : document;
-    publishHttpFeedback(ev.detail.xhr.status, ev.detail.xhr.responseText || "", root);
+    publishHttpFeedback(xhr ? xhr.status : 0, (xhr && xhr.responseText) || "", root);
   });
 
   document.addEventListener("htmx:sendError", function () {

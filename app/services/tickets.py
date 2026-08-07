@@ -701,6 +701,13 @@ def _sync_participant_watch(db: Session, ticket: Ticket, user_id: int) -> None:
         _drop_participant(db, ticket, user_id)
 
 
+def latest_visible_comment_id(db: Session, ticket: Ticket, user: User) -> int:
+    q = select(func.max(Comment.id)).where(Comment.ticket_id == ticket.id)
+    if not has_staff_capabilities(db, ticket.project_id, user):
+        q = q.where(Comment.is_internal.is_(False))
+    return int(db.scalar(q) or 0)
+
+
 def add_comment(
     db: Session,
     ticket: Ticket,
