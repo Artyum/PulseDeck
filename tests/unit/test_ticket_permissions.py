@@ -162,6 +162,16 @@ class TestCanEditTicket:
         )
         assert updated.status == TicketStatus.IN_PROGRESS
 
+    def test_closed_ticket_blocks_comment_for_everyone(
+        self, db_session, project_with_members, client_user, staff_user, admin_user
+    ):
+        ticket = make_ticket(db_session, project_with_members, client_user)
+        ticket_service.set_status(db_session, ticket, staff_user, TicketStatus.DONE)
+        ticket = _reload_ticket(db_session, ticket.id)
+        assert ticket_service.can_comment(db_session, client_user, ticket) is False
+        assert ticket_service.can_comment(db_session, staff_user, ticket) is False
+        assert ticket_service.can_comment(db_session, admin_user, ticket) is False
+
     def test_unassign_keeps_author_edit_lock(
         self, db_session, project_with_members, client_user, staff_user
     ):

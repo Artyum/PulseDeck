@@ -49,6 +49,8 @@ def test_comment_acl(
     ticket = ticket_service.get_ticket(db_session, ticket.id)
     assert ticket is not None
     assert ticket_service.can_comment(db_session, other2, ticket) is False
+    assert ticket_service.can_comment(db_session, staff_user, ticket) is False
+    assert ticket_service.can_comment(db_session, admin_user, ticket) is False
 
 
 def test_staff_reply_sets_waiting_on_client(

@@ -227,10 +227,10 @@ def can_delete_ticket(user: User, ticket: Ticket | None = None) -> bool:
 def can_comment(
     db: Session, user: User, ticket: Ticket, *, member: bool | None = None
 ) -> bool:
-    if can_moderate(user):
-        return ticket.deleted_at is None
     if ticket.deleted_at is not None or ticket.status == TicketStatus.DONE:
         return False
+    if can_moderate(user):
+        return True
     if not _is_member(db, user, ticket, member):
         return False
     if has_staff_capabilities(db, ticket.project_id, user):
