@@ -5,9 +5,15 @@ from app.services import projects as project_service
 from app.services import tickets as ticket_service
 
 
-def test_numbers_start_at_one_per_project(db_session, client_user):
-    project_a = project_service.create_project(db_session, "Alpha", "AAA")
-    project_b = project_service.create_project(db_session, "Beta", "BBB")
+def test_numbers_start_at_one_per_project(db_session, client_user, staff_user):
+    project_a = project_service.create_project(
+        db_session, "Alpha", "AAA", initial_staff_ids=[staff_user.id]
+    )
+    project_b = project_service.create_project(
+        db_session, "Beta", "BBB", initial_staff_ids=[staff_user.id]
+    )
+    project_service.add_project_member(db_session, project_a.id, client_user.id)
+    project_service.add_project_member(db_session, project_b.id, client_user.id)
 
     a1 = ticket_service.create_ticket(
         db_session,

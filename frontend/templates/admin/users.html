@@ -1,18 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% from "partials/ticket_macros.html" import project_checkboxes, modal_header, form_select_menu with context %}
-{% macro users_sort_th(col, label) -%}
-  {% set next = 'desc' if sort == col and sort_dir == 'asc' else 'asc' %}
-  <a href="{{ sort_links[col] }}"
-     class="admin-users-sort{% if sort == col %} is-active is-{{ sort_dir }}{% endif %}"
-     aria-label="{{ t('ui.admin.users.sort_' ~ col ~ '_' ~ next) }}"
-     hx-get="{{ sort_links[col] }}"
-     hx-target="#users-results"
-     hx-select="#users-results"
-     hx-swap="outerHTML"
-     hx-push-url="true"
-     hx-on:click="var f=this.closest('section'),s=f&&f.querySelector('input[name=sort]'),o=f&&f.querySelector('input[name=order]');if(s)s.value='{{ col }}';if(o)o.value='{{ next }}'">{{ label }}</a>
-{%- endmacro %}
+{% from "partials/ticket_macros.html" import project_checkboxes, modal_header, form_select_menu, admin_sort_th with context %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.users.title") }}{% endblock title %}
 {% block content %}
   <div class="admin-page-head">
@@ -71,11 +59,11 @@
     <ul id="users-results" class="admin-list admin-users-table">
       {% if users %}
         <li class="admin-users-head">
-          {{ users_sort_th('name', t('ui.admin.users.col_name') ) }}
-          {{ users_sort_th('email', t('ui.profile.field.email') ) }}
-          {{ users_sort_th('phone', t('ui.profile.field.phone') ) }}
-          {{ users_sort_th('role', t('ui.admin.users.filter_role') ) }}
-          {{ users_sort_th('status', t('ui.admin.users.col_status') ) }}
+          {{ admin_sort_th('name', t('ui.admin.users.col_name') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+          {{ admin_sort_th('email', t('ui.profile.field.email') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+          {{ admin_sort_th('phone', t('ui.profile.field.phone') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+          {{ admin_sort_th('role', t('ui.admin.users.filter_role') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+          {{ admin_sort_th('status', t('ui.admin.users.col_status') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
         </li>
       {% endif %}
       {% for u in users %}
@@ -104,9 +92,7 @@
               {% else %}
                 <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
               {% endif %}
-              {% if u.is_pending %}
-                <span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>
-              {% endif %}
+              {% if u.is_pending %}<span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>{% endif %}
             </span>
           </span>
         </li>

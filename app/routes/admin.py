@@ -29,7 +29,8 @@ def _admin_user_create_limit() -> str:
 
 
 _USER_SORT_COLS = ("name", "email", "phone", "role", "status")
-_ACTIVITY_SORT_COLS = ("name", "tickets", "last_login")
+_ACTIVITY_SORT_COLS = ("name", "role", "tickets", "last_login")
+_MEMBER_SORT_COLS = ("name", "role")
 _USER_STATUS_FILTERS = ("active", "blocked", "pending")
 
 
@@ -102,6 +103,7 @@ def _admin_projects_ctx(db: Session, *, show_disabled: bool, **extra) -> dict:
         "projects": project_service.list_project_summaries(
             db, disabled_only=show_disabled
         ),
+        "staff_candidates": project_service.list_staff_candidates(db),
         **extra,
     }
 
@@ -221,11 +223,20 @@ def create_project(
     name: Annotated[str, Form()],
     key: Annotated[str, Form()],
     description: Annotated[str, Form()] = "",
+    staff_user_id: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     show_disabled = _form_truthy(request.query_params.get("disabled", ""))
+    staff_ids = [int(staff_user_id)] if staff_user_id.strip().isdigit() else []
     try:
-        project_service.create_project(db, name, key, description, lang=lang)
+        project_service.create_project(
+            db,
+            name,
+            key,
+            description,
+            initial_staff_ids=staff_ids,
+            lang=lang,
+        )
     except ValueError as exc:
         return render(
             request,
@@ -238,6 +249,7 @@ def create_project(
                 form_name=name,
                 form_key=key,
                 form_description=description,
+                form_staff_user_id=staff_user_id,
             ),
         )
     return RedirectResponse(_admin_projects_path(), status_code=303)
@@ -259,24 +271,46 @@ def admin_project_active(
     )
 
 
-def _project_detail_ctx(db: Session, project: Project) -> dict:
+def _project_detail_ctx(
+    db: Session,
+    project: Project,
+    *,
+    sort: str = "name",
+    sort_dir: str = "asc",
+) -> dict:
     return {
         "project": project,
         "members": project_service.list_project_member_users(
-            db, project, include_admins=False
+            db, project, sort=sort, sort_dir=sort_dir
         ),
         "all_users": project_service.list_addable_users(db, project),
+        "sort": sort,
+        "sort_dir": sort_dir,
+        "sort_links": _sort_links(
+            admin_project_path(project),
+            _MEMBER_SORT_COLS,
+            sort=sort,
+            order=sort_dir,
+        ),
     }
 
 
 @router.get("/projects/{key}", response_class=HTMLResponse)
-def project_detail(request: Request, key: str, user: AdminUser, db: DbSession):
+def project_detail(
+    request: Request,
+    key: str,
+    user: AdminUser,
+    db: DbSession,
+    sort: Annotated[str, Query()] = "",
+    order: Annotated[str, Query()] = "",
+):
     project = _admin_project(db, key, lang=resolve_lang(request))
+    sort_col, sort_dir = _parse_sort(sort, order, allowed=_MEMBER_SORT_COLS)
     return render(
         request,
         "admin/project_detail.html",
         user=user,
-        **_project_detail_ctx(db, project),
+        **_project_detail_ctx(db, project, sort=sort_col, sort_dir=sort_dir),
     )
 
 
@@ -331,8 +365,18 @@ def remove_member(
     user: AdminUser,
     db: DbSession,
 ):
-    project = _admin_project(db, key, lang=resolve_lang(request))
-    project_service.remove_project_member(db, project.id, member_id)
+    lang = resolve_lang(request)
+    project = _admin_project(db, key, lang=lang)
+    try:
+        project_service.remove_project_member(db, project.id, member_id, lang=lang)
+    except ValueError as exc:
+        return render(
+            request,
+            "admin/project_detail.html",
+            user=user,
+            error=str(exc),
+            **_project_detail_ctx(db, project),
+        )
     return RedirectResponse(admin_project_path(project), status_code=303)
 
 

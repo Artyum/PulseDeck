@@ -5,7 +5,7 @@
 {% from "partials/rich_editor.html" import rich_editor with context %}
 {% block title %}{{ app_name }} - {{ t("ui.portal.feed.tickets") }}{% endblock title %}
 {% block content %}
-  {% if user.is_staff %}
+  {% if is_project_staff %}
     {% set views = [
           ('all', t('ui.portal.view.all')),
           ('needs_us', t('ui.portal.view.staff.needs_us')),
@@ -84,10 +84,12 @@
             namespace(value='updated_at', label=t('ui.portal.feed.sort_options.updated')),
             namespace(value='priority', label=t('ui.portal.feed.sort_options.priority')),
             ], filter_sort, compact=true, submit_on_pick=true, input_attrs='form="feed-filters"') }}
-            <button type="button"
-                    onclick="document.getElementById('new-ticket').showModal()"
-                    class="btn btn-primary"
-                    data-coachmark="feed-create">{{ t("ui.portal.feed.create") }}</button>
+            {% if can_create_ticket %}
+              <button type="button"
+                      onclick="document.getElementById('new-ticket').showModal()"
+                      class="btn btn-primary"
+                      data-coachmark="feed-create">{{ t("ui.portal.feed.create") }}</button>
+            {% endif %}
           </div>
         </div>
         <div class="issue-list">
@@ -134,9 +136,7 @@
             hx-select="#feed-header-and-results"
             hx-swap="outerHTML"
             hx-push-url="true">
-        {% if current_view %}
-          <input type="hidden" name="view" value="{{ current_view }}" data-feed-view>
-        {% endif %}
+        {% if current_view %}<input type="hidden" name="view" value="{{ current_view }}" data-feed-view>{% endif %}
         {% if filter_mine_paused %}<input type="hidden" name="mine_paused" value="1">{% endif %}
         <input type="hidden" name="per_page" value="{{ feed_query.per_page }}">
         <section class="issue-side-block">
@@ -226,39 +226,41 @@
     {% include "partials/sidebar_backdrop.html" %}
   </div>
   <dialog id="new-ticket" class="modal modal-fill" data-confirm-close>
-    <form method="post"
-          action="{{ url_for('create_ticket', key=project.key) }}"
-          enctype="multipart/form-data"
-          class="modal-form">
-      {{ modal_header('new-ticket', t('ui.portal.feed.modal_title') ) }}
-      <div class="modal-body">
-        <div>
-          <label class="label" for="new-ticket-title">{{ t("ui.portal.feed.field.title") }}</label>
-          <input id="new-ticket-title"
-                 name="title"
-                 {{ field_attrs("ticket.title") }}
-                 class="input mt-1">
-        </div>
-        <div class="form-grid">
+    {% if can_create_ticket %}
+      <form method="post"
+            action="{{ url_for('create_ticket', key=project.key) }}"
+            enctype="multipart/form-data"
+            class="modal-form">
+        {{ modal_header('new-ticket', t('ui.portal.feed.modal_title') ) }}
+        <div class="modal-body">
           <div>
-            <label class="label" for="new-ticket-type">{{ t("ui.portal.feed.field.type") }}</label>
-            {{ form_select_menu('ticket_type', t('ui.portal.feed.field.type') , ticket_types, 'BUG', type_labels, id='new-ticket-type', class_name='mt-1') }}
+            <label class="label" for="new-ticket-title">{{ t("ui.portal.feed.field.title") }}</label>
+            <input id="new-ticket-title"
+                   name="title"
+                   {{ field_attrs("ticket.title") }}
+                   class="input mt-1">
+          </div>
+          <div class="form-grid">
+            <div>
+              <label class="label" for="new-ticket-type">{{ t("ui.portal.feed.field.type") }}</label>
+              {{ form_select_menu('ticket_type', t('ui.portal.feed.field.type') , ticket_types, 'BUG', type_labels, id='new-ticket-type', class_name='mt-1') }}
+            </div>
+            <div>
+              <label class="label" for="new-ticket-priority">{{ t("ui.portal.feed.field.priority") }}</label>
+              {{ form_select_menu('priority', t('ui.portal.feed.field.priority') , ticket_priorities, 'NORMAL', priority_labels, id='new-ticket-priority', class_name='mt-1') }}
+            </div>
           </div>
           <div>
-            <label class="label" for="new-ticket-priority">{{ t("ui.portal.feed.field.priority") }}</label>
-            {{ form_select_menu('priority', t('ui.portal.feed.field.priority') , ticket_priorities, 'NORMAL', priority_labels, id='new-ticket-priority', class_name='mt-1') }}
+            <label class="label" for="new-ticket-description">{{ t("ui.portal.feed.field.description") }}</label>
+            {{ rich_editor('description', 'ticket.description', '', id='new-ticket-description', extra_class='mt-1') }}
           </div>
+          {{ attach_picker('new-ticket-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
         </div>
-        <div>
-          <label class="label" for="new-ticket-description">{{ t("ui.portal.feed.field.description") }}</label>
-          {{ rich_editor('description', 'ticket.description', '', id='new-ticket-description', extra_class='mt-1') }}
+        <div class="modal-footer">
+          {{ modal_cancel("new-ticket") }}
+          <button type="submit" class="btn btn-primary">{{ t("ui.common.create") }}</button>
         </div>
-        {{ attach_picker('new-ticket-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
-      </div>
-      <div class="modal-footer">
-        {{ modal_cancel("new-ticket") }}
-        <button type="submit" class="btn btn-primary">{{ t("ui.common.create") }}</button>
-      </div>
-    </form>
+      </form>
+    {% endif %}
   </dialog>
 {% endblock content %}

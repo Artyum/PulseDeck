@@ -202,9 +202,17 @@ def set_user_role(
             raise ValueError(
                 t(lang or DEFAULT_LANG, "messages.auth.cannot_demote_last_admin")
             )
+    if project_service.user_has_staff_ops(user) and role == UserRole.USER:
+        for mid in db.scalars(
+            select(ProjectMember.project_id).where(ProjectMember.user_id == user.id)
+        ).all():
+            if project_service.would_leave_project_without_staff(
+                db, int(mid), excluding_user_id=user.id
+            ):
+                raise ValueError(
+                    t(lang or DEFAULT_LANG, "messages.projects.last_staff")
+                )
     user.role = role
-    if role == UserRole.ADMIN:
-        project_service.clear_user_memberships(db, user.id)
     db.commit()
     db.refresh(user)
     return user
@@ -218,8 +226,17 @@ def set_active(
     active: bool,
     lang: str | None = None,
 ) -> User:
+    lang = lang or DEFAULT_LANG
     if target.id == actor.id:
-        raise ValueError(t(lang or DEFAULT_LANG, "messages.auth.cannot_block_self"))
+        raise ValueError(t(lang, "messages.auth.cannot_block_self"))
+    if not active and project_service.user_has_staff_ops(target):
+        for mid in db.scalars(
+            select(ProjectMember.project_id).where(ProjectMember.user_id == target.id)
+        ).all():
+            if project_service.would_leave_project_without_staff(
+                db, int(mid), excluding_user_id=target.id
+            ):
+                raise ValueError(t(lang, "messages.projects.last_staff"))
     target.is_active = active
     if not active:
         bump_auth_epoch(target)

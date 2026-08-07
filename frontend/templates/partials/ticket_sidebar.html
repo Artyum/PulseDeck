@@ -1,4 +1,4 @@
-{% from "partials/ticket_macros.html" import priority_chip, status_chip, type_chip, issue_field_menu with context %}
+{% from "partials/ticket_macros.html" import priority_chip, status_chip, type_chip, issue_field_menu, user_menu_item with context %}
 {% from "partials/icons.html" import icon %}
 {% set tref = ticket|ticket_label %}
 <section class="issue-side-block">
@@ -24,7 +24,7 @@
     {% endif %}
     <div class="issue-field">
       <span class="label-tight">{{ t("ui.ticket.type") }}</span>
-      {% if user.is_staff or can_edit %}
+      {% if is_project_staff %}
         {% call issue_field_menu(t('ui.ticket.change_type'), url_for('change_type', ticket_ref=tref), 'ticket_type', ticket_types, ticket.type.value, labels=type_labels) %}
           {{ type_chip(ticket.type) }}
         {% endcall %}
@@ -34,7 +34,7 @@
     </div>
     <div class="issue-field">
       <span class="label-tight">{{ t("ui.ticket.priority") }}</span>
-      {% if user.is_staff %}
+      {% if is_project_staff %}
         {% call issue_field_menu(t('ui.ticket.change_priority'), url_for('change_priority', ticket_ref=tref), 'priority', ticket_priorities, ticket.priority.value, labels=priority_labels) %}
           {{ priority_chip(ticket.priority) }}
         {% endcall %}
@@ -43,9 +43,9 @@
       {% endif %}
     </div>
     <div class="issue-field"
-         {% if user.is_staff %}data-coachmark="ticket-status"{% endif %}>
+         {% if is_project_staff %}data-coachmark="ticket-status"{% endif %}>
       <span class="label-tight">{{ t("ui.ticket.status") }}</span>
-      {% if user.is_staff %}
+      {% if is_project_staff %}
         {% call issue_field_menu(t('ui.ticket.change_status'), url_for('change_status', ticket_ref=tref), 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}
           {{ status_chip(ticket.status) }}
         {% endcall %}
@@ -115,7 +115,7 @@
     <div class="issue-field">
       <span class="label-tight">{{ t("ui.ticket.reporter") }}</span>
       {% if can_assign %}
-        {% call issue_field_menu(t('ui.ticket.change_reporter'), url_for('change_reporter', ticket_ref=tref), 'author_id', project_members, ticket.author_id, value_attr='id') %}
+        {% call issue_field_menu(t('ui.ticket.change_reporter'), url_for('change_reporter', ticket_ref=tref), 'author_id', project_members, ticket.author_id, value_attr='id', show_role_badge=true) %}
           <span class="issue-menu-value">{{ ticket.author.display_name if ticket.author else t("ui.common.empty_dash") }}</span>
         {% endcall %}
       {% else %}
@@ -127,7 +127,7 @@
       <span class="label-tight">{{ t("ui.ticket.assignee") }}</span>
       {% if can_assign %}
         <div class="issue-assignee-value">
-          {% call issue_field_menu(t('ui.ticket.change_assignee'), url_for('assign', ticket_ref=tref), 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label=t('ui.ticket.assignee_none')) %}
+          {% call issue_field_menu(t('ui.ticket.change_assignee'), url_for('assign', ticket_ref=tref), 'assignee_id', staff_members, ticket.assignee_id, value_attr='id', empty_value='', empty_label=t('ui.ticket.assignee_none'), show_role_badge=true) %}
             <span class="issue-menu-value">{{ ticket.assignee.display_name if ticket.assignee else t("ui.common.empty_dash") }}</span>
           {% endcall %}
           {% if not ticket.assignee_id %}
@@ -145,8 +145,6 @@
     <div class="issue-field">
       <div class="issue-participant-label-col">
         <span class="label-tight">{{ t("ui.ticket.participants") }}</span>
-        {% set sorted_participants = ticket.participants|sort(attribute='user.first_name', case_sensitive=False) %}
-        {% set can_add_participant = user.is_staff or user.id == ticket.author_id %}
         {% if can_add_participant %}
           <div class="issue-participant-add">
             <div x-data="{ open: false }"
@@ -170,18 +168,13 @@
                       hx-target="#ticket-view"
                       hx-swap="innerHTML"
                       class="issue-menu-form">
-                  {% set participant_ids = ticket.participants|map(attribute='user_id')|list %}
-                  {% set ns = namespace(n=0) %}
-                  {% for m in project_members %}
-                    {% if m.id != ticket.author_id and m.id not in participant_ids and not m.is_staff and not m.is_admin %}
-                      {% set ns.n = ns.n + 1 %}
-                      <button type="submit"
-                              name="user_id"
-                              value="{{ m.id }}"
-                              class="issue-menu-item">{{ m.display_name }}</button>
-                    {% endif %}
-                  {% endfor %}
-                  {% if ns.n == 0 %}<p class="issue-menu-empty">{{ t("ui.ticket.no_participants_to_add") }}</p>{% endif %}
+                  {% if addable_participants %}
+                    <div class="issue-menu-scroll">
+                      {% for m in addable_participants %}{{ user_menu_item(m, 'user_id', is_project_staff) }}{% endfor %}
+                    </div>
+                  {% else %}
+                    <p class="issue-menu-empty">{{ t("ui.ticket.no_participants_to_add") }}</p>
+                  {% endif %}
                 </form>
               </div>
             </div>
@@ -190,13 +183,13 @@
       </div>
       <div class="field-value field-value-participants">
         <div class="issue-participant-primary">
-          {% if sorted_participants %}
-            {% set p = sorted_participants[0] %}
+          {% if visible_participants %}
+            {% set p = visible_participants[0] %}
             {% set pname = p.user.display_name if p.user else p.user_id %}
             {% set as_admin = user.is_admin %}
             {% set self_unwatch = p.user_id == user.id %}
             <span class="issue-participant-name">{{ pname }}</span>
-            {% if as_admin or (not user.is_staff and self_unwatch) %}
+            {% if as_admin or (not is_project_staff and self_unwatch) %}
               <form method="post"
                     action="{{ url_for('stop_watching', ticket_ref=tref) }}"
                     class="issue-participant-unwatch"
@@ -214,15 +207,15 @@
             <span class="text-steel">{{ t("ui.common.none") }}</span>
           {% endif %}
         </div>
-        {% if sorted_participants|length > 1 %}
+        {% if visible_participants|length > 1 %}
           <ul class="issue-participant-list">
-            {% for p in sorted_participants[1:] %}
+            {% for p in visible_participants[1:] %}
               {% set pname = p.user.display_name if p.user else p.user_id %}
               {% set as_admin = user.is_admin %}
               {% set self_unwatch = p.user_id == user.id %}
               <li class="issue-participant-row">
                 <span class="issue-participant-name">{{ pname }}</span>
-                {% if as_admin or (not user.is_staff and self_unwatch) %}
+                {% if as_admin or (not is_project_staff and self_unwatch) %}
                   <form method="post"
                         action="{{ url_for('stop_watching', ticket_ref=tref) }}"
                         class="issue-participant-unwatch"

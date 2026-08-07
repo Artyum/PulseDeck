@@ -78,7 +78,7 @@ def phone(*, required: bool = False) -> FieldSpec:
         max_len=20,
         pattern=r"^\+[1-9]\d{7,14}$",
         html_input_type="tel",
-        html_pattern=r"\+[1-9]\d{7,14}",
+        html_pattern=r"\+[1-9][\d\s\-()]{7,24}",
     )
 
 

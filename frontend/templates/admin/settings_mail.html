@@ -2,7 +2,6 @@
 {% block settings_content %}
   <section class="admin-section">
     <h2 class="issue-section-title">{{ t("ui.admin.settings.mail.smtp_heading") }}</h2>
-    <p class="admin-section-note">{{ t("ui.admin.settings.mail.smtp_hint") }}</p>
     <form method="post"
           action="{{ url_for('admin_settings_mail_save') }}"
           class="admin-form-stack admin-settings-form">

@@ -349,6 +349,11 @@ class TestFieldAttrs:
         assert 'minlength="12"' in attrs
         assert 'type="password"' in attrs
 
+    def test_phone_attrs_allow_formatted_display(self):
+        attrs = str(field_attrs("user.phone"))
+        assert 'type="tel"' in attrs
+        assert r"\+[1-9][\d\s\-()]{7,24}" in attrs
+
     def test_optional_field_no_required(self):
         attrs = str(field_attrs("project.description"))
         assert "required" not in attrs.split()

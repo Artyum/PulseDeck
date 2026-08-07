@@ -12,12 +12,14 @@ from app.models.ticket import Ticket
 from app.models.user import User
 from app.rate_limit import client_ip_key, limiter
 from app.routes.context import group_comments, render
+from app.services import projects as project_service
 from app.services import reply_token as reply_token_service
 from app.services import tickets as ticket_service
 from app.services.auth import hash_magic_token
-from app.services.email import notify_new_comment
+from app.services.email import emit_comment
 from app.services.reply_token import ReplyTokenStatus
 from app.utils.i18n import resolve_lang
+from app.utils.timefmt import normalize_datetime_format, normalize_timezone
 from app.utils.urls import ticket_path
 from app.validation import clean
 
@@ -40,9 +42,9 @@ def _post_limit() -> str:
     return get_settings().reply_token_post_rate_limit
 
 
-def _visible_comment_groups(user: User, ticket: Ticket) -> list[list]:
+def _visible_comment_groups(user: User, ticket: Ticket, db: Session) -> list[list]:
     comments = list(ticket.comments or [])
-    if not user.is_staff:
+    if not project_service.has_staff_capabilities(db, ticket.project_id, user):
         comments = [c for c in comments if not c.is_internal]
     return group_comments(comments)
 
@@ -80,19 +82,20 @@ def _thread_page(
     ticket: Ticket,
     error: str | None = None,
 ):
-    groups = _visible_comment_groups(user, ticket)
+    groups = _visible_comment_groups(user, ticket, db)
     visible_group = groups[-1] if groups else []
     return render(
         request,
         "reply/thread.html",
         token=token,
-        user=user,
         ticket=ticket,
         project=ticket.project,
         comment_groups=[visible_group] if visible_group else [],
         has_earlier_messages=len(groups) > 1,
         can_comment=ticket_service.can_comment(db, user, ticket),
         error=error,
+        ui_timezone=normalize_timezone(user.timezone),
+        ui_datetime_format=normalize_datetime_format(user.datetime_format),
     )
 
 
@@ -265,7 +268,7 @@ def open_reply_post(
         db.rollback()
         raise
 
-    notify_new_comment(db, ticket, owner.id, is_internal=False)
+    emit_comment(db, ticket, owner.id, is_internal=False)
     _log(
         request,
         "success",

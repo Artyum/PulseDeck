@@ -1,38 +1,30 @@
 """Portal user-facing integration tests."""
 
-from app.models.enums import TicketStatus, TicketType
+from app.models.enums import TicketStatus
 from app.services import tickets as ticket_service
-
-
-def _login(client, email, password):
-    r = client.post(
-        "/auth/login",
-        data={"email": email, "password": password},
-        follow_redirects=False,
-    )
-    assert r.status_code in (303, 200)
+from tests.helpers import login_admin, login_client, login_staff, make_ticket, make_user
 
 
 class TestFeed:
     def test_project_feed(self, client, client_user, project_with_members):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get(f"/p/{project_with_members.key}")
         assert r.status_code == 200
         assert project_with_members.name in r.text
 
     def test_project_feed_with_filters(self, client, client_user, project_with_members):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get(f"/p/{project_with_members.key}?view=waiting_on_me")
         assert r.status_code == 200
 
     def test_project_not_found(self, client, client_user):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get("/p/NONEXIST", follow_redirects=False)
         assert r.status_code in (303, 403, 404, 200)
 
     def test_redirect_when_no_projects(self, client, client_user):
         # client_user has no projects by default (project_with_members not loaded)
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get("/", follow_redirects=False)
         # Just check it returns something valid (redirect or empty)
         assert r.status_code in (200, 303)
@@ -42,18 +34,13 @@ class TestFeed:
     ):
         from app.models.ticket import Tag
 
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=staff_user,
-            title="Tag test",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Tag test"
         )
         ticket_service.add_ticket_tag(db_session, ticket, staff_user, "urgent")
         db_session.add(Tag(project_id=project_with_members.id, name="orphan"))
         db_session.commit()
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.get(f"/p/{project_with_members.key}")
         assert r.status_code == 200
         assert "urgent" in r.text
@@ -62,17 +49,12 @@ class TestFeed:
     def test_feed_project_tags_shown(
         self, client, db_session, staff_user, project_with_members
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=staff_user,
-            title="Tag visible",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Tag visible"
         )
         ticket_service.add_ticket_tag(db_session, ticket, staff_user, "bug")
         db_session.commit()
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.get(f"/p/{project_with_members.key}")
         assert r.status_code == 200
         assert "bug" in r.text
@@ -80,7 +62,7 @@ class TestFeed:
 
 class TestTicketCRUD:
     def test_create_ticket(self, client, client_user, project_with_members):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             f"/p/{project_with_members.key}/tickets",
             data={
@@ -96,7 +78,7 @@ class TestTicketCRUD:
     def test_create_ticket_missing_title(
         self, client, client_user, project_with_members
     ):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             f"/p/{project_with_members.key}/tickets",
             data={
@@ -109,29 +91,23 @@ class TestTicketCRUD:
         assert r.status_code in (200, 303, 422)
 
     def test_ticket_detail(self, client, db_session, client_user, project_with_members):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="Detail test",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Detail test"
         )
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get(f"/t/{project_with_members.key}-{ticket.number}")
         assert r.status_code == 200
         assert "Detail test" in r.text
 
     def test_edit_ticket(self, client, db_session, client_user, project_with_members):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Edit me",
             description="Original",
-            ticket_type=TicketType.BUG,
         )
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/edit",
             data={
@@ -145,15 +121,10 @@ class TestTicketCRUD:
 
 class TestComments:
     def test_add_comment(self, client, db_session, client_user, project_with_members):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="Comment test",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Comment test"
         )
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={
@@ -166,15 +137,10 @@ class TestComments:
     def test_add_internal_note_staff(
         self, client, db_session, staff_user, project_with_members
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=staff_user,
-            title="Internal test",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Internal test"
         )
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={
@@ -188,16 +154,11 @@ class TestComments:
     def test_comment_on_done_ticket_blocked(
         self, client, db_session, client_user, project_with_members
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="Done ticket",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Done ticket"
         )
         ticket_service.set_status(db_session, ticket, client_user, TicketStatus.DONE)
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={"content": "Late comment"},
@@ -211,15 +172,10 @@ class TestTicketStatus:
     def test_set_status_staff(
         self, client, db_session, staff_user, project_with_members
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=staff_user,
-            title="Status test",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Status test"
         )
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/status",
             data={"status": "IN_PROGRESS"},
@@ -228,16 +184,11 @@ class TestTicketStatus:
         assert r.status_code in (200, 303)
 
     def test_reopen_ticket(self, client, db_session, staff_user, project_with_members):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=staff_user,
-            title="Reopen me",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Reopen me"
         )
         ticket_service.set_status(db_session, ticket, staff_user, TicketStatus.DONE)
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/reopen",
             follow_redirects=False,
@@ -254,68 +205,70 @@ class TestInactiveProject:
         project_service.set_project_active(
             db_session, project_with_members, active=False
         )
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get(f"/p/{project_with_members.key}", follow_redirects=False)
         assert r.status_code in (303, 404)
 
 
 class TestParticipantsAndReporter:
-    def test_add_participant(
+    def test_add_participant_client_adds_client(
+        self, client, db_session, client_user, project_with_members
+    ):
+        peer = make_user(
+            db_session,
+            "peer-portal-add@test.local",
+            first_name="Peer",
+            last_name="PortalAdd",
+            password="Peer1234!abcd",
+            project=project_with_members,
+        )
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Participants"
+        )
+        login_client(client)
+        r = client.post(
+            f"/t/{project_with_members.key}-{ticket.number}/participants",
+            data={"user_id": str(peer.id)},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+    def test_add_participant_client_cannot_add_staff(
         self, client, db_session, client_user, staff_user, project_with_members
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="Participants",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Participants staff"
         )
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/participants",
             data={"user_id": str(staff_user.id)},
             follow_redirects=False,
         )
-        assert r.status_code in (200, 303)
+        assert r.status_code == 400
 
     def test_admin_remove_participant(
         self, client, db_session, client_user, admin_user, project_with_members
     ):
-        from datetime import datetime, timezone
-
-        from app.models.enums import UserRole
-        from app.models.user import User
         from app.services import projects as project_service
-        from app.services.auth import set_password
 
         project_service.add_project_member(
             db_session, project_with_members.id, admin_user.id
         )
-        peer = User(
-            email="peer-portal@test.local",
+        peer = make_user(
+            db_session,
+            "peer-portal@test.local",
             first_name="Peer",
             last_name="Portal",
-            role=UserRole.USER,
-            activated_at=datetime.now(timezone.utc),
+            password="Peer1234!abcd",
+            project=project_with_members,
         )
-        set_password(peer, "Peer1234!abcd")
-        db_session.add(peer)
-        db_session.commit()
-        db_session.refresh(peer)
-        project_service.add_project_member(db_session, project_with_members.id, peer.id)
-
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="Remove participant",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Remove participant"
         )
         ticket_service.add_participant(db_session, ticket, client_user, peer.id)
 
-        _login(client, "admin@test.local", "Admin123!abcd")
+        login_admin(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/unwatch",
             data={"user_id": str(peer.id)},
@@ -331,15 +284,10 @@ class TestParticipantsAndReporter:
     def test_change_reporter(
         self, client, db_session, client_user, staff_user, project_with_members
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=staff_user,
-            title="Reporter",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Reporter"
         )
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/reporter",
             data={"author_id": str(client_user.id)},
@@ -350,20 +298,44 @@ class TestParticipantsAndReporter:
 
 class TestRemoveTag:
     def test_remove_tag(self, client, db_session, staff_user, project_with_members):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=staff_user,
-            title="Untag",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Untag"
         )
         tagged = ticket_service.add_ticket_tag(db_session, ticket, staff_user, "temp")
         tag_id = tagged.ticket_tags[0].tag_id
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/tags/remove",
             data={"tag_id": str(tag_id)},
+            follow_redirects=False,
+        )
+        assert r.status_code in (200, 303)
+
+
+class TestAclVisibility:
+    def test_client_opens_other_members_ticket(
+        self, client, db_session, client_user, staff_user, project_with_members
+    ):
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Staff only title"
+        )
+        login_client(client)
+        r = client.get(f"/t/{project_with_members.key}-{ticket.number}")
+        assert r.status_code == 200
+        assert "Staff only title" in r.text
+
+    def test_admin_creates_ticket_without_membership(
+        self, client, admin_user, project_with_members
+    ):
+        login_admin(client)
+        r = client.post(
+            f"/p/{project_with_members.key}/tickets",
+            data={
+                "title": "Admin ticket",
+                "description": "From admin",
+                "ticket_type": "BUG",
+                "priority": "NORMAL",
+            },
             follow_redirects=False,
         )
         assert r.status_code in (200, 303)

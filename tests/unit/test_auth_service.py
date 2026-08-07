@@ -73,7 +73,7 @@ class TestSetActiveAndRole:
                 db_session, admin_user, actor=admin_user, active=False
             )
 
-    def test_promote_to_admin_clears_memberships(
+    def test_promote_to_admin_keeps_memberships(
         self, db_session, admin_user, client_user, project_with_members
     ):
         assert project_service.is_project_member(
@@ -86,7 +86,7 @@ class TestSetActiveAndRole:
                 db_session, project_with_members.id, client_user.id
             )
             is True
-        )  # admin always member via role
+        )
 
     def test_cannot_demote_last_admin(self, db_session, admin_user):
         with pytest.raises(ValueError):

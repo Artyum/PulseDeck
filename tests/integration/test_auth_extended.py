@@ -1,38 +1,27 @@
 """Extended auth integration tests: login edge cases, activation errors, profile."""
 
-
-def _login(client, email, password):
-    return client.post(
-        "/auth/login",
-        data={"email": email, "password": password},
-        follow_redirects=False,
-    )
+from tests.helpers import login, login_client, make_user
 
 
 class TestLogin:
     def test_wrong_password(self, client, client_user):
-        r = _login(client, "client@test.local", "wrong")
+        r = login(client, "client@test.local", "wrong", assert_ok=False)
         assert r.status_code in (200, 303)
 
     def test_unactivated_user_blocked(self, client, db_session, project_with_members):
-        from app.models.enums import UserRole
-        from app.models.user import User
-
-        user = User(
-            email="unactivated@test.local",
+        make_user(
+            db_session,
+            "unactivated@test.local",
             first_name="Un",
             last_name="Activated",
-            role=UserRole.USER,
-            activated_at=None,
+            activated=False,
             is_active=True,
         )
-        db_session.add(user)
-        db_session.commit()
-        r = _login(client, "unactivated@test.local", "doesntmatter")
+        r = login(client, "unactivated@test.local", "doesntmatter", assert_ok=False)
         assert r.status_code in (200, 303)
 
     def test_logout(self, client, client_user):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post("/auth/logout", follow_redirects=False)
         assert r.status_code in (302, 303)
 
@@ -102,12 +91,12 @@ class TestActivationErrors:
 
 class TestProfile:
     def test_profile_page(self, client, client_user):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get("/profile", follow_redirects=False)
         assert r.status_code in (200, 303)
 
     def test_profile_subpages(self, client, client_user):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         for path in (
             "/profile",
             "/profile/data",
@@ -119,7 +108,7 @@ class TestProfile:
             assert r.status_code in (200, 303)
 
     def test_profile_update(self, client, client_user):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             "/profile/data",
             data={
@@ -133,7 +122,7 @@ class TestProfile:
         assert r.status_code in (200, 303, 422)
 
     def test_profile_password_change(self, client, client_user):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             "/profile/password",
             data={
@@ -146,7 +135,7 @@ class TestProfile:
         assert r.status_code in (200, 303, 422)
 
     def test_profile_notifications(self, client, client_user):
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.post(
             "/profile/notifications",
             data={
@@ -192,19 +181,11 @@ class TestForgotAndConfirmEmail:
 
 
 def _create_pending_user(db_session):
-    """Helper to create a pending user for activation tests."""
-    from app.models.enums import UserRole
-    from app.models.user import User
-
-    user = User(
-        email="pending@test.local",
+    return make_user(
+        db_session,
+        "pending@test.local",
         first_name="Pending",
         last_name="User",
-        role=UserRole.USER,
-        activated_at=None,
+        activated=False,
         is_active=True,
     )
-    db_session.add(user)
-    db_session.commit()
-    db_session.refresh(user)
-    return user

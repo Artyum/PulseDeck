@@ -3,28 +3,17 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from fastapi import HTTPException
 
-from app.models.enums import TicketPriority, TicketStatus, TicketType
+from app.models.enums import TicketPriority, TicketStatus, TicketType, UserRole
 from app.services import tickets as ticket_service
-
-
-def _ticket(db, project, author, **kwargs):
-    return ticket_service.create_ticket(
-        db,
-        project_id=project.id,
-        author=author,
-        title=kwargs.get("title", "Ticket"),
-        description=kwargs.get("description", "Desc"),
-        ticket_type=kwargs.get("ticket_type", TicketType.BUG),
-        priority=kwargs.get("priority", TicketPriority.NORMAL),
-    )
+from tests.helpers import make_ticket, make_user, peer_participant_ticket
 
 
 class TestListTicketsFilters:
     def test_view_open_and_mine_client(
         self, db_session, project_with_members, client_user, staff_user
     ):
-        mine = _ticket(db_session, project_with_members, client_user, title="Mine")
-        other = _ticket(db_session, project_with_members, staff_user, title="Other")
+        mine = make_ticket(db_session, project_with_members, client_user, title="Mine")
+        other = make_ticket(db_session, project_with_members, staff_user, title="Other")
         open_rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -46,7 +35,9 @@ class TestListTicketsFilters:
         assert other.id not in mine_ids
 
     def test_staff_view_unassigned(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user, title="Unassigned")
+        t = make_ticket(
+            db_session, project_with_members, staff_user, title="Unassigned"
+        )
         rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -66,14 +57,16 @@ class TestListTicketsFilters:
     def test_staff_mine_assignee_or_author(
         self, db_session, project_with_members, staff_user, client_user
     ):
-        authored = _ticket(
+        authored = make_ticket(
             db_session, project_with_members, staff_user, title="Authored"
         )
-        assigned = _ticket(
+        assigned = make_ticket(
             db_session, project_with_members, client_user, title="Assigned"
         )
         ticket_service.assign_ticket(db_session, assigned, staff_user, staff_user.id)
-        other = _ticket(db_session, project_with_members, client_user, title="Other")
+        other = make_ticket(
+            db_session, project_with_members, client_user, title="Other"
+        )
         rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -89,7 +82,7 @@ class TestListTicketsFilters:
     def test_priority_and_type_filters(
         self, db_session, project_with_members, client_user
     ):
-        high = _ticket(
+        high = make_ticket(
             db_session,
             project_with_members,
             client_user,
@@ -108,9 +101,11 @@ class TestListTicketsFilters:
         assert any(r.id == high.id for r in rows.items)
 
     def test_status_filter(self, db_session, project_with_members, client_user):
-        done = _ticket(db_session, project_with_members, client_user, title="Done one")
+        done = make_ticket(
+            db_session, project_with_members, client_user, title="Done one"
+        )
         done.status = TicketStatus.DONE
-        open_one = _ticket(
+        open_one = make_ticket(
             db_session, project_with_members, client_user, title="Open one"
         )
         db_session.commit()
@@ -128,11 +123,13 @@ class TestListTicketsFilters:
     def test_view_status_filters_exclusive(
         self, db_session, project_with_members, client_user
     ):
-        waiting = _ticket(
+        waiting = make_ticket(
             db_session, project_with_members, client_user, title="Waiting one"
         )
         waiting.status = TicketStatus.WAITING_ON_CLIENT
-        done = _ticket(db_session, project_with_members, client_user, title="Done one")
+        done = make_ticket(
+            db_session, project_with_members, client_user, title="Done one"
+        )
         done.status = TicketStatus.DONE
         db_session.commit()
         by_view = ticket_service.list_tickets(
@@ -159,7 +156,7 @@ class TestListTicketsFilters:
     def test_invalid_filters_ignored(
         self, db_session, project_with_members, client_user
     ):
-        _ticket(db_session, project_with_members, client_user)
+        make_ticket(db_session, project_with_members, client_user)
         rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -174,7 +171,9 @@ class TestListTicketsFilters:
     def test_search_by_title_and_number(
         self, db_session, project_with_members, client_user
     ):
-        t = _ticket(db_session, project_with_members, client_user, title="UniqueNeedle")
+        t = make_ticket(
+            db_session, project_with_members, client_user, title="UniqueNeedle"
+        )
         by_title = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -193,7 +192,7 @@ class TestListTicketsFilters:
     def test_search_by_author_name(
         self, db_session, project_with_members, client_user, staff_user
     ):
-        t = _ticket(db_session, project_with_members, client_user, title="ByAuthor")
+        t = make_ticket(db_session, project_with_members, client_user, title="ByAuthor")
         by_first = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -219,7 +218,9 @@ class TestListTicketsFilters:
     def test_search_ignores_view_when_q_set(
         self, db_session, project_with_members, staff_user
     ):
-        t = _ticket(db_session, project_with_members, staff_user, title="OpenNeedle")
+        t = make_ticket(
+            db_session, project_with_members, staff_user, title="OpenNeedle"
+        )
         rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -230,7 +231,7 @@ class TestListTicketsFilters:
         assert any(r.id == t.id for r in rows.items)
 
     def test_filter_by_tag(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         ticket_service.add_ticket_tag(db_session, t, staff_user, "alpha")
         rows = ticket_service.list_tickets(
             db_session,
@@ -241,7 +242,7 @@ class TestListTicketsFilters:
         assert any(r.id == t.id for r in rows.items)
 
     def test_staff_views(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
         for view in (
             "all",
@@ -261,7 +262,7 @@ class TestListTicketsFilters:
     def test_client_waiting_and_done_views(
         self, db_session, project_with_members, client_user
     ):
-        t = _ticket(db_session, project_with_members, client_user)
+        t = make_ticket(db_session, project_with_members, client_user)
         ticket_service.set_status(db_session, t, client_user, TicketStatus.DONE)
         for view in ("all", "open", "waiting_on_me", "done"):
             rows = ticket_service.list_tickets(
@@ -275,7 +276,9 @@ class TestListTicketsFilters:
     def test_client_mine_includes_participant(
         self, db_session, project_with_members, client_user
     ):
-        t, peer = _peer_participant(db_session, project_with_members, client_user)
+        t, peer = peer_participant_ticket(
+            db_session, project_with_members, client_user, notify_reply=False
+        )
         rows = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -289,7 +292,7 @@ class TestListTicketsFilters:
 class TestListTicketsPagination:
     def test_page_size_and_total(self, db_session, project_with_members, staff_user):
         for i in range(30):
-            _ticket(db_session, project_with_members, staff_user, title=f"T{i}")
+            make_ticket(db_session, project_with_members, staff_user, title=f"T{i}")
         result = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -326,7 +329,7 @@ class TestListTicketsPagination:
 
     def test_clamp_high_page(self, db_session, project_with_members, staff_user):
         for i in range(5):
-            _ticket(db_session, project_with_members, staff_user, title=f"C{i}")
+            make_ticket(db_session, project_with_members, staff_user, title=f"C{i}")
         result = ticket_service.list_tickets(
             db_session,
             project_with_members.id,
@@ -341,8 +344,10 @@ class TestListTicketsPagination:
     def test_count_matches_items_with_tag_and_mine(
         self, db_session, project_with_members, staff_user, client_user
     ):
-        mine = _ticket(db_session, project_with_members, staff_user, title="Mine tag")
-        other = _ticket(
+        mine = make_ticket(
+            db_session, project_with_members, staff_user, title="Mine tag"
+        )
+        other = make_ticket(
             db_session, project_with_members, client_user, title="Other tag"
         )
         ticket_service.add_ticket_tag(db_session, mine, staff_user, "pager")
@@ -362,7 +367,7 @@ class TestListTicketsPagination:
         self, db_session, project_with_members, staff_user
     ):
         tickets = [
-            _ticket(db_session, project_with_members, staff_user, title=f"S{i}")
+            make_ticket(db_session, project_with_members, staff_user, title=f"S{i}")
             for i in range(100)
         ]
         first = ticket_service.list_tickets(
@@ -397,34 +402,9 @@ class TestListTicketsPagination:
         assert ticket_service.normalize_feed_page_size("10") == 10
 
 
-def _peer_participant(db, project, author):
-    from app.models.enums import UserRole
-    from app.models.user import User
-    from app.services import projects as project_service
-    from app.services.auth import set_password
-
-    peer = User(
-        email=f"peer-{author.id}@test.local",
-        first_name="Peer",
-        last_name="Client",
-        role=UserRole.USER,
-        activated_at=datetime.now(timezone.utc),
-    )
-    set_password(peer, "Peer1234!abcd")
-    db.add(peer)
-    db.commit()
-    db.refresh(peer)
-    project_service.add_project_member(db, project.id, peer.id)
-    t = _ticket(db, project, author)
-    ticket_service.add_participant(db, t, author, peer.id)
-    t = ticket_service.get_ticket(db, t.id)
-    assert t is not None
-    return t, peer
-
-
 class TestTicketMutations:
     def test_reopen(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         ticket_service.set_status(db_session, t, staff_user, TicketStatus.DONE)
         reopened = ticket_service.reopen_ticket(db_session, t, staff_user)
         assert reopened.status == TicketStatus.IN_PROGRESS
@@ -437,7 +417,7 @@ class TestTicketMutations:
 
         from app.services.portal_settings import get_portal_settings
 
-        t = _ticket(db_session, project_with_members, client_user)
+        t = make_ticket(db_session, project_with_members, client_user)
         ticket_service.set_status(db_session, t, client_user, TicketStatus.DONE)
         t.closed_at = datetime.now(timezone.utc) - timedelta(days=30)
         db_session.commit()
@@ -454,7 +434,7 @@ class TestTicketMutations:
     def test_change_reporter(
         self, db_session, project_with_members, staff_user, client_user
     ):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         updated = ticket_service.change_reporter(
             db_session, t, staff_user, client_user.id
         )
@@ -463,32 +443,44 @@ class TestTicketMutations:
     def test_change_reporter_same_noop(
         self, db_session, project_with_members, staff_user
     ):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         updated = ticket_service.change_reporter(
             db_session, t, staff_user, staff_user.id
         )
         assert updated.author_id == staff_user.id
 
     def test_assign_and_unassign(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         assigned = ticket_service.assign_ticket(
             db_session, t, staff_user, staff_user.id
         )
         assert assigned.assignee_id == staff_user.id
         assert assigned.status == TicketStatus.IN_PROGRESS
+        assert all(p.user_id != staff_user.id for p in assigned.participants)
         cleared = ticket_service.assign_ticket(db_session, assigned, staff_user, None)
         assert cleared.assignee_id is None
+
+    def test_assign_drops_existing_participant_row(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        t = make_ticket(db_session, project_with_members, client_user)
+        ticket_service.add_participant(db_session, t, staff_user, staff_user.id)
+        assigned = ticket_service.assign_ticket(
+            db_session, t, staff_user, staff_user.id
+        )
+        assert assigned.assignee_id == staff_user.id
+        assert all(p.user_id != staff_user.id for p in assigned.participants)
 
     def test_assign_client_rejected(
         self, db_session, project_with_members, staff_user, client_user
     ):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         with pytest.raises(HTTPException) as exc:
             ticket_service.assign_ticket(db_session, t, staff_user, client_user.id)
         assert exc.value.status_code == 400
 
     def test_add_and_remove_tag(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         tagged = ticket_service.add_ticket_tag(db_session, t, staff_user, "beta")
         tag_id = tagged.ticket_tags[0].tag_id
         cleared = ticket_service.remove_ticket_tag(
@@ -497,24 +489,127 @@ class TestTicketMutations:
         assert cleared.ticket_tags == [] or len(cleared.ticket_tags) == 0
 
     def test_empty_tag_rejected(self, db_session, project_with_members, staff_user):
-        t = _ticket(db_session, project_with_members, staff_user)
+        t = make_ticket(db_session, project_with_members, staff_user)
         with pytest.raises(HTTPException) as exc:
             ticket_service.add_ticket_tag(db_session, t, staff_user, "   ")
         assert exc.value.status_code == 400
 
-    def test_add_participant(
+    def test_staff_comment_auto_assign_not_participant(
         self, db_session, project_with_members, client_user, staff_user
     ):
-        t = _ticket(db_session, project_with_members, client_user)
+        t = make_ticket(db_session, project_with_members, client_user)
+        ticket_service.add_comment(
+            db_session,
+            t,
+            staff_user,
+            "Staff reply",
+        )
+        refreshed = ticket_service.get_ticket(db_session, t.id)
+        assert refreshed is not None
+        assert refreshed.assignee_id == staff_user.id
+        assert all(p.user_id != staff_user.id for p in refreshed.participants)
+
+    def test_staff_comment_becomes_participant_when_not_assignee(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        other_staff = make_user(
+            db_session,
+            "staff-other@test.local",
+            first_name="Other",
+            last_name="Staff",
+            role=UserRole.STAFF,
+            project=project_with_members,
+        )
+
+        t = make_ticket(db_session, project_with_members, client_user)
+        ticket_service.assign_ticket(db_session, t, staff_user, staff_user.id)
+        ticket_service.add_comment(
+            db_session,
+            t,
+            other_staff,
+            "Another staff reply",
+        )
+        refreshed = ticket_service.get_ticket(db_session, t.id)
+        assert refreshed is not None
+        assert any(p.user_id == other_staff.id for p in refreshed.participants)
+
+    def test_add_participant_client_adds_client(
+        self, db_session, project_with_members, client_user
+    ):
+        peer = make_user(
+            db_session,
+            "peer-add@test.local",
+            first_name="Peer",
+            last_name="Add",
+            password="Peer1234!abcd",
+            project=project_with_members,
+        )
+
+        t = make_ticket(db_session, project_with_members, client_user)
+        updated = ticket_service.add_participant(db_session, t, client_user, peer.id)
+        assert any(p.user_id == peer.id for p in updated.participants)
+
+    def test_add_participant_client_cannot_add_staff(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        t = make_ticket(db_session, project_with_members, client_user)
+        with pytest.raises(HTTPException) as exc:
+            ticket_service.add_participant(db_session, t, client_user, staff_user.id)
+        assert exc.value.status_code == 400
+
+    def test_add_participant_staff_can_add_staff(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        t = make_ticket(db_session, project_with_members, client_user)
         updated = ticket_service.add_participant(
-            db_session, t, client_user, staff_user.id
+            db_session, t, staff_user, staff_user.id
         )
         assert any(p.user_id == staff_user.id for p in updated.participants)
+
+    def test_add_participant_admin_project_member_can_add_client(
+        self, db_session, project_with_members, client_user, admin_user
+    ):
+        from app.services import projects as project_service
+
+        peer = make_user(
+            db_session,
+            "peer-admin-add@test.local",
+            first_name="Peer",
+            last_name="AdminAdd",
+            password="Peer1234!abcd",
+            project=project_with_members,
+        )
+        project_service.add_project_member(
+            db_session, project_with_members.id, admin_user.id
+        )
+
+        t = make_ticket(db_session, project_with_members, client_user)
+        updated = ticket_service.add_participant(db_session, t, admin_user, peer.id)
+        assert any(p.user_id == peer.id for p in updated.participants)
+
+    def test_add_participant_admin_without_project_membership_forbidden(
+        self, db_session, project_with_members, client_user, admin_user
+    ):
+        peer = make_user(
+            db_session,
+            "peer-admin-block@test.local",
+            first_name="Peer",
+            last_name="Block",
+            password="Peer1234!abcd",
+            project=project_with_members,
+        )
+
+        t = make_ticket(db_session, project_with_members, client_user)
+        with pytest.raises(HTTPException) as exc:
+            ticket_service.add_participant(db_session, t, admin_user, peer.id)
+        assert exc.value.status_code == 403
 
     def test_remove_participant_permissions(
         self, db_session, project_with_members, client_user, staff_user, admin_user
     ):
-        t, peer = _peer_participant(db_session, project_with_members, client_user)
+        t, peer = peer_participant_ticket(
+            db_session, project_with_members, client_user, notify_reply=False
+        )
 
         with pytest.raises(HTTPException) as exc:
             ticket_service.remove_participant(db_session, t, client_user, peer.id)
@@ -536,7 +631,7 @@ class TestTicketMutations:
     def test_add_attachment_and_remove(
         self, db_session, project_with_members, client_user
     ):
-        t = _ticket(db_session, project_with_members, client_user)
+        t = make_ticket(db_session, project_with_members, client_user)
         att = ticket_service.add_attachment(
             db_session,
             file_name="a.jpg",
@@ -551,36 +646,28 @@ class TestTicketMutations:
         assert all(a.id != att.id for a in cleared.attachments)
 
     def test_require_project_access_denied(self, db_session, project_with_members):
-        from app.models.enums import UserRole
-        from app.models.user import User
-        from app.services.auth import set_password
-
-        outsider = User(
-            email="out@test.local",
+        outsider = make_user(
+            db_session,
+            "out@test.local",
             first_name="Out",
             last_name="Sider",
-            role=UserRole.USER,
-            activated_at=datetime.now(timezone.utc),
+            password="Outsider1!abc",
         )
-        set_password(outsider, "Outsider1!abc")
-        db_session.add(outsider)
-        db_session.commit()
-        db_session.refresh(outsider)
         with pytest.raises(HTTPException) as exc:
             ticket_service.require_project_access(
                 db_session, outsider, project_with_members.id
             )
         assert exc.value.status_code == 403
 
-    def test_set_type_same_noop(self, db_session, project_with_members, client_user):
-        t = _ticket(db_session, project_with_members, client_user)
-        same = ticket_service.set_type(db_session, t, client_user, TicketType.BUG)
+    def test_set_type_same_noop(self, db_session, project_with_members, staff_user):
+        t = make_ticket(db_session, project_with_members, staff_user)
+        same = ticket_service.set_type(db_session, t, staff_user, TicketType.BUG)
         assert same.type == TicketType.BUG
 
     def test_client_cannot_set_arbitrary_status(
         self, db_session, project_with_members, client_user
     ):
-        t = _ticket(db_session, project_with_members, client_user)
+        t = make_ticket(db_session, project_with_members, client_user)
         with pytest.raises(HTTPException) as exc:
             ticket_service.set_status(
                 db_session, t, client_user, TicketStatus.IN_PROGRESS

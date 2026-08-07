@@ -1205,7 +1205,7 @@
       lang: detectedLang,
     })
       .then(function (r) {
-        if (r.status === 200) window.location.reload();
+        if (r.status === 200 && !r.redirected) window.location.reload();
       })
       .catch(function () {});
   })();

@@ -7,35 +7,23 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.config import get_settings
 from app.db.session import get_db
 from app.main import build_fastapi_app
-from app.models.enums import TicketType
 from app.services import reply_token as reply_token_service
 from app.services import tickets as ticket_service
 from app.services.portal_settings import invalidate_cache
 from app.utils.urls import ticket_path
-
-
-def _login(client, email: str, password: str, *, next_path: str | None = None):
-    data = {"email": email, "password": password}
-    if next_path is not None:
-        data["next"] = next_path
-    return client.post(
-        "/auth/login",
-        data=data,
-        follow_redirects=False,
-    )
+from tests.helpers import login, login_client, login_staff, make_ticket
 
 
 class TestOpenReplyRoutes:
     def test_get_valid_shows_thread(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Open reply",
             description="Body",
-            ticket_type=TicketType.BUG,
         )
         ticket_service.add_comment(
             db_session, ticket, client_user, "First note", is_internal=False
@@ -60,32 +48,32 @@ class TestOpenReplyRoutes:
     def test_login_next_redirects_to_ticket(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Login next",
             description="Body",
-            ticket_type=TicketType.BUG,
         )
         dest = ticket_path(ticket)
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         r = client.get(f"/open/{raw}")
         assert f"/login?next={dest}" in r.text
-        r = _login(client, "staff@test.local", "Staff123!abcd", next_path=dest)
+        r = login(
+            client, "staff@test.local", "Staff123!abcd", next_path=dest, assert_ok=False
+        )
         assert r.status_code == 303
         assert r.headers["location"] == dest
 
     def test_get_used_status(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Used",
             description="Body",
-            ticket_type=TicketType.BUG,
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         row = reply_token_service.lookup_reply_token(db_session, raw)
@@ -99,13 +87,12 @@ class TestOpenReplyRoutes:
     def test_post_consumes_and_thanks(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Post reply",
             description="Body",
-            ticket_type=TicketType.BUG,
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         r = client.post(
@@ -146,13 +133,12 @@ class TestOpenReplyRoutes:
 
         app = build_fastapi_app()
         app.dependency_overrides[get_db] = _get_db
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="CSRF form reply",
             description="Body",
-            ticket_type=TicketType.BUG,
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         try:
@@ -180,16 +166,15 @@ class TestOpenReplyRoutes:
     def test_owner_session_redirects_without_consume(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Owner redirect",
             description="Body",
-            ticket_type=TicketType.BUG,
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
-        _login(client, "staff@test.local", "Staff123!abcd")
+        login_staff(client)
         r = client.get(f"/open/{raw}", follow_redirects=False)
         assert r.status_code == 303
         assert r.headers["location"] == ticket_path(ticket)
@@ -200,16 +185,15 @@ class TestOpenReplyRoutes:
     def test_other_session_conflict(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Conflict",
             description="Body",
-            ticket_type=TicketType.BUG,
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
-        _login(client, "client@test.local", "Client123!ab")
+        login_client(client)
         r = client.get(f"/open/{raw}")
         assert r.status_code == 200
         assert "client@test.local" not in r.text
@@ -222,13 +206,12 @@ class TestOpenReplyRoutes:
     def test_shows_only_last_comment_group(
         self, client, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
+        ticket = make_ticket(
             db_session,
-            project_id=project_with_members.id,
-            author=client_user,
+            project_with_members,
+            client_user,
             title="Trim thread",
             description="Ticket body stays",
-            ticket_type=TicketType.BUG,
         )
         ticket_service.add_comment(
             db_session, ticket, client_user, "OLD_CLIENT_NOTE", is_internal=False

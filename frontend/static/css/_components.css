@@ -1310,6 +1310,22 @@
     --admin-users-cols: minmax(0, 1.2fr) minmax(0, 1.45fr) minmax(0, 0.9fr) minmax(0, 0.85fr) minmax(4.75rem, 1.15fr);
   }
 
+  .admin-users-table-actions {
+    --admin-users-cols: minmax(0, 1fr) minmax(0, 8rem) auto;
+  }
+
+  .admin-users-actions {
+    display: flex;
+    justify-content: flex-end;
+    overflow: visible;
+  }
+
+  .admin-entity-clickable .admin-users-actions > form > button {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+  }
+
   .admin-users-head,
   .admin-users-row {
     display: grid;
@@ -2417,6 +2433,10 @@
     background: var(--color-surface-2);
   }
 
+  .ticket-row-deleted {
+    opacity: 0.72;
+  }
+
   .ticket-row-main {
     min-width: 0;
     display: flex;
@@ -3241,6 +3261,15 @@
     gap: 0.15rem;
   }
 
+  .issue-menu-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    max-height: min(16rem, 50vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   .issue-menu-item {
     display: flex;
     align-items: center;
@@ -3271,6 +3300,24 @@
 
   .issue-menu-item:hover {
     background: var(--color-surface-2);
+  }
+
+  .issue-menu-item-split {
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  .issue-menu-item-name {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .issue-menu-item-split .chip {
+    flex-shrink: 0;
+    font-size: 0.6875rem;
+    padding: 0.15rem 0.4rem;
   }
 
   .issue-menu-item.is-active {
@@ -3543,6 +3590,7 @@
   .issue-thread-activity,
   .issue-thread-reply-head {
     margin-bottom: 0;
+    flex-wrap: nowrap;
   }
 
   .issue-thread-activity .issue-section-title,
@@ -5453,8 +5501,9 @@
     border-right-color: var(--color-signal);
   }
 
-  /* === Auth === */
-  .auth-scene {
+  /* === Auth / Notice === */
+  .auth-scene,
+  .notice-scene {
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -5467,19 +5516,21 @@
     background-size: cover;
   }
 
-  .auth-stack {
-    --auth-brand-space: calc(clamp(3.25rem, 2.6rem + 2vw, 4.75rem) + 0.75rem + (clamp(2rem, 1.6rem + 1.4vw, 2.5rem) * 1.05) + 1.5rem);
+  .auth-stack,
+  .notice-shell {
+    --auth-brand-space: calc(clamp(2.5rem, 2rem + 1.2vw, 3.25rem) + 0.65rem + (clamp(1.35rem, 1.2rem + 0.5vw, 1.55rem) * 1.1) + 1.5rem);
     position: relative;
     width: 100%;
-    max-width: calc(24 * var(--layout-rem));
+    max-width: calc(28 * var(--layout-rem));
     margin-block: var(--auth-brand-space);
   }
 
-  .auth-stack-wide {
-    max-width: calc(32 * var(--layout-rem));
+  .auth-stack {
+    max-width: calc(24 * var(--layout-rem));
   }
 
-  .auth-stack-brand {
+  .auth-stack-brand,
+  .notice-brand-wrap {
     position: absolute;
     inset-inline: 0;
     bottom: 100%;
@@ -5487,18 +5538,48 @@
     text-align: center;
   }
 
-  .auth-card {
+  .auth-card,
+  .notice-card {
     width: 100%;
-    max-width: calc(24 * var(--layout-rem));
     border-radius: 0.85rem;
     border: 1px solid var(--color-frame);
     background: var(--surface-gradient);
-    padding: 1.75rem;
+    padding: 2rem 1.75rem;
     box-shadow: var(--shadow-float);
+    text-align: center;
   }
 
-  .auth-stack-wide .auth-card {
-    max-width: none;
+  .auth-card {
+    max-width: calc(24 * var(--layout-rem));
+    text-align: start;
+    padding: 1.75rem;
+  }
+
+  .notice-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 1.1rem + 0.55vw, 1.5rem);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+
+  .notice-body {
+    margin: 1.15rem auto 0;
+    max-width: 24rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-steel);
+  }
+
+  .notice-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
   }
 
   .auth-card .btn {
@@ -5528,7 +5609,7 @@
 
   .auth-brand {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 1.6rem + 1.4vw, 2.5rem);
+    font-size: clamp(1.85rem, 1.5rem + 1.1vw, 2.35rem);
     font-weight: 800;
     line-height: 1.05;
     color: var(--color-ink);
@@ -5832,6 +5913,16 @@
       padding: 0.45rem 0.85rem;
     }
 
+    .comment-actions {
+      gap: 0.35rem;
+    }
+
+    .comment-action {
+      min-height: 2.45rem;
+      min-width: 2.45rem;
+      padding: 0.45rem;
+    }
+
     .btn-sm {
       min-height: 1.85rem;
       padding: 0.25rem 0.55rem;
@@ -5859,9 +5950,16 @@
       justify-content: flex-start;
     }
 
-    .issue-section-bar:has(.issue-section-actions) {
+    .issue-section-bar:has(.issue-section-actions):not(.issue-thread-activity):not(.issue-thread-reply-head) {
       flex-direction: column;
       align-items: stretch;
+    }
+
+    .issue-thread-activity .issue-section-actions,
+    .issue-thread-reply-head .issue-section-actions {
+      flex: 0 0 auto;
+      width: auto;
+      justify-content: flex-end;
     }
 
     .issue-section-actions {
@@ -5939,12 +6037,12 @@
       grid-template-columns: 1fr;
     }
 
-    .issue-section-actions {
+    .issue-section-actions:not(.thread-order-wrap) {
       flex: 1 1 100%;
     }
 
-    .issue-section-actions .form-select-menu,
-    .issue-section-actions .btn {
+    .issue-section-actions:not(.thread-order-wrap) .form-select-menu,
+    .issue-section-actions:not(.thread-order-wrap) .btn {
       flex: 1 1 100%;
     }
   }
@@ -6300,6 +6398,7 @@
   */
   html[data-theme-gradient="off"] body,
   html[data-theme-gradient="off"] .auth-scene,
+  html[data-theme-gradient="off"] .notice-scene,
   html[data-theme-gradient="off"] .admin-aside,
   html[data-theme-gradient="off"] .issue-page,
   html[data-theme-gradient="off"] .issue-sidebar {
@@ -6308,6 +6407,7 @@
 
   @media (max-width: 48rem) {
     .auth-scene,
+    .notice-scene,
     .admin-aside {
       background-attachment: scroll;
     }

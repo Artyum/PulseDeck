@@ -1,0 +1,12 @@
+{% from "partials/icons.html" import brand_logo with context %}
+{% macro notice_brand() -%}
+  <a href="{{ url_for('home') }}"
+     class="inline-flex flex-col items-center gap-2.5 no-underline">
+    {{ brand_logo(variant='auth', alt='') }}
+    <span class="auth-brand">{{ app_name }}</span>
+  </a>
+{%- endmacro %}
+{% macro auth_brand() -%}
+  {{ brand_logo(variant='auth', alt='') }}
+  <h1 class="auth-brand mt-3">{{ app_name }}</h1>
+{%- endmacro %}

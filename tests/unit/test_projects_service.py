@@ -1,16 +1,17 @@
 import pytest
 from fastapi import HTTPException
 
-from app.models.enums import UserRole
 from app.services import projects as project_service
 
 
 class TestListProjects:
-    def test_active_only(self, db_session, project_with_members):
+    def test_active_only(self, db_session, project_with_members, staff_user):
         project_service.set_project_active(
             db_session, project_with_members, active=False
         )
-        active = project_service.create_project(db_session, "Active", "ACTV")
+        active = project_service.create_project(
+            db_session, "Active", "ACTV", initial_staff_ids=[staff_user.id]
+        )
         rows = project_service.list_projects(db_session, active_only=True)
         keys = {p.key for p in rows}
         assert active.key in keys
@@ -55,8 +56,10 @@ class TestProjectCrud:
         assert updated.name == "Renamed"
         assert updated.description == "New desc"
 
-    def test_update_duplicate_name(self, db_session, project_with_members):
-        other = project_service.create_project(db_session, "Other", "OTHR")
+    def test_update_duplicate_name(self, db_session, project_with_members, staff_user):
+        other = project_service.create_project(
+            db_session, "Other", "OTHR", initial_staff_ids=[staff_user.id]
+        )
         with pytest.raises(ValueError):
             project_service.update_project(
                 db_session,
@@ -65,9 +68,15 @@ class TestProjectCrud:
                 key="OTHR2",
             )
 
-    def test_create_empty_name(self, db_session):
+    def test_create_requires_staff(self, db_session):
         with pytest.raises(ValueError):
-            project_service.create_project(db_session, "  ", "KEY1")
+            project_service.create_project(db_session, "NoStaff", "NSTF")
+
+    def test_create_empty_name(self, db_session, staff_user):
+        with pytest.raises(ValueError):
+            project_service.create_project(
+                db_session, "  ", "KEY1", initial_staff_ids=[staff_user.id]
+            )
 
     def test_get_project_by_key_or_404_inactive(self, db_session, project_with_members):
         project_service.set_project_active(
@@ -84,68 +93,70 @@ class TestProjectCrud:
             project_service.get_project_by_key_or_404(db_session, "ZZZZZ")
 
 
+class TestHasStaffCapabilities:
+    def test_admin_without_membership(
+        self, db_session, admin_user, project_with_members
+    ):
+        assert (
+            project_service.has_staff_capabilities(
+                db_session, project_with_members.id, admin_user
+            )
+            is True
+        )
+
+    def test_client_member_false(self, db_session, client_user, project_with_members):
+        assert (
+            project_service.has_staff_capabilities(
+                db_session, project_with_members.id, client_user
+            )
+            is False
+        )
+
+
 class TestMembership:
-    def test_add_admin_noop(self, db_session, admin_user, project_with_members):
+    def test_add_admin_as_member(self, db_session, admin_user, project_with_members):
         project_service.add_project_member(
             db_session, project_with_members.id, admin_user.id
         )
-        members = project_service.list_project_member_users(
-            db_session, project_with_members, include_admins=False
-        )
-        assert all(m.id != admin_user.id for m in members)
-
-    def test_remove_admin_noop(self, db_session, admin_user, project_with_members):
-        project_service.remove_project_member(
+        assert project_service.is_project_member(
             db_session, project_with_members.id, admin_user.id
         )
-
-    def test_addable_users(
-        self, db_session, project_with_members, client_user, admin_user
-    ):
-        from datetime import datetime, timezone
-
-        from app.models.user import User
-        from app.services.auth import set_password
-
-        free = User(
-            email="free@test.local",
-            first_name="Free",
-            last_name="User",
-            role=UserRole.USER,
-            activated_at=datetime.now(timezone.utc),
-        )
-        set_password(free, "FreeUser1!abc")
-        db_session.add(free)
-        db_session.commit()
-        db_session.refresh(free)
-        addable = project_service.list_addable_users(db_session, project_with_members)
-        ids = {u.id for u in addable}
-        assert free.id in ids
-        assert client_user.id not in ids
-        assert admin_user.id not in ids
-
-    def test_set_user_projects(self, db_session, client_user, project_with_members):
-        other = project_service.create_project(db_session, "Second", "SEC2")
-        project_service.set_user_projects(db_session, client_user.id, [other.id])
-        db_session.commit()
-        assert project_service.is_project_member(db_session, other.id, client_user.id)
-        assert not project_service.is_project_member(
-            db_session, project_with_members.id, client_user.id
+        assert project_service.is_project_staff(
+            db_session, project_with_members.id, admin_user
         )
 
-    def test_set_user_projects_admin_clears(
+    def test_admin_without_membership_not_staff(
         self, db_session, admin_user, project_with_members
     ):
-        project_service.set_user_projects(db_session, admin_user.id, [])
-        db_session.commit()
+        assert not project_service.is_project_member(
+            db_session, project_with_members.id, admin_user.id
+        )
+        assert not project_service.is_project_staff(
+            db_session, project_with_members.id, admin_user
+        )
 
-    def test_resolve_project_ids_empty(self, db_session):
+    def test_remove_last_staff_fails(
+        self, db_session, project_with_members, staff_user
+    ):
         with pytest.raises(ValueError):
-            project_service.resolve_project_ids(db_session, [])
+            project_service.remove_project_member(
+                db_session, project_with_members.id, staff_user.id
+            )
 
-    def test_resolve_project_ids_invalid(self, db_session):
-        with pytest.raises(ValueError):
-            project_service.resolve_project_ids(db_session, [99999])
+    def test_is_project_member_false_for_non_member(self, db_session, admin_user):
+        assert (
+            project_service.is_project_member(db_session, 999999, admin_user.id)
+            is False
+        )
 
-    def test_list_project_tags_for_projects_empty(self, db_session):
-        assert project_service.list_project_tags_for_projects(db_session, []) == {}
+
+class TestSetUserProjects:
+    def test_set_projects(
+        self, db_session, client_user, project_with_members, staff_user
+    ):
+        other = project_service.create_project(
+            db_session, "Second", "SEC2", initial_staff_ids=[staff_user.id]
+        )
+        project_service.set_user_projects(db_session, client_user.id, [other.id])
+        rows = project_service.list_user_projects(db_session, client_user)
+        assert {p.id for p in rows} == {other.id}

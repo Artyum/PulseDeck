@@ -2,8 +2,11 @@
 {% from "_macros.html" import ticket_ref, cta, dual_cta with context %}
 {% block title %}{{ t("email.new_comment.subject") }}{% endblock title %}
 {% block body %}
-  <p style="margin:0 0 12px;">{{ t('email.common.greeting', name=user.first_name) }}</p>
-  <p style="margin:0 0 20px;">
+  <p style="margin:0 0 18px;font-size:16px;font-weight:600;color:#0f172a;">{{ t('email.common.greeting', name=user.first_name) }}</p>
+  <p style="margin:0 0 28px;
+            font-size:15px;
+            line-height:1.65;
+            color:#334155">
     {{- t("email.new_comment.body_before") -}}
     {{- ticket_ref(label, ticket.title) -}}
     {{- t('email.new_comment.body_after', app=app_name) -}}

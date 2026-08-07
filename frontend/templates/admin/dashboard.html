@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
-{% from "partials/ticket_macros.html" import form_select_menu with context %}
+{% from "partials/ticket_macros.html" import form_select_menu, admin_sort_th with context %}
 {% macro count_card(label, value, href=none) -%}
   {% if href %}
     <a href="{{ href }}" class="admin-count-card">
@@ -20,17 +20,6 @@
       {{ count_card(labels[member], counts[member], feed ~ '?view=all&' ~ query_key ~ '=' ~ member.value) }}
     {% endfor %}
   </div>
-{%- endmacro %}
-{% macro activity_sort_th(col, label) -%}
-  {% set next = 'desc' if activity_sort == col and activity_sort_dir == 'asc' else 'asc' %}
-  <a href="{{ activity_sort_links[col] }}"
-     class="admin-users-sort{% if activity_sort == col %} is-active is-{{ activity_sort_dir }}{% endif %}"
-     aria-label="{{ t('ui.admin.dashboard.sort_' ~ col ~ '_' ~ next) }}"
-     hx-get="{{ activity_sort_links[col] }}"
-     hx-target="#project-panel"
-     hx-select="#project-panel"
-     hx-swap="outerHTML"
-     hx-push-url="true">{{ label }}</a>
 {%- endmacro %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.dashboard.title") }}{% endblock title %}
 {% block content %}
@@ -108,9 +97,10 @@
                 <table class="admin-mini-table admin-mini-table-activity">
                   <thead>
                     <tr>
-                      <th>{{ activity_sort_th('name', t('ui.admin.users.col_name') ) }}</th>
-                      <th>{{ activity_sort_th('tickets', t('ui.admin.dashboard.col_tickets_created') ) }}</th>
-                      <th>{{ activity_sort_th('last_login', t('ui.admin.users.col_last_login') ) }}</th>
+                      <th>{{ admin_sort_th('name', t('ui.admin.users.col_name') , activity_sort_links, activity_sort, activity_sort_dir, 'ui.admin.dashboard.sort_', '#project-panel') }}</th>
+                      <th>{{ admin_sort_th('role', t('ui.admin.users.filter_role') , activity_sort_links, activity_sort, activity_sort_dir, 'ui.admin.dashboard.sort_', '#project-panel') }}</th>
+                      <th>{{ admin_sort_th('tickets', t('ui.admin.dashboard.col_tickets_created') , activity_sort_links, activity_sort, activity_sort_dir, 'ui.admin.dashboard.sort_', '#project-panel') }}</th>
+                      <th>{{ admin_sort_th('last_login', t('ui.admin.users.col_last_login') , activity_sort_links, activity_sort, activity_sort_dir, 'ui.admin.dashboard.sort_', '#project-panel') }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -119,6 +109,11 @@
                         <td data-label="{{ t('ui.admin.users.col_name') }}">
                           <span class="admin-kv-value">
                             <a href="{{ feed }}?view=all&q={{ row.user.display_name|urlencode }}">{{ row.user.display_name }}</a>
+                          </span>
+                        </td>
+                        <td data-label="{{ t('ui.admin.users.filter_role') }}">
+                          <span class="admin-kv-value">
+                            <span class="chip chip-role-{{ row.user.role.value|lower }}">{{ role_labels[row.user.role] }}</span>
                           </span>
                         </td>
                         <td data-label="{{ t('ui.admin.dashboard.col_tickets_created') }}">

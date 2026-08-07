@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.config import resolve_upload_dir
 from app.models.ticket import Attachment, Comment
 from app.models.user import User
+from app.services import projects as project_service
 from app.services import tickets as ticket_service
 from app.services.portal_settings import get_portal_settings
 from app.utils.i18n import DEFAULT_LANG, t
@@ -237,15 +238,22 @@ def get_attachment_for_download(
     ticket = att.ticket
     comment: Comment | None = att.comment
     if comment is not None:
-        if comment.is_internal and not user.is_staff:
+        ticket = comment.ticket
+        if ticket is None:
             raise HTTPException(
                 status_code=404, detail=t(lang, "messages.http.not_found")
             )
-        ticket = comment.ticket
+        if comment.is_internal and not project_service.has_staff_capabilities(
+            db, ticket.project_id, user
+        ):
+            raise HTTPException(
+                status_code=404, detail=t(lang, "messages.http.not_found")
+            )
     if ticket is None:
         raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
 
-    ticket_service.require_project_access(db, user, ticket.project_id, lang=lang)
+    if not ticket_service.can_view_ticket(db, user, ticket):
+        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
     return att
 
 

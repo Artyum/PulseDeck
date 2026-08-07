@@ -67,9 +67,9 @@ def load_reply_context(db: Session, row: MagicToken) -> tuple[User, Ticket] | No
     if not user or login_blocked_reason(user) is not None or not row.ticket_id:
         return None
     ticket = ticket_service.get_ticket(db, row.ticket_id)
-    if not ticket or not ticket_service.is_project_member(
-        db, ticket.project_id, user.id
-    ):
+    if not ticket or not ticket_service.can_view_ticket(db, user, ticket):
+        return None
+    if not ticket_service.can_comment(db, user, ticket):
         return None
     return user, ticket
 

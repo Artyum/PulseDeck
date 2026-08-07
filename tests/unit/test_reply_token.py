@@ -1,23 +1,18 @@
 from datetime import datetime, timedelta, timezone
 
-from app.models.enums import MagicTokenPurpose, TicketType
+from app.models.enums import MagicTokenPurpose
 from app.services import reply_token as reply_token_service
-from app.services import tickets as ticket_service
 from app.services.auth import hash_magic_token
 from app.services.reply_token import ReplyTokenStatus
+from tests.helpers import make_ticket
 
 
 class TestReplyToken:
     def test_create_two_tokens_both_valid(
         self, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="T",
-            description="D",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="T", description="D"
         )
         raw1 = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         raw2 = reply_token_service.create_reply_token(db_session, staff_user, ticket)
@@ -28,13 +23,8 @@ class TestReplyToken:
     def test_classify_used_and_expired(
         self, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="T2",
-            description="D",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="T2", description="D"
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         row = reply_token_service.lookup_reply_token(db_session, raw)
@@ -65,13 +55,8 @@ class TestReplyToken:
     def test_purpose_is_ticket_reply(
         self, db_session, project_with_members, client_user, staff_user
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="T3",
-            description="D",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="T3", description="D"
         )
         raw = reply_token_service.create_reply_token(db_session, staff_user, ticket)
         row = reply_token_service.lookup_reply_token(db_session, raw)

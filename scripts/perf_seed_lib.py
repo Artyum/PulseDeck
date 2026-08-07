@@ -91,13 +91,25 @@ def ensure_project(
     project = get_project(db, name)
     if project is not None:
         return project
+    from app.models.enums import UserRole
     from app.services.projects import create_project
 
+    staff = db.scalar(
+        select(User)
+        .where(
+            User.role.in_((UserRole.STAFF, UserRole.ADMIN)), User.is_active.is_(True)
+        )
+        .order_by(User.id)
+        .limit(1)
+    )
+    if staff is None:
+        raise RuntimeError("Brak użytkownika Staff/Admin do utworzenia projektu perf.")
     project = create_project(
         db,
         name,
         key,
         description="Dane testów wydajnościowych (auto-seed).",
+        initial_staff_ids=[staff.id],
         lang=lang,
     )
     logger.info("Utworzono projekt %r (key=%s)", name, project.key)

@@ -1,32 +1,31 @@
 {% extends "base.html" %}
 {% from "partials/notice.html" import notice_brand with context %}
-{% block title %}{{ app_name }} - {{ t("ui.auth.unsubscribe.title") }}{% endblock title %}
+{% block title %}{{ app_name }} - {{ t("ui.auth.unwatch.title") }}{% endblock title %}
 {% block body %}
   <div class="notice-scene">
     <div class="notice-shell">
       <div class="notice-brand-wrap">{{ notice_brand() }}</div>
       <div class="notice-card">
         {% if error %}
-          <h1 class="notice-title">{{ t("ui.auth.unsubscribe.heading_invalid") }}</h1>
+          <h1 class="notice-title">{{ t("ui.auth.unwatch.heading_invalid") }}</h1>
           <p class="notice-body">{{ error }}</p>
           <div class="notice-actions">
             <a href="{{ url_for('home') }}" class="btn btn-primary">{{ t("ui.common.back_home") }}</a>
           </div>
         {% elif confirm_token %}
-          <h1 class="notice-title">{{ t("ui.auth.unsubscribe.heading_confirm") }}</h1>
-          <p class="notice-body">{{ confirm_body }}</p>
+          <h1 class="notice-title">{{ t("ui.auth.unwatch.heading_confirm") }}</h1>
+          <p class="notice-body">{{ t("ui.auth.unwatch.confirm_body", label=ticket_label) }}</p>
           <form method="post"
-                action="{{ url_for('email_unsubscribe_post') }}"
+                action="{{ url_for('email_unwatch_post') }}"
                 class="notice-actions">
             <input type="hidden" name="token" value="{{ confirm_token }}">
-            <button type="submit" class="btn btn-primary min-w-40">{{ t("ui.auth.unsubscribe.confirm") }}</button>
+            <button type="submit" class="btn btn-primary min-w-40">{{ t("ui.auth.unwatch.confirm") }}</button>
           </form>
         {% else %}
-          <h1 class="notice-title">{{ t("ui.auth.unsubscribe.heading") }}</h1>
+          <h1 class="notice-title">{{ t("ui.auth.unwatch.heading") }}</h1>
           <p class="notice-body">{{ success }}</p>
           <div class="notice-actions">
-            <a href="{{ url_for('profile_notifications_page') }}"
-               class="btn btn-primary">{{ t("ui.auth.unsubscribe.manage") }}</a>
+            <a href="{{ url_for('home') }}" class="btn btn-primary">{{ t("ui.common.back_home") }}</a>
           </div>
         {% endif %}
       </div>

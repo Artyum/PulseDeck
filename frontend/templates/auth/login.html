@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "partials/icons.html" import brand_logo with context %}
+{% from "partials/notice.html" import auth_brand with context %}
 {% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ app_name }} - {{ t("ui.auth.login.title") }}{% endblock title %}
 {% block body %}
@@ -9,10 +9,7 @@
   {{ app_flash(error=none if is_blocking else error, success=success, flash=t("ui.auth.login.forgot_sent") if forgot_sent else none) }}
   <div class="auth-scene">
     <div class="auth-stack">
-      <div class="auth-stack-brand">
-        {{ brand_logo(variant='auth', alt='') }}
-        <h1 class="auth-brand mt-3">{{ app_name }}</h1>
-      </div>
+      <div class="auth-stack-brand">{{ auth_brand() }}</div>
       <div class="auth-card">
         {% if is_blocking %}
           <p class="alert alert-error mb-4">{{ error }}</p>

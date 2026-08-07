@@ -9,15 +9,35 @@
        class="issue-key"
        aria-current="page">{{ ticket|ticket_label }}</a>
   </nav>
+  {% if ticket.deleted_at %}
+    <p class="alert alert-muted">{{ t("ui.ticket.deleted_banner") }}</p>
+  {% endif %}
   {% include "partials/ticket_header.html" %}
   <section class="issue-section">
     <div class="issue-section-bar">
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
-      {% if can_edit %}
-        <button type="button"
-                onclick="document.getElementById('edit-ticket').showModal()"
-                class="btn btn-ghost comment-action"
-                aria-label="{{ t('ui.ticket.edit') }}">{{ icon("edit") }}</button>
+      {% if can_edit or can_delete_ticket %}
+        <span class="comment-actions">
+          {% if can_edit %}
+            <button type="button"
+                    onclick="document.getElementById('edit-ticket').showModal()"
+                    class="btn btn-ghost comment-action"
+                    aria-label="{{ t('ui.ticket.edit') }}">{{ icon("edit") }}</button>
+          {% endif %}
+          {% if can_delete_ticket %}
+            <form method="post"
+                  action="{{ url_for('delete_ticket', ticket_ref=ticket|ticket_label) }}"
+                  class="comment-delete-form"
+                  data-confirm-title="{{ t('ui.confirm.delete_ticket.title') }}"
+                  data-confirm="{{ t('ui.confirm.delete_ticket.message') }}"
+                  data-confirm-action="{{ t('ui.confirm.delete_ticket.action') }}"
+                  data-confirm-danger>
+              <button type="submit"
+                      class="btn btn-ghost comment-action"
+                      aria-label="{{ t('ui.ticket.delete') }}">{{ icon("trash") }}</button>
+            </form>
+          {% endif %}
+        </span>
       {% endif %}
     </div>
     <div class="issue-description rich-content">{{ ticket.description | markdown_safe }}</div>

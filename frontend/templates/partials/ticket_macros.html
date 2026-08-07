@@ -36,13 +36,14 @@
 {%- endmacro %}
 {% macro ticket_row(tkt, show_tags=true) -%}
   <a href="{{ url_for('ticket_detail', ticket_ref=tkt|ticket_label) }}"
-     class="ticket-row"
+     class="ticket-row{% if tkt.deleted_at %} ticket-row-deleted{% endif %}"
      data-status="{{ tkt.status.value }}">
     <div class="ticket-row-main">
       <span class="ticket-row-title">{{ tkt.title }}</span>
       <div class="ticket-row-meta">
         <span class="issue-key">{{ tkt|ticket_label }}</span>
         {{ type_chip(tkt.type) }}
+        {% if tkt.deleted_at %}<span class="chip chip-blocked">{{ t("ui.portal.feed.deleted_badge") }}</span>{% endif %}
         {% if tkt.author %}
           <span class="ticket-row-reporter">
             <span class="ticket-row-reporter-label">{{ t("ui.ticket.reporter") }}</span>
@@ -53,9 +54,7 @@
       {% if show_tags and tkt.ticket_tags %}
         <div class="ticket-row-tags">
           <span class="ticket-row-tags-label">{{ t("ui.ticket.tags") }}</span>
-          {% for tt in tkt.ticket_tags %}
-            <span class="chip chip-outline">{{ tt.tag.name }}</span>
-          {% endfor %}
+          {% for tt in tkt.ticket_tags %}<span class="chip chip-outline">{{ tt.tag.name }}</span>{% endfor %}
         </div>
       {% endif %}
     </div>
@@ -73,7 +72,18 @@
     </div>
   </a>
 {%- endmacro %}
-{% macro issue_field_menu(aria_label, post_url, field_name, choices, current_value, labels=none, value_attr='value', empty_value=none, empty_label=none) -%}
+{% macro user_menu_item(user, field_name, show_role_badge=false) -%}
+  <button type="submit"
+          name="{{ field_name }}"
+          value="{{ user.id }}"
+          class="issue-menu-item{% if show_role_badge %} issue-menu-item-split{% endif %}">
+    <span class="issue-menu-item-name">{{ user.display_name }}</span>
+    {% if show_role_badge %}
+      <span class="chip chip-role-{{ user.role.value|lower }}">{{ role_labels[user.role] }}</span>
+    {% endif %}
+  </button>
+{%- endmacro %}
+{% macro issue_field_menu(aria_label, post_url, field_name, choices, current_value, labels=none, value_attr='value', empty_value=none, empty_label=none, show_role_badge=false) -%}
   <div x-data="{ open: false }"
        @click.outside="open = false"
        :class="{'is-menu-open': open}"
@@ -102,21 +112,21 @@
                   value="{{ empty_value if empty_value is not none else '' }}"
                   class="issue-menu-item{% if current_value == empty_value or ((empty_value is none or empty_value == '') and not current_value) %} is-active{% endif %}">{{ empty_label }}</button>
         {% endif %}
-        {% for item in choices %}
-          {% if value_attr == 'id' %}
-            <button type="submit"
-                    name="{{ field_name }}"
-                    value="{{ item.id }}"
-                    class="issue-menu-item{% if current_value == item.id %} is-active{% endif %}"
-                    {% if current_value == item.id %}aria-current="true"{% endif %}>{{ item.display_name }}</button>
-          {% else %}
-            <button type="submit"
-                    name="{{ field_name }}"
-                    value="{{ item.value }}"
-                    class="issue-menu-item{% if current_value == item.value %} is-active{% endif %}"
-                    {% if current_value == item.value %}aria-current="true"{% endif %}>{{ labels[item] }}</button>
-          {% endif %}
-        {% endfor %}
+        {% if show_role_badge %}<div class="issue-menu-scroll">{% endif %}
+          {% for item in choices %}
+            {% if value_attr != 'id' or current_value is none or item.id != current_value %}
+              {% if value_attr == 'id' %}
+                {{ user_menu_item(item, field_name, show_role_badge) }}
+              {% else %}
+                <button type="submit"
+                        name="{{ field_name }}"
+                        value="{{ item.value }}"
+                        class="issue-menu-item{% if current_value == item.value %} is-active{% endif %}"
+                        {% if current_value == item.value %}aria-current="true"{% endif %}>{{ labels[item] }}</button>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% if show_role_badge %}</div>{% endif %}
       </form>
     </div>
   </div>
@@ -272,6 +282,21 @@
       {% endfor %}
     </div>
   </fieldset>
+{%- endmacro %}
+{% macro admin_sort_th(col, label, links, sort, sort_dir, i18n_prefix, hx_target, hx_select='', filter_sync=false) -%}
+  {% set next = 'desc' if sort == col and sort_dir == 'asc' else 'asc' %}
+  {% set select = hx_select or hx_target %}
+  <a href="{{ links[col] }}"
+     class="admin-users-sort{% if sort == col %} is-active is-{{ sort_dir }}{% endif %}"
+     aria-label="{{ t(i18n_prefix ~ col ~ '_' ~ next) }}"
+     hx-get="{{ links[col] }}"
+     hx-target="{{ hx_target }}"
+     hx-select="{{ select }}"
+     hx-swap="outerHTML"
+     hx-push-url="true"
+     {%- if filter_sync %}
+     hx-on:click="var f=this.closest('section'),s=f&&f.querySelector('input[name=sort]'),o=f&&f.querySelector('input[name=order]');if(s)s.value='{{ col }}';if(o)o.value='{{ next }}'"
+     {%- endif %}>{{ label }}</a>
 {%- endmacro %}
 {% macro modal_header(dialog_id, title) -%}
   <div class="modal-header">

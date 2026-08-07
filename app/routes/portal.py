@@ -34,10 +34,12 @@ from app.routes.context import render
 from app.services import projects as project_service
 from app.services import tickets as ticket_service
 from app.services.email import (
-    notify_assignment,
-    notify_new_comment,
-    notify_new_ticket,
-    notify_ticket_update,
+    emit_comment,
+    emit_ticket_assigned,
+    emit_ticket_closed,
+    emit_ticket_created,
+    emit_ticket_reopened,
+    emit_ticket_updated,
 )
 from app.services.portal_settings import get_portal_settings
 from app.services.uploads import (
@@ -83,7 +85,7 @@ def _load_ticket(
     key, number = _parse_ticket_ref(ticket_ref, lang=lang)
     project = _load_project(db, key, user, lang=lang)
     ticket = ticket_service.get_ticket_by_project_number(db, project.id, number)
-    if not ticket:
+    if not ticket or not ticket_service.can_view_ticket(db, user, ticket):
         raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
     return project, ticket
 
@@ -91,21 +93,25 @@ def _load_ticket(
 def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> dict:
     perms = ticket_service.get_ticket_permissions(db, user, ticket)
     members = (
-        project_service.list_project_member_users(db, ticket.project)
+        ticket_service.sorted_project_members(db, ticket.project)
         if ticket.project
         else []
-    )
-    members = sorted(
-        members,
-        key=lambda u: (
-            (u.first_name or "").casefold(),
-            (u.last_name or "").casefold(),
-        ),
     )
     project_key = ticket.project.key if ticket.project else ""
     back_to_feed_url = (
         resolve_last_feed_url(request, project_key) if project_key else "/"
     )
+    staff_members = [
+        m
+        for m in members
+        if ticket.project and project_service.is_project_staff(db, ticket.project.id, m)
+    ]
+    is_member = project_service.is_project_member(db, ticket.project_id, user.id)
+    editable_comment_ids = {
+        c.id
+        for c in (ticket.comments or [])
+        if ticket_service.can_edit_comment(db, user, ticket, c)
+    }
     return {
         "user": user,
         "ticket": ticket,
@@ -116,9 +122,19 @@ def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> di
         "can_edit": perms.can_edit,
         "can_manage_tags": perms.can_manage_tags,
         "can_comment": perms.can_comment,
-        "can_edit_comments": perms.can_edit_comments,
+        "editable_comment_ids": editable_comment_ids,
         "can_delete_comments": perms.can_delete_comments,
-        "staff_members": [m for m in members if m.is_staff],
+        "can_delete_ticket": perms.can_delete_ticket,
+        "is_project_staff": perms.is_project_staff,
+        "is_project_member": is_member,
+        "can_add_participant": perms.can_add_participant,
+        "addable_participants": (
+            ticket_service.list_addable_participants(db, ticket, user)
+            if perms.can_add_participant
+            else []
+        ),
+        "visible_participants": ticket_service.list_visible_participants(ticket),
+        "staff_members": staff_members,
         "project_members": members,
         "project_tags": ticket_service.list_project_tags(db, ticket.project_id),
         "back_to_feed_url": back_to_feed_url,
@@ -274,9 +290,14 @@ def project_feed(
         current_view = ""
     if current_view not in ("", "all"):
         status_filter = None
+    is_member = project_service.is_project_member(db, project.id, user.id)
+    is_staff = project_service.has_staff_capabilities(db, project.id, user)
     if current_view == "unassigned":
         filter_mine = mine_on
         filter_mine_paused = paused_on and not mine_on
+    elif user.is_admin and not is_member:
+        filter_mine = mine_on
+        filter_mine_paused = False
     else:
         filter_mine = mine_on or paused_on or (not has_query)
         filter_mine_paused = False
@@ -336,6 +357,9 @@ def project_feed(
         default_feed_url=build_feed_path(
             project.key, view="all", mine=True, per_page=page_size
         ),
+        is_project_staff=is_staff,
+        is_project_member=is_member,
+        can_create_ticket=is_member or user.is_admin,
     )
 
 
@@ -373,6 +397,7 @@ async def create_ticket(
 ):
     lang = resolve_lang(request)
     project = _load_project(db, key, user, lang=lang)
+    ticket_service.require_project_membership(db, user, project.id, lang=lang)
     try:
         prio = TicketPriority(priority)
     except ValueError:
@@ -389,7 +414,7 @@ async def create_ticket(
     )
     await _attach_many(db, attachments, ticket_id=ticket.id, lang=lang)
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
-    notify_new_ticket(db, ticket)
+    emit_ticket_created(db, ticket, actor_id=user.id)
     return RedirectResponse(ticket_path(ticket), status_code=303)
 
 
@@ -402,12 +427,14 @@ def _comment_edit_partial(
     template: str,
 ):
     lang = resolve_lang(request)
-    if not ticket_service.can_edit_comments(user):
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
+    comment = ticket_service.get_ticket_comment(db, ticket, comment_id, lang=lang)
+    if template.endswith("edit_form.html") and not ticket_service.can_edit_comment(
+        db, user, ticket, comment
+    ):
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
         )
-    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
-    comment = ticket_service.get_ticket_comment(db, ticket, comment_id, lang=lang)
     return render(
         request,
         template,
@@ -466,7 +493,9 @@ async def add_comment(
 ):
     lang = resolve_lang(request)
     _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
-    internal = bool(is_internal) and user.is_staff
+    internal = bool(is_internal) and project_service.has_staff_capabilities(
+        db, ticket.project_id, user
+    )
     comment = ticket_service.add_comment(
         db, ticket, user, content, is_internal=internal, lang=lang
     )
@@ -474,7 +503,7 @@ async def add_comment(
         db, attachments, ticket_id=ticket.id, comment_id=comment.id, lang=lang
     )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
-    notify_new_comment(db, ticket, user.id, is_internal=internal)
+    emit_comment(db, ticket, user.id, is_internal=internal)
     return _ticket_mutation_response(request, db, user, ticket)
 
 
@@ -554,12 +583,11 @@ def change_status(
 
     def after(ticket: Ticket) -> None:
         if ticket.status != prev_status:
-            notify_ticket_update(
-                db,
-                ticket,
-                user.id,
-                change_key=f"enums.ticket_status.{ticket.status.value}",
-            )
+            change_key = f"enums.ticket_status.{ticket.status.value}"
+            if ticket.status == TicketStatus.DONE:
+                emit_ticket_closed(db, ticket, user.id, change_key=change_key)
+            else:
+                emit_ticket_updated(db, ticket, user.id, change_key=change_key)
 
     return _mutate_ticket(request, db, user, ticket_ref, mutate, after=after)
 
@@ -574,7 +602,7 @@ def reopen_ticket(
     lang = resolve_lang(request)
 
     def after(ticket: Ticket) -> None:
-        notify_ticket_update(
+        emit_ticket_reopened(
             db,
             ticket,
             user.id,
@@ -645,7 +673,7 @@ def change_priority(
 
     def after(ticket: Ticket) -> None:
         if prev is not None and ticket.priority != prev:
-            notify_ticket_update(
+            emit_ticket_updated(
                 db,
                 ticket,
                 user.id,
@@ -680,7 +708,7 @@ def change_type(
 
     def after(ticket: Ticket) -> None:
         if prev is not None and ticket.type != prev:
-            notify_ticket_update(
+            emit_ticket_updated(
                 db,
                 ticket,
                 user.id,
@@ -746,7 +774,7 @@ def assign(
         return ticket_service.assign_ticket(db, ticket, user, aid, lang=lang)
 
     def after(ticket: Ticket) -> None:
-        notify_assignment(
+        emit_ticket_assigned(
             db,
             ticket,
             actor_id=user.id,
@@ -799,6 +827,20 @@ def self_assign(
         ticket_ref,
         lambda ticket: ticket_service.self_assign(db, ticket, user, lang=lang),
     )
+
+
+@router.post("/t/{ticket_ref}/delete", response_class=HTMLResponse)
+def delete_ticket(
+    request: Request,
+    ticket_ref: str,
+    user: CurrentUser,
+    db: DbSession,
+):
+    lang = resolve_lang(request)
+    _project, ticket = _load_ticket(db, ticket_ref, user, lang=lang)
+    ticket_service.soft_delete_ticket(db, ticket, user, lang=lang)
+    key = _project.key
+    return RedirectResponse(f"/p/{key}", status_code=303)
 
 
 @router.post("/t/{ticket_ref}/participants", response_class=HTMLResponse)

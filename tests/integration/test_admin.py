@@ -2,63 +2,60 @@
 
 from unittest.mock import patch
 
-
-def _login_admin(client):
-    r = client.post(
-        "/auth/login",
-        data={"email": "admin@test.local", "password": "Admin123!abcd"},
-        follow_redirects=False,
-    )
-    assert r.status_code in (303, 200)
+from tests.helpers import login_admin, login_client, make_ticket, make_user
 
 
 class TestAdminAccess:
     def test_admin_dashboard(self, client, admin_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.get("/admin")
         assert r.status_code == 200
 
     def test_non_admin_blocked(self, client, client_user):
-        r = client.post(
-            "/auth/login",
-            data={"email": "client@test.local", "password": "Client123!ab"},
-            follow_redirects=False,
-        )
+        login_client(client)
         r = client.get("/admin", follow_redirects=False)
         # Non-admin gets redirected away from /admin
         assert r.status_code in (303, 403, 200)
 
 
 class TestAdminProjects:
-    def test_create_project(self, client, admin_user):
-        _login_admin(client)
+    def test_create_project(self, client, admin_user, staff_user):
+        login_admin(client)
         r = client.post(
             "/admin/projects",
-            data={"name": "New Project", "key": "NEWP"},
+            data={
+                "name": "New Project",
+                "key": "NEWP",
+                "staff_user_id": str(staff_user.id),
+            },
             follow_redirects=False,
         )
         assert r.status_code == 303
 
     def test_create_project_duplicate_key(
-        self, client, admin_user, project_with_members
+        self, client, admin_user, project_with_members, staff_user
     ):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             "/admin/projects",
-            data={"name": "Other", "key": "DEMO"},
+            data={
+                "name": "Other",
+                "key": "DEMO",
+                "staff_user_id": str(staff_user.id),
+            },
             follow_redirects=False,
         )
         # Duplicate key stays on same page
         assert r.status_code in (200, 303, 422)
 
     def test_project_detail(self, client, admin_user, project_with_members):
-        _login_admin(client)
+        login_admin(client)
         r = client.get(f"/admin/projects/{project_with_members.key}")
         assert r.status_code == 200
         assert project_with_members.name in r.text
 
     def test_edit_project(self, client, admin_user, project_with_members):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/edit",
             data={"name": "Updated", "key": project_with_members.key},
@@ -69,7 +66,7 @@ class TestAdminProjects:
     def test_toggle_project_active(
         self, client, db_session, admin_user, project_with_members
     ):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/active",
             data={"active": "0"},
@@ -90,7 +87,7 @@ class TestAdminProjects:
     def test_add_project_member(
         self, client, db_session, admin_user, project_with_members, client_user
     ):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/members",
             data={"user_id": str(client_user.id)},
@@ -106,7 +103,7 @@ class TestAdminProjects:
         project_service.add_project_member(
             db_session, project_with_members.id, client_user.id
         )
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/members/{client_user.id}/remove",
             follow_redirects=False,
@@ -116,13 +113,13 @@ class TestAdminProjects:
 
 class TestAdminUsers:
     def test_users_list(self, client, admin_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.get("/admin/users")
         assert r.status_code == 200
         assert "admin" in r.text.lower() or "Admin" in r.text
 
     def test_create_user(self, client, db_session, admin_user, project_with_members):
-        _login_admin(client)
+        login_admin(client)
         with patch("app.services.auth.send_password_link") as send_link:
             r = client.post(
                 "/admin/users/new",
@@ -152,7 +149,7 @@ class TestAdminUsers:
     def test_create_user_active(
         self, client, db_session, admin_user, project_with_members
     ):
-        _login_admin(client)
+        login_admin(client)
         with patch("app.services.auth.send_password_link") as send_link:
             r = client.post(
                 "/admin/users/new",
@@ -181,7 +178,7 @@ class TestAdminUsers:
     def test_update_user_ui_lang(
         self, client, db_session, admin_user, client_user, project_with_members
     ):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{client_user.id}",
             data={
@@ -201,7 +198,7 @@ class TestAdminUsers:
         assert client_user.ui_lang == "pl"
 
     def test_edit_user(self, client, admin_user, client_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{client_user.id}",
             data={
@@ -215,7 +212,7 @@ class TestAdminUsers:
         assert r.status_code in (200, 303, 400)
 
     def test_toggle_active(self, client, admin_user, client_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{client_user.id}/active",
             follow_redirects=False,
@@ -223,7 +220,7 @@ class TestAdminUsers:
         assert r.status_code in (200, 303, 422)
 
     def test_change_role(self, client, admin_user, client_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{client_user.id}",
             data={
@@ -238,7 +235,7 @@ class TestAdminUsers:
         assert r.status_code in (200, 303, 400)
 
     def test_send_password_link(self, client, admin_user, client_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{client_user.id}/password",
             data={"action": "send_link"},
@@ -247,12 +244,12 @@ class TestAdminUsers:
         assert r.status_code == 303
 
     def test_user_edit_page(self, client, admin_user, client_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.get(f"/admin/users/{client_user.id}")
         assert r.status_code == 200
 
     def test_user_notifications(self, client, admin_user, client_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{client_user.id}/notifications",
             data={
@@ -264,21 +261,15 @@ class TestAdminUsers:
         assert r.status_code in (200, 303)
 
     def test_resend_activation(self, client, db_session, admin_user):
-        from app.models.enums import UserRole
-        from app.models.user import User
-
-        pending = User(
-            email="resend@test.local",
+        pending = make_user(
+            db_session,
+            "resend@test.local",
             first_name="Resend",
             last_name="User",
-            role=UserRole.USER,
-            activated_at=None,
+            activated=False,
             is_active=True,
         )
-        db_session.add(pending)
-        db_session.commit()
-        db_session.refresh(pending)
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{pending.id}/resend-activation",
             follow_redirects=False,
@@ -286,7 +277,7 @@ class TestAdminUsers:
         assert r.status_code in (200, 303)
 
     def test_set_password_direct(self, client, admin_user, client_user):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/users/{client_user.id}/password",
             data={
@@ -299,41 +290,25 @@ class TestAdminUsers:
         assert r.status_code in (200, 303)
 
     def test_projects_list(self, client, admin_user, project_with_members):
-        _login_admin(client)
+        login_admin(client)
         r = client.get("/admin/projects")
         assert r.status_code == 200
         assert project_with_members.name in r.text
 
 
-def _login_client(client):
-    r = client.post(
-        "/auth/login",
-        data={"email": "client@test.local", "password": "Client123!ab"},
-        follow_redirects=False,
-    )
-    assert r.status_code in (303, 200)
-
-
 class TestAdminProjectTags:
     def test_tag_delete(self, client, db_session, admin_user, project_with_members):
-        from app.models.enums import TicketType
         from app.models.ticket import Tag, TicketTag
-        from app.services import tickets as ticket_service
 
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=admin_user,
-            title="Tag to delete",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, admin_user, title="Tag to delete"
         )
         tag = Tag(project_id=project_with_members.id, name="delete-me")
         db_session.add(tag)
         db_session.flush()
         db_session.add(TicketTag(ticket_id=ticket.id, tag_id=tag.id))
         db_session.commit()
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/tags/{tag.id}/delete",
             follow_redirects=False,
@@ -351,7 +326,7 @@ class TestAdminProjectTags:
         tag = Tag(project_id=project_with_members.id, name="cant-delete")
         db_session.add(tag)
         db_session.commit()
-        _login_client(client)
+        login_client(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/tags/{tag.id}/delete",
             follow_redirects=False,
@@ -359,7 +334,7 @@ class TestAdminProjectTags:
         assert r.status_code in (303, 403)
 
     def test_tag_delete_not_found(self, client, admin_user, project_with_members):
-        _login_admin(client)
+        login_admin(client)
         r = client.post(
             f"/admin/projects/{project_with_members.key}/tags/999/delete",
             follow_redirects=False,

@@ -19,15 +19,17 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.config import get_settings, project_root
 from app.models.email_outbox import EmailOutbox
-from app.models.enums import EmailOutboxPriority, EmailOutboxStatus, UserRole
+from app.models.enums import EmailOutboxPriority, EmailOutboxStatus
 from app.models.ticket import Ticket, TicketParticipant
-from app.models.user import ProjectMember, User
+from app.models.user import User
 from app.services import projects as project_service
 from app.services import reply_token as reply_token_service
 from app.services.auth import login_blocked_reason
 from app.services.portal_settings import PortalSettings, get_portal_settings
+from app.services.tickets import is_ticket_involved, is_ticket_watcher
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.unsubscribe import make_unsubscribe_url
+from app.utils.unwatch import make_unwatch_url
 from app.utils.urls import ticket_label, ticket_path
 
 logger = logging.getLogger("pulsedeck.mail")
@@ -317,45 +319,90 @@ def _enqueue_auth(
     db.commit()
 
 
-def _staff_circle(db: Session, ticket: Ticket) -> list[User]:
-    member_staff = db.scalars(
-        select(User)
-        .join(ProjectMember, ProjectMember.user_id == User.id)
-        .where(
-            ProjectMember.project_id == ticket.project_id,
-            User.role == UserRole.STAFF,
-        )
-    ).all()
-    by_id = {u.id: u for u in (*project_service.list_admins(db), *member_staff)}
-    if ticket.assignee:
-        by_id[ticket.assignee.id] = ticket.assignee
-    return list(by_id.values())
+def project_staff(db: Session, ticket: Ticket) -> set[User]:
+    return set(project_service.list_project_staff(db, ticket.project_id))
 
 
-def _client_circle(ticket: Ticket) -> list[User]:
+def _involved_users(ticket: Ticket) -> dict[int, User]:
     by_id: dict[int, User] = {}
-    if ticket.author and not ticket.author.is_staff:
-        by_id[ticket.author.id] = ticket.author
-    for p in ticket.participants:
-        if p.user and not p.user.is_staff:
-            by_id[p.user.id] = p.user
-    return list(by_id.values())
+    for user in (
+        ticket.author,
+        ticket.assignee,
+        *(participant.user for participant in ticket.participants or []),
+    ):
+        if user and user.is_active:
+            by_id[user.id] = user
+    return by_id
 
 
-def _pick(
+def _involved_staff(db: Session, ticket: Ticket) -> set[User]:
+    return {
+        user
+        for user in _involved_users(ticket).values()
+        if project_service.user_has_staff_ops(user)
+        and project_service.is_project_member(db, ticket.project_id, user.id)
+    }
+
+
+def _staff_recipients(db: Session, ticket: Ticket) -> set[User]:
+    staff = _involved_staff(db, ticket)
+    return staff or project_staff(db, ticket)
+
+
+def _client_recipients(db: Session, ticket: Ticket) -> set[User]:
+    return {
+        user
+        for user_id, user in _involved_users(ticket).items()
+        if user_id == ticket.author_id
+        or not project_service.is_project_staff(db, ticket.project_id, user)
+    }
+
+
+def comment_recipients(
+    db: Session,
+    ticket: Ticket,
+    *,
+    internal: bool,
+    actor_id: int,
+) -> set[User]:
+    if internal:
+        return _involved_staff(db, ticket)
+    recipients = set(_involved_users(ticket).values())
+    if not any(
+        project_service.is_project_staff(db, ticket.project_id, user)
+        for user in recipients
+        if user.id != actor_id
+    ):
+        recipients |= project_staff(db, ticket)
+    return recipients
+
+
+def _pipeline_recipients(
     users: Iterable[User],
     *,
-    exclude_id: int | None,
-    pref: str,
+    actor_id: int | None,
+    pref: str | None,
+    ticket: Ticket | None = None,
 ) -> list[User]:
-    out: list[User] = []
+    by_email: dict[str, User] = {}
     for user in users:
-        if exclude_id is not None and user.id == exclude_id:
+        if not user.is_active:
             continue
-        if not getattr(user, pref):
+        if (
+            ticket is not None
+            and user.is_admin
+            and not is_ticket_involved(user, ticket)
+        ):
             continue
-        out.append(user)
-    return out
+        if actor_id is not None and user.id == actor_id:
+            continue
+        if pref is not None and not getattr(user, pref, False):
+            continue
+        email = (user.email or "").strip().lower()
+        if not email or email in by_email:
+            continue
+        by_email[email] = user
+    return list(by_email.values())
 
 
 def _ticket_mail_ctx(ticket: Ticket, **extra) -> dict:
@@ -405,6 +452,179 @@ def _load_ticket(db: Session, ticket_id: int) -> Ticket | None:
             selectinload(Ticket.participants).selectinload(TicketParticipant.user),
             selectinload(Ticket.project),
         )
+    )
+
+
+def _emit_group(
+    db: Session,
+    ticket: Ticket,
+    *,
+    actor_id: int | None,
+    group: set[User],
+    mail_key: str,
+    pref: str | None,
+    ctx: dict | None = None,
+) -> None:
+    recipients = _pipeline_recipients(
+        group, actor_id=actor_id, pref=pref, ticket=ticket
+    )
+    if not recipients:
+        return
+    if pref is None:
+        loaded_ctx = ctx or _ticket_mail_ctx(ticket)
+        for user in recipients:
+            lang = normalize_lang(user.ui_lang)
+            enqueue_email(
+                db,
+                to_email=user.email,
+                subject=t(lang, f"email.{mail_key}.subject"),
+                html_body=render_email_html(
+                    f"{mail_key}.html",
+                    {**loaded_ctx, "user": user},
+                    lang=lang,
+                ),
+            )
+        db.commit()
+        return
+    _send_pref_mails(
+        db,
+        recipients,
+        key=mail_key,
+        pref=pref,
+        ctx=ctx or _ticket_mail_ctx(ticket),
+    )
+
+
+def emit_ticket_created(db: Session, ticket: Ticket, *, actor_id: int) -> None:
+    loaded = _load_ticket(db, ticket.id) or ticket
+    _emit_group(
+        db,
+        loaded,
+        actor_id=actor_id,
+        group=project_staff(db, loaded),
+        mail_key="new_ticket",
+        pref="notify_new_ticket",
+    )
+
+
+def emit_comment(
+    db: Session,
+    ticket: Ticket,
+    author_id: int,
+    *,
+    is_internal: bool = False,
+) -> None:
+    loaded = _load_ticket(db, ticket.id) or ticket
+    recipients = _pipeline_recipients(
+        comment_recipients(db, loaded, internal=is_internal, actor_id=author_id),
+        actor_id=author_id,
+        pref="notify_reply",
+        ticket=loaded,
+    )
+    if not recipients:
+        return
+    base_ctx = _ticket_mail_ctx(loaded)
+    base = get_settings().app_base_url.rstrip("/")
+    for user in recipients:
+        lang = normalize_lang(user.ui_lang)
+        unsub = make_unsubscribe_url(user.id, "notify_reply")
+        unwatch = (
+            make_unwatch_url(user.id, loaded.id)
+            if is_ticket_watcher(loaded, user.id)
+            else None
+        )
+        if login_blocked_reason(user) is None:
+            raw = reply_token_service.create_reply_token(db, user, loaded)
+            reply_url = f"{base}/open/{raw}"
+        else:
+            reply_url = None
+        enqueue_email(
+            db,
+            to_email=user.email,
+            subject=t(lang, "email.new_comment.subject"),
+            html_body=render_email_html(
+                "new_comment.html",
+                {
+                    **base_ctx,
+                    "url": reply_url or base_ctx["url"],
+                    "reply_url": reply_url,
+                    "login_url": f"{base}/login",
+                    "user": user,
+                    "unsubscribe_url": unsub,
+                    "unwatch_url": unwatch,
+                },
+                lang=lang,
+            ),
+            list_unsubscribe_url=unsub,
+        )
+    db.commit()
+
+
+def emit_ticket_assigned(
+    db: Session,
+    ticket: Ticket,
+    *,
+    actor_id: int,
+    previous: User | None,
+    new: User | None,
+) -> None:
+    if new is None or new.id == actor_id:
+        return
+    if previous is not None and previous.id == new.id:
+        return
+    loaded = _load_ticket(db, ticket.id) or ticket
+    recipients = _pipeline_recipients(
+        [new], actor_id=actor_id, pref=None, ticket=loaded
+    )
+    if not recipients:
+        return
+    ctx = _ticket_mail_ctx(loaded)
+    for user in recipients:
+        lang = normalize_lang(user.ui_lang)
+        enqueue_email(
+            db,
+            to_email=user.email,
+            subject=t(lang, "email.assignment.subject"),
+            html_body=render_email_html(
+                "assignment.html", {**ctx, "user": user}, lang=lang
+            ),
+        )
+    db.commit()
+
+
+def emit_ticket_updated(
+    db: Session, ticket: Ticket, actor_id: int, *, change_key: str
+) -> None:
+    loaded = _load_ticket(db, ticket.id) or ticket
+    _emit_group(
+        db,
+        loaded,
+        actor_id=actor_id,
+        group=_client_recipients(db, loaded),
+        mail_key="ticket_update",
+        pref="notify_ticket_update",
+        ctx=_ticket_mail_ctx(loaded, change_key=change_key),
+    )
+
+
+def emit_ticket_closed(
+    db: Session, ticket: Ticket, actor_id: int, *, change_key: str
+) -> None:
+    emit_ticket_updated(db, ticket, actor_id, change_key=change_key)
+
+
+def emit_ticket_reopened(
+    db: Session, ticket: Ticket, actor_id: int, *, change_key: str
+) -> None:
+    loaded = _load_ticket(db, ticket.id) or ticket
+    _emit_group(
+        db,
+        loaded,
+        actor_id=actor_id,
+        group=_staff_recipients(db, loaded),
+        mail_key="ticket_update",
+        pref="notify_ticket_update",
+        ctx=_ticket_mail_ctx(loaded, change_key=change_key),
     )
 
 
@@ -458,20 +678,7 @@ def notify_password_set(
 
 
 def notify_new_ticket(db: Session, ticket: Ticket) -> None:
-    if ticket.author and ticket.author.is_staff:
-        return
-    loaded = _load_ticket(db, ticket.id) or ticket
-    _send_pref_mails(
-        db,
-        _pick(
-            _staff_circle(db, loaded),
-            exclude_id=loaded.author_id,
-            pref="notify_new_ticket",
-        ),
-        key="new_ticket",
-        pref="notify_new_ticket",
-        ctx=_ticket_mail_ctx(loaded),
-    )
+    emit_ticket_created(db, ticket, actor_id=ticket.author_id)
 
 
 def notify_new_comment(
@@ -481,68 +688,16 @@ def notify_new_comment(
     *,
     is_internal: bool = False,
 ) -> None:
-    if is_internal:
-        return
-    loaded = _load_ticket(db, ticket.id) or ticket
-    author = db.get(User, author_id)
-    circle = (
-        _client_circle(loaded)
-        if author and author.is_staff
-        else _staff_circle(db, loaded)
-    )
-    recipients = _pick(circle, exclude_id=author_id, pref="notify_reply")
-    if not recipients:
-        return
-    base_ctx = _ticket_mail_ctx(loaded)
-    base = get_settings().app_base_url.rstrip("/")
-    seen: set[str] = set()
-    for user in recipients:
-        email = (user.email or "").strip().lower()
-        if not email or email in seen:
-            continue
-        seen.add(email)
-        lang = normalize_lang(user.ui_lang)
-        unsub = make_unsubscribe_url(user.id, "notify_reply")
-        if login_blocked_reason(user) is None:
-            raw = reply_token_service.create_reply_token(db, user, loaded)
-            reply_url = f"{base}/open/{raw}"
-        else:
-            reply_url = None
-        html = render_email_html(
-            "new_comment.html",
-            {
-                **base_ctx,
-                "url": reply_url or base_ctx["url"],
-                "reply_url": reply_url,
-                "login_url": f"{base}/login",
-                "user": user,
-                "unsubscribe_url": unsub,
-            },
-            lang=lang,
-        )
-        enqueue_email(
-            db,
-            to_email=email,
-            subject=t(lang, "email.new_comment.subject"),
-            html_body=html,
-            list_unsubscribe_url=unsub,
-        )
-    if seen:
-        db.commit()
+    emit_comment(db, ticket, author_id, is_internal=is_internal)
 
 
 def notify_ticket_update(
     db: Session, ticket: Ticket, actor_id: int, *, change_key: str
 ) -> None:
-    loaded = _load_ticket(db, ticket.id) or ticket
-    by_id = {u.id: u for u in (*_staff_circle(db, loaded), *_client_circle(loaded))}
-    _send_pref_mails(
-        db,
-        _pick(by_id.values(), exclude_id=actor_id, pref="notify_ticket_update"),
-        key="ticket_update",
-        pref="notify_ticket_update",
-        ctx=_ticket_mail_ctx(loaded, change_key=change_key),
-    )
+    if change_key.endswith(".DONE") or "ticket_status.DONE" in change_key:
+        emit_ticket_closed(db, ticket, actor_id, change_key=change_key)
+        return
+    emit_ticket_updated(db, ticket, actor_id, change_key=change_key)
 
 
 def notify_assignment(
@@ -553,27 +708,4 @@ def notify_assignment(
     previous: User | None,
     new: User | None,
 ) -> None:
-    targets: list[tuple[User, str]] = []
-    if new is not None and new.id != actor_id:
-        targets.append((new, "assignment"))
-    if (
-        previous is not None
-        and previous.id != actor_id
-        and (new is None or previous.id != new.id)
-    ):
-        targets.append((previous, "unassignment"))
-    if not targets:
-        return
-    loaded = _load_ticket(db, ticket.id) or ticket
-    ctx = _ticket_mail_ctx(loaded)
-    for user, key in targets:
-        lang = normalize_lang(user.ui_lang)
-        enqueue_email(
-            db,
-            to_email=user.email,
-            subject=t(lang, f"email.{key}.subject"),
-            html_body=render_email_html(
-                f"{key}.html", {**ctx, "user": user}, lang=lang
-            ),
-        )
-    db.commit()
+    emit_ticket_assigned(db, ticket, actor_id=actor_id, previous=previous, new=new)

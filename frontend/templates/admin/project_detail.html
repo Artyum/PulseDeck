@@ -1,7 +1,7 @@
 {% extends "admin/base_admin.html" %}
 {% set coachmark_scope = "admin-project" %}
 {% from "partials/icons.html" import icon %}
-{% from "partials/ticket_macros.html" import form_select_menu with context %}
+{% from "partials/ticket_macros.html" import form_select_menu, admin_sort_th with context %}
 {% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ app_name }} - {{ project.key }}{% endblock title %}
 {% block content %}
@@ -65,46 +65,56 @@
         <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("members") }}</span>{{ t("ui.admin.project.members") }}</h2>
       </div>
     </div>
-    <p class="admin-section-note">{{ t("ui.profile.admin_all_projects_hint") }}</p>
-    <div class="admin-section-block">
-      <ul class="admin-list">
-        {% for u in members %}
-          <li class="admin-entity">
-            <div class="admin-entity-main">
-              <p class="admin-entity-title">{{ u.display_name }}</p>
-              <p class="admin-entity-meta">{{ u.email }} · {{ role_labels[u.role] }}</p>
-            </div>
-            <div class="admin-entity-actions">
-              <form method="post"
-                    action="{{ url_for('remove_member', key=project.key, member_id=u.id) }}"
-                    data-confirm-title="{{ t('ui.confirm.remove_member.title') }}"
-                    data-confirm="{{ t('ui.confirm.remove_member.message', name=u.display_name, project=project.name) }}"
-                    data-confirm-action="{{ t('ui.confirm.remove_member.action') }}"
-                    data-confirm-danger>
-                <button type="submit" class="btn btn-danger">{{ t("ui.common.delete") }}</button>
-              </form>
-            </div>
-          </li>
-        {% else %}
-          <li class="empty">{{ t("ui.admin.project.members_empty") }}</li>
-        {% endfor %}
-      </ul>
-    </div>
     {% if all_users %}
-      <div class="admin-section-block">
-        <form method="post"
-              action="{{ url_for('add_member', key=project.key) }}"
-              class="admin-form-row admin-form-row-2">
-          <div class="admin-form-field">
-            <label class="label-tight" for="add-member">{{ t("ui.admin.project.add_user") }}</label>
-            {{ form_select_menu('user_id', t('ui.admin.project.add_user') , all_users, all_users[0].id, value_attr='id', id='add-member') }}
-          </div>
-          <div class="admin-form-field">
-            <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-            <button type="submit" class="btn btn-primary">{{ t("ui.common.add") }}</button>
-          </div>
-        </form>
-      </div>
+      <form method="post"
+            action="{{ url_for('add_member', key=project.key) }}"
+            class="admin-form-row admin-form-row-2">
+        <div class="admin-form-field">
+          <label class="label-tight" for="add-member">{{ t("ui.admin.project.add_user") }}</label>
+          {{ form_select_menu('user_id', t('ui.admin.project.add_user') , all_users, all_users[0].id, value_attr='id', id='add-member') }}
+        </div>
+        <div class="admin-form-field">
+          <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
+          <button type="submit" class="btn btn-primary">{{ t("ui.common.add") }}</button>
+        </div>
+      </form>
     {% endif %}
+    <ul id="project-members-results"
+        class="admin-list admin-users-table admin-users-table-actions">
+      {% if members %}
+        <li class="admin-users-head">
+          {{ admin_sort_th('name', t('ui.admin.users.col_name') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#project-members-results', filter_sync=false) }}
+          {{ admin_sort_th('role', t('ui.admin.users.filter_role') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#project-members-results', filter_sync=false) }}
+          <span>{{ t("ui.admin.project.col_action") }}</span>
+        </li>
+      {% endif %}
+      {% for u in members %}
+        <li class="admin-entity admin-users-row admin-entity-clickable">
+          <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
+             class="admin-entity-hit"
+             aria-label="{{ t('ui.admin.users.edit_aria', name=u.display_name) }}"></a>
+          <span class="admin-users-cell admin-users-name"
+                data-label="{{ t('ui.admin.users.col_name') }}"
+                title="{{ u.display_name }}">{{ u.display_name }}</span>
+          <span class="admin-users-cell"
+                data-label="{{ t('ui.admin.users.filter_role') }}">
+            <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
+          </span>
+          <span class="admin-users-cell admin-users-actions"
+                data-label="{{ t('ui.admin.project.col_action') }}">
+            <form method="post"
+                  action="{{ url_for('remove_member', key=project.key, member_id=u.id) }}"
+                  data-confirm-title="{{ t('ui.confirm.remove_member.title') }}"
+                  data-confirm="{{ t('ui.confirm.remove_member.message', name=u.display_name, project=project.name) }}"
+                  data-confirm-action="{{ t('ui.confirm.remove_member.action') }}"
+                  data-confirm-danger>
+              <button type="submit" class="btn btn-danger btn-sm">{{ t("ui.common.delete") }}</button>
+            </form>
+          </span>
+        </li>
+      {% else %}
+        <li class="empty">{{ t("ui.admin.project.members_empty") }}</li>
+      {% endfor %}
+    </ul>
   </section>
 {% endblock content %}

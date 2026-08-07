@@ -21,7 +21,13 @@ from app.models.ticket import (
 )
 from app.models.user import Project, ProjectMember, User
 from app.services.portal_settings import get_portal_settings
-from app.services.projects import is_project_member
+from app.services.projects import (
+    can_view_project,
+    has_staff_capabilities,
+    is_project_member,
+    is_project_staff,
+    list_project_member_users,
+)
 from app.utils.i18n import DEFAULT_LANG, t
 from app.utils.parse import parse_positive_int
 from app.utils.urls import FEED_PER_PAGE_DEFAULT
@@ -120,8 +126,10 @@ class TicketPermissions:
     can_edit: bool
     can_manage_tags: bool
     can_comment: bool
-    can_edit_comments: bool
     can_delete_comments: bool
+    can_delete_ticket: bool
+    is_project_staff: bool
+    can_add_participant: bool
 
 
 def _is_member(db: Session, user: User, ticket: Ticket, member: bool | None) -> bool:
@@ -130,44 +138,138 @@ def _is_member(db: Session, user: User, ticket: Ticket, member: bool | None) -> 
     return is_project_member(db, ticket.project_id, user.id)
 
 
-def can_comment(
-    db: Session, user: User, ticket: Ticket, *, member: bool | None = None
-) -> bool:
-    if ticket.status == TicketStatus.DONE:
-        return False
-    return _is_member(db, user, ticket, member)
-
-
-def can_edit_comments(user: User) -> bool:
-    return user.is_staff
-
-
-def can_delete_comments(user: User) -> bool:
+def can_moderate(user: User) -> bool:
     return user.is_admin
 
 
-def can_assign(
+def ticket_involved_user_ids(ticket: Ticket) -> set[int]:
+    ids = {ticket.author_id}
+    if ticket.assignee_id is not None:
+        ids.add(ticket.assignee_id)
+    for participant in ticket.participants or []:
+        ids.add(participant.user_id)
+    return ids
+
+
+def is_ticket_involved(user: User, ticket: Ticket) -> bool:
+    return user.id in ticket_involved_user_ids(ticket)
+
+
+def lock_author_edits(ticket: Ticket) -> None:
+    if ticket.author_edits_locked_at is None:
+        ticket.author_edits_locked_at = datetime.now(timezone.utc)
+
+
+def author_edits_locked(ticket: Ticket) -> bool:
+    return ticket.author_edits_locked_at is not None
+
+
+def _is_latest_comment(db: Session, ticket: Ticket, comment: Comment) -> bool:
+    latest_id = db.scalar(
+        select(Comment.id)
+        .where(Comment.ticket_id == ticket.id)
+        .order_by(Comment.created_at.desc(), Comment.id.desc())
+        .limit(1)
+    )
+    return latest_id == comment.id
+
+
+def can_grace_edit_ticket(
+    db: Session, user: User, ticket: Ticket, *, member: bool | None = None
+) -> bool:
+    if ticket.deleted_at is not None:
+        return False
+    if not _is_member(db, user, ticket, member):
+        return False
+    if ticket.author_id != user.id:
+        return False
+    return not author_edits_locked(ticket)
+
+
+def can_grace_edit_comment(
+    db: Session, user: User, ticket: Ticket, comment: Comment
+) -> bool:
+    if ticket.deleted_at is not None:
+        return False
+    if not is_project_member(db, ticket.project_id, user.id):
+        return False
+    if comment.author_id != user.id:
+        return False
+    if author_edits_locked(ticket):
+        return False
+    return _is_latest_comment(db, ticket, comment)
+
+
+def can_edit_ticket(
     user: User, ticket: Ticket, db: Session, *, member: bool | None = None
 ) -> bool:
-    return user.is_staff and _is_member(db, user, ticket, member)
+    if can_moderate(user):
+        return True
+    if ticket.deleted_at is not None:
+        return False
+    return can_grace_edit_ticket(db, user, ticket, member=member)
+
+
+def can_edit_comment(db: Session, user: User, ticket: Ticket, comment: Comment) -> bool:
+    if can_moderate(user):
+        return True
+    if ticket.deleted_at is not None:
+        return False
+    return can_grace_edit_comment(db, user, ticket, comment)
+
+
+def can_delete_ticket(user: User, ticket: Ticket | None = None) -> bool:
+    if ticket is not None and ticket.deleted_at is not None:
+        return False
+    return can_moderate(user)
+
+
+def can_comment(
+    db: Session, user: User, ticket: Ticket, *, member: bool | None = None
+) -> bool:
+    if can_moderate(user):
+        return ticket.deleted_at is None
+    if ticket.deleted_at is not None or ticket.status == TicketStatus.DONE:
+        return False
+    if not _is_member(db, user, ticket, member):
+        return False
+    if has_staff_capabilities(db, ticket.project_id, user):
+        return True
+    if ticket.author_id == user.id:
+        return True
+    return any(p.user_id == user.id for p in (ticket.participants or []))
+
+
+def can_assign(user: User, ticket: Ticket, db: Session) -> bool:
+    return ticket.deleted_at is None and has_staff_capabilities(
+        db, ticket.project_id, user
+    )
 
 
 def can_set_done(
     user: User, ticket: Ticket, db: Session, *, member: bool | None = None
 ) -> bool:
+    if can_moderate(user):
+        return ticket.deleted_at is None
+    if ticket.deleted_at is not None:
+        return False
     if not _is_member(db, user, ticket, member):
         return False
-    return user.is_staff or ticket.author_id == user.id
+    if has_staff_capabilities(db, ticket.project_id, user):
+        return True
+    return ticket.author_id == user.id
 
 
 def can_reopen(
     user: User, ticket: Ticket, db: Session, *, member: bool | None = None
 ) -> bool:
-    if ticket.status != TicketStatus.DONE:
+    if can_moderate(user):
+        return ticket.deleted_at is None and ticket.status == TicketStatus.DONE
+    if ticket.deleted_at is not None or ticket.status != TicketStatus.DONE:
         return False
     if not _is_member(db, user, ticket, member):
         return False
-    if user.is_staff:
+    if has_staff_capabilities(db, ticket.project_id, user):
         return True
     if ticket.closed_at is None:
         return False
@@ -179,41 +281,166 @@ def can_reopen(
     return datetime.now(timezone.utc) <= deadline
 
 
-def can_edit_ticket(
-    user: User, ticket: Ticket, db: Session, *, member: bool | None = None
+def can_manage_workflow(user: User, ticket: Ticket, db: Session) -> bool:
+    return ticket.deleted_at is None and has_staff_capabilities(
+        db, ticket.project_id, user
+    )
+
+
+def can_manage_tags(user: User, ticket: Ticket, db: Session) -> bool:
+    return can_manage_workflow(user, ticket, db)
+
+
+def _participant_exclude_ids(ticket: Ticket) -> set[int]:
+    ids = {ticket.author_id}
+    if ticket.assignee_id is not None:
+        ids.add(ticket.assignee_id)
+    for participant in ticket.participants or []:
+        ids.add(participant.user_id)
+    return ids
+
+
+def user_display_key(user: User) -> str:
+    return (user.display_name or "").casefold()
+
+
+def _participant_row(
+    db: Session, ticket: Ticket, user_id: int
+) -> TicketParticipant | None:
+    return db.scalar(
+        select(TicketParticipant).where(
+            TicketParticipant.ticket_id == ticket.id,
+            TicketParticipant.user_id == user_id,
+        )
+    )
+
+
+def list_visible_participants(ticket: Ticket) -> list[TicketParticipant]:
+    assignee_id = ticket.assignee_id
+    rows = [
+        participant
+        for participant in (ticket.participants or [])
+        if participant.user_id != assignee_id
+    ]
+    return sorted(
+        rows,
+        key=lambda participant: (
+            user_display_key(participant.user) if participant.user else ""
+        ),
+    )
+
+
+def _is_project_client(db: Session, project_id: int, user: User) -> bool:
+    return (
+        user.is_active
+        and is_project_member(db, project_id, user.id)
+        and not is_project_staff(db, project_id, user)
+    )
+
+
+def _client_author_can_add(db: Session, ticket: Ticket, actor: User) -> bool:
+    return ticket.author_id == actor.id and _is_project_client(
+        db, ticket.project_id, actor
+    )
+
+
+def can_add_participant(db: Session, actor: User, ticket: Ticket) -> bool:
+    return is_project_staff(db, ticket.project_id, actor) or _client_author_can_add(
+        db, ticket, actor
+    )
+
+
+def _addable_participant_candidates(
+    db: Session, ticket: Ticket, actor: User
+) -> list[User]:
+    members = list_project_member_users(db, ticket.project)
+    if is_project_staff(db, ticket.project_id, actor):
+        return members
+    if _client_author_can_add(db, ticket, actor):
+        return [
+            user for user in members if _is_project_client(db, ticket.project_id, user)
+        ]
+    return []
+
+
+def can_add_as_participant(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    target: User,
 ) -> bool:
-    if not _is_member(db, user, ticket, member):
+    if target.id in _participant_exclude_ids(ticket) or not target.is_active:
         return False
-    if user.is_staff:
-        return True
-    return ticket.author_id == user.id and ticket.status == TicketStatus.NEW
+    if is_project_staff(db, ticket.project_id, actor):
+        return is_project_member(db, ticket.project_id, target.id)
+    if _client_author_can_add(db, ticket, actor):
+        return _is_project_client(db, ticket.project_id, target)
+    return False
 
 
-def can_manage_tags(
-    user: User, ticket: Ticket, db: Session, *, member: bool | None = None
-) -> bool:
-    return can_assign(user, ticket, db, member=member)
+def list_addable_participants(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+) -> list[User]:
+    excluded = _participant_exclude_ids(ticket)
+    return sorted(
+        [
+            user
+            for user in _addable_participant_candidates(db, ticket, actor)
+            if user.id not in excluded
+        ],
+        key=user_display_key,
+    )
+
+
+def sorted_project_members(db: Session, project: Project) -> list[User]:
+    return sorted(
+        list_project_member_users(db, project),
+        key=user_display_key,
+    )
+
+
+def can_view_ticket(db: Session, user: User, ticket: Ticket) -> bool:
+    if ticket.deleted_at is not None:
+        return can_moderate(user)
+    return can_moderate(user) or is_project_member(db, ticket.project_id, user.id)
 
 
 def get_ticket_permissions(
     db: Session, user: User, ticket: Ticket
 ) -> TicketPermissions:
     member = is_project_member(db, ticket.project_id, user.id)
+    staff_ui = has_staff_capabilities(db, ticket.project_id, user)
     return TicketPermissions(
-        can_assign=can_assign(user, ticket, db, member=member),
+        can_assign=can_assign(user, ticket, db),
         can_set_done=can_set_done(user, ticket, db, member=member),
         can_reopen=can_reopen(user, ticket, db, member=member),
         can_edit=can_edit_ticket(user, ticket, db, member=member),
-        can_manage_tags=can_manage_tags(user, ticket, db, member=member),
+        can_manage_tags=can_manage_tags(user, ticket, db),
         can_comment=can_comment(db, user, ticket, member=member),
-        can_edit_comments=can_edit_comments(user),
-        can_delete_comments=can_delete_comments(user),
+        can_delete_comments=can_moderate(user),
+        can_delete_ticket=can_delete_ticket(user, ticket),
+        is_project_staff=staff_ui,
+        can_add_participant=can_add_participant(db, user, ticket),
     )
 
 
 def require_project_access(
     db: Session, user: User, project_id: int, *, lang: str | None = None
 ) -> None:
+    if not can_view_project(db, user, project_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=t(lang or DEFAULT_LANG, "messages.tickets.no_project_access"),
+        )
+
+
+def require_project_membership(
+    db: Session, user: User, project_id: int, *, lang: str | None = None
+) -> None:
+    if can_moderate(user):
+        return
     if not is_project_member(db, project_id, user.id):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -237,8 +464,8 @@ def _apply_view_filter(stmt, *, view: str | None):
     return stmt
 
 
-def _apply_mine_scope(stmt, user: User):
-    if user.is_staff:
+def _apply_mine_scope(stmt, user: User, *, project_id: int, db: Session):
+    if is_project_staff(db, project_id, user):
         return stmt.where(
             or_(Ticket.assignee_id == user.id, Ticket.author_id == user.id)
         )
@@ -269,6 +496,7 @@ def _apply_sort(stmt, sort: str | None):
 
 
 def _build_feed_query(
+    db: Session,
     project_id: int,
     *,
     user: User,
@@ -279,11 +507,14 @@ def _build_feed_query(
     status_filter: str | None = None,
     tag: str | None = None,
     q: str | None = None,
+    include_deleted: bool = False,
 ) -> Select[tuple[Ticket]]:
     stmt = select(Ticket).where(Ticket.project_id == project_id)
+    if not include_deleted:
+        stmt = stmt.where(Ticket.deleted_at.is_(None))
     stmt = _apply_view_filter(stmt, view=None if q else view)
     if mine:
-        stmt = _apply_mine_scope(stmt, user)
+        stmt = _apply_mine_scope(stmt, user, project_id=project_id, db=db)
     if priority_filter:
         try:
             stmt = stmt.where(Ticket.priority == TicketPriority(priority_filter))
@@ -352,6 +583,7 @@ def list_tickets(
         status_filter = None
     page_size = normalize_feed_page_size(page_size)
     base_stmt = _build_feed_query(
+        db,
         project_id,
         user=user,
         view=view,
@@ -361,6 +593,7 @@ def list_tickets(
         status_filter=status_filter,
         tag=tag,
         q=q,
+        include_deleted=can_moderate(user),
     )
     total = (
         db.scalar(
@@ -449,17 +682,23 @@ def create_ticket(
 
 
 def _ensure_participant(db: Session, ticket: Ticket, user_id: int) -> None:
-    if ticket.author_id == user_id:
+    if ticket.author_id == user_id or ticket.assignee_id == user_id:
         return
-    existing = db.scalar(
-        select(TicketParticipant).where(
-            TicketParticipant.ticket_id == ticket.id,
-            TicketParticipant.user_id == user_id,
-        )
-    )
-    if existing:
+    if _participant_row(db, ticket, user_id):
         return
     db.add(TicketParticipant(ticket_id=ticket.id, user_id=user_id))
+
+
+def _drop_participant(db: Session, ticket: Ticket, user_id: int) -> None:
+    row = _participant_row(db, ticket, user_id)
+    if row:
+        db.delete(row)
+
+
+def _sync_participant_watch(db: Session, ticket: Ticket, user_id: int) -> None:
+    _ensure_participant(db, ticket, user_id)
+    if ticket.assignee_id == user_id:
+        _drop_participant(db, ticket, user_id)
 
 
 def add_comment(
@@ -477,7 +716,7 @@ def add_comment(
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_comment")
         )
-    if is_internal and not author.is_staff:
+    if is_internal and not has_staff_capabilities(db, ticket.project_id, author):
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.internal_staff_only")
         )
@@ -489,14 +728,16 @@ def add_comment(
         is_internal=bool(is_internal),
     )
     db.add(comment)
+    lock_author_edits(ticket)
+    staff = has_staff_capabilities(db, ticket.project_id, author)
     if not is_internal:
-        _ensure_participant(db, ticket, author.id)
-        if author.is_staff:
+        if staff:
             ticket.status = TicketStatus.WAITING_ON_CLIENT
             if ticket.assignee_id is None:
                 ticket.assignee_id = author.id
         else:
             ticket.status = TicketStatus.IN_PROGRESS
+    _sync_participant_watch(db, ticket, author.id)
     if commit:
         db.commit()
         db.refresh(comment)
@@ -536,15 +777,22 @@ def update_comment(
     lang: str | None = None,
 ) -> Comment:
     lang = lang or DEFAULT_LANG
-    if not can_edit_comments(actor):
+    comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
+    if not can_edit_comment(db, actor, ticket, comment):
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
         )
     text = _clean_or_400("comment.content", content, lang=lang)
-    comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
     comment.content = text
     comment.edited_at = datetime.now(timezone.utc)
     comment.edited_by_id = actor.id
+    if can_moderate(actor):
+        logger.info(
+            "Moderation edit comment id=%s ticket_id=%s by user_id=%s",
+            comment.id,
+            ticket.id,
+            actor.id,
+        )
     db.commit()
     db.refresh(comment)
     return comment
@@ -559,7 +807,7 @@ def delete_comment(
     lang: str | None = None,
 ) -> None:
     lang = lang or DEFAULT_LANG
-    if not can_delete_comments(actor):
+    if not can_moderate(actor):
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_delete_comment")
         )
@@ -592,22 +840,24 @@ def assign_ticket(
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_assign")
         )
+    previous_id = ticket.assignee_id
     if assignee_id is not None:
         assignee = db.get(User, assignee_id)
-        if not assignee or not assignee.is_staff:
+        if not assignee or not is_project_staff(db, ticket.project_id, assignee):
             raise HTTPException(
                 status_code=400,
                 detail=t(lang, "messages.tickets.assignee_must_be_staff"),
             )
-        if not is_project_member(db, ticket.project_id, assignee.id):
-            raise HTTPException(
-                status_code=400,
-                detail=t(lang, "messages.tickets.assignee_must_be_member"),
-            )
+        if previous_id == assignee.id:
+            return get_ticket(db, ticket.id) or ticket
         ticket.assignee_id = assignee.id
+        _drop_participant(db, ticket, assignee.id)
+        lock_author_edits(ticket)
         if ticket.status == TicketStatus.NEW:
             ticket.status = TicketStatus.IN_PROGRESS
     else:
+        if previous_id is None:
+            return get_ticket(db, ticket.id) or ticket
         ticket.assignee_id = None
     db.commit()
     return get_ticket(db, ticket.id) or ticket
@@ -662,7 +912,9 @@ def set_status(
     lang: str | None = None,
 ) -> Ticket:
     lang = lang or DEFAULT_LANG
-    if not is_project_member(db, ticket.project_id, actor.id):
+    if not can_moderate(actor) and not is_project_member(
+        db, ticket.project_id, actor.id
+    ):
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_project_access")
         )
@@ -670,7 +922,7 @@ def set_status(
     if status_value == ticket.status:
         return ticket
 
-    if actor.is_staff:
+    if has_staff_capabilities(db, ticket.project_id, actor):
         ticket.status = status_value
         ticket.closed_at = (
             datetime.now(timezone.utc) if status_value == TicketStatus.DONE else None
@@ -730,6 +982,8 @@ def update_ticket(
     )
     ticket.title = data["ticket.title"]
     ticket.description = data["ticket.description"]
+    if can_moderate(actor) and not can_grace_edit_ticket(db, actor, ticket):
+        logger.info("Moderation edit ticket id=%s by user_id=%s", ticket.id, actor.id)
     return _commit_reload(db, ticket)
 
 
@@ -741,7 +995,7 @@ def set_priority(
     *,
     lang: str | None = None,
 ) -> Ticket:
-    if not can_edit_ticket(actor, ticket, db):
+    if not can_manage_workflow(actor, ticket, db):
         raise HTTPException(
             status_code=403,
             detail=t(lang or DEFAULT_LANG, "messages.tickets.no_priority"),
@@ -758,7 +1012,7 @@ def set_type(
     *,
     lang: str | None = None,
 ) -> Ticket:
-    if not can_edit_ticket(actor, ticket, db):
+    if not can_manage_workflow(actor, ticket, db):
         raise HTTPException(
             status_code=403,
             detail=t(lang or DEFAULT_LANG, "messages.tickets.no_type"),
@@ -854,17 +1108,38 @@ def add_participant(
     lang: str | None = None,
 ) -> Ticket:
     lang = lang or DEFAULT_LANG
-    if not actor.is_staff and ticket.author_id != actor.id:
+    if not can_add_participant(db, actor, ticket):
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_add_participant")
         )
-    if not is_project_member(db, ticket.project_id, user_id):
-        raise HTTPException(
-            status_code=400, detail=t(lang, "messages.tickets.user_must_be_member")
+    target = db.get(User, user_id)
+    if not target or not can_add_as_participant(db, ticket, actor, target):
+        detail = (
+            t(lang, "messages.tickets.user_must_be_member")
+            if is_project_staff(db, ticket.project_id, actor)
+            else t(lang, "messages.tickets.participant_not_allowed")
         )
+        raise HTTPException(status_code=400, detail=detail)
     _ensure_participant(db, ticket, user_id)
     db.commit()
     return get_ticket(db, ticket.id) or ticket
+
+
+def is_ticket_watcher(ticket: Ticket, user_id: int) -> bool:
+    if user_id in (ticket.author_id, ticket.assignee_id):
+        return False
+    return any(p.user_id == user_id for p in (ticket.participants or []))
+
+
+def unwatch_ticket(db: Session, user_id: int, ticket_id: int) -> bool:
+    ticket = get_ticket(db, ticket_id)
+    if ticket is None:
+        return False
+    row = _participant_row(db, ticket, user_id)
+    if row:
+        db.delete(row)
+        db.commit()
+    return True
 
 
 def remove_participant(
@@ -877,13 +1152,15 @@ def remove_participant(
 ) -> Ticket:
     """Participant removes self; admin may remove any participant by user_id."""
     lang = lang or DEFAULT_LANG
-    if actor.is_admin:
+    if can_moderate(actor):
         if user_id is None:
             raise HTTPException(
                 status_code=400, detail=t(lang, "messages.tickets.select_user")
             )
         target_id = user_id
-    elif not actor.is_staff and (user_id is None or user_id == actor.id):
+    elif not is_project_staff(db, ticket.project_id, actor) and (
+        user_id is None or user_id == actor.id
+    ):
         target_id = actor.id
     else:
         raise HTTPException(
@@ -902,6 +1179,26 @@ def remove_participant(
         )
     db.delete(row)
     db.commit()
+    return get_ticket(db, ticket.id) or ticket
+
+
+def soft_delete_ticket(
+    db: Session,
+    ticket: Ticket,
+    actor: User,
+    *,
+    lang: str | None = None,
+) -> Ticket:
+    lang = lang or DEFAULT_LANG
+    if not can_delete_ticket(actor, ticket):
+        raise HTTPException(
+            status_code=403, detail=t(lang, "messages.tickets.no_delete")
+        )
+    if ticket.deleted_at is None:
+        ticket.deleted_at = datetime.now(timezone.utc)
+        ticket.deleted_by_id = actor.id
+        logger.info("Soft-delete ticket id=%s by user_id=%s", ticket.id, actor.id)
+        db.commit()
     return get_ticket(db, ticket.id) or ticket
 
 
@@ -961,15 +1258,15 @@ def remove_comment_attachments(
     lang: str | None = None,
 ) -> Comment:
     lang = lang or DEFAULT_LANG
-    if not can_edit_comments(actor):
+    comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
+    if not can_edit_comment(db, actor, ticket, comment):
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
         )
-    comment = _get_ticket_comment(db, ticket, comment_id, lang=lang)
     wanted = {int(x) for x in attachment_ids}
     if not wanted:
         return comment
-    for att in list(comment.attachments):
+    for att in list(comment.attachments or []):
         if att.id in wanted:
             db.delete(att)
     db.commit()

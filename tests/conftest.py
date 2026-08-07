@@ -152,7 +152,12 @@ def staff_user(db_session):
 
 @pytest.fixture()
 def project_with_members(db_session, client_user, staff_user):
-    project = project_service.create_project(db_session, "Demo", "DEMO", "Opis")
+    project = project_service.create_project(
+        db_session,
+        "Demo",
+        "DEMO",
+        "Opis",
+        initial_staff_ids=[staff_user.id],
+    )
     project_service.add_project_member(db_session, project.id, client_user.id)
-    project_service.add_project_member(db_session, project.id, staff_user.id)
     return project

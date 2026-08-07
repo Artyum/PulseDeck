@@ -4,11 +4,12 @@
 {% from "partials/rich_editor.html" import rich_editor with context %}
 {% from "partials/thread_order_controls.html" import thread_order_controls with context %}
 <div class="issue-thread">
-  {% if user.is_staff %}
+  {% if is_project_staff %}
     {% set comments = ticket.comments %}
   {% else %}
     {% set comments = ticket.comments|rejectattr('is_internal')|list %}
   {% endif %}
+  {% set editable_comment_ids = editable_comment_ids|default([]) %}
   {% if comments %}
     {% include "partials/thread_activity_head.html" with context %}
     <div class="issue-thread-messages">
@@ -32,9 +33,10 @@
                 {% endif %}
                 <span class="comment-meta-aside">
                   <span class="comment-meta-row">
-                    {% if can_edit_comments or can_delete_comments %}
+                    {% set can_edit_this = comment.id in editable_comment_ids %}
+                    {% if can_edit_this or can_delete_comments %}
                       <span class="comment-actions">
-                        {% if can_edit_comments %}
+                        {% if can_edit_this %}
                           <button type="button"
                                   class="btn btn-ghost comment-action"
                                   hx-get="{{ url_for('comment_edit_form', ticket_ref=ticket|ticket_label, comment_id=comment.id) }}"
@@ -84,7 +86,7 @@
         <div class="issue-composer-bar">
           {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
           <div class="issue-composer-actions">
-            {% if user.is_staff %}
+            {% if is_project_staff %}
               <label class="issue-composer-opt" data-coachmark="compose-internal">
                 <input type="checkbox" name="is_internal" value="1" class="checkbox">
                 {{ t("ui.ticket.internal_note") }}
@@ -99,7 +101,7 @@
         {{ t("ui.ticket.closed_notice") }}
         {% if can_reopen is defined and can_reopen %}
           {{ t("ui.ticket.reopen_hint_staff") }}
-        {% elif not user.is_staff %}
+        {% elif not is_project_staff %}
           {{ t('ui.ticket.reopen_hint_client', days=ticket_reopen_days) }}
         {% endif %}
       </p>

@@ -1,56 +1,21 @@
 {% extends "admin/base_admin.html" %}
 {% set coachmark_scope = "admin-projects" %}
 {% from "partials/icons.html" import icon %}
+{% from "partials/ticket_macros.html" import modal_header with context %}
 {% from "partials/app_flash.html" import app_flash %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.projects.title") }}{% endblock title %}
 {% block content %}
-  {{ app_flash(error=error) }}
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.projects.title") }}</h1>
   </div>
   <section class="admin-section">
     <div class="issue-section-bar">
       <div class="issue-section-title-row">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("new_project") }}</span>{{ t("ui.admin.projects.new") }}</h2>
+        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
       </div>
-    </div>
-    <form method="post"
-          action="{{ url_for('create_project') }}{%- if show_disabled -%}?disabled=1{%- endif -%}"
-          class="admin-form-row">
-      <div class="admin-form-field" data-coachmark="admin-projects-name">
-        <label class="label-tight" for="project-name">{{ t("ui.admin.projects.name") }}</label>
-        <input id="project-name"
-               name="name"
-               {{ field_attrs("project.name") }}
-               value="{{ form_name or '' }}"
-               class="input">
-      </div>
-      <div class="admin-form-field" data-coachmark="admin-projects-key">
-        <label class="label-tight" for="project-key">{{ t("ui.admin.projects.key") }}</label>
-        <input id="project-key"
-               name="key"
-               {{ field_attrs("project.key") }}
-               title="{{ t('messages.project_key.invalid', min=1, max=5) }}"
-               value="{{ form_key or '' }}"
-               class="input uppercase">
-      </div>
-      <div class="admin-form-field" data-coachmark="admin-projects-description">
-        <label class="label-tight" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
-        <input id="project-desc"
-               name="description"
-               {{ field_attrs("project.description") }}
-               value="{{ form_description or '' }}"
-               class="input">
-      </div>
-      <div class="admin-form-field">
-        <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-        <button type="submit" class="btn btn-primary">{{ t("ui.common.create") }}</button>
-      </div>
-    </form>
-  </section>
-  <section class="admin-section">
-    <div class="issue-section-bar">
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
+      <button type="button"
+              class="btn btn-primary"
+              onclick="document.getElementById('new-project').showModal()">{{ t("ui.admin.projects.new") }}</button>
     </div>
     <nav class="admin-tabs admin-section-tabs"
          aria-label="{{ t('ui.admin.projects.list') }}">
@@ -119,4 +84,64 @@
       {% endfor %}
     </div>
   </section>
+  <dialog id="new-project" class="modal modal-fill">
+    <form method="post"
+          action="{{ url_for('create_project') }}{%- if show_disabled -%}?disabled=1{%- endif -%}"
+          class="modal-form">
+      {{ modal_header('new-project', t('ui.admin.projects.new') ) }}
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="admin-field" data-coachmark="admin-projects-name">
+            <label class="label" for="project-name">{{ t("ui.admin.projects.name") }}</label>
+            <input id="project-name"
+                   name="name"
+                   {{ field_attrs("project.name") }}
+                   value="{{ form_name or '' }}"
+                   class="input">
+          </div>
+          <div class="admin-field" data-coachmark="admin-projects-key">
+            <label class="label" for="project-key">{{ t("ui.admin.projects.key") }}</label>
+            <input id="project-key"
+                   name="key"
+                   {{ field_attrs("project.key") }}
+                   title="{{ t('messages.project_key.invalid', min=1, max=5) }}"
+                   value="{{ form_key or '' }}"
+                   class="input uppercase">
+          </div>
+        </div>
+        <div class="admin-field" data-coachmark="admin-projects-description">
+          <label class="label" for="project-desc">{{ t("ui.admin.projects.description") }}</label>
+          <input id="project-desc"
+                 name="description"
+                 {{ field_attrs("project.description") }}
+                 value="{{ form_description or '' }}"
+                 class="input">
+        </div>
+        <div class="admin-field">
+          <label class="label" for="project-staff">{{ t("ui.admin.projects.initial_staff") }}</label>
+          {% if staff_candidates %}
+            <select id="project-staff" name="staff_user_id" class="input" required>
+              <option value="">{{ t("ui.admin.projects.initial_staff_placeholder") }}</option>
+              {% for u in staff_candidates %}
+                <option value="{{ u.id }}"
+                        {% if form_staff_user_id and form_staff_user_id|string == u.id|string %}selected{% endif %}>
+                  {{ u.display_name }} · {{ role_labels[u.role] }}
+                </option>
+              {% endfor %}
+            </select>
+          {% else %}
+            <p class="empty">{{ t("ui.admin.projects.no_staff_candidates") }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-modal-dismiss="new-project" class="btn btn-ghost">{{ t("ui.common.cancel") }}</button>
+        <button type="submit"
+                class="btn btn-primary"
+                {% if not staff_candidates %}disabled{% endif %}>{{ t("ui.common.create") }}</button>
+      </div>
+    </form>
+  </dialog>
+  {{ app_flash(error=error) }}
+  {% if error %}<script>document.getElementById("new-project")?.showModal();</script>{% endif %}
 {% endblock content %}

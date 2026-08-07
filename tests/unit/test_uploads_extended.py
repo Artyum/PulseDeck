@@ -7,7 +7,6 @@ from fastapi import HTTPException, UploadFile
 from PIL import Image
 
 from app.config import get_settings, resolve_upload_dir
-from app.models.enums import TicketType
 from app.services import tickets as ticket_service
 from app.services.uploads import (
     file_response_for_attachment,
@@ -15,6 +14,7 @@ from app.services.uploads import (
     resolve_safe_upload_path,
     save_upload,
 )
+from tests.helpers import make_ticket
 
 
 def _png_bytes(size=(40, 40), mode="RGB", color=(10, 20, 30)):
@@ -192,13 +192,8 @@ class TestAttachmentDownload:
     def test_get_attachment_and_response(
         self, db_session, project_with_members, client_user, upload_tmp
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="With file",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="With file"
         )
         root = resolve_upload_dir()
         rel = Path("tickets") / "att.jpg"
@@ -220,13 +215,8 @@ class TestAttachmentDownload:
     def test_non_image_attachment_disposition(
         self, db_session, project_with_members, client_user, upload_tmp
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="With json",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="With json"
         )
         root = resolve_upload_dir()
         rel = Path("tickets") / "data.json"
@@ -249,13 +239,8 @@ class TestAttachmentDownload:
     def test_missing_file_response(
         self, db_session, project_with_members, client_user, upload_tmp
     ):
-        ticket = ticket_service.create_ticket(
-            db_session,
-            project_id=project_with_members.id,
-            author=client_user,
-            title="Missing file",
-            description="Desc",
-            ticket_type=TicketType.BUG,
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Missing file"
         )
         att = ticket_service.add_attachment(
             db_session,

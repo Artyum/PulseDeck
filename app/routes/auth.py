@@ -25,6 +25,7 @@ from app.models.user import User
 from app.rate_limit import client_ip_key, limiter
 from app.routes.context import render
 from app.services import auth as auth_service
+from app.services import tickets as ticket_service
 from app.services.email import notify_email_confirm
 from app.utils.csrf import ensure_csrf_token
 from app.utils.i18n import (
@@ -36,7 +37,8 @@ from app.utils.i18n import (
 )
 from app.utils.password import verify_password
 from app.utils.unsubscribe import apply_unsubscribe, parse_unsubscribe_token
-from app.utils.urls import safe_next_path
+from app.utils.unwatch import parse_unwatch_token
+from app.utils.urls import safe_next_path, ticket_label
 
 router = APIRouter(tags=["auth"])
 logger = logging.getLogger("pulsedeck.auth")
@@ -514,7 +516,7 @@ def email_unsubscribe_get(request: Request, token: str = ""):
         request,
         "auth/unsubscribed.html",
         confirm_token=token,
-        confirm_pref_label=t(lang, f"ui.profile.settings.{pref}"),
+        confirm_body=t(lang, f"ui.auth.unsubscribe.confirm_body.{pref}"),
     )
 
 
@@ -553,5 +555,77 @@ async def email_unsubscribe_post(request: Request, db: DbSession):
             lang,
             "ui.auth.unsubscribe.done",
             type=t(lang, f"ui.profile.settings.{pref}"),
+        ),
+    )
+
+
+def _unwatch(db, token: str):
+    parsed = parse_unwatch_token(token)
+    if parsed is None:
+        return None
+    user_id, ticket_id = parsed
+    ticket = ticket_service.get_ticket(db, ticket_id)
+    if ticket is None:
+        return None
+    if not ticket_service.unwatch_ticket(db, user_id, ticket_id):
+        return None
+    return ticket
+
+
+def _unwatch_ticket_label(ticket) -> str:
+    try:
+        return ticket_label(ticket)
+    except ValueError:
+        return str(ticket.number)
+
+
+@router.get("/email/unwatch", response_class=HTMLResponse)
+def email_unwatch_get(request: Request, db: DbSession, token: str = ""):
+    lang = resolve_lang(request)
+    parsed = parse_unwatch_token(token)
+    if parsed is None:
+        logger.warning("Unwatch invalid token ip=%s", client_ip_key(request))
+        return render(
+            request,
+            "auth/unwatched.html",
+            error=t(lang, "ui.auth.unwatch.invalid"),
+        )
+    _user_id, ticket_id = parsed
+    ticket = ticket_service.get_ticket(db, ticket_id)
+    if ticket is None:
+        return render(
+            request,
+            "auth/unwatched.html",
+            error=t(lang, "ui.auth.unwatch.invalid"),
+        )
+    return render(
+        request,
+        "auth/unwatched.html",
+        confirm_token=token,
+        ticket_label=_unwatch_ticket_label(ticket),
+    )
+
+
+@router.post("/email/unwatch")
+async def email_unwatch_post(request: Request, db: DbSession):
+    lang = resolve_lang(request)
+    form = await request.form()
+    token = str(form.get("token") or "").strip()
+    ticket = _unwatch(db, token)
+    if ticket is None:
+        logger.warning("Unwatch POST invalid token ip=%s", client_ip_key(request))
+        return render(
+            request,
+            "auth/unwatched.html",
+            error=t(lang, "ui.auth.unwatch.invalid"),
+        )
+    logger.info("Unwatch ok ticket_id=%s", ticket.id)
+    return render(
+        request,
+        "auth/unwatched.html",
+        success=t(
+            lang,
+            "ui.auth.unwatch.done",
+            label=_unwatch_ticket_label(ticket),
         ),
     )
