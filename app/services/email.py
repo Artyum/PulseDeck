@@ -339,8 +339,7 @@ def _involved_staff(db: Session, ticket: Ticket) -> set[User]:
     return {
         user
         for user in _involved_users(ticket).values()
-        if project_service.user_has_staff_ops(user)
-        and project_service.is_project_member(db, ticket.project_id, user.id)
+        if project_service.is_project_staff(db, ticket.project_id, user)
     }
 
 
@@ -363,18 +362,22 @@ def comment_recipients(
     ticket: Ticket,
     *,
     internal: bool,
-    actor_id: int,
 ) -> set[User]:
+    staff_targets = (
+        {ticket.assignee}
+        if ticket.assignee is not None and ticket.assignee.is_active
+        else project_staff(db, ticket)
+    )
     if internal:
-        return _involved_staff(db, ticket)
-    recipients = set(_involved_users(ticket).values())
-    if not any(
-        project_service.is_project_staff(db, ticket.project_id, user)
-        for user in recipients
-        if user.id != actor_id
-    ):
-        recipients |= project_staff(db, ticket)
-    return recipients
+        watchers = {
+            p.user
+            for p in (ticket.participants or [])
+            if p.user
+            and p.user.is_active
+            and project_service.is_project_staff(db, ticket.project_id, p.user)
+        }
+        return watchers | staff_targets
+    return set(_involved_users(ticket).values()) | staff_targets
 
 
 def _pipeline_recipients(
@@ -516,7 +519,7 @@ def emit_comment(
 ) -> None:
     loaded = _load_ticket(db, ticket.id) or ticket
     recipients = _pipeline_recipients(
-        comment_recipients(db, loaded, internal=is_internal, actor_id=author_id),
+        comment_recipients(db, loaded, internal=is_internal),
         actor_id=author_id,
         pref="notify_reply",
         ticket=loaded,

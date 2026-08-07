@@ -1,9 +1,6 @@
 const CACHE_NAME = "pulsedeck-static-v1";
 const OFFLINE_URL = "/offline";
-const PRECACHE_URLS = [
-  OFFLINE_URL,
-  "/static/images/android-chrome-192x192.png",
-];
+const PRECACHE_URLS = [OFFLINE_URL, "/static/images/android-chrome-192x192.png"];
 
 function isSameOrigin(url) {
   return url.origin === self.location.origin;
@@ -37,19 +34,22 @@ self.addEventListener("install", function (event) {
 
 self.addEventListener("activate", function (event) {
   event.waitUntil(
-    caches.keys().then(function (keys) {
-      return Promise.all(
-        keys
-          .filter(function (key) {
-            return key !== CACHE_NAME;
-          })
-          .map(function (key) {
-            return caches.delete(key);
-          })
-      );
-    }).then(function () {
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then(function (keys) {
+        return Promise.all(
+          keys
+            .filter(function (key) {
+              return key !== CACHE_NAME;
+            })
+            .map(function (key) {
+              return caches.delete(key);
+            })
+        );
+      })
+      .then(function () {
+        return self.clients.claim();
+      })
   );
 });
 

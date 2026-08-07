@@ -1,11 +1,31 @@
 from unittest.mock import MagicMock, patch
 
+from sqlalchemy import select
+
 from app.models.email_outbox import EmailOutbox
-from app.models.enums import EmailOutboxPriority
+from app.models.enums import EmailOutboxPriority, UserRole
 from app.services import email as email_service
 from app.services import projects as project_service
 from app.services import tickets as ticket_service
 from tests.helpers import make_ticket, make_user, peer_participant_ticket
+
+
+def _outbox_emails(db):
+    return {row.to_email for row in db.scalars(select(EmailOutbox)).all()}
+
+
+def _staff_peer(db, project, email: str, *, first: str = "Other", last: str = "Staff"):
+    user = make_user(
+        db,
+        email,
+        first_name=first,
+        last_name=last,
+        role=UserRole.STAFF,
+        project=project,
+    )
+    user.notify_reply = True
+    db.commit()
+    return user
 
 
 class TestSmtpLocalHostname:
@@ -231,24 +251,28 @@ class TestNotify:
         assert "/open/" in row.html_body
         assert "/login" in row.html_body
 
-    def test_notify_internal_comment_to_staff(
-        self, db_session, project_with_members, staff_user, admin_user
+    def test_notify_internal_comment_unassigned_broadcasts_staff(
+        self, db_session, project_with_members, staff_user, client_user
     ):
-        project_service.add_project_member(
-            db_session, project_with_members.id, admin_user.id
+        other_staff = _staff_peer(
+            db_session,
+            project_with_members,
+            "staff-internal-broadcast@test.local",
+            first="Internal",
+            last="Broadcast",
         )
-        admin_user.notify_reply = True
+        staff_user.notify_reply = True
         db_session.commit()
         ticket = make_ticket(
-            db_session, project_with_members, staff_user, title="Internal"
+            db_session, project_with_members, client_user, title="Internal"
         )
         email_service.notify_new_comment(
             db_session, ticket, staff_user.id, is_internal=True
         )
-        from sqlalchemy import select
-
-        rows = list(db_session.scalars(select(EmailOutbox)).all())
-        assert all(r.to_email != admin_user.email.lower() for r in rows)
+        emails = _outbox_emails(db_session)
+        assert other_staff.email.lower() in emails
+        assert staff_user.email.lower() not in emails
+        assert client_user.email.lower() not in emails
 
     def test_notify_internal_comment_to_involved_admin(
         self, db_session, project_with_members, staff_user, admin_user
@@ -388,26 +412,18 @@ class TestCommentRecipients:
             db_session, project_with_members, client_user
         )
         email_service.notify_new_comment(db_session, ticket, client_user.id)
-        from sqlalchemy import select
-
-        emails = {row.to_email for row in db_session.scalars(select(EmailOutbox)).all()}
-        assert peer.email.lower() in emails
+        assert peer.email.lower() in _outbox_emails(db_session)
 
     def test_notifies_staff_participant_when_other_staff_comments(
         self, db_session, project_with_members, staff_user
     ):
-        from app.models.enums import UserRole
-
-        other_staff = make_user(
+        other_staff = _staff_peer(
             db_session,
+            project_with_members,
             "staff-peer@test.local",
-            first_name="Staff",
-            last_name="Peer",
-            role=UserRole.STAFF,
-            project=project_with_members,
+            first="Staff",
+            last="Peer",
         )
-        other_staff.notify_reply = True
-        db_session.commit()
         ticket = make_ticket(
             db_session, project_with_members, staff_user, title="Staff peer"
         )
@@ -417,10 +433,7 @@ class TestCommentRecipients:
         staff_user.notify_reply = True
         db_session.commit()
         email_service.notify_new_comment(db_session, ticket, staff_user.id)
-        from sqlalchemy import select
-
-        emails = {row.to_email for row in db_session.scalars(select(EmailOutbox)).all()}
-        assert other_staff.email.lower() in emails
+        assert other_staff.email.lower() in _outbox_emails(db_session)
 
     def test_internal_comment_skips_client_participant(
         self, db_session, project_with_members, client_user, staff_user
@@ -433,10 +446,7 @@ class TestCommentRecipients:
         email_service.notify_new_comment(
             db_session, ticket, staff_user.id, is_internal=True
         )
-        from sqlalchemy import select
-
-        emails = {row.to_email for row in db_session.scalars(select(EmailOutbox)).all()}
-        assert peer.email.lower() not in emails
+        assert peer.email.lower() not in _outbox_emails(db_session)
 
     def test_comment_skips_author(
         self, db_session, project_with_members, client_user, staff_user
@@ -447,10 +457,7 @@ class TestCommentRecipients:
             db_session, project_with_members, client_user, title="Author skip"
         )
         email_service.notify_new_comment(db_session, ticket, client_user.id)
-        from sqlalchemy import select
-
-        emails = {row.to_email for row in db_session.scalars(select(EmailOutbox)).all()}
-        assert client_user.email.lower() not in emails
+        assert client_user.email.lower() not in _outbox_emails(db_session)
 
     def test_unwatch_url_only_for_participants(
         self, db_session, project_with_members, client_user, staff_user
@@ -461,10 +468,123 @@ class TestCommentRecipients:
         staff_user.notify_reply = True
         db_session.commit()
         email_service.notify_new_comment(db_session, ticket, client_user.id)
-        from sqlalchemy import select
-
         rows = list(db_session.scalars(select(EmailOutbox)).all())
         peer_row = next(r for r in rows if r.to_email == peer.email.lower())
         staff_row = next(r for r in rows if r.to_email == staff_user.email.lower())
         assert "/email/unwatch" in peer_row.html_body
         assert "/email/unwatch" not in staff_row.html_body
+
+    def test_client_comment_with_assignee_skips_other_staff(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        other_staff = _staff_peer(
+            db_session, project_with_members, "staff-other-reply@test.local"
+        )
+        staff_user.notify_reply = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Assigned reply"
+        )
+        ticket_service.assign_ticket(db_session, ticket, staff_user, staff_user.id)
+        ticket = ticket_service.get_ticket(db_session, ticket.id)
+        assert ticket is not None
+        email_service.notify_new_comment(db_session, ticket, client_user.id)
+        emails = _outbox_emails(db_session)
+        assert staff_user.email.lower() in emails
+        assert other_staff.email.lower() not in emails
+
+    def test_client_comment_without_assignee_broadcasts_staff(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        other_staff = _staff_peer(
+            db_session,
+            project_with_members,
+            "staff-broadcast@test.local",
+            first="Broadcast",
+        )
+        staff_user.notify_reply = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Unassigned reply"
+        )
+        email_service.notify_new_comment(db_session, ticket, client_user.id)
+        emails = _outbox_emails(db_session)
+        assert staff_user.email.lower() in emails
+        assert other_staff.email.lower() in emails
+
+    def test_assignee_comment_does_not_broadcast_staff(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        other_staff = _staff_peer(
+            db_session,
+            project_with_members,
+            "staff-no-broadcast@test.local",
+            first="No",
+            last="Broadcast",
+        )
+        client_user.notify_reply = True
+        staff_user.notify_reply = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Assignee replies"
+        )
+        ticket_service.assign_ticket(db_session, ticket, staff_user, staff_user.id)
+        ticket = ticket_service.get_ticket(db_session, ticket.id)
+        assert ticket is not None
+        email_service.notify_new_comment(db_session, ticket, staff_user.id)
+        emails = _outbox_emails(db_session)
+        assert client_user.email.lower() in emails
+        assert other_staff.email.lower() not in emails
+        assert staff_user.email.lower() not in emails
+
+    def test_internal_with_assignee_skips_other_staff(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        other_staff = _staff_peer(
+            db_session,
+            project_with_members,
+            "staff-internal-skip@test.local",
+            first="Internal",
+            last="Skip",
+        )
+        staff_user.notify_reply = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Internal assigned"
+        )
+        ticket_service.assign_ticket(db_session, ticket, staff_user, staff_user.id)
+        ticket = ticket_service.get_ticket(db_session, ticket.id)
+        assert ticket is not None
+        email_service.notify_new_comment(
+            db_session, ticket, other_staff.id, is_internal=True
+        )
+        emails = _outbox_emails(db_session)
+        assert staff_user.email.lower() in emails
+        assert other_staff.email.lower() not in emails
+        assert client_user.email.lower() not in emails
+
+    def test_internal_notifies_staff_participant(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        watcher = _staff_peer(
+            db_session,
+            project_with_members,
+            "staff-internal-watch@test.local",
+            first="Watch",
+        )
+        staff_user.notify_reply = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Internal watcher"
+        )
+        ticket_service.assign_ticket(db_session, ticket, staff_user, staff_user.id)
+        ticket_service.add_participant(db_session, ticket, staff_user, watcher.id)
+        ticket = ticket_service.get_ticket(db_session, ticket.id)
+        assert ticket is not None
+        email_service.notify_new_comment(
+            db_session, ticket, staff_user.id, is_internal=True
+        )
+        emails = _outbox_emails(db_session)
+        assert watcher.email.lower() in emails
+        assert staff_user.email.lower() not in emails
+        assert client_user.email.lower() not in emails
