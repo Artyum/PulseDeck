@@ -2,6 +2,7 @@
   html {
     --space-scale: 1.18;
     --layout-rem: 16px;
+    --layout-shell-max: 1440px;
     --font-size-root: 17.5px;
     font-size: var(--font-size-root);
     -webkit-text-size-adjust: 100%;

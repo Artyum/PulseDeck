@@ -75,13 +75,13 @@
 
   .app-shell {
     margin-inline: auto;
-    max-width: calc(84 * var(--layout-rem));
+    max-width: var(--layout-shell-max);
     padding-inline: calc(1.5rem * var(--space-scale));
   }
 
   .app-main {
     margin-inline: auto;
-    max-width: calc(84 * var(--layout-rem));
+    max-width: var(--layout-shell-max);
     padding: calc(1.75rem * var(--space-scale)) calc(1.5rem * var(--space-scale)) calc(3.5rem * var(--space-scale));
   }
 
@@ -395,7 +395,7 @@
     min-height: calc(100vh - var(--app-header-h));
     min-width: 0;
     margin-inline: auto;
-    max-width: calc(84 * var(--layout-rem));
+    max-width: var(--layout-shell-max);
   }
 
   .admin-aside {
@@ -4223,13 +4223,30 @@
   @media (min-width: 1024px) {
     #new-ticket.modal,
     #edit-ticket.modal {
-      width: min(100% - 2rem, 48rem);
+      width: min(100% - 2rem, calc(72 * var(--layout-rem)));
       max-height: min(94vh, 58rem);
     }
   }
 
-  .modal-body .rich-editor-surface {
+  #new-ticket .rich-editor-toolbar,
+  #edit-ticket .rich-editor-toolbar {
+    position: sticky;
+    top: -1.25rem;
+    z-index: 6;
+    background: var(--color-surface-2);
+    box-shadow: 0 1px 0 var(--color-line);
+  }
+
+  #new-ticket .rich-editor-toolbar.is-stuck,
+  #edit-ticket .rich-editor-toolbar.is-stuck {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  #new-ticket .modal-body .rich-editor-surface,
+  #edit-ticket .modal-body .rich-editor-surface {
     min-height: 16rem;
+    overflow: visible;
   }
 
   .modal-body .rich-editor-surface .rich-editor-prose {

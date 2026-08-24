@@ -1249,6 +1249,19 @@
     });
   });
 
+  document.querySelectorAll("#new-ticket.modal, #edit-ticket.modal").forEach(function (dialog) {
+    var body = dialog.querySelector(".modal-body");
+    var toolbar = dialog.querySelector(".rich-editor-toolbar");
+    if (!body || !toolbar) return;
+    var updateToolbarState = function () {
+      var bodyTop = body.getBoundingClientRect().top;
+      toolbar.classList.toggle("is-stuck", toolbar.getBoundingClientRect().top <= bodyTop + 1);
+    };
+    body.addEventListener("scroll", updateToolbarState, { passive: true });
+    dialog.addEventListener("toggle", updateToolbarState);
+    updateToolbarState();
+  });
+
   document.querySelectorAll("[data-ui-storage-key]").forEach(function (root) {
     if (root.matches("select") || root.hasAttribute("data-form-select-input")) return;
     syncPrefPicker(root);
