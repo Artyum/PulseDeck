@@ -1,7 +1,9 @@
 import pytest
 from fastapi import HTTPException
 
+from app.models.enums import UserRole
 from app.services import projects as project_service
+from tests.helpers import make_user
 
 
 class TestListProjects:
@@ -55,6 +57,40 @@ class TestProjectCrud:
         )
         assert updated.name == "Renamed"
         assert updated.description == "New desc"
+
+    def test_update_project_notify_clients_on_staff_ticket(
+        self, db_session, project_with_members
+    ):
+        updated = project_service.update_project(
+            db_session,
+            project_with_members,
+            name=project_with_members.name,
+            key=project_with_members.key,
+            notify_clients_on_staff_ticket=True,
+        )
+        assert updated.notify_clients_on_staff_ticket is True
+        updated = project_service.update_project(
+            db_session,
+            updated,
+            name=updated.name,
+            key=updated.key,
+            notify_clients_on_staff_ticket=False,
+        )
+        assert updated.notify_clients_on_staff_ticket is False
+
+    def test_list_project_clients(self, db_session, project_with_members, client_user):
+        other_client = make_user(
+            db_session,
+            "client2@test.local",
+            role=UserRole.USER,
+            project=project_with_members,
+        )
+        clients = project_service.list_project_clients(
+            db_session, project_with_members.id
+        )
+        emails = {user.email.lower() for user in clients}
+        assert client_user.email.lower() in emails
+        assert other_client.email.lower() in emails
 
     def test_update_duplicate_name(self, db_session, project_with_members, staff_user):
         other = project_service.create_project(

@@ -328,6 +328,21 @@ def list_project_staff(db: Session, project_id: int) -> list[User]:
     )
 
 
+def list_project_clients(db: Session, project_id: int) -> list[User]:
+    return list(
+        db.scalars(
+            select(User)
+            .join(ProjectMember, ProjectMember.user_id == User.id)
+            .where(
+                ProjectMember.project_id == project_id,
+                User.is_active.is_(True),
+                User.role == UserRole.USER,
+            )
+            .order_by(User.last_name, User.first_name)
+        ).all()
+    )
+
+
 def count_active_project_staff(db: Session, project_id: int) -> int:
     return int(
         db.scalar(
@@ -568,6 +583,7 @@ def update_project(
     name: str,
     key: str,
     description: str | None = None,
+    notify_clients_on_staff_ticket: bool | None = None,
     lang: str | None = None,
 ) -> Project:
     clean_name, clean_key, clean_description = _normalize_project_fields(
@@ -576,6 +592,8 @@ def update_project(
     project.name = clean_name
     project.key = clean_key
     project.description = clean_description
+    if notify_clients_on_staff_ticket is not None:
+        project.notify_clients_on_staff_ticket = notify_clients_on_staff_ticket
     db.commit()
     db.refresh(project)
     return project

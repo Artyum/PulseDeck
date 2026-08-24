@@ -279,8 +279,7 @@ def update_notification_prefs(
     notify_reply: bool,
     notify_ticket_update: bool,
 ) -> User:
-    if user.is_staff:
-        user.notify_new_ticket = notify_new_ticket
+    user.notify_new_ticket = notify_new_ticket
     user.notify_reply = notify_reply
     user.notify_ticket_update = notify_ticket_update
     db.commit()

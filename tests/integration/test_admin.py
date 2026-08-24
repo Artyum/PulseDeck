@@ -63,6 +63,43 @@ class TestAdminProjects:
         )
         assert r.status_code in (200, 303, 422)
 
+    def test_edit_project_notify_clients_on_staff_ticket(
+        self, client, db_session, admin_user, project_with_members
+    ):
+        login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/edit",
+            data={
+                "name": project_with_members.name,
+                "project_key": project_with_members.key,
+                "description": project_with_members.description or "",
+                "notify_clients_on_staff_ticket": "1",
+            },
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+        db_session.refresh(project_with_members)
+        assert project_with_members.notify_clients_on_staff_ticket is True
+
+    def test_edit_project_notify_clients_off(
+        self, client, db_session, admin_user, project_with_members
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        db_session.commit()
+        login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/edit",
+            data={
+                "name": project_with_members.name,
+                "project_key": project_with_members.key,
+                "description": project_with_members.description or "",
+            },
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+        db_session.refresh(project_with_members)
+        assert project_with_members.notify_clients_on_staff_ticket is False
+
     def test_toggle_project_active(
         self, client, db_session, admin_user, project_with_members
     ):

@@ -235,6 +235,134 @@ class TestNotify:
         assert staff_user.email.lower() not in emails
         assert other_staff.email.lower() in emails
 
+    def test_notify_staff_ticket_to_client_when_flag_on(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        client_user.notify_new_ticket = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Staff for client"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        assert client_user.email.lower() in _outbox_emails(db_session)
+
+    def test_notify_staff_ticket_skips_client_when_flag_off(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        client_user.notify_new_ticket = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Staff no notify"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        assert client_user.email.lower() not in _outbox_emails(db_session)
+
+    def test_notify_client_created_ticket_does_not_notify_other_clients(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        other_client = make_user(
+            db_session,
+            "client2@test.local",
+            first_name="Client",
+            last_name="Two",
+            role=UserRole.USER,
+            project=project_with_members,
+        )
+        other_client.notify_new_ticket = True
+        staff_user.notify_new_ticket = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Client created"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        emails = _outbox_emails(db_session)
+        assert other_client.email.lower() not in emails
+        assert staff_user.email.lower() in emails
+
+    def test_notify_staff_ticket_respects_client_pref(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        client_user.notify_new_ticket = False
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Pref off"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        assert client_user.email.lower() not in _outbox_emails(db_session)
+
+    def test_notify_staff_ticket_notifies_each_client_once(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        other_client = make_user(
+            db_session,
+            "client2@test.local",
+            first_name="Client",
+            last_name="Two",
+            role=UserRole.USER,
+            project=project_with_members,
+        )
+        client_user.notify_new_ticket = True
+        other_client.notify_new_ticket = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Two clients"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        rows = list(db_session.scalars(select(EmailOutbox)).all())
+        client_rows = [
+            row
+            for row in rows
+            if row.to_email in {client_user.email.lower(), other_client.email.lower()}
+        ]
+        assert len(client_rows) == 2
+        assert len({row.to_email for row in client_rows}) == 2
+
+    def test_notify_staff_ticket_skips_inactive_client(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        client_user.notify_new_ticket = True
+        client_user.is_active = False
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Inactive client"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        assert client_user.email.lower() not in _outbox_emails(db_session)
+
+    def test_notify_staff_ticket_skips_user_outside_project(
+        self, db_session, project_with_members, staff_user
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        outsider = make_user(
+            db_session,
+            "outsider@test.local",
+            role=UserRole.USER,
+        )
+        outsider.notify_new_ticket = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Outsider"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        assert outsider.email.lower() not in _outbox_emails(db_session)
+
+    def test_notify_new_comment_unchanged_when_client_notify_flag_on(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        project_with_members.notify_clients_on_staff_ticket = True
+        staff_user.notify_reply = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Comment path"
+        )
+        email_service.notify_new_comment(db_session, ticket, client_user.id)
+        assert staff_user.email.lower() in _outbox_emails(db_session)
+
     def test_notify_new_comment(
         self, db_session, project_with_members, client_user, staff_user
     ):

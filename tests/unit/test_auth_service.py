@@ -264,6 +264,16 @@ class TestProfileAndPrefs:
             notify_ticket_update=True,
         )
         assert client_user.notify_reply is False
+        assert client_user.notify_new_ticket is True
+
+        auth_service.update_notification_prefs(
+            db_session,
+            client_user,
+            notify_new_ticket=False,
+            notify_reply=True,
+            notify_ticket_update=True,
+        )
+        assert client_user.notify_new_ticket is False
 
     def test_update_notification_prefs_staff(self, db_session, staff_user):
         auth_service.update_notification_prefs(

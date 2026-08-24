@@ -198,6 +198,7 @@ ui:
       notify_intro: "Konfiguracja powiadomień e-mail o zmianach w zgłoszeniach."
       notify_new_ticket: "Nowe zgłoszenia"
       notify_new_ticket_hint: "E-mail, gdy ktoś założy nowe zgłoszenie w projekcie, w którym jesteś Staff."
+      notify_new_ticket_hint_client: "E-mail, gdy zespół utworzy zgłoszenie w Twoim projekcie."
       notify_reply: "Odpowiedzi"
       notify_reply_hint: "E-mail o nowych komentarzach w zgłoszeniach, w których uczestniczysz."
       notify_ticket_update: "Status, typ i priorytet"
@@ -453,6 +454,8 @@ ui:
     project:
       open_portal: "Otwórz w portalu"
       settings: "Ustawienia"
+      notify_clients_on_staff_ticket: "Powiadamiaj klientów o zgłoszeniach od zespołu"
+      notify_clients_on_staff_ticket_note: "Domyślnie klienci nie otrzymują powiadomień o nowych zgłoszeniach od obsługi. Włącz tę opcję, aby umożliwić dwukierunkową komunikację."
       members: "Członkowie"
       members_empty: "Brak członków w projekcie."
       add_user: "Dodaj użytkownika"

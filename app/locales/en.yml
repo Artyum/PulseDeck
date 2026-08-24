@@ -198,6 +198,7 @@ ui:
       notify_intro: "Email notification settings for ticket changes."
       notify_new_ticket: "New tickets"
       notify_new_ticket_hint: "Email when someone creates a new ticket in a project where you are Staff."
+      notify_new_ticket_hint_client: "Email when the team creates a ticket in your project."
       notify_reply: "Replies"
       notify_reply_hint: "Email about new comments on tickets you participate in."
       notify_ticket_update: "Status, type and priority"
@@ -453,6 +454,8 @@ ui:
     project:
       open_portal: "Open in portal"
       settings: "Settings"
+      notify_clients_on_staff_ticket: "Notify clients about team-created tickets"
+      notify_clients_on_staff_ticket_note: "By default, clients do not receive notifications about new tickets created by the team. Enable this option to allow two-way communication."
       members: "Members"
       members_empty: "No members in the project."
       add_user: "Add user"

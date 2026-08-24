@@ -512,11 +512,21 @@ def _emit_group(
 
 def emit_ticket_created(db: Session, ticket: Ticket, *, actor_id: int) -> None:
     loaded = _load_ticket(db, ticket.id) or ticket
+    group = project_staff(db, loaded)
+    author = loaded.author
+    project = loaded.project
+    if (
+        project
+        and project.notify_clients_on_staff_ticket
+        and author
+        and project_service.user_has_staff_ops(author)
+    ):
+        group |= set(project_service.list_project_clients(db, project.id))
     _emit_group(
         db,
         loaded,
         actor_id=actor_id,
-        group=project_staff(db, loaded),
+        group=group,
         mail_key="new_ticket",
         pref="notify_new_ticket",
     )

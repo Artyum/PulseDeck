@@ -323,12 +323,20 @@ def edit_project(
     name: Annotated[str, Form()],
     project_key: Annotated[str, Form()],
     description: Annotated[str, Form()] = "",
+    notify_clients_on_staff_ticket: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     project = _admin_project(db, key, lang=lang)
+    notify_clients = bool(notify_clients_on_staff_ticket)
     try:
         project = project_service.update_project(
-            db, project, name=name, key=project_key, description=description, lang=lang
+            db,
+            project,
+            name=name,
+            key=project_key,
+            description=description,
+            notify_clients_on_staff_ticket=notify_clients,
+            lang=lang,
         )
     except ValueError as exc:
         return render(
@@ -339,6 +347,7 @@ def edit_project(
             form_name=name,
             form_key=project_key,
             form_description=description,
+            form_notify_clients_on_staff_ticket=notify_clients,
             **_project_detail_ctx(db, project),
         )
     return RedirectResponse(admin_project_path(project), status_code=303)

@@ -197,24 +197,22 @@
             class="pref-toggle-list"
             data-notif-prefs
             data-notif-prefs-url="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}">
-        {% if edit_user.is_staff %}
-          <label class="pref-toggle">
-            <span class="pref-toggle-meta">
-              <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
-              <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_new_ticket_hint") }}</span>
+        <label class="pref-toggle">
+          <span class="pref-toggle-meta">
+            <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
+            <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_new_ticket_hint" if edit_user.is_staff else "ui.profile.settings.notify_new_ticket_hint_client") }}</span>
+          </span>
+          <span class="theme-gradient-switch">
+            <input type="checkbox"
+                   name="notify_new_ticket"
+                   value="1"
+                   data-notif-pref="new_ticket"
+                   {% if edit_user.notify_new_ticket %}checked{% endif %}>
+            <span class="theme-gradient-track" aria-hidden="true">
+              <span class="theme-gradient-thumb"></span>
             </span>
-            <span class="theme-gradient-switch">
-              <input type="checkbox"
-                     name="notify_new_ticket"
-                     value="1"
-                     data-notif-pref="new_ticket"
-                     {% if edit_user.notify_new_ticket %}checked{% endif %}>
-              <span class="theme-gradient-track" aria-hidden="true">
-                <span class="theme-gradient-thumb"></span>
-              </span>
-            </span>
-          </label>
-        {% endif %}
+          </span>
+        </label>
         <label class="pref-toggle">
           <span class="pref-toggle-meta">
             <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_reply") }}</span>
