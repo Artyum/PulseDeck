@@ -454,6 +454,7 @@ ui:
     project:
       open_portal: "Open in portal"
       settings: "Settings"
+      notifications: "Notifications"
       notify_clients_on_staff_ticket: "Notify clients about team-created tickets"
       notify_clients_on_staff_ticket_note: "By default, clients do not receive notifications about new tickets created by the team. Enable this option to allow two-way communication."
       members: "Members"

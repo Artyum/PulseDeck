@@ -1204,6 +1204,16 @@
       }).catch(function () {});
       return;
     }
+    var projectNotifRoot = el.closest("[data-project-notif-prefs]");
+    if (projectNotifRoot && el.hasAttribute("data-project-notif-pref")) {
+      var projectNotifUrl = projectNotifRoot.getAttribute("data-project-notif-prefs-url");
+      var prefName = el.getAttribute("data-project-notif-pref");
+      if (!projectNotifUrl || !prefName) return;
+      var projectPayload = {};
+      projectPayload[prefName] = el.checked ? "1" : "";
+      postForm(projectNotifUrl, projectPayload).catch(function () {});
+      return;
+    }
     var notifRoot = el.closest("[data-notif-prefs]");
     if (notifRoot && el.hasAttribute("data-notif-pref")) {
       var notifUrl = notifRoot.getAttribute("data-notif-prefs-url");

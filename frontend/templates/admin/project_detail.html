@@ -23,43 +23,50 @@
     <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.admin.project.settings") }}</h2>
     <form method="post"
           action="{{ url_for('edit_project', key=project.key) }}"
-          class="admin-form-stack"
+          class="admin-form-row"
           data-confirm-when-key-changes="{{ project.key }}"
           data-confirm-title="{{ t('ui.confirm.change_key.title') }}"
           data-confirm="{{ t('ui.confirm.change_key.message') }}"
           data-confirm-action="{{ t('ui.confirm.change_key.action') }}">
-      <div class="admin-form-row">
-        <div class="admin-form-field">
-          <label class="label-tight" for="edit-name">{{ t("ui.admin.projects.name") }}</label>
-          <input id="edit-name"
-                 name="name"
-                 {{ field_attrs("project.name") }}
-                 value="{{ form_name if form_name is defined else project.name }}"
-                 class="input">
-        </div>
-        <div class="admin-form-field">
-          <label class="label-tight" for="edit-key">{{ t("ui.admin.projects.key") }}</label>
-          <input id="edit-key"
-                 name="project_key"
-                 {{ field_attrs("project.key") }}
-                 value="{{ form_key if form_key is defined else project.key }}"
-                 title="{{ t('ui.admin.projects.key_title') }}"
-                 class="input uppercase">
-        </div>
-        <div class="admin-form-field">
-          <label class="label-tight" for="edit-desc">{{ t("ui.admin.projects.description") }}</label>
-          <input id="edit-desc"
-                 name="description"
-                 {{ field_attrs("project.description") }}
-                 value="{{ form_description if form_description is defined else (project.description or '') }}"
-                 class="input">
-        </div>
-        <div class="admin-form-field">
-          <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
-          <button type="submit" class="btn btn-primary">{{ t("ui.common.save") }}</button>
-        </div>
+      <div class="admin-form-field">
+        <label class="label-tight" for="edit-name">{{ t("ui.admin.projects.name") }}</label>
+        <input id="edit-name"
+               name="name"
+               {{ field_attrs("project.name") }}
+               value="{{ form_name if form_name is defined else project.name }}"
+               class="input">
       </div>
-      <div class="admin-prefs">
+      <div class="admin-form-field">
+        <label class="label-tight" for="edit-key">{{ t("ui.admin.projects.key") }}</label>
+        <input id="edit-key"
+               name="project_key"
+               {{ field_attrs("project.key") }}
+               value="{{ form_key if form_key is defined else project.key }}"
+               title="{{ t('ui.admin.projects.key_title') }}"
+               class="input uppercase">
+      </div>
+      <div class="admin-form-field">
+        <label class="label-tight" for="edit-desc">{{ t("ui.admin.projects.description") }}</label>
+        <input id="edit-desc"
+               name="description"
+               {{ field_attrs("project.description") }}
+               value="{{ form_description if form_description is defined else (project.description or '') }}"
+               class="input">
+      </div>
+      <div class="admin-form-field">
+        <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
+        <button type="submit" class="btn btn-primary">{{ t("ui.common.save") }}</button>
+      </div>
+    </form>
+  </section>
+  <section class="admin-section">
+    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.admin.project.notifications") }}</h2>
+    <div class="admin-prefs">
+      <form method="post"
+            action="{{ url_for('project_notifications', key=project.key) }}"
+            class="pref-toggle-list"
+            data-project-notif-prefs
+            data-project-notif-prefs-url="{{ url_for('project_notifications', key=project.key) }}">
         <label class="pref-toggle">
           <span class="pref-toggle-meta">
             <span class="pref-toggle-label">{{ t("ui.admin.project.notify_clients_on_staff_ticket") }}</span>
@@ -69,17 +76,15 @@
             <input type="checkbox"
                    name="notify_clients_on_staff_ticket"
                    value="1"
-                   {% if form_notify_clients_on_staff_ticket is defined %} {% if form_notify_clients_on_staff_ticket %}checked{% endif %}
-                   {% elif project.notify_clients_on_staff_ticket %}
-                   checked
-                   {% endif %}>
+                   data-project-notif-pref="notify_clients_on_staff_ticket"
+                   {% if project.notify_clients_on_staff_ticket %}checked{% endif %}>
             <span class="theme-gradient-track" aria-hidden="true">
               <span class="theme-gradient-thumb"></span>
             </span>
           </span>
         </label>
-      </div>
-    </form>
+      </form>
+    </div>
   </section>
   <section class="admin-section" data-coachmark="admin-project-members">
     <div class="issue-section-bar">

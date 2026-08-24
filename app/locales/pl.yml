@@ -454,6 +454,7 @@ ui:
     project:
       open_portal: "Otwórz w portalu"
       settings: "Ustawienia"
+      notifications: "Powiadomienia"
       notify_clients_on_staff_ticket: "Powiadamiaj klientów o zgłoszeniach od zespołu"
       notify_clients_on_staff_ticket_note: "Domyślnie klienci nie otrzymują powiadomień o nowych zgłoszeniach od obsługi. Włącz tę opcję, aby umożliwić dwukierunkową komunikację."
       members: "Członkowie"

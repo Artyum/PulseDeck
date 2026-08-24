@@ -323,11 +323,9 @@ def edit_project(
     name: Annotated[str, Form()],
     project_key: Annotated[str, Form()],
     description: Annotated[str, Form()] = "",
-    notify_clients_on_staff_ticket: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     project = _admin_project(db, key, lang=lang)
-    notify_clients = bool(notify_clients_on_staff_ticket)
     try:
         project = project_service.update_project(
             db,
@@ -335,7 +333,6 @@ def edit_project(
             name=name,
             key=project_key,
             description=description,
-            notify_clients_on_staff_ticket=notify_clients,
             lang=lang,
         )
     except ValueError as exc:
@@ -347,9 +344,23 @@ def edit_project(
             form_name=name,
             form_key=project_key,
             form_description=description,
-            form_notify_clients_on_staff_ticket=notify_clients,
             **_project_detail_ctx(db, project),
         )
+    return RedirectResponse(admin_project_path(project), status_code=303)
+
+
+@router.post("/projects/{key}/notifications")
+def project_notifications(
+    request: Request,
+    key: str,
+    user: AdminUser,
+    db: DbSession,
+    notify_clients_on_staff_ticket: Annotated[str, Form()] = "",
+):
+    project = _admin_project(db, key, lang=resolve_lang(request))
+    project_service.set_project_notify_clients_on_staff_ticket(
+        db, project, enabled=bool(notify_clients_on_staff_ticket)
+    )
     return RedirectResponse(admin_project_path(project), status_code=303)
 
 

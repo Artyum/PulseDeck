@@ -68,13 +68,8 @@ class TestAdminProjects:
     ):
         login_admin(client)
         r = client.post(
-            f"/admin/projects/{project_with_members.key}/edit",
-            data={
-                "name": project_with_members.name,
-                "project_key": project_with_members.key,
-                "description": project_with_members.description or "",
-                "notify_clients_on_staff_ticket": "1",
-            },
+            f"/admin/projects/{project_with_members.key}/notifications",
+            data={"notify_clients_on_staff_ticket": "1"},
             follow_redirects=False,
         )
         assert r.status_code == 303
@@ -88,12 +83,8 @@ class TestAdminProjects:
         db_session.commit()
         login_admin(client)
         r = client.post(
-            f"/admin/projects/{project_with_members.key}/edit",
-            data={
-                "name": project_with_members.name,
-                "project_key": project_with_members.key,
-                "description": project_with_members.description or "",
-            },
+            f"/admin/projects/{project_with_members.key}/notifications",
+            data={},
             follow_redirects=False,
         )
         assert r.status_code == 303

@@ -599,6 +599,18 @@ def update_project(
     return project
 
 
+def set_project_notify_clients_on_staff_ticket(
+    db: Session,
+    project: Project,
+    *,
+    enabled: bool,
+) -> Project:
+    project.notify_clients_on_staff_ticket = enabled
+    db.commit()
+    db.refresh(project)
+    return project
+
+
 def set_project_active(db: Session, project: Project, *, active: bool) -> Project:
     project.is_active = active
     db.commit()
