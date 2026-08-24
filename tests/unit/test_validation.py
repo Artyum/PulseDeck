@@ -298,6 +298,10 @@ class TestCleanManyAndErrors:
         raw = "one\n\ntwo"
         assert clean("comment.content", raw) == "one\n\ntwo"
 
+    def test_unescapes_html_entities_in_rich_text(self):
+        assert clean("ticket.description", "Refunds &amp; Chargebacks") == "Refunds & Chargebacks"
+        assert clean("comment.content", "A &amp; B &lt; C") == "A & B < C"
+
     def test_clean_many_stops_on_first_error(self):
         with pytest.raises(ValidationValueError) as exc:
             clean_many({"ticket.title": "", "ticket.description": "ok"})

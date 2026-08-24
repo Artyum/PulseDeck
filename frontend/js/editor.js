@@ -13,6 +13,13 @@ var CMD_ACTIVE = {
   setLink: "link",
 };
 
+function decodeHtmlEntities(text) {
+  if (!text) return "";
+  var el = document.createElement("textarea");
+  el.innerHTML = text;
+  return el.value;
+}
+
 function parseHttpUrl(url, defaultProtocol) {
   try {
     var raw = String(url || "").trim();
@@ -203,7 +210,7 @@ function initEditor(root) {
   var input = root.querySelector("[data-rich-input]");
   if (!surface || !input) return;
 
-  var initial = input.defaultValue || "";
+  var initial = decodeHtmlEntities(input.defaultValue || "");
   var placeholder = root.getAttribute("data-placeholder") || "";
   var attrs = { class: "rich-editor-prose" };
   if (placeholder) attrs["data-placeholder"] = placeholder;

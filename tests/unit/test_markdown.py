@@ -84,3 +84,13 @@ class TestRenderMarkdownSafe:
         html = render_markdown_safe("[x](data:text/html,hi)")
         assert 'href="data:' not in html
         assert "<a " not in html
+
+    def test_ampersand_plain(self):
+        html = render_markdown_safe("Refunds & Chargebacks")
+        assert "Refunds &amp; Chargebacks" in html
+        assert "&amp;amp;" not in html
+
+    def test_ampersand_entity_in_source(self):
+        html = render_markdown_safe("Refunds &amp; Chargebacks")
+        assert "Refunds &amp; Chargebacks" in html
+        assert "&amp;amp;" not in html

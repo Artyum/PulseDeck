@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import string
+from html import unescape
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -51,6 +52,7 @@ def normalize_raw(value: Any, spec: FieldSpec) -> Any:
         value = value.strip()
     if spec.trim_blank_edges:
         value = trim_blank_edges(value)
+    value = unescape(value)
     if spec.collapse_spaces:
         value = " ".join(value.split())
     if spec.case == "lower":

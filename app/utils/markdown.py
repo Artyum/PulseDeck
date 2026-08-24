@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from html import unescape
+
 import nh3
 from markdown_it import MarkdownIt
 from markupsafe import Markup
@@ -44,7 +46,7 @@ _md = (
 def render_markdown_safe(text: str | None) -> Markup:
     if not text or not str(text).strip():
         return Markup("")
-    html = _md.render(str(text))
+    html = _md.render(unescape(str(text)))
     return Markup(
         nh3.clean(
             html,
