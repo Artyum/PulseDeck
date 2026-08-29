@@ -89,7 +89,7 @@
                       action="{{ url_for('open_reply_post', token=token) }}"
                       class="issue-composer{% if not comment_groups %} issue-composer-solo{% endif %}">
                   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                  {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder') ) }}
+                  {{ rich_editor('content', 'comment.content', '', placeholder=t('ui.ticket.reply_placeholder')) }}
                   <div class="issue-composer-bar">
                     <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
                        class="issue-composer-opt link-quiet">{{ t("ui.reply.attach_login_hint") }}</a>

@@ -7,62 +7,61 @@
 {% block content %}
   {% if is_project_staff %}
     {% set views = [
-          ('all', t('ui.portal.view.all')),
-          ('needs_us', t('ui.portal.view.staff.needs_us')),
-          ('open', t('ui.portal.view.open')),
-          ('done', t('ui.portal.view.done')),
-          ('unassigned', t('ui.portal.view.staff.unassigned'))
-        ] %}
+      ('all', t('ui.portal.view.all')),
+      ('needs_us', t('ui.portal.view.staff.needs_us')),
+      ('open', t('ui.portal.view.open')),
+      ('done', t('ui.portal.view.done')),
+      ('unassigned', t('ui.portal.view.staff.unassigned'))
+    ] %}
   {% else %}
     {% set views = [
-          ('all', t('ui.portal.view.all')),
-          ('waiting_on_me', t('ui.portal.view.client.waiting_on_me')),
-          ('open', t('ui.portal.view.open')),
-          ('done', t('ui.portal.view.done'))
-        ] %}
+      ('all', t('ui.portal.view.all')),
+      ('waiting_on_me', t('ui.portal.view.client.waiting_on_me')),
+      ('open', t('ui.portal.view.open')),
+      ('done', t('ui.portal.view.done'))
+    ] %}
   {% endif %}
   {% macro feed_link(page=1, per_page=none) -%}
     {{ build_feed_path(project.key,
-        view=feed_query.view,
-        mine=feed_query.mine,
-        mine_paused=feed_query.mine_paused,
-        priority=feed_query.priority,
-        type=feed_query.type,
-        status=feed_query.status,
-        tag=feed_query.tag,
-        q=feed_query.q,
-        sort=feed_query.sort,
-        page=page,
-        per_page=per_page if per_page is not none else feed_query.per_page) }}
+      view=feed_query.view,
+      mine=feed_query.mine,
+      mine_paused=feed_query.mine_paused,
+      priority=feed_query.priority,
+      type=feed_query.type,
+      status=feed_query.status,
+      tag=feed_query.tag,
+      q=feed_query.q,
+      sort=feed_query.sort,
+      page=page,
+      per_page=per_page if per_page is not none else feed_query.per_page) }}
   {%- endmacro %}
   {% macro feed_view_link(key) -%}
     {{ build_feed_path(project.key,
-        view=key,
-        mine=(key != 'unassigned') and (filter_mine or filter_mine_paused),
-    mine_paused=(key == 'unassigned') and (filter_mine or filter_mine_paused),
-    priority=feed_query.priority,
-    type=feed_query.type,
-    tag=feed_query.tag,
-    sort=feed_query.sort,
-    per_page=feed_query.per_page
-    ) }}
+      view=key,
+      mine=(key != 'unassigned') and (filter_mine or filter_mine_paused),
+      mine_paused=(key == 'unassigned') and (filter_mine or filter_mine_paused),
+      priority=feed_query.priority,
+      type=feed_query.type,
+      tag=feed_query.tag,
+      sort=feed_query.sort,
+      per_page=feed_query.per_page) }}
   {%- endmacro %}
   {% macro feed_page_btn(enabled, href, label, icon_name) -%}
     {% if enabled %}
       <a href="{{ href }}"
          class="feed-pagination-btn"
          aria-label="{{ label }}">
-      {% else %}
-        <span class="feed-pagination-btn is-disabled"
-              aria-disabled="true"
-              aria-label="{{ label }}">
-        {% endif %}
-        <span class="section-icon feed-pagination-icon" aria-hidden="true">{{ icon(icon_name) }}</span>
-        {% if enabled %}
+    {% else %}
+      <span class="feed-pagination-btn is-disabled"
+            aria-disabled="true"
+            aria-label="{{ label }}">
+    {% endif %}
+      <span class="section-icon feed-pagination-icon" aria-hidden="true">{{ icon(icon_name) }}</span>
+      {% if enabled %}
         </a>
       {% else %}
-      </span>
-    {% endif %}
+        </span>
+      {% endif %}
   {%- endmacro %}
   <div id="feed-header-and-results" class="issue-page" data-sidebar>
     <div class="issue-page-body">
@@ -80,9 +79,9 @@
           <div class="issue-section-actions">
             <span class="label-tight">{{ t("ui.portal.feed.sort") }}</span>
             {{ form_select_menu('sort', t('ui.portal.feed.sort') , [
-            namespace(value='created_at', label=t('ui.portal.feed.sort_options.created')),
-            namespace(value='updated_at', label=t('ui.portal.feed.sort_options.updated')),
-            namespace(value='priority', label=t('ui.portal.feed.sort_options.priority')),
+              namespace(value='created_at', label=t('ui.portal.feed.sort_options.created')),
+              namespace(value='updated_at', label=t('ui.portal.feed.sort_options.updated')),
+              namespace(value='priority', label=t('ui.portal.feed.sort_options.priority')),
             ], filter_sort, compact=true, submit_on_pick=true, input_attrs='form="feed-filters"') }}
             {% if can_create_ticket %}
               <button type="button"
@@ -233,7 +232,7 @@
             action="{{ url_for('create_ticket', key=project.key) }}"
             enctype="multipart/form-data"
             class="modal-form">
-        {{ modal_header('new-ticket', t('ui.portal.feed.modal_title') ) }}
+        {{ modal_header('new-ticket', t('ui.portal.feed.modal_title')) }}
         <div class="modal-body">
           <div>
             <label class="label" for="new-ticket-title">{{ t("ui.portal.feed.field.title") }}</label>

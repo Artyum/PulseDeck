@@ -229,12 +229,14 @@ def delete_perf_data(
 
 def vacuum_db(db: Session) -> None:
     from sqlalchemy import text
+    from sqlalchemy.engine import Engine
 
     bind = db.get_bind()
-    if bind is None or bind.dialect.name != "postgresql":
+    engine = bind if isinstance(bind, Engine) else getattr(bind, "engine", None)
+    if not isinstance(engine, Engine) or engine.dialect.name != "postgresql":
         logger.info("VACUUM pominięty (tylko PostgreSQL)")
         return
-    with bind.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+    with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
         conn.execute(
             text(
                 "VACUUM ANALYZE tickets, comments, users, project_members, tags, ticket_tags"

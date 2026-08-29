@@ -88,7 +88,7 @@
     <form method="post"
           action="{{ url_for('create_project') }}{%- if show_disabled -%}?disabled=1{%- endif -%}"
           class="modal-form">
-      {{ modal_header('new-project', t('ui.admin.projects.new') ) }}
+      {{ modal_header('new-project', t('ui.admin.projects.new')) }}
       <div class="modal-body">
         <div class="form-grid">
           <div class="admin-field" data-coachmark="admin-projects-name">

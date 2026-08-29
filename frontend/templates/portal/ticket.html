@@ -11,7 +11,7 @@
             action="{{ url_for('edit_ticket', ticket_ref=ticket|ticket_label) }}"
             enctype="multipart/form-data"
             class="modal-form">
-        {{ modal_header('edit-ticket', t('ui.ticket.edit_modal') ) }}
+        {{ modal_header('edit-ticket', t('ui.ticket.edit_modal')) }}
         <div class="modal-body">
           <div>
             <label class="label" for="edit-ticket-title">{{ t("ui.portal.feed.field.title") }}</label>
@@ -36,7 +36,7 @@
   {% endif %}
   <dialog id="ticket-history" class="modal modal-fill">
     <div class="modal-form">
-      {{ modal_header('ticket-history', t('ui.ticket.history') ) }}
+      {{ modal_header('ticket-history', t('ui.ticket.history')) }}
       <div class="modal-body" id="ticket-history-body">
         <p class="alert alert-muted">{{ t("ui.ticket.history_loading") }}</p>
       </div>

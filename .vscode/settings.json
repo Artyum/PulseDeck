@@ -8,18 +8,10 @@
   "files.insertFinalNewline": true, // automatyczne dodawanie pustej linii na końcu pliku
   "files.eol": "\n",
 
-  // Interpreter — wybierz środowisko w VS Code (Ctrl+Shift+P → Python: Select Interpreter)
-  "python.defaultInterpreterPath": "C:\\Users\\arkad\\miniconda3\\envs\\pulsedeck\\python.exe",
-  "python-envs.pythonProjects": [
-    {
-      "path": ".",
-      "envManager": "ms-python.python:conda"
-    }
-  ],
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
   "python.terminal.activateEnvInCurrentTerminal": true,
   "python.terminal.activateEnvironment": true,
   "terminal.integrated.scrollback": 10000,
-  "terminal.integrated.defaultProfile.windows": "PowerShell",
 
   // Konfiguracja dla plików Python
   "[python]": {
@@ -59,9 +51,6 @@
   // Konfiguracja PRETTIER (szczegóły w .prettierrc.json)
   "prettier.requireConfig": true,
 
-  // djLint jest w bazowym Miniconda, nie w env pulsedeck
-  "djlint.useVenv": false,
-  "djlint.executablePath": "C:\\Users\\arkad\\miniconda3\\Scripts\\djlint.exe",
   "djlint.indent": 2,
 
   // Konfiguracja dla plików HTML/Jinja — wszystkie .html to szablony Jinja
@@ -100,8 +89,6 @@
   },
   "html.validate.styles": false,
   "html.validate.scripts": false,
-  "python-envs.defaultEnvManager": "ms-python.python:conda",
-  "python-envs.defaultPackageManager": "ms-python.python:conda",
   "python.terminal.useEnvFile": true,
   "python.analysis.diagnosticMode": "workspace"
 }

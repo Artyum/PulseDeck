@@ -1,0 +1,44 @@
+services:
+  migrate:
+    image: ${PULSEDECK_IMAGE}
+    container_name: pulsedeck_prod_migrate
+    env_file:
+      - .env.prod
+    entrypoint: ["/bin/sh", "/app/deploy/entrypoint_migrate.sh"]
+    restart: "no"
+
+  web:
+    image: ${PULSEDECK_IMAGE}
+    container_name: pulsedeck_prod
+    env_file:
+      - .env.prod
+    volumes:
+      - ../data/uploads:/app/data/uploads
+      - ../logs:/app/logs
+    ports:
+      - "${PULSEDECK_HTTP_PORT:-8000}:${UVICORN_PORT:-8000}"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS \"http://127.0.0.1:$${UVICORN_PORT:-8000}/api/health\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  worker:
+    image: ${PULSEDECK_IMAGE}
+    container_name: pulsedeck_prod_worker
+    env_file:
+      - .env.prod
+    entrypoint: ["/bin/sh", "/app/deploy/entrypoint_worker.sh"]
+    volumes:
+      - ../logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      web:
+        condition: service_healthy
+    restart: unless-stopped

@@ -114,20 +114,20 @@
                   class="issue-menu-item{% if current_value == empty_value or ((empty_value is none or empty_value == '') and not current_value) %} is-active{% endif %}">{{ empty_label }}</button>
         {% endif %}
         {% if show_role_badge %}<div class="issue-menu-scroll">{% endif %}
-          {% for item in choices %}
-            {% if value_attr != 'id' or current_value is none or item.id != current_value %}
-              {% if value_attr == 'id' %}
-                {{ user_menu_item(item, field_name, show_role_badge) }}
-              {% else %}
-                <button type="submit"
-                        name="{{ field_name }}"
-                        value="{{ item.value }}"
-                        class="issue-menu-item{% if current_value == item.value %} is-active{% endif %}"
-                        {% if current_value == item.value %}aria-current="true"{% endif %}>{{ labels[item] }}</button>
-              {% endif %}
+        {% for item in choices %}
+          {% if value_attr != 'id' or current_value is none or item.id != current_value %}
+            {% if value_attr == 'id' %}
+              {{ user_menu_item(item, field_name, show_role_badge) }}
+            {% else %}
+              <button type="submit"
+                      name="{{ field_name }}"
+                      value="{{ item.value }}"
+                      class="issue-menu-item{% if current_value == item.value %} is-active{% endif %}"
+                      {% if current_value == item.value %}aria-current="true"{% endif %}>{{ labels[item] }}</button>
             {% endif %}
-          {% endfor %}
-          {% if show_role_badge %}</div>{% endif %}
+          {% endif %}
+        {% endfor %}
+        {% if show_role_badge %}</div>{% endif %}
       </form>
     </div>
   </div>
@@ -203,24 +203,24 @@
                 {% if not ns.current %}aria-current="true"{% endif %}>{{ empty_label }}</button>
       {% endif %}
       {% if show_role_badge %}<div class="issue-menu-scroll">{% endif %}
-        {% for item in choices %}
-          {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
-          {% set item_label = _form_select_item_label(item, labels, value_attr, show_role_badge) %}
-          <button type="button"
-                  class="issue-menu-item{% if show_role_badge and value_attr == 'id' %} issue-menu-item-split{% endif %}{% if item_value == ns.current %} is-active{% endif %}"
-                  data-form-select-option
-                  data-value="{{ item_value }}"
-                  data-label="{{ item_label }}"
-                  {% if item_value == ns.current %}aria-current="true"{% endif %}>
-            {% if show_role_badge and value_attr == 'id' %}
-              <span class="issue-menu-item-name">{{ item_label }}</span>
-              <span class="chip chip-role-{{ item.role.value|lower }}">{{ role_labels[item.role] }}</span>
-            {% else %}
-              {{ item_label }}
-            {% endif %}
-          </button>
-        {% endfor %}
-        {% if show_role_badge %}</div>{% endif %}
+      {% for item in choices %}
+        {% set item_value = item.id|string if value_attr == 'id' else item.value|string %}
+        {% set item_label = _form_select_item_label(item, labels, value_attr, show_role_badge) %}
+        <button type="button"
+                class="issue-menu-item{% if show_role_badge and value_attr == 'id' %} issue-menu-item-split{% endif %}{% if item_value == ns.current %} is-active{% endif %}"
+                data-form-select-option
+                data-value="{{ item_value }}"
+                data-label="{{ item_label }}"
+                {% if item_value == ns.current %}aria-current="true"{% endif %}>
+          {% if show_role_badge and value_attr == 'id' %}
+            <span class="issue-menu-item-name">{{ item_label }}</span>
+            <span class="chip chip-role-{{ item.role.value|lower }}">{{ role_labels[item.role] }}</span>
+          {% else %}
+            {{ item_label }}
+          {% endif %}
+        </button>
+      {% endfor %}
+      {% if show_role_badge %}</div>{% endif %}
     </div>
   </div>
 {%- endmacro %}

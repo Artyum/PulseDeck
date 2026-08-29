@@ -1,0 +1,61 @@
+networks:
+  traefik-net:
+    external: true
+
+services:
+  migrate:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: pulsedeck:latest
+    container_name: pulsedeck_dev_migrate
+    env_file:
+      - .env.dev
+    entrypoint: ["/bin/sh", "/app/deploy/entrypoint_migrate.sh"]
+    volumes:
+      - ../app:/app/app
+      - ../alembic:/app/alembic
+      - ../alembic.ini:/app/alembic.ini:ro
+      - ../mount/uploads:/app/data/uploads
+      - ../mount/logs:/app/logs
+    restart: "no"
+
+  web:
+    image: pulsedeck:latest
+    container_name: pulsedeck_dev
+    env_file:
+      - .env.dev
+    volumes:
+      - ../app:/app/app
+      - ../frontend:/app/frontend
+      - ../alembic:/app/alembic
+      - ../alembic.ini:/app/alembic.ini:ro
+      - ../tests:/app/tests:ro
+      - ../requirements-dev.txt:/app/requirements-dev.txt:ro
+      - ../mount/uploads:/app/data/uploads
+      - ../mount/logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pulsedeck_dev.rule=Host(`pulsedeck.lan`)"
+      - "traefik.http.routers.pulsedeck_dev.middlewares=lan-only@file"
+      - "traefik.http.services.pulsedeck_dev.loadbalancer.server.port=8000"
+    restart: no
+
+  worker:
+    image: pulsedeck:latest
+    container_name: pulsedeck_dev_worker
+    env_file:
+      - .env.dev
+    entrypoint: ["/bin/sh", "/app/deploy/entrypoint_worker.sh"]
+    volumes:
+      - ../app:/app/app
+      - ../mount/logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: no

@@ -36,73 +36,73 @@
     <section class="admin-section">
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.profile.title.data") }}</h2>
       <div class="admin-narrow">
-      {% endif %}
-      <form method="post"
-            action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
-            class="admin-form-stack">
-        <div class="form-grid">
-          <div class="admin-field">
-            <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
-            <input id="first_name"
-                   name="first_name"
-                   {{ field_attrs("user.first_name") }}
-                   value="{{ edit_user.first_name }}"
-                   class="input">
-          </div>
-          <div class="admin-field">
-            <label class="label" for="last_name">{{ t("ui.profile.field.last_name") }}</label>
-            <input id="last_name"
-                   name="last_name"
-                   {{ field_attrs("user.last_name") }}
-                   value="{{ edit_user.last_name }}"
-                   class="input">
-          </div>
-          <div class="admin-field">
-            <label class="label" for="email">{{ t("ui.profile.field.email") }}</label>
-            <input id="email"
-                   name="email"
-                   {{ field_attrs("user.email") }}
-                   value="{{ edit_user.email }}"
-                   class="input">
-            {% if not is_admin_edit %}
-              <p class="admin-field-hint">{{ t("ui.profile.email_change_hint") }}</p>
-            {% endif %}
-            {% if edit_user.pending_email %}
-              <p class="admin-field-hint">{{ t('ui.profile.email_pending', email=edit_user.pending_email) }}</p>
-            {% endif %}
-          </div>
-          <div class="admin-field">
-            <label class="label" for="phone">{{ t("ui.profile.field.phone") }}</label>
-            <input id="phone"
-                   name="phone"
-                   {{ field_attrs("user.phone") }}
-                   value="{{ edit_user.phone|format_phone }}"
-                   placeholder="+48 123 456 789"
-                   class="input">
-          </div>
-          {% if is_admin_edit %}
-            <div class="admin-field">
-              <label class="label" for="edit-user-role">{{ t("ui.admin.user_new.role") }}</label>
-              {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, edit_user.role.value, role_labels, id='edit-user-role', input_attrs='data-role-select', disabled=(edit_user.id == user.id)) }}
-            </div>
-            <div class="admin-field">
-              <label class="label" for="edit-user-lang">{{ t("ui.settings.language") }}</label>
-              {{ form_select_menu('ui_lang', t('ui.settings.language') , lang_choices, edit_user.ui_lang, value_attr='id', id='edit-user-lang') }}
-            </div>
-          {% endif %}
-        </div>
-        {% if is_admin_edit %}
-          <div data-projects-field
-               data-required-msg="{{ t('ui.admin.projects_required') }}"
-               {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
-          <p class="admin-field-hint"
-             data-admin-projects-hint
-             {% if not edit_user.is_admin %}hidden{% endif %}>{{ t("ui.profile.admin_all_projects_hint") }}</p>
-        {% endif %}
-        <button type="submit" class="btn btn-primary">{{ t("ui.profile.save_data") }}</button>
-      </form>
-      {% if is_admin_edit %}
+  {% endif %}
+  <form method="post"
+        action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
+        class="admin-form-stack">
+    <div class="form-grid">
+      <div class="admin-field">
+        <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
+        <input id="first_name"
+               name="first_name"
+               {{ field_attrs("user.first_name") }}
+               value="{{ edit_user.first_name }}"
+               class="input">
       </div>
+      <div class="admin-field">
+        <label class="label" for="last_name">{{ t("ui.profile.field.last_name") }}</label>
+        <input id="last_name"
+               name="last_name"
+               {{ field_attrs("user.last_name") }}
+               value="{{ edit_user.last_name }}"
+               class="input">
+      </div>
+      <div class="admin-field">
+        <label class="label" for="email">{{ t("ui.profile.field.email") }}</label>
+        <input id="email"
+               name="email"
+               {{ field_attrs("user.email") }}
+               value="{{ edit_user.email }}"
+               class="input">
+        {% if not is_admin_edit %}
+          <p class="admin-field-hint">{{ t("ui.profile.email_change_hint") }}</p>
+        {% endif %}
+        {% if edit_user.pending_email %}
+          <p class="admin-field-hint">{{ t('ui.profile.email_pending', email=edit_user.pending_email) }}</p>
+        {% endif %}
+      </div>
+      <div class="admin-field">
+        <label class="label" for="phone">{{ t("ui.profile.field.phone") }}</label>
+        <input id="phone"
+               name="phone"
+               {{ field_attrs("user.phone") }}
+               value="{{ edit_user.phone|format_phone }}"
+               placeholder="+48 123 456 789"
+               class="input">
+      </div>
+      {% if is_admin_edit %}
+        <div class="admin-field">
+          <label class="label" for="edit-user-role">{{ t("ui.admin.user_new.role") }}</label>
+          {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, edit_user.role.value, role_labels, id='edit-user-role', input_attrs='data-role-select', disabled=(edit_user.id == user.id)) }}
+        </div>
+        <div class="admin-field">
+          <label class="label" for="edit-user-lang">{{ t("ui.settings.language") }}</label>
+          {{ form_select_menu('ui_lang', t('ui.settings.language') , lang_choices, edit_user.ui_lang, value_attr='id', id='edit-user-lang') }}
+        </div>
+      {% endif %}
+    </div>
+    {% if is_admin_edit %}
+      <div data-projects-field
+           data-required-msg="{{ t('ui.admin.projects_required') }}"
+           {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
+      <p class="admin-field-hint"
+         data-admin-projects-hint
+         {% if not edit_user.is_admin %}hidden{% endif %}>{{ t("ui.profile.admin_all_projects_hint") }}</p>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">{{ t("ui.profile.save_data") }}</button>
+  </form>
+  {% if is_admin_edit %}
+    </div>
     </section>
   {% endif %}
 {% endif %}
@@ -188,65 +188,65 @@
     {% if is_admin_edit %}
       <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
       <div class="admin-prefs">
-      {% else %}
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
-      {% endif %}
-      <p class="admin-section-note">{{ t("ui.profile.settings.notify_intro") }}</p>
-      <form method="post"
-            action="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}"
-            class="pref-toggle-list"
-            data-notif-prefs
-            data-notif-prefs-url="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}">
-        <label class="pref-toggle">
-          <span class="pref-toggle-meta">
-            <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
-            <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_new_ticket_hint" if edit_user.is_staff else "ui.profile.settings.notify_new_ticket_hint_client") }}</span>
+    {% else %}
+      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
+    {% endif %}
+    <p class="admin-section-note">{{ t("ui.profile.settings.notify_intro") }}</p>
+    <form method="post"
+          action="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}"
+          class="pref-toggle-list"
+          data-notif-prefs
+          data-notif-prefs-url="{%- if is_admin_edit -%}{{ url_for('admin_user_notifications', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_notifications') }}{%- endif -%}">
+      <label class="pref-toggle">
+        <span class="pref-toggle-meta">
+          <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
+          <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_new_ticket_hint" if edit_user.is_staff else "ui.profile.settings.notify_new_ticket_hint_client") }}</span>
+        </span>
+        <span class="theme-gradient-switch">
+          <input type="checkbox"
+                 name="notify_new_ticket"
+                 value="1"
+                 data-notif-pref="new_ticket"
+                 {% if edit_user.notify_new_ticket %}checked{% endif %}>
+          <span class="theme-gradient-track" aria-hidden="true">
+            <span class="theme-gradient-thumb"></span>
           </span>
-          <span class="theme-gradient-switch">
-            <input type="checkbox"
-                   name="notify_new_ticket"
-                   value="1"
-                   data-notif-pref="new_ticket"
-                   {% if edit_user.notify_new_ticket %}checked{% endif %}>
-            <span class="theme-gradient-track" aria-hidden="true">
-              <span class="theme-gradient-thumb"></span>
-            </span>
+        </span>
+      </label>
+      <label class="pref-toggle">
+        <span class="pref-toggle-meta">
+          <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_reply") }}</span>
+          <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_reply_hint") }}</span>
+        </span>
+        <span class="theme-gradient-switch">
+          <input type="checkbox"
+                 name="notify_reply"
+                 value="1"
+                 data-notif-pref="reply"
+                 {% if edit_user.notify_reply %}checked{% endif %}>
+          <span class="theme-gradient-track" aria-hidden="true">
+            <span class="theme-gradient-thumb"></span>
           </span>
-        </label>
-        <label class="pref-toggle">
-          <span class="pref-toggle-meta">
-            <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_reply") }}</span>
-            <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_reply_hint") }}</span>
+        </span>
+      </label>
+      <label class="pref-toggle">
+        <span class="pref-toggle-meta">
+          <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_ticket_update") }}</span>
+          <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_ticket_update_hint") }}</span>
+        </span>
+        <span class="theme-gradient-switch">
+          <input type="checkbox"
+                 name="notify_ticket_update"
+                 value="1"
+                 data-notif-pref="update"
+                 {% if edit_user.notify_ticket_update %}checked{% endif %}>
+          <span class="theme-gradient-track" aria-hidden="true">
+            <span class="theme-gradient-thumb"></span>
           </span>
-          <span class="theme-gradient-switch">
-            <input type="checkbox"
-                   name="notify_reply"
-                   value="1"
-                   data-notif-pref="reply"
-                   {% if edit_user.notify_reply %}checked{% endif %}>
-            <span class="theme-gradient-track" aria-hidden="true">
-              <span class="theme-gradient-thumb"></span>
-            </span>
-          </span>
-        </label>
-        <label class="pref-toggle">
-          <span class="pref-toggle-meta">
-            <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_ticket_update") }}</span>
-            <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_ticket_update_hint") }}</span>
-          </span>
-          <span class="theme-gradient-switch">
-            <input type="checkbox"
-                   name="notify_ticket_update"
-                   value="1"
-                   data-notif-pref="update"
-                   {% if edit_user.notify_ticket_update %}checked{% endif %}>
-            <span class="theme-gradient-track" aria-hidden="true">
-              <span class="theme-gradient-thumb"></span>
-            </span>
-          </span>
-        </label>
-      </form>
-      {% if is_admin_edit %}</div>{% endif %}
+        </span>
+      </label>
+    </form>
+    {% if is_admin_edit %}</div>{% endif %}
   </section>
 {% endif %}
 {% if show_appearance %}

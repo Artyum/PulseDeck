@@ -9,10 +9,10 @@ alwaysApply: true
 
 - Save tokens, be concrete, no fluff.
 - Ask before destructive operations (install, file deletion, config changes). Safe commands (git status, read) run without asking.
-- The app and CSS watcher are already running (`start_app.ps1` + Tailwind watch window). Do not start or rebuild them automatically. If something does not work, ask for a manual start/restart.
-- Dev: <http://pulsedeck.lan:8005/> (`deploy/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
+- The app and CSS watcher run through `start_app.sh` and Docker Compose. Do not start or rebuild them automatically. If something does not work, ask for a manual start/restart.
+- Dev: <http://pulsedeck.lan/> (`deploy/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
 - Never run tests yourself — point out how to run them manually.
-- Windows environment — commands in PowerShell.
+- Linux environment — commands in Bash.
 
 - Before finishing: rethink the implementation — simplify as far as reasonable (reuse or add shared helpers if that shortens the result), then strip leftovers. Do not stop at "it works".
 
@@ -58,7 +58,7 @@ alwaysApply: true
 
 ## Stack
 
-Backend: FastAPI + SQLAlchemy + PostgreSQL + Alembic. CSS: Tailwind + custom components. Start: `start_app.ps1`, npm: `update_npm.ps1`.
+Backend: FastAPI + SQLAlchemy + PostgreSQL + Alembic. CSS: Tailwind + custom components. Start: `start_app.sh`, npm: `update_npm.sh`.
 
 ## Network
 
