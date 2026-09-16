@@ -8,14 +8,14 @@ COMPOSE="${DEPLOY}/docker-compose.dev.yml"
 COMPOSE_CMD=(docker compose --env-file "${ENV_FILE}" -p pulsedeck-dev -f "${COMPOSE}")
 
 if [[ ! -f "${ENV_FILE}" ]]; then
-    echo "[BLAD] Brak ${ENV_FILE} — skopiuj deploy/.env.dev.example" >&2
+    echo "[ERROR] Missing ${ENV_FILE} — copy deploy/example/.env.dev.example" >&2
     exit 1
 fi
 
 "${COMPOSE_CMD[@]}" up -d
 
 if "${ROOT}/scripts/check_css_watch.sh"; then
-    echo "[CSS] Watcher juz dziala"
+    echo "[CSS] Watcher already running"
 else
     exec "${ROOT}/css_watcher.sh"
 fi

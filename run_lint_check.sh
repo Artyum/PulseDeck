@@ -13,17 +13,17 @@ export TMPDIR="${TMPDIR:-/tmp}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 
 if [[ ! -x "${VENV}/bin/python" ]]; then
-    echo "[BLAD] Brak .venv — utworz: python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt" >&2
+    echo "[ERROR] Missing .venv — create: python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt" >&2
     exit 1
 fi
 export PATH="${VENV}/bin:${PATH}"
 
 if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-    echo "[BLAD] Brak node/npm — zainstaluj Node.js (np. Node 22)" >&2
+    echo "[ERROR] node/npm not found — install Node.js (e.g. Node 22)" >&2
     exit 1
 fi
 if [[ ! -d node_modules ]]; then
-    echo "[BLAD] Brak node_modules — uruchom: npm ci" >&2
+    echo "[ERROR] node_modules missing — run: npm ci" >&2
     exit 1
 fi
 
@@ -47,9 +47,9 @@ run_step() {
     local n="$1"
     local title="$2"
     shift 2
-    echo "[Krok ${n}/${TOTAL}] ${title}..."
+    echo "[Step ${n}/${TOTAL}] ${title}..."
     {
-        echo "--- Krok ${n}/${TOTAL}: ${title} ---"
+        echo "--- Step ${n}/${TOTAL}: ${title} ---"
         date '+%Y-%m-%d %H:%M:%S'
         echo ""
     } >> "${LOG}"
@@ -85,7 +85,7 @@ run_step 9 "npm run lint:css" npm run lint:css
 run_step 10 "jscpd" bash scripts/jscpd_summary.sh
 
 echo ""
-echo "============ PODSUMOWANIE ============"
+echo "============ SUMMARY ============"
 echo ""
 
 any_fail=0
@@ -106,7 +106,7 @@ echo ""
 {
     echo ""
     echo "========================================"
-    echo " PODSUMOWANIE"
+    echo " SUMMARY"
     echo "========================================"
     echo ""
 } >> "${LOG}"
@@ -121,8 +121,8 @@ for i in "${!results[@]}"; do
 done
 
 if [[ "${any_fail}" -ne 0 ]]; then
-    echo "[BLAD] Niektore kroki zakonczone bledem — sprawdz log."
+    echo "[ERROR] Some steps failed — check the log."
     exit 1
 fi
 
-echo "[OK] Wszystkie kroki zakonczone pomyslnie."
+echo "[OK] All steps completed successfully."

@@ -9,8 +9,20 @@
   "files.eol": "\n",
 
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.venvPath": "${workspaceFolder}",
+  "python.venvFolders": [".venv"],
   "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.useEnvironmentsExtension": false,
+  "python.analysis.diagnosticMode": "workspace",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "/bin/bash",
+      "icon": "terminal-bash",
+      "args": ["--init-file", "${workspaceFolder}/.vscode/venv-terminal.sh"]
+    }
+  },
   "terminal.integrated.scrollback": 10000,
 
   // Konfiguracja dla plików Python
@@ -88,7 +100,5 @@
     "jinja-html": "html"
   },
   "html.validate.styles": false,
-  "html.validate.scripts": false,
-  "python.terminal.useEnvFile": true,
-  "python.analysis.diagnosticMode": "workspace"
+  "html.validate.scripts": false
 }

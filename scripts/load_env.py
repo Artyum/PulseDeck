@@ -18,7 +18,7 @@ def _strip_quotes(value: str) -> str:
 
 
 def parse_env_file(path: Path | str) -> list[tuple[str, str]]:
-    """Parsuje plik env do listy par (klucz, wartość)."""
+    """Parse an env file into a list of (key, value) pairs."""
     env_path = Path(path)
     if not env_path.is_file():
         raise FileNotFoundError(env_path)
@@ -37,7 +37,7 @@ def parse_env_file(path: Path | str) -> list[tuple[str, str]]:
 
 
 def apply_env_file(path: Path | str, *, override: bool = True) -> int:
-    """Ustawia zmienne z pliku env w bieżącym procesie Pythona."""
+    """Set env vars from a file in the current Python process."""
     count = 0
     for key, value in parse_env_file(path):
         if override or key not in os.environ:
@@ -51,7 +51,7 @@ def _escape_cmd_value(value: str) -> str:
 
 
 def write_cmd_batch(path: Path | str) -> Path:
-    """Generuje tymczasowy .bat z poleceniami set (nadpisanie w sesji cmd)."""
+    """Generate a temporary .bat with set commands (override in cmd session)."""
     pairs = parse_env_file(path)
     bat_path = Path(tempfile.gettempdir()) / f"pulsedeck_env_{uuid.uuid4().hex}.bat"
     lines = ["@echo off"]

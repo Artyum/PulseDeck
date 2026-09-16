@@ -2,28 +2,28 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - feature/**
-      - fix/**
+    branches: [main]
+    tags: ["v*"]
   pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
 
 permissions:
   contents: read
   packages: write
+  actions: write
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test-and-static:
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
           cache: pip
@@ -31,8 +31,7 @@ jobs:
             requirements.txt
             requirements-dev.txt
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
@@ -40,137 +39,171 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements-dev.txt
 
-      - name: Run tests
-        env:
-          DATABASE_URL: sqlite://
-          ENVIRONMENT: dev
-          STORAGE_SECRET: test-storage-secret
-          SECURITY_CSRF_ENABLED: "false"
-          APP_BASE_URL: http://testserver
-          ALLOWED_HOSTS: testserver,localhost,127.0.0.1
-        run: python -m pytest tests/ -v --tb=short --cov=app --cov-report=term-missing:skip-covered
-
       - name: Install Node dependencies
         run: npm ci
 
-      - name: Check code duplication
+      - name: ruff format
+        run: ruff format . --check --color=never
+
+      - name: ruff check
+        run: ruff check . --output-format=concise --color=never
+
+      - name: basedpyright
+        run: basedpyright app alembic scripts tests
+
+      - name: djlint
+        run: djlint frontend/templates/ --lint
+
+      - name: prettier
+        run: npm run format:check
+
+      - name: stylelint
+        run: npm run lint:css
+
+      - name: jscpd
         run: npm run lint:dup
 
-      - name: Build static assets
-        run: |
-          npm run css:build
-          npm run js:build
+      - name: pytest
+        run: python -m pytest tests/ -v --tb=short --cov=app --cov-report=term-missing:skip-covered
 
+  build:
+    name: Build & push image
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: deploy/Dockerfile
-          load: true
-          tags: pulsedeck:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Smoke test health endpoint in container
-        run: |
-          docker network create pulsedeck-ci
-          docker run -d --name pulsedeck-ci-db --network pulsedeck-ci \
-            -e POSTGRES_DB=pulsedeck \
-            -e POSTGRES_USER=pulsedeck \
-            -e POSTGRES_PASSWORD=pulsedeck \
-            postgres:16-alpine
-          DB_READY=0
-          for i in $(seq 1 30); do
-            if docker exec pulsedeck-ci-db pg_isready -U pulsedeck -d pulsedeck > /dev/null 2>&1; then
-              DB_READY=1
-              break
-            fi
-            sleep 2
-          done
-          if [ "$DB_READY" -ne 1 ]; then
-            echo "Database did not become ready in time"
-            docker logs pulsedeck-ci-db
-            exit 1
-          fi
-          docker run -d --name pulsedeck-ci-smoke \
-            --network pulsedeck-ci \
-            -e DATABASE_URL=postgresql+psycopg://pulsedeck:pulsedeck@pulsedeck-ci-db:5432/pulsedeck \
-            -e STORAGE_SECRET=ci-only-secret \
-            -e ENVIRONMENT=preprod \
-            -e APP_BASE_URL=https://example.com \
-            -e ALLOWED_HOSTS=example.com,localhost,127.0.0.1 \
-            -e UVICORN_WORKERS=1 \
-            -e ALEMBIC_MAX_RETRIES=20 \
-            -p 18000:8000 \
-            pulsedeck:ci
-          for i in $(seq 1 45); do
-            if curl -fsS http://127.0.0.1:18000/api/health > /dev/null; then
-              echo "Healthcheck OK"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Healthcheck failed"
-          docker logs pulsedeck-ci-smoke
-          exit 1
-
-      - name: Smoke test CSS asset
-        run: curl -fsS http://127.0.0.1:18000/static/css/app.css > /dev/null
-
-      - name: Cleanup smoke container
-        if: always()
-        run: |
-          docker rm -f pulsedeck-ci-smoke || true
-          docker rm -f pulsedeck-ci-db || true
-          docker network rm pulsedeck-ci || true
-
-  publish-ghcr:
-    runs-on: ubuntu-latest
-    needs: test-and-static
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set lowercase image name
+      - name: Lowercase image name
         id: image
-        run: echo "name=ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')/pulsedeck" >> "$GITHUB_OUTPUT"
+        run: echo "name=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
 
-      - name: Set image metadata
+      - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ steps.image.outputs.name }}
           tags: |
+            type=ref,event=branch
+            type=ref,event=tag
             type=sha,format=short
-            type=raw,value=main-latest
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=main-latest,enable={{is_default_branch}}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push image
-        uses: docker/build-push-action@v6
+      - name: Build and push
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: deploy/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          provenance: false
-          sbom: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  cleanup:
+    name: Cleanup
+    needs: [test, build]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      KEEP: "3"
+    steps:
+      - name: Keep ${{ env.KEEP }} newest GHCR images
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          OWNER_TYPE: ${{ github.event.repository.owner.type }}
+          PACKAGE: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          package="$(echo "$PACKAGE" | tr '[:upper:]' '[:lower:]')"
+          if [ "$OWNER_TYPE" = "Organization" ]; then
+            api="orgs/${OWNER}"
+          else
+            api="users/${OWNER}"
+          fi
+
+          ids="$(gh api --paginate "/${api}/packages/container/${package}/versions" \
+            --jq "sort_by(.created_at) | reverse | .[${KEEP}:] | .[].id" || true)"
+
+          if [ -z "${ids}" ]; then
+            echo "No GHCR versions to delete (keeping up to ${KEEP})."
+            exit 0
+          fi
+
+          deleted=0
+          while IFS= read -r id; do
+            [ -z "${id}" ] && continue
+            echo "Deleting GHCR version ${id}"
+            gh api -X DELETE "/${api}/packages/container/${package}/versions/${id}"
+            deleted=$((deleted + 1))
+          done <<< "${ids}"
+          echo "Deleted ${deleted} GHCR version(s)."
+
+      - name: Keep ${{ env.KEEP }} newest runs per workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          workflows="$(gh api --paginate "/repos/${REPO}/actions/workflows?per_page=100" \
+            --jq '.workflows[] | [.id, .path] | @tsv')"
+          if [ -z "${workflows}" ]; then
+            echo "No workflows found."
+            exit 0
+          fi
+
+          deleted=0
+          while IFS=$'\t' read -r workflow_id path; do
+            [ -z "${workflow_id}" ] && continue
+            name="$(basename "${path}")"
+            echo "Cleaning runs for ${name}"
+            ids="$(gh api --paginate \
+              "/repos/${REPO}/actions/workflows/${workflow_id}/runs?per_page=100" \
+              --jq ".workflow_runs | .[${KEEP}:] | .[].id" || true)"
+            while IFS= read -r id; do
+              [ -z "${id}" ] && continue
+              if [ "${id}" = "${CURRENT_RUN}" ]; then
+                continue
+              fi
+              echo "Deleting run ${id} (${name})"
+              gh api -X DELETE "/repos/${REPO}/actions/runs/${id}"
+              deleted=$((deleted + 1))
+            done <<< "${ids}"
+          done <<< "${workflows}"
+          echo "Deleted ${deleted} workflow run(s)."
+
+      - name: Keep ${{ env.KEEP }} newest Actions caches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ids="$(gh api --paginate "/repos/${REPO}/actions/caches" --jq '.actions_caches[]' \
+            | jq -s "sort_by(.created_at) | reverse | .[${KEEP}:] | .[].id" || true)"
+
+          if [ -z "${ids}" ]; then
+            echo "No Actions caches to delete (keeping up to ${KEEP})."
+            exit 0
+          fi
+
+          deleted=0
+          while IFS= read -r id; do
+            [ -z "${id}" ] && continue
+            echo "Deleting cache ${id}"
+            gh cache delete "${id}" --repo "${REPO}"
+            deleted=$((deleted + 1))
+          done <<< "${ids}"
+          echo "Deleted ${deleted} cache(s)."

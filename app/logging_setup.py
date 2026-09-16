@@ -23,6 +23,19 @@ _DOMAIN_FILES: tuple[tuple[str, str], ...] = (
 )
 
 _FILE_ONLY = frozenset({"pulsedeck.reply_token"})
+_HEALTH_CHECK_PATHS = ("/api/health", "/healthz")
+
+
+class HealthCheckAccessLogFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return not any(path in record.getMessage() for path in _HEALTH_CHECK_PATHS)
+
+
+def silence_healthcheck_access_logs() -> None:
+    filt = HealthCheckAccessLogFilter()
+    access = logging.getLogger("uvicorn.access")
+    if not any(isinstance(f, HealthCheckAccessLogFilter) for f in access.filters):
+        access.addFilter(filt)
 
 
 def _parse_level(value: str) -> int:
@@ -95,3 +108,4 @@ def setup_logging() -> None:
 
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("markdown_it").setLevel(logging.WARNING)
+    silence_healthcheck_access_logs()

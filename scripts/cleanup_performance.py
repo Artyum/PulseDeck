@@ -27,50 +27,51 @@ logger = logging.getLogger("pulsedeck.cleanup_performance")
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Usuwa dane testów wydajnościowych: wątki z prefiksem w projekcie "
-            "Performance i userzy perf-seed-*@perf.pulsedeck.test (tylko z tego projektu)."
+            "Remove performance test data: tickets with a prefix in the "
+            "Performance project and perf-seed-*@perf.pulsedeck.test users "
+            "(only from that project)."
         )
     )
     parser.add_argument(
         "--env",
         default=str(DEFAULT_ENV),
-        help="Ścieżka do pliku .env (domyślnie deploy/.env.dev)",
+        help="Path to .env file (default: deploy/.env.dev)",
     )
     parser.add_argument(
         "--project",
         default=DEFAULT_PROJECT_NAME,
-        help="Nazwa projektu (domyślnie Performance)",
+        help="Project name (default: Performance)",
     )
     parser.add_argument(
         "--prefix",
         default=TITLE_PREFIX,
-        help="Prefiks tytułów wątków do usunięcia",
+        help="Ticket title prefix to remove",
     )
     parser.add_argument(
         "--keep-users",
         action="store_true",
-        help="Usuń tylko wątki, zostaw userów testowych",
+        help="Remove tickets only, keep test users",
     )
     parser.add_argument(
         "--vacuum",
         action="store_true",
-        help="Po usunięciu uruchom VACUUM ANALYZE (PostgreSQL)",
+        help="Run VACUUM ANALYZE after deletion (PostgreSQL)",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Pokaż liczniki bez usuwania",
+        help="Show counts without deleting",
     )
     parser.add_argument(
         "--yes",
         action="store_true",
-        help="Potwierdź usuwanie (wymagane poza --dry-run)",
+        help="Confirm deletion (required unless --dry-run)",
     )
     args = parser.parse_args()
 
     if not args.dry_run and not args.yes:
         print(
-            "Podaj --yes aby usunąć dane lub --dry-run aby tylko sprawdzić liczniki.",
+            "Pass --yes to delete data or --dry-run to only check counts.",
             file=sys.stderr,
         )
         return 1
@@ -85,14 +86,14 @@ def main() -> int:
     try:
         project = get_project(db, args.project)
         if project is None:
-            logger.info("Brak projektu %r — nic do usunięcia.", args.project)
+            logger.info("Project %r not found — nothing to remove.", args.project)
             return 0
         ticket_count = count_perf_tickets(db, project.id, args.prefix)
         user_count = count_perf_users(db, project.id)
         tag_count = count_perf_tags(db, project.id)
 
         logger.info(
-            "Projekt %r: %d wątków (prefiks %r), %d userów testowych, %d tagów perf-",
+            "Project %r: %d tickets (prefix %r), %d test users, %d perf- tags",
             args.project,
             ticket_count,
             args.prefix,
@@ -110,7 +111,7 @@ def main() -> int:
             delete_users=not args.keep_users,
         )
         logger.info(
-            "Usunięto %d wątków, %d userów testowych, %d tagów",
+            "Removed %d tickets, %d test users, %d tags",
             tickets_removed,
             users_removed,
             tags_removed,
@@ -122,7 +123,7 @@ def main() -> int:
         return 0
     except Exception:
         db.rollback()
-        logger.exception("Cleanup nie powiódł się")
+        logger.exception("Cleanup failed")
         return 1
     finally:
         db.close()

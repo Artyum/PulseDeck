@@ -6,7 +6,7 @@ ENV_FILE="${SCRIPT_DIR}/.env.dev"
 COMPOSE="${SCRIPT_DIR}/docker-compose.dev.yml"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
-    echo "[BLAD] Brak ${ENV_FILE} — skopiuj deploy/.env.dev.example" >&2
+    echo "[ERROR] Missing ${ENV_FILE} — copy deploy/example/.env.dev.example" >&2
     exit 1
 fi
 

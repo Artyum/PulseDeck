@@ -245,7 +245,7 @@ def seed(
 
         if pending_tickets >= batch_size:
             db.commit()
-            logger.info("Zapisano %d / %d wątków", ticket_count, tickets)
+            logger.info("Saved %d / %d tickets", ticket_count, tickets)
             pending_tickets = 0
 
     if pending_tickets:
@@ -257,89 +257,89 @@ def seed(
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Seed danych wydajnościowych — wątki i komentarze (markdown + Faker). "
-            "Każde uruchomienie dodaje nowe wątki (numeracja od MAX+1). "
-            "Użyj cleanup_performance.py lub --cleanup do wyczyszczenia."
+            "Seed performance data — tickets and comments (markdown + Faker). "
+            "Each run appends new tickets (numbered from MAX+1). "
+            "Use cleanup_performance.py or --cleanup to remove test data."
         )
     )
     parser.add_argument(
         "--env",
         default=str(DEFAULT_ENV),
-        help="Ścieżka do pliku .env (domyślnie deploy/.env.dev)",
+        help="Path to .env file (default: deploy/.env.dev)",
     )
     parser.add_argument(
         "--project",
         default=DEFAULT_PROJECT_NAME,
-        help="Nazwa projektu (domyślnie Performance)",
+        help="Project name (default: Performance)",
     )
     parser.add_argument(
         "--project-key",
         default=DEFAULT_PROJECT_KEY,
-        help="Key projektu przy auto-tworzeniu (domyślnie PERF)",
+        help="Project key when auto-creating (default: PERF)",
     )
-    parser.add_argument("--tickets", type=int, default=1000, help="Liczba wątków")
+    parser.add_argument("--tickets", type=int, default=1000, help="Number of tickets")
     parser.add_argument(
         "--comments",
         type=int,
         default=30,
-        help="Max. komentarzy na wątek (liczba losowana z rozkładu 1…N)",
+        help="Max comments per ticket (random count from 1…N)",
     )
     parser.add_argument(
         "--users",
         type=int,
         default=10,
-        help="Liczba testowych klientów (perf-seed-NNN@perf.pulsedeck.test)",
+        help="Number of test clients (perf-seed-NNN@perf.pulsedeck.test)",
     )
     parser.add_argument(
         "--staff",
         type=int,
         default=3,
-        help="Liczba testowych staff (perf-seed-staff-NNN@perf.pulsedeck.test)",
+        help="Number of test staff (perf-seed-staff-NNN@perf.pulsedeck.test)",
     )
     parser.add_argument(
         "--tag-pool",
         type=int,
         default=25,
-        help="Liczba tagów w puli (perf-NNN); na wątek losowo 0–5",
+        help="Number of tags in the pool (perf-NNN); 0–5 random per ticket",
     )
     parser.add_argument(
         "--min-len",
         type=int,
         default=10,
-        help="Dolny limit długości treści (rozkład komentarzy/opisów)",
+        help="Minimum content length (comments/descriptions distribution)",
     )
     parser.add_argument(
         "--max-len",
         type=int,
         default=8000,
-        help="Górny limit długości treści (rozkład komentarzy/opisów)",
+        help="Maximum content length (comments/descriptions distribution)",
     )
     parser.add_argument(
         "--batch",
         type=int,
         default=50,
-        help="Commit co N wątków",
+        help="Commit every N tickets",
     )
     parser.add_argument(
         "--prefix",
         default=TITLE_PREFIX,
-        help="Prefiks tytułu wątku (do cleanupu)",
+        help="Ticket title prefix (for cleanup)",
     )
     parser.add_argument(
-        "--locale", default="pl_PL", help="Locale Faker (np. pl_PL, en_US)"
+        "--locale", default="pl_PL", help="Faker locale (e.g. pl_PL, en_US)"
     )
     parser.add_argument(
-        "--seed", type=int, default=None, help="Ziarno RNG (powtarzalne dane)"
+        "--seed", type=int, default=None, help="RNG seed (reproducible data)"
     )
     parser.add_argument(
         "--cleanup",
         action="store_true",
-        help="Wyczyść dane testowe (wątki + userzy perf) przed seedem",
+        help="Remove test data (tickets + perf users) before seeding",
     )
     args = parser.parse_args()
 
     if args.min_len < 1 or args.max_len < args.min_len:
-        print("Nieprawidłowy zakres długości komentarza.", file=sys.stderr)
+        print("Invalid comment length range.", file=sys.stderr)
         return 1
     if args.tickets < 1 or args.comments < 0:
         print("tickets >= 1, comments >= 0", file=sys.stderr)
@@ -375,7 +375,7 @@ def main() -> int:
                 db, project.id, args.prefix, delete_users=True
             )
             logger.info(
-                "Cleanup: usunięto %d wątków, %d userów, %d tagów",
+                "Cleanup: removed %d tickets, %d users, %d tags",
                 tickets_removed,
                 users_removed,
                 tags_removed,
@@ -399,7 +399,7 @@ def main() -> int:
         viewers = resolve_viewers(db, project.id)
         db.commit()
         logger.info(
-            "Klienci: %d, staff seed: %d, tagi: %d, przypisani staff/admin: %d",
+            "Clients: %d, seeded staff: %d, tags: %d, assigned staff/admin: %d",
             len(client_users),
             len(staff_users),
             len(tag_pool),
@@ -407,7 +407,7 @@ def main() -> int:
         )
 
         logger.info(
-            "Seed: projekt=%r (key=%s), wątki=%d, max komentarzy/wątek=%d, długość %d–%d",
+            "Seed: project=%r (key=%s), tickets=%d, max comments/ticket=%d, length %d–%d",
             args.project,
             project.key,
             args.tickets,
@@ -433,16 +433,16 @@ def main() -> int:
         )
         elapsed = time.perf_counter() - started
         logger.info(
-            "Gotowe: %d wątków, %d komentarzy w %.1f s",
+            "Done: %d tickets, %d comments in %.1f s",
             ticket_count,
             comment_count,
             elapsed,
         )
-        logger.info("Feed (widok domyślny): %s", project_feed_url(project.key))
+        logger.info("Feed (default view): %s", project_feed_url(project.key))
         return 0
     except Exception:
         db.rollback()
-        logger.exception("Seed nie powiódł się")
+        logger.exception("Seed failed")
         return 1
     finally:
         db.close()

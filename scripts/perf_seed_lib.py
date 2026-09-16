@@ -57,7 +57,7 @@ def load_runtime_env(env_path: Path | str) -> None:
     if path.is_file():
         apply_env_file(path, override=True)
     elif str(path) != str(DEFAULT_ENV):
-        raise SystemExit(f"Brak pliku: {path}")
+        raise SystemExit(f"File not found: {path}")
     os.environ.setdefault("DATABASE_URL", "sqlite://")
     os.environ.setdefault("STORAGE_SECRET", "seed-performance-secret")
     from app.config import get_settings
@@ -70,11 +70,11 @@ def log_db_target() -> None:
 
     url = get_settings().database_url
     if url.startswith("sqlite"):
-        logger.info("Baza: sqlite (%s)", url)
+        logger.info("Database: sqlite (%s)", url)
         return
     host = url.split("@", 1)[-1].split("/", 1)[0]
     db_name = url.rsplit("/", 1)[-1].split("?", 1)[0]
-    logger.info("Baza: %s / %s", host, db_name)
+    logger.info("Database: %s / %s", host, db_name)
 
 
 def get_project(db: Session, name: str) -> Project | None:
@@ -103,16 +103,16 @@ def ensure_project(
         .limit(1)
     )
     if staff is None:
-        raise RuntimeError("Brak użytkownika Staff/Admin do utworzenia projektu perf.")
+        raise RuntimeError("No Staff/Admin user available to create the perf project.")
     project = create_project(
         db,
         name,
         key,
-        description="Dane testów wydajnościowych (auto-seed).",
+        description="Performance test data (auto-seed).",
         initial_staff_ids=[staff.id],
         lang=lang,
     )
-    logger.info("Utworzono projekt %r (key=%s)", name, project.key)
+    logger.info("Created project %r (key=%s)", name, project.key)
     return project
 
 
@@ -234,7 +234,7 @@ def vacuum_db(db: Session) -> None:
     bind = db.get_bind()
     engine = bind if isinstance(bind, Engine) else getattr(bind, "engine", None)
     if not isinstance(engine, Engine) or engine.dialect.name != "postgresql":
-        logger.info("VACUUM pominięty (tylko PostgreSQL)")
+        logger.info("VACUUM skipped (PostgreSQL only)")
         return
     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
         conn.execute(
@@ -414,7 +414,7 @@ def resolve_viewers(db: Session, project_id: int) -> list[User]:
 
     if not viewers:
         raise SystemExit(
-            "Brak staff/admin — nie można przypisać wątków do widoku „moje”."
+            "No staff/admin available — cannot assign tickets to the mine view."
         )
 
     for user in viewers:

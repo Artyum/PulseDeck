@@ -1,3 +1,4 @@
+\! Docs
 __pycache__/
 *.py[cod]
 .venv/
@@ -24,4 +25,3 @@ frontend/static/js/editor.bundle.js
 .idea/
 .cursor/mcp.json
 mount/
-/! Docs/

@@ -23,27 +23,27 @@ def main() -> int:
         "to",
         nargs="?",
         default="test@pulsedeck.local",
-        help="Adres odbiorcy (domyślnie test@pulsedeck.local)",
+        help="Recipient address (default: test@pulsedeck.local)",
     )
     parser.add_argument(
         "--env",
         default=str(DEFAULT_ENV),
-        help="Ścieżka do pliku .env (domyślnie deploy/.env.dev)",
+        help="Path to .env file (default: deploy/.env.dev)",
     )
     parser.add_argument(
         "--mailpit",
         action="store_true",
-        help="Wymuś SMTP na Mailpit (nadpisuje SMTP_* z .env)",
+        help="Force Mailpit SMTP (overrides SMTP_* from .env)",
     )
-    parser.add_argument("--smtp-server", default="", help="Nadpisz SMTP_SERVER")
-    parser.add_argument("--smtp-port", type=int, default=0, help="Nadpisz SMTP_PORT")
+    parser.add_argument("--smtp-server", default="", help="Override SMTP_SERVER")
+    parser.add_argument("--smtp-port", type=int, default=0, help="Override SMTP_PORT")
     args = parser.parse_args()
 
     env_path = Path(args.env)
     if env_path.is_file():
         apply_env_file(env_path, override=True)
     elif args.env != str(DEFAULT_ENV):
-        print(f"Brak pliku: {env_path}", file=sys.stderr)
+        print(f"File not found: {env_path}", file=sys.stderr)
         return 1
 
     if args.mailpit:
@@ -71,7 +71,7 @@ def main() -> int:
     settings = get_settings()
     if not settings.smtp_configured:
         print(
-            "SMTP nie skonfigurowane — ustaw SMTP_SERVER lub użyj --mailpit.",
+            "SMTP not configured — set SMTP_SERVER or use --mailpit.",
             file=sys.stderr,
         )
         return 1
@@ -83,7 +83,7 @@ def main() -> int:
         first_name="Jan",
         last_name="Kowalski",
     )
-    ticket = SimpleNamespace(title="Testowe zgłoszenie Mailpit")
+    ticket = SimpleNamespace(title="Mailpit test ticket")
     ticket_url = f"{settings.app_base_url}/t/DEMO-1"
     activate_url = f"{settings.app_base_url}/auth/activate?token=mailpit-test-token"
     confirm_url = f"{settings.app_base_url}/auth/confirm-email?token=mailpit-test-token"
@@ -184,7 +184,7 @@ def main() -> int:
     print(
         f"[SMTP] {settings.smtp_server}:{settings.smtp_port} ssl={settings.smtp_use_ssl}"
     )
-    print(f"[LANG] {LANG} — {len(samples)} wiadomości → {recipient}")
+    print(f"[LANG] {LANG} — {len(samples)} messages → {recipient}")
     failed = 0
     for subject, template, context, list_unsub in samples:
         html = render_email_html(template, context, lang=LANG)
@@ -192,15 +192,15 @@ def main() -> int:
         if not send_email_sync(
             recipient, subject, html, list_unsubscribe_url=list_unsub
         ):
-            print(f"  BLAD — {template}", file=sys.stderr)
+            print(f"  ERROR — {template}", file=sys.stderr)
             failed += 1
         else:
             print(f"  OK — {template}")
 
     if failed:
-        print(f"BLAD — nieudanych: {failed}/{len(samples)}", file=sys.stderr)
+        print(f"ERROR — failed: {failed}/{len(samples)}", file=sys.stderr)
         return 1
-    print(f"OK — wysłano {len(samples)} wiadomości (sprawdź UI Mailpit).")
+    print(f"OK — sent {len(samples)} messages (check Mailpit UI).")
     return 0
 
 

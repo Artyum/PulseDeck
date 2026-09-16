@@ -7,7 +7,7 @@ ENV_FILE="${DEPLOY}/.env.dev"
 RECIPIENT="${1:-test@pulsedeck.local}"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
-    echo "[BLAD] Brak ${ENV_FILE} — skopiuj deploy/.env.dev.example" >&2
+    echo "[ERROR] Missing ${ENV_FILE} — copy deploy/example/.env.dev.example" >&2
     exit 1
 fi
 

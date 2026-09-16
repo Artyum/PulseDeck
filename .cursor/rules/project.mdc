@@ -12,6 +12,7 @@ alwaysApply: true
 - The app and CSS watcher run through `start_app.sh` and Docker Compose. Do not start or rebuild them automatically. If something does not work, ask for a manual start/restart.
 - Dev: <http://pulsedeck.lan/> (`deploy/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
 - Never run tests yourself — point out how to run them manually.
+- Host Python: `.venv/bin/python` and `./run_lint_check.sh`. Tests: `./run_tests.sh` (Docker, not the venv).
 - Linux environment — commands in Bash.
 
 - Before finishing: rethink the implementation — simplify as far as reasonable (reuse or add shared helpers if that shortens the result), then strip leftovers. Do not stop at "it works".
