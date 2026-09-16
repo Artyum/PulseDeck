@@ -49,7 +49,7 @@ jobs:
         run: ruff check . --output-format=concise --color=never
 
       - name: basedpyright
-        run: basedpyright app alembic scripts tests
+        run: basedpyright --pythonpath "$(command -v python)" app alembic scripts tests
 
       - name: djlint
         run: djlint frontend/templates/ --lint
