@@ -9,9 +9,13 @@ RUN npm run js:build
 FROM python:3.13-slim
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip uninstall -y pip setuptools wheel
 COPY . .
 COPY --from=frontend /build/frontend/static/css/app.css frontend/static/css/app.css
 COPY --from=frontend /build/frontend/static/js/editor.bundle.js frontend/static/js/editor.bundle.js

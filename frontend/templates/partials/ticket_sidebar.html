@@ -4,7 +4,8 @@
 <section class="issue-side-block">
   <div class="issue-section-bar">
     <div class="issue-section-title-row">
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+      <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
     </div>
     <a href="{{ back_to_feed_url }}" class="nav-back">
       <span class="section-icon" aria-hidden="true">{{ icon("back") }}</span>
@@ -49,7 +50,7 @@
         {% call issue_field_menu(t('ui.ticket.change_status'), url_for('change_status', ticket_ref=tref), 'status', ticket_statuses, ticket.status.value, labels=status_labels) %}
           {{ status_chip(ticket.status) }}
         {% endcall %}
-      {% elif can_set_done and ticket.status.value != 'DONE' %}
+      {% elif can_set_done and ticket.status.value != "DONE" %}
         <div x-data="{ open: false }"
              @click.outside="open = false"
              :class="{'is-menu-open': open}"
@@ -73,7 +74,10 @@
                   hx-target="#ticket-view"
                   hx-swap="innerHTML"
                   class="issue-menu-form">
-              <button type="submit" name="status" value="DONE" class="issue-menu-item">{{ status_labels[ticket_statuses.DONE] }}</button>
+              <button type="submit"
+                      name="status"
+                      value="DONE"
+                      class="issue-menu-item">{{ status_labels[ticket_statuses.DONE] }}</button>
             </form>
           </div>
         </div>
@@ -110,7 +114,8 @@
   </div>
 </section>
 <section class="issue-side-block">
-  <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.ticket.people") }}</h2>
+  <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.ticket.people") }}</h2>
   <div class="issue-side-fields">
     <div class="issue-field">
       <span class="label-tight">{{ t("ui.ticket.reporter") }}</span>
@@ -238,7 +243,8 @@
   </div>
 </section>
 <section class="issue-side-block">
-  <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.ticket.tags") }}</h2>
+  <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.ticket.tags") }}</h2>
   <div class="issue-side-fields">
     <div class="field-value">
       <div class="issue-tags">

@@ -110,11 +110,12 @@
     {% else %}
       {% if not comments %}
         <div class="issue-section-bar issue-thread-reply-head">
-          <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
+          <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("activity") }}</span>{{ t("ui.ticket.activity") }}</h2>
           {{ thread_order_controls(show_order=false) }}
         </div>
       {% endif %}
-      {% if ticket.status.value == 'DONE' %}
+      {% if ticket.status.value == "DONE" %}
         <p class="alert alert-muted">
           {{ t("ui.ticket.closed_notice") }}
           {% if can_reopen is defined and can_reopen %}

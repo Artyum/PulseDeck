@@ -178,7 +178,7 @@ The dev container mounts `app/`, `frontend/`, and `alembic/`. Restart after back
 | `./restart_app.sh`    | Restart the dev container                           |
 | `./docker_logs.sh`    | Follow container logs                               |
 | `./deploy/build.sh`   | Build dev image only                                |
-| `./run_tests.sh`      | Run pytest in Docker                                |
+| `./run_tests.sh`      | Run pytest (`.venv`)                                |
 | `./run_lint_check.sh` | Run ruff, djLint, Prettier, stylelint, jscpd        |
 | `./run_audit.sh`      | Run pip-audit, npm audit, and Trivy on local image  |
 | `./update_npm.sh`     | Update npm dependencies                             |

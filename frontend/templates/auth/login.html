@@ -35,7 +35,9 @@
             </div>
             <button type="submit" class="btn btn-primary w-full">{{ t("ui.auth.login.submit") }}</button>
           </form>
-          <button type="button" class="auth-switch" data-auth-show="forgot">{{ t("ui.auth.login.forgot_label") }}</button>
+          <button type="button"
+                  class="auth-switch"
+                  data-auth-show="forgot">{{ t("ui.auth.login.forgot_label") }}</button>
         </div>
         <div data-auth-panel="forgot"{% if not forgot_sent %} hidden{% endif %}>
           <form method="post"

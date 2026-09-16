@@ -15,7 +15,8 @@
   {% include "partials/ticket_header.html" %}
   <section class="issue-section">
     <div class="issue-section-bar">
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
+      <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
       {% if can_edit or can_delete_ticket %}
         <span class="comment-actions">
           {% if can_edit %}
@@ -43,7 +44,8 @@
     <div class="issue-description rich-content">{{ ticket.description | markdown_safe }}</div>
     {% if ticket.attachments %}
       <div class="issue-attachments">
-        <h3 class="issue-subhead"><span class="section-icon" aria-hidden="true">{{ icon("attachments") }}</span>{{ t("ui.ticket.attachments") }}</h3>
+        <h3 class="issue-subhead"><span class="section-icon"
+      aria-hidden="true">{{ icon("attachments") }}</span>{{ t("ui.ticket.attachments") }}</h3>
         {{ attachment_list(ticket.attachments, 'mt-2') }}
       </div>
     {% endif %}

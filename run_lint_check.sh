@@ -27,7 +27,7 @@ if [[ ! -d node_modules ]]; then
     exit 1
 fi
 
-"${VENV}/bin/pip" install -q -r requirements-dev.txt
+"${VENV}/bin/pip" install -q -U -r requirements-dev.txt
 
 echo ""
 echo "============ LINT CHECK (PulseDeck) ============"

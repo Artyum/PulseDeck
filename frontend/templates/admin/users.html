@@ -9,7 +9,8 @@
   <section class="admin-section">
     <div class="issue-section-bar">
       <div class="issue-section-title-row">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.admin.users.list") }}</h2>
+        <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("people") }}</span>{{ t("ui.admin.users.list") }}</h2>
       </div>
       <button type="button"
               class="btn btn-primary"
@@ -157,7 +158,10 @@
       </div>
       <div class="modal-footer">
         <button type="button" data-modal-dismiss="new-user" class="btn btn-ghost">{{ t("ui.common.cancel") }}</button>
-        <button type="submit" name="mode" value="active" class="btn btn-secondary">{{ t("ui.admin.user_new.submit_active") }}</button>
+        <button type="submit"
+                name="mode"
+                value="active"
+                class="btn btn-secondary">{{ t("ui.admin.user_new.submit_active") }}</button>
         <button type="submit" class="btn btn-primary">{{ t("ui.admin.user_new.submit") }}</button>
       </div>
     </form>

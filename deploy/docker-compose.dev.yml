@@ -30,8 +30,6 @@ services:
       - ../frontend:/app/frontend
       - ../alembic:/app/alembic
       - ../alembic.ini:/app/alembic.ini:ro
-      - ../tests:/app/tests:ro
-      - ../requirements-dev.txt:/app/requirements-dev.txt:ro
       - ../mount/uploads:/app/data/uploads
       - ../mount/logs:/app/logs
     depends_on:

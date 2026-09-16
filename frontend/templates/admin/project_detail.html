@@ -20,7 +20,8 @@
        class="btn btn-secondary">{{ t("ui.admin.project.open_portal") }}</a>
   </div>
   <section class="admin-section">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.admin.project.settings") }}</h2>
+    <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("settings") }}</span>{{ t("ui.admin.project.settings") }}</h2>
     <form method="post"
           action="{{ url_for('edit_project', key=project.key) }}"
           class="admin-form-row"
@@ -60,7 +61,8 @@
     </form>
   </section>
   <section class="admin-section">
-    <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.admin.project.notifications") }}</h2>
+    <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.admin.project.notifications") }}</h2>
     <div class="admin-prefs">
       <form method="post"
             action="{{ url_for('project_notifications', key=project.key) }}"
@@ -89,7 +91,8 @@
   <section class="admin-section" data-coachmark="admin-project-members">
     <div class="issue-section-bar">
       <div class="issue-section-title-row">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("members") }}</span>{{ t("ui.admin.project.members") }}</h2>
+        <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("members") }}</span>{{ t("ui.admin.project.members") }}</h2>
       </div>
     </div>
     {% if all_users %}

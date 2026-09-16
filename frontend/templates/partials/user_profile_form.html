@@ -34,7 +34,8 @@
 {% if show_data %}
   {% if is_admin_edit %}
     <section class="admin-section">
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.profile.title.data") }}</h2>
+      <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.profile.title.data") }}</h2>
       <div class="admin-narrow">
   {% endif %}
   <form method="post"
@@ -109,7 +110,8 @@
 {% if show_password %}
   {% if is_admin_edit %}
     <section class="admin-section">
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>{{ t("ui.profile.password.section") }}</h2>
+      <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("lock") }}</span>{{ t("ui.profile.password.section") }}</h2>
       <p class="admin-section-note">{{ t("ui.profile.password.hint", min=password_min_len) }}</p>
       <div class="admin-narrow">
         <form method="post"
@@ -134,7 +136,10 @@
             </div>
           </div>
           <div class="admin-form-actions">
-            <button type="submit" name="action" value="set" class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
+            <button type="submit"
+                    name="action"
+                    value="set"
+                    class="btn btn-primary">{{ t("ui.profile.password.set") }}</button>
             <button type="submit"
                     name="action"
                     value="send_link"
@@ -186,10 +191,12 @@
   <section class="admin-section"
            {% if not is_admin_edit %}id="notification-settings"{% endif %}>
     {% if is_admin_edit %}
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
+      <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
       <div class="admin-prefs">
     {% else %}
-      <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
+      <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("bell") }}</span>{{ t("ui.profile.title.notifications") }}</h2>
     {% endif %}
     <p class="admin-section-note">{{ t("ui.profile.settings.notify_intro") }}</p>
     <form method="post"

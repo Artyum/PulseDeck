@@ -26,6 +26,11 @@ else
     PYTHON="${PYTHON:-python3}"
 fi
 
+if ! "${PYTHON}" -c "import pip_audit" 2>/dev/null; then
+    echo "[ERROR] pip-audit missing — install: ${PYTHON} -m pip install -r requirements-dev.txt" >&2
+    exit 1
+fi
+
 "${PYTHON}" -m pip_audit -r requirements.txt
 
 if ! npm audit --omit=dev --audit-level=high; then

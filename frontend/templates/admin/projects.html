@@ -11,7 +11,8 @@
   <section class="admin-section">
     <div class="issue-section-bar">
       <div class="issue-section-title-row">
-        <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
+        <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("projects") }}</span>{{ t("ui.admin.projects.list") }}</h2>
       </div>
       <button type="button"
               class="btn btn-primary"
@@ -53,12 +54,7 @@
                  class="btn btn-secondary btn-sm">{{ t("ui.common.edit") }}</a>
               <form method="post"
                     action="{{ url_for('admin_project_active', key=p.key) }}"
-                    {%- if p.is_active %}
-                    data-confirm-title="{{ t('ui.confirm.disable_project.title') }}"
-                    data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}"
-                    data-confirm-action="{{ t('ui.confirm.disable_project.action') }}"
-                    data-confirm-danger
-                    {%- endif -%}>
+                    {%- if p.is_active %} data-confirm-title="{{ t('ui.confirm.disable_project.title') }}" data-confirm="{{ t('ui.confirm.disable_project.message', name=p.name, key=p.key) }}" data-confirm-action="{{ t('ui.confirm.disable_project.action') }}" data-confirm-danger {%- endif -%}>
                 {% if show_disabled %}<input type="hidden" name="disabled" value="1">{% endif %}
                 {% if p.is_active %}
                   <input type="hidden" name="active" value="0">
@@ -135,7 +131,9 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" data-modal-dismiss="new-project" class="btn btn-ghost">{{ t("ui.common.cancel") }}</button>
+        <button type="button"
+                data-modal-dismiss="new-project"
+                class="btn btn-ghost">{{ t("ui.common.cancel") }}</button>
         <button type="submit"
                 class="btn btn-primary"
                 {% if not staff_candidates %}disabled{% endif %}>{{ t("ui.common.create") }}</button>

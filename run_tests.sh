@@ -2,17 +2,14 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEPLOY="${ROOT}/deploy"
-ENV_FILE="${DEPLOY}/.env.dev"
-COMPOSE="${DEPLOY}/docker-compose.dev.yml"
+cd "${ROOT}"
+VENV="${ROOT}/.venv"
 DEFAULT_PYTEST_OPTS=(-v --tb=line --color=yes --cov=app --cov-report=term-missing)
 
-if [[ ! -f "${ENV_FILE}" ]]; then
-    echo "[ERROR] Missing ${ENV_FILE} — copy deploy/example/.env.dev.example" >&2
+if [[ ! -x "${VENV}/bin/python" ]]; then
+    echo "[ERROR] Missing .venv — create: python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt" >&2
     exit 1
 fi
-
-cd "${ROOT}"
 
 STAGED=0
 ARGS=()
@@ -44,7 +41,4 @@ else
     fi
 fi
 
-docker compose --env-file "${ENV_FILE}" -p pulsedeck-dev -f "${COMPOSE}" run --rm --no-deps \
-    -e PIP_ROOT_USER_ACTION=ignore \
-    --entrypoint /bin/sh web -lc 'pip install -q -r requirements-dev.txt && python -m pytest "$@"' \
-    test-runner "$@"
+exec "${VENV}/bin/python" -m pytest "$@"

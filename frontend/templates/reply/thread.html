@@ -35,7 +35,8 @@
         {% include "partials/ticket_header.html" %}
         <section class="issue-section">
           <div class="issue-section-bar">
-            <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
+            <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("description") }}</span>{{ t("ui.ticket.description") }}</h2>
           </div>
           <div class="issue-description rich-content">{{ ticket.description | markdown_safe }}</div>
           {% if ticket.attachments %}
@@ -94,7 +95,8 @@
                     <a href="{{ url_for('login_page') }}?next={{ ticket|ticket_path }}"
                        class="issue-composer-opt link-quiet">{{ t("ui.reply.attach_login_hint") }}</a>
                     <div class="issue-composer-actions">
-                      <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
+                      <button type="submit"
+                              class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
                     </div>
                   </div>
                 </form>
@@ -107,7 +109,8 @@
       </div>
       <aside class="issue-sidebar">
         <section class="issue-side-block">
-          <h2 class="issue-section-title"><span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
+          <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.ticket.details") }}</h2>
           <div class="issue-side-fields">
             <div class="issue-field">
               <span class="label-tight">{{ t("ui.ticket.created") }}</span>

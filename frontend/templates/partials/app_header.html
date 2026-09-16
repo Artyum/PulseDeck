@@ -71,7 +71,7 @@
         {{ brand_logo() }}
         <span class="brand-mark-name">{{ app_name }}</span>
       </a>
-      {% if header_section_label|default('') %}
+      {% if header_section_label|default("") %}
         <span class="app-header-section">{{ header_section_label }}</span>
       {% elif show_project_section %}
         {{ nav_project_block(project.name, show_project_picker) }}
@@ -107,7 +107,7 @@
              class="issue-menu-panel"
              role="menu">{{ nav_account_links() }}</div>
       </div>
-      {% if coachmark_scope|default('') %}{{ coachmark_replay(coachmark_scope) }}{% endif %}
+      {% if coachmark_scope|default("") %}{{ coachmark_replay(coachmark_scope) }}{% endif %}
     </nav>
     <div class="app-header-nav-mobile"
          x-data="{ open: false }"
@@ -125,7 +125,7 @@
           <span x-show="!open">{{ icon("menu") }}</span>
           <span x-show="open" x-cloak>{{ icon("close") }}</span>
         </button>
-        {% if coachmark_scope|default('') %}{{ coachmark_replay(coachmark_scope) }}{% endif %}
+        {% if coachmark_scope|default("") %}{{ coachmark_replay(coachmark_scope) }}{% endif %}
       </div>
       <nav id="app-nav-mobile-panel"
            class="issue-menu-panel nav-mobile-panel"

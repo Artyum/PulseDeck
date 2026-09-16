@@ -13,7 +13,7 @@
     <div class="flex flex-wrap gap-2 {{ extra_class }}">
       {% for a in attachments %}
         {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
-        {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+        {% if ext in ["jpg", "jpeg", "png", "webp", "gif"] %}
           <button type="button"
                   class="attach-thumb"
                   data-lightbox-src="{{ a|attachment_path }}"
@@ -115,8 +115,8 @@
         {% endif %}
         {% if show_role_badge %}<div class="issue-menu-scroll">{% endif %}
         {% for item in choices %}
-          {% if value_attr != 'id' or current_value is none or item.id != current_value %}
-            {% if value_attr == 'id' %}
+          {% if value_attr != "id" or current_value is none or item.id != current_value %}
+            {% if value_attr == "id" %}
               {{ user_menu_item(item, field_name, show_role_badge) }}
             {% else %}
               <button type="submit"
@@ -133,13 +133,13 @@
   </div>
 {%- endmacro %}
 {% macro _form_select_item_label(item, labels, value_attr, show_role_badge) -%}
-  {%- if show_role_badge and value_attr == 'id' -%}
+  {%- if show_role_badge and value_attr == "id" -%}
     {{- item.display_name -}}
   {%- elif labels is not none -%}
     {{- labels[item] -}}
-  {%- elif value_attr == 'id' and item.name is defined -%}
+  {%- elif value_attr == "id" and item.name is defined -%}
     {{- item.name -}}
-  {%- elif value_attr == 'id' -%}
+  {%- elif value_attr == "id" -%}
     {{- item.display_name -}}
   {%- else -%}
     {{- item.label -}}
@@ -212,7 +212,7 @@
                 data-value="{{ item_value }}"
                 data-label="{{ item_label }}"
                 {% if item_value == ns.current %}aria-current="true"{% endif %}>
-          {% if show_role_badge and value_attr == 'id' %}
+          {% if show_role_badge and value_attr == "id" %}
             <span class="issue-menu-item-name">{{ item_label }}</span>
             <span class="chip chip-role-{{ item.role.value|lower }}">{{ role_labels[item.role] }}</span>
           {% else %}
@@ -237,7 +237,7 @@
         {% for a in existing %}
           {% set ext = a.file_path.rsplit('.', 1)[-1]|lower %}
           <div class="attach-preview-item" data-existing-id="{{ a.id }}">
-            {% if ext in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+            {% if ext in ["jpg", "jpeg", "png", "webp", "gif"] %}
               <img src="{{ a|attachment_path }}"
                    alt="{{ a.file_name }}"
                    width="80"
@@ -264,7 +264,7 @@
              accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,.docx,.xlsx,.pptx,.txt,.csv,.log,.json,.xml,.zip,.rar,.7z"
              multiple
              class="file-pick-input">
-      {% if variant == 'zone' %}
+      {% if variant == "zone" %}
         <div class="file-pick-zone">
           <label for="{{ input_id }}" class="file-pick-zone-title file-pick-btn">
             <span class="section-icon" aria-hidden="true">{{ icon("attach") }}</span>
@@ -279,7 +279,7 @@
                aria-label="{{ t('ui.ticket.attach.button') }}">{{ icon("attach") }}</label>
       {% endif %}
     </div>
-    {% if variant != 'zone' %}
+    {% if variant != "zone" %}
       <p class="modal-hint">{{ t('ui.ticket.attach.hint_icon', count=max_files, file_word=file_word) }}</p>
       {{ preview }}
     {% endif %}
@@ -317,9 +317,7 @@
      hx-select="{{ select }}"
      hx-swap="outerHTML"
      hx-push-url="true"
-     {%- if filter_sync %}
-     hx-on:click="var f=this.closest('section'),s=f&&f.querySelector('input[name=sort]'),o=f&&f.querySelector('input[name=order]');if(s)s.value='{{ col }}';if(o)o.value='{{ next }}'"
-     {%- endif %}>{{ label }}</a>
+     {%- if filter_sync %} hx-on:click="var f=this.closest('section'),s=f&&f.querySelector('input[name=sort]'),o=f&&f.querySelector('input[name=order]');if(s)s.value='{{ col }}';if(o)o.value='{{ next }}'" {%- endif %}>{{ label }}</a>
 {%- endmacro %}
 {% macro modal_header(dialog_id, title) -%}
   <div class="modal-header">
