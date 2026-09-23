@@ -15,6 +15,7 @@ data/uploads/*
 !data/uploads/.gitkeep
 frontend/static/css/app.css
 tests
+requirements-dev.txt
 *.md
 .hintrc
 .jscpd.json

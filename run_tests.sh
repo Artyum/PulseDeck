@@ -11,6 +11,8 @@ if [[ ! -x "${VENV}/bin/python" ]]; then
     exit 1
 fi
 
+"${VENV}/bin/pip" install -q -r requirements-dev.txt
+
 STAGED=0
 ARGS=()
 for arg in "$@"; do

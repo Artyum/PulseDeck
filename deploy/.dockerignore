@@ -17,6 +17,7 @@ mount
 report
 frontend/static/css/app.css
 tests
+requirements-dev.txt
 *.md
 .hintrc
 .jscpd.json

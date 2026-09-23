@@ -1,0 +1,44 @@
+name: GHCR cleanup
+
+on:
+  schedule:
+    - cron: "17 3 * * 0"
+  workflow_dispatch:
+
+permissions:
+  packages: write
+
+concurrency:
+  group: ghcr-cleanup-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      RETENTION_DAYS: "21"
+    steps:
+      - name: Remove old untagged images
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          OWNER_TYPE: ${{ github.event.repository.owner.type }}
+          PACKAGE: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          cutoff="$(date -u -d "${RETENTION_DAYS} days ago" +%FT%TZ)"
+          package="$(echo "$PACKAGE" | tr '[:upper:]' '[:lower:]')"
+          if [ "$OWNER_TYPE" = "Organization" ]; then api="orgs/${OWNER}"; else api="users/${OWNER}"; fi
+          versions="$(gh api --paginate "/${api}/packages/container/${package}/versions")"
+          ids="$(jq -r --arg cutoff "$cutoff" '
+            . as $all
+            | ([$all[] | select(any((.metadata.container.tags // [])[]?; test("^[0-9a-f]{7,40}$")))] | sort_by(.created_at) | reverse | .[:15] | map(.id)) as $recent_sha
+            | $all[]
+            | {id, created_at, tags: (.metadata.container.tags // [])}
+            | .id as $id
+            | select(((.tags | length) == 0 and .created_at < $cutoff) or ((any(.tags[]?; test("^[0-9a-f]{7,40}$"))) and (any(.tags[]?; test("^(v|latest$|main$|main-latest$)")) | not) and (($recent_sha | index($id)) | not)))
+            | .id
+          ' <<< "$versions")"
+          while IFS= read -r id; do
+            [ -z "$id" ] || gh api -X DELETE "/${api}/packages/container/${package}/versions/${id}"
+          done <<< "$ids"
