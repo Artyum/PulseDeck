@@ -53,6 +53,10 @@ class TestIsExempt:
     def test_other_path(self):
         assert _is_exempt("/profile", "POST") is False
 
+    def test_mfa_not_exempt(self):
+        assert _is_exempt("/auth/mfa/verify", "POST") is False
+        assert _is_exempt("/auth/mfa/resend", "POST") is False
+
 
 class TestCsrfReject:
     def test_html_reject(self):

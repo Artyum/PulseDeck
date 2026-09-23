@@ -44,6 +44,9 @@ class Settings(BaseSettings):
     security_csp_enabled: bool = True
     security_hsts_enabled: bool = False
     auth_login_rate_limit: str = "10/minute"
+    auth_mfa_resend_rate_limit: str = "5/minute"
+    mfa_enabled: bool = False
+    mfa_ttl: str = "30d"
     auth_forgot_password_rate_limit: str = "5/minute"
     auth_activate_rate_limit: str = "10/minute"
     auth_admin_user_create_rate_limit: str = "20/minute"
@@ -89,6 +92,13 @@ class Settings(BaseSettings):
     reply_token_post_rate_limit: str = "10/minute"
     ticket_reopen_days: int = Field(default=7, validation_alias="TICKET_REOPEN_DAYS")
 
+    @field_validator("*", mode="before")
+    @classmethod
+    def strip_env_crlf(cls, value: object) -> object:
+        if isinstance(value, str):
+            return value.rstrip("\r")
+        return value
+
     @field_validator("database_url", mode="before")
     @classmethod
     def normalize_database_url(cls, value: object) -> object:
@@ -129,8 +139,31 @@ class Settings(BaseSettings):
             msg = "PASSWORD_MIN_LEN must be <= PASSWORD_MAX_LEN"
             raise ValueError(msg)
 
+        from app.utils.mfa_ttl import is_protected_environment, parse_mfa_ttl_days
+
+        try:
+            parse_mfa_ttl_days(self.mfa_ttl)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "MFA_TTL must be a number of days, e.g. 30 or 30d (1–365)"
+            ) from exc
+        if (
+            self.mfa_enabled
+            and is_protected_environment(self.environment)
+            and not self.smtp_configured
+        ):
+            raise ValueError(
+                "MFA_ENABLED requires SMTP when ENVIRONMENT is prod or preprod"
+            )
+
         self.app_base_url = self.app_base_url.strip().rstrip("/")
         return self
+
+    @property
+    def mfa_ttl_days(self) -> int:
+        from app.utils.mfa_ttl import parse_mfa_ttl_days
+
+        return parse_mfa_ttl_days(self.mfa_ttl)
 
     @property
     def smtp_configured(self) -> bool:

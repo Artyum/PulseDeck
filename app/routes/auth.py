@@ -27,6 +27,17 @@ from app.routes.context import render
 from app.services import auth as auth_service
 from app.services import tickets as ticket_service
 from app.services.email import notify_email_confirm
+from app.services.mfa import (
+    MfaDeliveryError,
+    clear_pending_mfa,
+    get_pending_mfa_user_id,
+    is_trusted_device,
+    remember_device,
+    revoke_trusted_devices,
+    send_challenge_email,
+    set_pending_mfa,
+    verify_challenge,
+)
 from app.utils.csrf import ensure_csrf_token
 from app.utils.i18n import (
     LANG_STORAGE_KEY,
@@ -53,6 +64,10 @@ def _forgot_limit() -> str:
     return get_settings().auth_forgot_password_rate_limit
 
 
+def _mfa_resend_limit() -> str:
+    return get_settings().auth_mfa_resend_rate_limit
+
+
 def _activate_limit() -> str:
     return get_settings().auth_activate_rate_limit
 
@@ -64,6 +79,7 @@ def _render_login(
     success: str | None = None,
     forgot_sent: bool = False,
     next_path: str = "/",
+    mfa_pending: bool = False,
 ):
     return render(
         request,
@@ -72,6 +88,7 @@ def _render_login(
         success=success,
         forgot_sent=forgot_sent,
         next_path=next_path,
+        mfa_pending=mfa_pending,
     )
 
 
@@ -143,12 +160,39 @@ def _render_activate(
     )
 
 
+def _login_success(
+    request: Request,
+    db: DbSession,
+    user: User,
+    dest: str,
+    *,
+    trust_device: bool = False,
+):
+    ip = client_ip_key(request)
+    clear_user_session(request, preserve_last_project=True)
+    set_user_session(request, user)
+    ensure_csrf_token(request)
+    cookie_lang = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
+    response = RedirectResponse(dest, status_code=303)
+    if trust_device:
+        remember_device(db, request, response, user.id)
+    auth_service.record_login(db, user)
+    if cookie_lang in available_lang_ids():
+        if cookie_lang != user.ui_lang:
+            auth_service.update_ui_lang(db, user, cookie_lang)
+    else:
+        set_lang_cookie(response, user.ui_lang)
+    logger.info("Login ok email=%s user_id=%s ip=%s", user.email, user.id, ip)
+    return response
+
+
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request, db: DbSession, next: str = ""):
     dest = safe_next_path(next)
     user = get_optional_user(request, db)
     if user:
         return RedirectResponse(dest, status_code=303)
+    clear_pending_mfa(request)
     return _render_login(request, next_path=dest)
 
 
@@ -179,19 +223,112 @@ def login_submit(
         logger.warning("Login blocked email=%s ip=%s", email_norm, ip)
         security_logger.warning("Login blocked email=%s ip=%s", email_norm, ip)
         return _render_login(request, error=blocked, next_path=dest)
-    clear_user_session(request, preserve_last_project=True)
-    set_user_session(request, user)
-    auth_service.record_login(db, user)
-    ensure_csrf_token(request)
-    cookie_lang = (request.cookies.get(LANG_STORAGE_KEY) or "").strip().lower()
-    response = RedirectResponse(dest, status_code=303)
-    if cookie_lang in available_lang_ids():
-        if cookie_lang != user.ui_lang:
-            auth_service.update_ui_lang(db, user, cookie_lang)
-    else:
-        set_lang_cookie(response, user.ui_lang)
-    logger.info("Login ok email=%s user_id=%s ip=%s", user.email, user.id, ip)
-    return response
+    settings = get_settings()
+    if settings.mfa_enabled and not is_trusted_device(db, request, user.id):
+        clear_user_session(request, preserve_last_project=True)
+        try:
+            send_challenge_email(db, user, locale=lang)
+        except MfaDeliveryError:
+            db.rollback()
+            return _render_login(
+                request,
+                error=t(lang, "flash.auth.mfa_delivery"),
+                next_path=dest,
+            )
+        set_pending_mfa(request, user.id)
+        db.commit()
+        return _render_login(request, next_path=dest, mfa_pending=True)
+    return _login_success(request, db, user, dest)
+
+
+@router.post("/auth/mfa/verify")
+@limiter.limit(_login_limit)
+def mfa_verify(
+    request: Request,
+    db: DbSession,
+    next: Annotated[str, Form()] = "",
+    trust_device: Annotated[str, Form()] = "",
+    d0: Annotated[str, Form()] = "",
+    d1: Annotated[str, Form()] = "",
+    d2: Annotated[str, Form()] = "",
+    d3: Annotated[str, Form()] = "",
+    d4: Annotated[str, Form()] = "",
+    d5: Annotated[str, Form()] = "",
+    code: Annotated[str, Form()] = "",
+):
+    lang = resolve_lang(request)
+    dest = safe_next_path(next)
+    user_id = get_pending_mfa_user_id(request)
+    if user_id is None:
+        return _render_login(
+            request,
+            error=t(lang, "flash.auth.mfa_expired"),
+            next_path=dest,
+        )
+    user = db.get(User, user_id)
+    blocked = (
+        auth_service.login_blocked_reason(user, lang=lang)
+        if user
+        else t(lang, "flash.auth.mfa_expired")
+    )
+    if not user or blocked:
+        clear_pending_mfa(request)
+        return _render_login(request, error=blocked, next_path=dest)
+    digits = "".join(ch for ch in f"{d0}{d1}{d2}{d3}{d4}{d5}{code}" if ch.isdigit())
+    if not verify_challenge(db, user.id, digits):
+        db.commit()
+        return _render_login(
+            request,
+            error=t(lang, "flash.auth.mfa_invalid"),
+            next_path=dest,
+            mfa_pending=True,
+        )
+    clear_pending_mfa(request)
+    return _login_success(
+        request,
+        db,
+        user,
+        dest,
+        trust_device=trust_device.lower() in {"on", "true", "1", "yes"},
+    )
+
+
+@router.post("/auth/mfa/resend")
+@limiter.limit(_mfa_resend_limit)
+def mfa_resend(
+    request: Request,
+    db: DbSession,
+    next: Annotated[str, Form()] = "",
+):
+    lang = resolve_lang(request)
+    dest = safe_next_path(next)
+    user_id = get_pending_mfa_user_id(request)
+    if user_id is None:
+        return _render_login(
+            request,
+            error=t(lang, "flash.auth.mfa_expired"),
+            next_path=dest,
+        )
+    user = db.get(User, user_id)
+    if not user:
+        clear_pending_mfa(request)
+        return _render_login(
+            request,
+            error=t(lang, "flash.auth.mfa_expired"),
+            next_path=dest,
+        )
+    try:
+        send_challenge_email(db, user, locale=lang)
+    except MfaDeliveryError:
+        db.rollback()
+        return _render_login(
+            request,
+            error=t(lang, "flash.auth.mfa_delivery"),
+            next_path=dest,
+            mfa_pending=True,
+        )
+    db.commit()
+    return _render_login(request, next_path=dest, mfa_pending=True)
 
 
 @router.post("/auth/forgot-password")
@@ -301,6 +438,7 @@ def change_password(
             raise ValueError(t(lang, "flash.auth.current_password_invalid"))
         auth_service.set_password(user, new_password, lang=lang)
         auth_service.bump_auth_epoch(user)
+        revoke_trusted_devices(db, user.id)
         db.commit()
         db.refresh(user)
         set_user_session(request, user)

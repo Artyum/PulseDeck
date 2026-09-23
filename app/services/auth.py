@@ -241,6 +241,9 @@ def set_active(
     if not active:
         bump_auth_epoch(target)
         invalidate_magic_tokens(db, target.id)
+        from app.services.mfa import revoke_trusted_devices
+
+        revoke_trusted_devices(db, target.id)
     db.commit()
     db.refresh(target)
     return target
@@ -405,6 +408,9 @@ def admin_set_password(
     mark_activated(user)
     bump_auth_epoch(user)
     invalidate_magic_tokens(db, user.id)
+    from app.services.mfa import revoke_trusted_devices
+
+    revoke_trusted_devices(db, user.id)
     db.commit()
     db.refresh(user)
     return user
@@ -461,6 +467,9 @@ def complete_password_set(
     bump_auth_epoch(user)
     row.used_at = datetime.now(timezone.utc)
     invalidate_magic_tokens(db, user.id)
+    from app.services.mfa import revoke_trusted_devices
+
+    revoke_trusted_devices(db, user.id)
     db.commit()
     db.refresh(user)
     return user

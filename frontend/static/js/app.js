@@ -401,6 +401,66 @@
     autoResizeTextarea(el);
   });
 
+  function mfaDigitInputs(from) {
+    var root = from && from.closest ? from.closest("form") || document : document;
+    return Array.from(root.querySelectorAll(".mfa-digit"));
+  }
+
+  function fillMfaDigits(raw, from) {
+    var inputs = mfaDigitInputs(from);
+    var digits = String(raw || "")
+      .replace(/\D/g, "")
+      .slice(0, 6);
+    if (!digits) return;
+    inputs.forEach(function (input, index) {
+      input.value = digits[index] || "";
+    });
+    var next = inputs[Math.min(digits.length, inputs.length) - 1];
+    if (next) next.focus();
+  }
+
+  document.addEventListener(
+    "paste",
+    function (event) {
+      var target = event.target;
+      if (!(target instanceof HTMLInputElement) || !target.classList.contains("mfa-digit")) return;
+      var pasted = ((event.clipboardData || window.clipboardData).getData("text") || "").replace(/\D/g, "").slice(0, 6);
+      if (!pasted) return;
+      event.preventDefault();
+      fillMfaDigits(pasted, target);
+    },
+    true
+  );
+
+  document.addEventListener("input", function (event) {
+    var target = event.target;
+    if (!(target instanceof HTMLInputElement) || !target.classList.contains("mfa-digit")) return;
+    var raw = target.value.replace(/\D/g, "");
+    if (raw.length > 1) {
+      fillMfaDigits(raw, target);
+      return;
+    }
+    var inputs = mfaDigitInputs(target);
+    var index = inputs.indexOf(target);
+    target.value = raw.slice(-1);
+    if (target.value && inputs[index + 1]) inputs[index + 1].focus();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof HTMLInputElement) || !target.classList.contains("mfa-digit")) return;
+    if (event.key !== "Backspace" || target.value) return;
+    var inputs = mfaDigitInputs(target);
+    var prev = inputs[inputs.indexOf(target) - 1];
+    if (prev) prev.focus();
+  });
+
+  var mfaPanel = document.querySelector("[data-auth-panel='mfa']");
+  if (mfaPanel && !mfaPanel.hidden) {
+    var firstDigit = mfaPanel.querySelector(".mfa-digit");
+    if (firstDigit) firstDigit.focus();
+  }
+
   function clearFieldFeedback(control) {
     if (!control) return;
     control.removeAttribute("aria-invalid");

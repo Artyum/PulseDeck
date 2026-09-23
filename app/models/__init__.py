@@ -10,6 +10,7 @@ from app.models.enums import (
     TicketType,
     UserRole,
 )
+from app.models.mfa import MfaChallenge, MfaTrustedDevice
 from app.models.portal_settings import PortalSetting
 from app.models.ticket import (
     Attachment,
@@ -30,6 +31,8 @@ __all__ = [
     "EmailOutboxPriority",
     "EmailOutboxStatus",
     "MagicToken",
+    "MfaChallenge",
+    "MfaTrustedDevice",
     "PortalSetting",
     "Project",
     "ProjectMember",

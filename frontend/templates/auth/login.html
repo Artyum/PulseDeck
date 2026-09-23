@@ -6,7 +6,7 @@
   {% set blocked_msg = t('flash.auth.account_blocked') %}
   {% set not_activated_msg = t('flash.auth.account_not_activated') %}
   {% set is_blocking = error and (error == blocked_msg or error == not_activated_msg) %}
-  {{ app_flash(error=none if is_blocking else error, success=success, flash=t("ui.auth.login.forgot_sent") if forgot_sent else none) }}
+  {{ app_flash(error=none if is_blocking or mfa_pending else error, success=success, flash=t("ui.auth.login.forgot_sent") if forgot_sent else none) }}
   <div class="auth-scene">
     <div class="auth-stack">
       <div class="auth-stack-brand">{{ auth_brand() }}</div>
@@ -14,7 +14,42 @@
         {% if is_blocking %}
           <p class="alert alert-error mb-4">{{ error }}</p>
         {% endif %}
-        <div data-auth-panel="login"{% if forgot_sent %} hidden{% endif %}>
+        <div data-auth-panel="mfa"{% if not mfa_pending %} hidden{% endif %}>
+          {% if mfa_pending and error %}
+            <p class="alert alert-error mb-4">{{ error }}</p>
+          {% endif %}
+          <form method="post"
+                action="{{ url_for('mfa_verify') }}"
+                class="space-y-4"
+                id="mfaForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="next" value="{{ next_path }}">
+            <p class="text-sm">{{ t("ui.auth.login.mfa_hint") }}</p>
+            <div id="mfaDigits">
+              {% for i in range(6) %}
+                <input name="d{{ i }}"
+                       type="text"
+                       inputmode="numeric"
+                       maxlength="1"
+                       autocomplete="{{ 'one-time-code' if i == 0 else 'off' }}"
+                       class="input text-center text-xl mfa-digit"
+                       aria-label="{{ t('ui.auth.login.mfa_title') }} {{ i + 1 }}">
+              {% endfor %}
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer text-sm leading-none">
+              <input type="checkbox" name="trust_device" value="on" class="checkbox">
+              <span>{{ t("ui.auth.login.mfa_trust", days=mfa_ttl_days) }}</span>
+            </label>
+            <button type="submit" class="btn btn-primary w-full">{{ t("ui.auth.login.mfa_submit") }}</button>
+          </form>
+          <form method="post" action="{{ url_for('mfa_resend') }}" class="mt-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="next" value="{{ next_path }}">
+            <button type="submit" class="auth-switch">{{ t("ui.auth.login.mfa_resend") }}</button>
+          </form>
+        </div>
+        <div data-auth-panel="login"
+             {% if forgot_sent or mfa_pending %} hidden{% endif %}>
           <form method="post"
                 action="{{ url_for('login_submit') }}"
                 class="space-y-4">

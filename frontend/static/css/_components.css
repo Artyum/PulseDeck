@@ -5663,6 +5663,28 @@
     padding: 1.75rem;
   }
 
+  .auth-stack:has([data-auth-panel="mfa"]:not([hidden])),
+  .auth-card:has([data-auth-panel="mfa"]:not([hidden])) {
+    max-width: 28rem;
+  }
+
+  #mfaDigits {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .auth-card .mfa-digit {
+    box-sizing: border-box;
+    flex: 0 1 3rem;
+    width: 3rem;
+    min-width: 0;
+    max-width: 3rem;
+    height: 3rem;
+    padding: 0;
+  }
+
   .notice-title {
     margin: 0;
     font-family: var(--font-display);

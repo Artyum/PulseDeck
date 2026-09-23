@@ -1,0 +1,8 @@
+{% extends "_base.html" %}
+{% block title %}{{ t("email.mfa.subject") }}{% endblock title %}
+{% block body %}
+  <p style="margin:0 0 12px;">{{ t('email.common.greeting', name=user.first_name) }}</p>
+  <p style="margin:0 0 12px;">{{ t('email.mfa.body') }}</p>
+  <p style="margin:0 0 20px;font-size:28px;letter-spacing:0.35em;font-weight:700;">{{ code }}</p>
+  <p style="margin:0;">{{ t('email.mfa.ttl', minutes=minutes) }}</p>
+{% endblock body %}

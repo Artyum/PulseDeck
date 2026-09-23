@@ -88,6 +88,13 @@ ui:
       forgot_submit: "Wyślij link do zmiany hasła"
       forgot_back: "Wróć do logowania"
       forgot_sent: "Jeśli konto istnieje i nie jest zablokowane, wysłaliśmy link na e-mail."
+      mfa_title: "Kod z e-maila"
+      mfa_hint: "Wpisz 6-cyfrowy kod, który wysłaliśmy na Twój adres e-mail."
+      mfa_submit: "Potwierdź kod"
+      mfa_trust: "Dodaj to urządzenie do zaufanych na {days} dni"
+      mfa_resend: "Wyślij kod ponownie"
+      mfa_invalid: "Nieprawidłowy lub wygasły kod."
+      mfa_expired: "Sesja weryfikacji wygasła. Zaloguj się ponownie."
     activate:
       title_pending: "Aktywacja konta"
       title_reset: "Ustaw hasło"
@@ -623,6 +630,9 @@ flash:
     confirm_link_invalid: "Link potwierdzający wygasł lub jest nieprawidłowy."
     email_confirmed: "E-mail potwierdzony — zaloguj się nowym adresem."
     activation_link_invalid: "Link aktywacyjny wygasł lub jest nieprawidłowy."
+    mfa_invalid: "Nieprawidłowy lub wygasły kod."
+    mfa_expired: "Sesja weryfikacji wygasła. Zaloguj się ponownie."
+    mfa_delivery: "Nie udało się wysłać kodu. Spróbuj ponownie później."
   admin:
     user_created: "Konto utworzone — wysłaliśmy link aktywacyjny."
     user_created_active: "Konto utworzone i aktywne — ustaw hasło poniżej."
@@ -872,6 +882,10 @@ js:
       body: "Notatki wewnętrzne widzi tylko obsługa — klienci ich nie zobaczą."
 
 email:
+  mfa:
+    subject: "Kod logowania"
+    body: "Twój kod weryfikacyjny do logowania:"
+    ttl: "Kod jest ważny przez {minutes} min."
   confirm:
     subject: "Potwierdź nowy adres e-mail"
     body: "Otrzymaliśmy prośbę o zmianę adresu e-mail w {app}. Potwierdź nowy adres klikając poniższy przycisk. Link jest ważny przez {minutes} min. Jeśli to nie Ty, zignoruj tę wiadomość."

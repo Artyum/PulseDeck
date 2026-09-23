@@ -12,6 +12,9 @@ os.environ["ALLOWED_HOSTS"] = "testserver,localhost,127.0.0.1"
 os.environ.pop("ADMIN_EMAIL", None)
 os.environ.pop("ADMIN_PASSWORD", None)
 os.environ["SECURITY_CSRF_ENABLED"] = "false"
+os.environ["MFA_ENABLED"] = "false"
+os.environ["LOG_DIR"] = "logs"
+os.environ["UPLOAD_DIR"] = "data/uploads"
 os.environ["AUTH_LOGIN_RATE_LIMIT"] = "100/minute"
 os.environ["AUTH_FORGOT_PASSWORD_RATE_LIMIT"] = "100/minute"
 os.environ["AUTH_ACTIVATE_RATE_LIMIT"] = "100/minute"

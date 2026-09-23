@@ -88,6 +88,13 @@ ui:
       forgot_submit: "Send password change link"
       forgot_back: "Back to sign in"
       forgot_sent: "If the account exists and isn't blocked, we've sent a link by email."
+      mfa_title: "Email code"
+      mfa_hint: "Enter the 6-digit code we sent to your email."
+      mfa_submit: "Confirm code"
+      mfa_trust: "Trust this device for {days} days"
+      mfa_resend: "Resend code"
+      mfa_invalid: "Invalid or expired code."
+      mfa_expired: "Verification session expired. Sign in again."
     activate:
       title_pending: "Account activation"
       title_reset: "Set password"
@@ -623,6 +630,9 @@ flash:
     confirm_link_invalid: "That confirmation link has expired or isn't valid."
     email_confirmed: "Email confirmed — sign in with the new address."
     activation_link_invalid: "That activation link has expired or isn't valid."
+    mfa_invalid: "Invalid or expired code."
+    mfa_expired: "Verification session expired. Sign in again."
+    mfa_delivery: "Could not send the code. Please try again later."
   admin:
     user_created: "Account created — we've sent an activation link."
     user_created_active: "Account created and active — set a password below."
@@ -872,6 +882,10 @@ js:
       body: "Internal notes are visible only to staff — clients won’t see them."
 
 email:
+  mfa:
+    subject: "Sign-in code"
+    body: "Your sign-in verification code:"
+    ttl: "The code is valid for {minutes} min."
   confirm:
     subject: "Confirm your new email"
     body: "We received a request to change your email address in {app}. Confirm the new address using the button below. The link is valid for {minutes} min. If this wasn’t you, you can ignore this message."
