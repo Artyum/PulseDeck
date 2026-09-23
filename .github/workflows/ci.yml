@@ -103,8 +103,8 @@ jobs:
             pulsedeck:ci
             ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=main
+          cache-to: ${{ github.event_name != 'pull_request' && 'type=gha,mode=min,scope=main' || '' }}
 
       - name: Start smoke-test database
         run: |

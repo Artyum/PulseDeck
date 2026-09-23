@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   packages: write
 
 concurrency:
@@ -29,16 +30,48 @@ jobs:
           cutoff="$(date -u -d "${RETENTION_DAYS} days ago" +%FT%TZ)"
           package="$(echo "$PACKAGE" | tr '[:upper:]' '[:lower:]')"
           if [ "$OWNER_TYPE" = "Organization" ]; then api="orgs/${OWNER}"; else api="users/${OWNER}"; fi
-          versions="$(gh api --paginate "/${api}/packages/container/${package}/versions")"
+          versions="$(gh api --paginate "/${api}/packages/container/${package}/versions?per_page=100" | jq -s 'if length == 0 then [] elif (.[0] | type) == "array" then add else . end')"
           ids="$(jq -r --arg cutoff "$cutoff" '
             . as $all
             | ([$all[] | select(any((.metadata.container.tags // [])[]?; test("^[0-9a-f]{7,40}$")))] | sort_by(.created_at) | reverse | .[:15] | map(.id)) as $recent_sha
             | $all[]
             | {id, created_at, tags: (.metadata.container.tags // [])}
             | .id as $id
-            | select(((.tags | length) == 0 and .created_at < $cutoff) or ((any(.tags[]?; test("^[0-9a-f]{7,40}$"))) and (any(.tags[]?; test("^(v|latest$|main$|main-latest$)")) | not) and (($recent_sha | index($id)) | not)))
+            | select(
+                ((.tags | length) == 0 and .created_at < $cutoff)
+                or (
+                  (any(.tags[]?; test("^[0-9a-f]{7,40}$")))
+                  and (any(.tags[]?; test("^(v|latest$|main$|main-latest$)")) | not)
+                  and (($recent_sha | index($id)) | not)
+                )
+              )
             | .id
           ' <<< "$versions")"
           while IFS= read -r id; do
             [ -z "$id" ] || gh api -X DELETE "/${api}/packages/container/${package}/versions/${id}"
+          done <<< "$ids"
+
+      - name: Prune Actions caches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          caches="$(gh api --paginate "/repos/${REPO}/actions/caches?per_page=100" | jq -s 'map(.actions_caches // []) | add // []')"
+          ids="$(jq -r '
+            def dep: (.key | test("setup-python|node-cache|golangci-lint"));
+            def scoped: ((.key == "main") or (.key | startswith("main-") or startswith("main/") or startswith("main@") or startswith("main:")));
+            def epoch: (.last_accessed_at | sub("\\.[0-9]+"; "") | fromdateiso8601);
+            (map(select(scoped) | epoch) | max) as $newest
+            | .[]
+            | select(dep | not)
+            | select(
+                if $newest == null then true
+                else (scoped | not) or (epoch < ($newest - 10800))
+                end
+              )
+            | .id
+          ' <<< "$caches")"
+          while IFS= read -r id; do
+            [ -z "$id" ] || gh api -X DELETE "/repos/${REPO}/actions/caches/${id}"
           done <<< "$ids"
