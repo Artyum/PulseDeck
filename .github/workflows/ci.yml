@@ -144,7 +144,7 @@ jobs:
             "$image"
           for i in $(seq 1 45); do
             if docker run --rm --network pulsedeck-ci curlimages/curl:8.10.1 \
-              -fsS http://pulsedeck-ci:8000/api/health >/dev/null; then exit 0; fi
+              -fsS -H "Host: localhost" http://pulsedeck-ci:8000/api/health >/dev/null 2>&1; then exit 0; fi
             sleep 2
           done
           docker logs pulsedeck-ci
