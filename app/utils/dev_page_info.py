@@ -48,7 +48,11 @@ def _template_refs(env: Environment, template_name: str) -> list[str]:
     try:
         refs = [ref for ref in meta.find_referenced_templates(env.parse(source)) if ref]
     except Exception:
-        logger.debug("Nie udało się odczytać referencji szablonu %s", template_name, exc_info=True)
+        logger.debug(
+            "Nie udało się odczytać referencji szablonu %s",
+            template_name,
+            exc_info=True,
+        )
         return []
     return [ref for ref in refs if ref not in _DEV_SKIP_TEMPLATE_REFS]
 
@@ -96,7 +100,9 @@ def _copy_text(info: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
-def build_dev_page_info(request: Request, env: Environment, template_name: str) -> dict[str, str]:
+def build_dev_page_info(
+    request: Request, env: Environment, template_name: str
+) -> dict[str, str]:
     route = request.scope.get("route")
     route_path = str(getattr(route, "path", "") or "") if route is not None else ""
     actual_path = request.url.path

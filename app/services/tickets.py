@@ -5,6 +5,7 @@ import math
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from typing import cast
 
 from fastapi import HTTPException, status
 from sqlalchemy import Select, case, func, or_, select
@@ -489,7 +490,7 @@ def _apply_mine_scope(stmt, user: User):
     return stmt.where(_ticket_involvement_filter(user))
 
 
-def _apply_sort(stmt, sort: str | None):
+def _apply_sort(stmt: Select[tuple[Ticket]], sort: str | None) -> Select[tuple[Ticket]]:
     if sort == "created_at":
         return stmt.order_by(Ticket.created_at.desc(), Ticket.id.desc())
     if sort == "priority":
@@ -498,9 +499,7 @@ def _apply_sort(stmt, sort: str | None):
             (Ticket.priority == TicketPriority.NORMAL, 1),
             else_=2,
         )
-        return stmt.add_columns(priority_order).order_by(
-            priority_order, Ticket.updated_at.desc(), Ticket.id.desc()
-        )
+        return stmt.order_by(priority_order, Ticket.updated_at.desc(), Ticket.id.desc())
     return stmt.order_by(Ticket.updated_at.desc(), Ticket.id.desc())
 
 
@@ -613,13 +612,12 @@ def list_tickets(
         or 0
     )
     page = min(parse_positive_int(page), max(1, math.ceil(total / page_size)))
-    items = list(
-        db.scalars(
-            _apply_sort(base_stmt.options(*_FEED_LIST_LOAD), sort)
-            .offset((page - 1) * page_size)
-            .limit(page_size)
-        ).all()
+    stmt = (
+        _apply_sort(base_stmt.options(*_FEED_LIST_LOAD), sort)
+        .offset((page - 1) * page_size)
+        .limit(page_size)
     )
+    items = cast(list[Ticket], list(db.scalars(stmt).all()))
     return TicketListResult(items=items, total=total, page=page, page_size=page_size)
 
 

@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     log_dir: str = "logs"
     log_level: str = "DEBUG"
     upload_dir: str = "data/uploads"
+    static_asset_version: str = Field(
+        default="", validation_alias="STATIC_ASSET_VERSION"
+    )
     upload_max_image_bytes: int = Field(
         default=5 * 1024 * 1024, validation_alias="UPLOAD_MAX_IMAGE_BYTES"
     )
@@ -129,7 +132,11 @@ class Settings(BaseSettings):
             msg = f"DATABASE_URL is not a valid SQLAlchemy URL: {exc}"
             raise ValueError(msg) from exc
 
-        from app.utils.mfa_ttl import is_protected_environment, normalize_environment, parse_mfa_ttl_days
+        from app.utils.mfa_ttl import (
+            is_protected_environment,
+            normalize_environment,
+            parse_mfa_ttl_days,
+        )
 
         self.environment = normalize_environment(self.environment)
 

@@ -105,28 +105,42 @@
           x-cloak
           class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 gap-y-1 border-t border-white/15 px-2 py-2 text-white/90">
         <dt class="text-white/50">{{ t("ui.dev.url") }}</dt>
-        <dd class="min-w-0 break-all">{{ dev_page_info.url }}</dd>
+        <dd class="min-w-0 break-all">
+          {{ dev_page_info.url }}
+        </dd>
         <dt class="text-white/50">{{ t("ui.dev.template") }}</dt>
-        <dd class="min-w-0 break-all">{{ dev_page_info.template }}</dd>
+        <dd class="min-w-0 break-all">
+          {{ dev_page_info.template }}
+        </dd>
         {% if dev_page_info.partials %}
           <dt class="text-white/50">{{ t("ui.dev.partials") }}</dt>
-          <dd class="min-w-0 break-all">{{ dev_page_info.partials }}</dd>
+          <dd class="min-w-0 break-all">
+            {{ dev_page_info.partials }}
+          </dd>
         {% endif %}
         {% if dev_page_info.api %}
           <dt class="text-white/50">{{ t("ui.dev.api") }}</dt>
-          <dd class="min-w-0 break-all">{{ dev_page_info.api }}</dd>
+          <dd class="min-w-0 break-all">
+            {{ dev_page_info.api }}
+          </dd>
         {% endif %}
         {% if dev_page_info.js %}
           <dt class="text-white/50">{{ t("ui.dev.js") }}</dt>
-          <dd class="min-w-0 break-all">{{ dev_page_info.js }}</dd>
+          <dd class="min-w-0 break-all">
+            {{ dev_page_info.js }}
+          </dd>
         {% endif %}
         {% if dev_page_info.route %}
           <dt class="text-white/50">{{ t("ui.dev.route") }}</dt>
-          <dd class="min-w-0 break-all">{{ dev_page_info.route }}</dd>
+          <dd class="min-w-0 break-all">
+            {{ dev_page_info.route }}
+          </dd>
         {% endif %}
         {% if dev_page_info.file %}
           <dt class="text-white/50">{{ t("ui.dev.file") }}</dt>
-          <dd class="min-w-0 break-all">{{ dev_page_info.file }}</dd>
+          <dd class="min-w-0 break-all">
+            {{ dev_page_info.file }}
+          </dd>
         {% endif %}
       </dl>
     </div>
