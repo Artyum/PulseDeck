@@ -88,6 +88,120 @@ function applyLinkCommand(root, editor) {
   openLinkPop(root, editor);
 }
 
+function toastPasteMarkdownFail() {
+  var msg = i18n("errors.paste_markdown");
+  if (typeof window.showToast === "function") window.showToast(msg || "", "error");
+}
+
+function toastPasteMarkdownHint() {
+  var msg = i18n("editor.paste_markdown_hint");
+  if (msg && typeof window.showToast === "function") window.showToast(msg, "info");
+}
+
+function setPasteMarkdownArmed(root, on) {
+  root._pasteMarkdownArmed = !!on;
+  var btn = root.querySelector("[data-rich-paste-md]");
+  if (!btn) return;
+  btn.classList.toggle("is-active", !!on);
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+}
+
+function normalizeMarkdownForEditor(text) {
+  return String(text || "")
+    .replace(/^(\s*)(#{1,6})(?=\s|$)/gm, "$1\\$2")
+    .replace(/^(\s*)([-*_])(?:[ \t]*\2){2,}[ \t]*$/gm, "$1\\$2$2$2");
+}
+
+function normalizeMarkdownJson(node, schema) {
+  if (Array.isArray(node)) {
+    return node.map(function (child) {
+      return normalizeMarkdownJson(child, schema);
+    });
+  }
+  if (!node || typeof node !== "object") return node;
+  var out = Object.assign({}, node);
+  if (out.content) out.content = normalizeMarkdownJson(out.content, schema);
+  if (out.marks) {
+    out.marks = out.marks.filter(function (mark) {
+      return mark && mark.type && schema.marks[mark.type];
+    });
+    if (
+      out.marks.some(function (mark) {
+        return mark.type === "code";
+      })
+    ) {
+      out.marks = out.marks.filter(function (mark) {
+        return mark.type === "code";
+      });
+    }
+  }
+  return out;
+}
+
+function insertMarkdownFromText(editor, text) {
+  try {
+    if (!String(text || "").trim()) {
+      toastPasteMarkdownFail();
+      return false;
+    }
+    var json = normalizeMarkdownJson(editor.markdown.parse(normalizeMarkdownForEditor(text)), editor.schema);
+    var content = json && json.type === "doc" && json.content ? json.content : json;
+    var ok = editor.chain().focus().insertContent(content).run();
+    if (!ok) {
+      toastPasteMarkdownFail();
+      return false;
+    }
+    return true;
+  } catch (_e) {
+    console.error("Could not paste Markdown", _e);
+    toastPasteMarkdownFail();
+    return false;
+  }
+}
+
+function consumeMarkdownPaste(root, editor, event) {
+  if (!root._pasteMarkdownArmed) return false;
+  if (editor.isActive("codeBlock")) return false;
+  var data = event.clipboardData;
+  if (data && data.files && data.files.length) return false;
+  var html = data ? data.getData("text/html") : "";
+  if (html && html.indexOf("data-pm-slice") !== -1) return false;
+  var text = data ? data.getData("text/plain") : "";
+  setPasteMarkdownArmed(root, false);
+  if (!text || !String(text).trim()) return false;
+  insertMarkdownFromText(editor, text);
+  return true;
+}
+
+function armMarkdownPaste(root, editor) {
+  setPasteMarkdownArmed(root, true);
+  editor.chain().focus().run();
+  toastPasteMarkdownHint();
+}
+
+function onPasteMarkdownClick(root, editor) {
+  stopDictation(root);
+  closeLinkPop(root);
+  if (root._pasteMarkdownArmed) {
+    setPasteMarkdownArmed(root, false);
+    editor.chain().focus().run();
+    return;
+  }
+  var clipboard = navigator.clipboard;
+  if (clipboard && typeof clipboard.readText === "function") {
+    clipboard
+      .readText()
+      .then(function (text) {
+        insertMarkdownFromText(editor, text);
+      })
+      .catch(function () {
+        armMarkdownPaste(root, editor);
+      });
+    return;
+  }
+  armMarkdownPaste(root, editor);
+}
+
 function i18n(key, vars) {
   var dict = window.__i18n || {};
   var msg = dict[key] || "";
@@ -247,11 +361,9 @@ function initEditor(root) {
     contentType: "markdown",
     editorProps: {
       attributes: attrs,
-      handleDOMEvents: {
-        paste: function () {
-          stopDictation(root);
-          return false;
-        },
+      handlePaste: function (_view, event) {
+        stopDictation(root);
+        return consumeMarkdownPaste(root, editor, event);
       },
     },
     onCreate: function ({ editor: ed }) {
@@ -326,6 +438,17 @@ function initEditor(root) {
     });
   }
 
+  var mdBtn = root.querySelector("[data-rich-paste-md]");
+  if (mdBtn) {
+    mdBtn.addEventListener("mousedown", function (ev) {
+      ev.preventDefault();
+    });
+    mdBtn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      onPasteMarkdownClick(root, editor);
+    });
+  }
+
   root._richEditor = editor;
   root._richInput = input;
 }
@@ -337,6 +460,7 @@ function scan(scope) {
 function destroyIn(scope) {
   (scope || document).querySelectorAll("[data-rich-editor]").forEach(function (root) {
     closeLinkPop(root);
+    setPasteMarkdownArmed(root, false);
     detachDictation(root);
     if (!root._richEditor) return;
     try {

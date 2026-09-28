@@ -362,6 +362,7 @@ ui:
     blockquote: "Quote"
     dictate: "Dictate"
     dictate_stop: "Stop dictation"
+    paste_markdown: "Paste Markdown"
   admin:
     aside_label: "Administration"
     nav_aria: "Admin"
@@ -800,6 +801,7 @@ js:
     network: "Couldn't reach the server."
     comment_empty: "Write something in the comment"
     content_too_long: "Text is too long (max {max} characters)"
+    paste_markdown: "Couldn't paste Markdown."
   ticket:
     stale_reply: "A new message appeared — check the thread before sending."
   editor:
@@ -807,6 +809,7 @@ js:
     dictate_denied: "Microphone access denied"
     dictate_no_mic: "No microphone found"
     dictate_network: "Dictation is unavailable. Check your connection."
+    paste_markdown_hint: "Paste with Ctrl+V — Markdown will be formatted."
   validation:
     missing_user: "Select a user"
     missing_field: "Fill in {label}"

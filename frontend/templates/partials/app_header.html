@@ -32,12 +32,12 @@
   </form>
 {%- endmacro %}
 {% macro nav_project_trigger(label) -%}
-  <div x-data="{ open: false }"
-       @click.outside="open = false"
+  <div x-data="dropdown"
+       @click.outside="close()"
        :class="{'is-menu-open': open}"
        class="issue-menu app-header-project">
     <button type="button"
-            @click="open = !open"
+            @click="toggle()"
             :aria-expanded="open"
             class="app-header-project-btn"
             data-coachmark="nav-project"
@@ -87,12 +87,12 @@
           {{ t("ui.common.back_to_portal") }}
         </a>
       {% endif %}
-      <div x-data="{ open: false }"
-           @click.outside="open = false"
+      <div x-data="dropdown"
+           @click.outside="close()"
            :class="{'is-menu-open': open}"
            class="issue-menu">
         <button type="button"
-                @click="open = !open"
+                @click="toggle()"
                 :aria-expanded="open"
                 class="nav-chrome nav-user"
                 data-coachmark="nav-appearance"
@@ -110,15 +110,15 @@
       {% if coachmark_scope|default("") %}{{ coachmark_replay(coachmark_scope) }}{% endif %}
     </nav>
     <div class="app-header-nav-mobile"
-         x-data="{ open: false }"
-         @keydown.escape.window="open = false"
-         @click.outside="open = false"
+         x-data="dropdown"
+         @keydown.escape.window="close()"
+         @click.outside="close()"
          :class="{'is-menu-open': open}">
       <div class="app-header-nav-mobile-actions">
         <button type="button"
                 class="nav-chrome nav-hamburger"
                 data-coachmark="nav-appearance"
-                @click="open = !open"
+                @click="toggle()"
                 :aria-expanded="open"
                 aria-controls="app-nav-mobile-panel"
                 aria-label="{{ t('ui.nav.menu') }}">

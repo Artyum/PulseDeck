@@ -1,4 +1,14 @@
 document.addEventListener("alpine:init", () => {
+  Alpine.data("dropdown", () => ({
+    open: false,
+    toggle() {
+      if (this.$el.hasAttribute("data-disabled")) return;
+      this.open = !this.open;
+    },
+    close() {
+      this.open = false;
+    },
+  }));
   Alpine.data("devPanel", () => ({
     open: false,
     copied: false,

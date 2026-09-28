@@ -362,6 +362,7 @@ ui:
     blockquote: "Cytat"
     dictate: "Dyktowanie"
     dictate_stop: "Zatrzymaj dyktowanie"
+    paste_markdown: "Wklej Markdown"
   admin:
     aside_label: "Administracja"
     nav_aria: "Admin"
@@ -800,6 +801,7 @@ js:
     network: "Brak połączenia z serwerem."
     comment_empty: "Napisz coś w komentarzu"
     content_too_long: "Tekst jest za długi (maks. {max} znaków)"
+    paste_markdown: "Nie udało się wkleić Markdownu."
   ticket:
     stale_reply: "Pojawiła się nowa wiadomość — sprawdź wątek przed wysłaniem."
   editor:
@@ -807,6 +809,7 @@ js:
     dictate_denied: "Brak dostępu do mikrofonu"
     dictate_no_mic: "Nie znaleziono mikrofonu"
     dictate_network: "Dyktowanie jest niedostępne. Sprawdź połączenie."
+    paste_markdown_hint: "Wklej skrótem Ctrl+V — Markdown zostanie sformatowany."
   validation:
     missing_user: "Wybierz użytkownika"
     missing_field: "Uzupełnij {label}"

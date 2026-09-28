@@ -4032,6 +4032,7 @@
     flex-direction: column;
     gap: 0;
     min-width: 0;
+    border-radius: 0.55rem;
   }
 
   .rich-editor-toolbar {
@@ -4124,19 +4125,31 @@
   }
 
   .rich-editor-surface,
-  .rich-editor-surface.textarea,
-  .modal-body .rich-editor-surface.textarea {
+  .modal-body .rich-editor-surface {
     min-height: 6.5rem;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     overflow: auto;
-    padding-top: 0.65rem;
-    padding-bottom: 0.65rem;
+    padding: 0.65rem 0.8rem;
   }
 
-  .rich-editor-surface .rich-editor-prose {
+  .rich-editor-surface .rich-editor-prose,
+  .rich-editor-surface .ProseMirror,
+  .rich-editor-input-frame [contenteditable] {
     min-height: 4.5rem;
     outline: none;
+    box-shadow: none;
+  }
+
+  .rich-editor-surface .rich-editor-prose:focus,
+  .rich-editor-surface .rich-editor-prose:focus-visible,
+  .rich-editor-surface .ProseMirror:focus,
+  .rich-editor-surface .ProseMirror:focus-visible,
+  .rich-editor-input-frame :focus,
+  .rich-editor-input-frame :focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 
   .rich-editor-input-frame {
@@ -4153,18 +4166,19 @@
       box-shadow 0.15s ease;
   }
 
-  .rich-editor-input-frame:focus-within {
-    border-color: color-mix(in oklab, var(--color-pulse) 62%, var(--color-frame));
-    box-shadow:
-      var(--shadow-field),
-      0 0 0 3px var(--color-soft-blue);
+  .rich-editor-input-frame:hover {
+    border-color: var(--color-frame-strong);
   }
 
-  .rich-editor-input-frame > .rich-editor-surface,
-  .rich-editor-input-frame > .rich-editor-surface.textarea {
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
+  .rich-editor-input-frame:focus-within {
+    outline: none;
+    border-color: var(--color-pulse);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-field);
+  }
+
+  .rich-editor:focus-within .rich-editor-toolbar {
+    border-color: var(--color-pulse);
   }
 
   .rich-editor-meter {

@@ -50,6 +50,11 @@
               {% if quote_coachmark %}data-coachmark="compose-quote"{% endif %}
               aria-label="{{ t('ui.editor.blockquote') }}"
               title="{{ t('ui.editor.blockquote') }}">❝</button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-paste-md
+              aria-label="{{ t('ui.editor.paste_markdown') }}"
+              title="{{ t('ui.editor.paste_markdown') }}">MD</button>
       <span class="rich-editor-sep" aria-hidden="true"></span>
       <button type="button"
               class="rich-editor-btn"
@@ -75,7 +80,7 @@
       </button>
     </div>
     <div class="rich-editor-input-frame">
-      <div class="rich-editor-surface textarea">
+      <div class="rich-editor-surface">
         <div data-rich-surface></div>
       </div>
       <div class="rich-editor-meter" data-rich-meter hidden>

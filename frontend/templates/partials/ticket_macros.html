@@ -85,14 +85,14 @@
   </button>
 {%- endmacro %}
 {% macro issue_field_menu(aria_label, post_url, field_name, choices, current_value, labels=none, value_attr='value', empty_value=none, empty_label=none, show_role_badge=false) -%}
-  <div x-data="{ open: false }"
-       @click.outside="open = false"
+  <div x-data="dropdown"
+       @click.outside="close()"
        :class="{'is-menu-open': open}"
        class="issue-menu relative">
     <div class="issue-field-editable">
       <span class="issue-field-face">{{ caller() }}</span>
       <button type="button"
-              @click="open = !open"
+              @click="toggle()"
               :aria-expanded="open"
               class="issue-field-edit-btn"
               aria-label="{{ aria_label }}"
@@ -166,8 +166,8 @@
       {% endfor %}
     {% endif %}
   {% endif %}
-  <div x-data="{ open: false }"
-       @click.outside="open = false"
+  <div x-data="dropdown"
+       @click.outside="close()"
        :class="{'is-menu-open': open}"
        class="issue-menu form-select-menu{% if compact %} issue-filter-menu{% endif %}{% if class_name %} {{ class_name }}{% endif %} relative"
        data-form-select
@@ -180,7 +180,7 @@
            data-form-select-input
            {{ input_attrs|safe }}>
     <button type="button"
-            @click="if (!$el.closest('[data-disabled]')) open = !open"
+            @click="toggle()"
             :aria-expanded="open"
             class="issue-menu-trigger"
             aria-label="{{ aria_label }}"

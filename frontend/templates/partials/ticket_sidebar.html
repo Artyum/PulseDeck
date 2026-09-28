@@ -51,14 +51,14 @@
           {{ status_chip(ticket.status) }}
         {% endcall %}
       {% elif can_set_done and ticket.status.value != "DONE" %}
-        <div x-data="{ open: false }"
-             @click.outside="open = false"
+        <div x-data="dropdown"
+             @click.outside="close()"
              :class="{'is-menu-open': open}"
              class="issue-menu relative">
           <div class="issue-field-editable">
             <span class="issue-field-face">{{ status_chip(ticket.status) }}</span>
             <button type="button"
-                    @click="open = !open"
+                    @click="toggle()"
                     :aria-expanded="open"
                     class="issue-field-edit-btn"
                     data-coachmark="ticket-done"
@@ -82,14 +82,14 @@
           </div>
         </div>
       {% elif can_reopen %}
-        <div x-data="{ open: false }"
-             @click.outside="open = false"
+        <div x-data="dropdown"
+             @click.outside="close()"
              :class="{'is-menu-open': open}"
              class="issue-menu relative">
           <div class="issue-field-editable">
             <span class="issue-field-face">{{ status_chip(ticket.status) }}</span>
             <button type="button"
-                    @click="open = !open"
+                    @click="toggle()"
                     :aria-expanded="open"
                     class="issue-field-edit-btn"
                     aria-label="{{ t('ui.ticket.change_status') }}"
@@ -152,12 +152,12 @@
         <span class="label-tight">{{ t("ui.ticket.participants") }}</span>
         {% if can_add_participant %}
           <div class="issue-participant-add">
-            <div x-data="{ open: false }"
-                 @click.outside="open = false"
+            <div x-data="dropdown"
+                 @click.outside="close()"
                  :class="{'is-menu-open': open}"
                  class="issue-menu">
               <button type="button"
-                      @click="open = !open"
+                      @click="toggle()"
                       :aria-expanded="open"
                       class="issue-menu-trigger"
                       aria-label="{{ t('ui.ticket.add_participant') }}"
