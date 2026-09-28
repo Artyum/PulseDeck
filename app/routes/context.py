@@ -27,6 +27,7 @@ from app.utils.i18n import (
     t,
     translations_prefix,
 )
+from app.utils.icons import render_icon
 from app.utils.markdown import render_markdown_safe
 from app.utils.phone import format_phone
 from app.utils.static_assets import static_url
@@ -108,6 +109,8 @@ _templates.env.filters["user_initials"] = user_initials
 _templates.env.filters["avatar_tone"] = avatar_tone
 _templates.env.filters["markdown_safe"] = render_markdown_safe
 _templates.env.globals["static_url"] = static_url
+_templates.env.globals["icon"] = render_icon
+_templates.env.globals["icon_svg"] = render_icon
 _templates.env.globals["field_attrs"] = field_attrs
 _templates.env.globals["build_feed_path"] = build_feed_path
 
