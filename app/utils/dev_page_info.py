@@ -2,104 +2,114 @@ from __future__ import annotations
 
 import inspect
 import logging
-from collections import deque
+import re
+from pathlib import Path
 from typing import Any
 
 from fastapi import Request
-from jinja2 import Environment, nodes
+from jinja2 import Environment, meta
+
+from app.config import project_root
 
 logger = logging.getLogger("pulsedeck.app")
 
 _TEMPLATES_PREFIX = "frontend/templates"
-
-
-def _rel_template_path(name: str) -> str:
-    return f"{_TEMPLATES_PREFIX}/{name}".replace("\\", "/")
-
-
-def _const_template_name(node: nodes.Node | None) -> str | None:
-    if isinstance(node, nodes.Const) and isinstance(node.value, str):
-        return node.value
-    return None
-
-
-def _parse_template(env: Environment, name: str) -> tuple[str | None, list[str]]:
-    try:
-        source, _, _ = env.loader.get_source(env, name)  # type: ignore[union-attr]
-    except Exception:
-        logger.exception("Dev page info: cannot load template %s", name)
-        return None, []
-    try:
-        ast = env.parse(source)
-    except Exception:
-        logger.exception("Dev page info: cannot parse template %s", name)
-        return None, []
-
-    extends: str | None = None
-    for node in ast.find_all(nodes.Extends):
-        extends = _const_template_name(node.template)
-        if extends:
-            break
-
-    refs: list[str] = []
-    for node in ast.find_all((nodes.Include, nodes.Import, nodes.FromImport)):
-        ref = _const_template_name(node.template)
-        if ref:
-            refs.append(ref)
-    return extends, refs
-
-
-def _collect_partials(env: Environment, template_name: str) -> list[str]:
-    ordered: list[str] = []
-    seen: set[str] = set()
-    queue: deque[str] = deque([template_name])
-
-    while queue:
-        current = queue.popleft()
-        _, refs = _parse_template(env, current)
-        for ref in refs:
-            if ref in seen or ref == template_name:
-                continue
-            seen.add(ref)
-            ordered.append(_rel_template_path(ref))
-            queue.append(ref)
-    return ordered
-
-
-def _route_meta(request: Request) -> tuple[str, str, str, str]:
-    endpoint = request.scope.get("endpoint")
-    handler_qid = ""
-    handler_module = ""
-    if endpoint is not None and callable(endpoint):
-        fn = inspect.unwrap(endpoint)
-        handler_module = getattr(fn, "__module__", "") or ""
-        name = getattr(fn, "__name__", "") or ""
-        if handler_module and name:
-            handler_qid = f"{handler_module}.{name}"
-        elif name:
-            handler_qid = name
-
-    route = request.scope.get("route")
-    route_path = getattr(route, "path", None) or request.url.path
-    method = request.method.upper()
-    return handler_qid, handler_module, method, str(route_path)
-
-
-def build_dev_page_info(
-    request: Request,
-    env: Environment,
-    template_name: str,
-    context_keys: list[str],
-) -> dict[str, Any]:
-    handler_qid, handler_module, method, route_path = _route_meta(request)
-    extends_name, _ = _parse_template(env, template_name)
-    return {
-        "handler_qid": handler_qid,
-        "handler_module": handler_module,
-        "method": method,
-        "route_path": route_path,
-        "template": _rel_template_path(template_name),
-        "extends": _rel_template_path(extends_name) if extends_name else None,
-        "context_keys": sorted(context_keys),
-        "partials": _collect_partials(env, template_name),
+_DEV_SKIP_TEMPLATE_REFS = frozenset(
+    {
+        "base.html",
+        "base_app.html",
+        "admin/base_admin.html",
+        "admin/base_settings.html",
+        "auth/base_profile.html",
+        "partials/dev_panel.html",
+        "partials/icons.html",
     }
+)
+_DEV_API_RE = re.compile(r"/api/[A-Za-z0-9_./-]*[A-Za-z0-9_-]")
+_DEV_JS_RE = re.compile(r"static_url\(\s*['\"]js/([^'\"]+)['\"]")
+_COPY_KEYS = ("url", "template", "partials", "api", "js", "route", "file")
+
+
+def _template_source(env: Environment, template_name: str) -> str:
+    loader = env.loader
+    if loader is None:
+        return ""
+    try:
+        return loader.get_source(env, template_name)[0]
+    except Exception:
+        logger.debug("Nie udało się odczytać szablonu %s", template_name, exc_info=True)
+        return ""
+
+
+def _template_refs(env: Environment, template_name: str) -> list[str]:
+    source = _template_source(env, template_name)
+    if not source:
+        return []
+    try:
+        refs = [ref for ref in meta.find_referenced_templates(env.parse(source)) if ref]
+    except Exception:
+        logger.debug("Nie udało się odczytać referencji szablonu %s", template_name, exc_info=True)
+        return []
+    return [ref for ref in refs if ref not in _DEV_SKIP_TEMPLATE_REFS]
+
+
+def _scan_page_assets(env: Environment, template_name: str) -> tuple[str, str, str]:
+    names = [template_name, *_template_refs(env, template_name)]
+    apis: set[str] = set()
+    scripts: set[str] = set()
+    sources: dict[str, str] = {}
+    for name in names:
+        sources[name] = _template_source(env, name)
+        for match in _DEV_API_RE.finditer(sources[name]):
+            apis.add(match.group(0).rstrip("/"))
+    for match in _DEV_JS_RE.finditer(sources.get(template_name, "")):
+        path = match.group(1)
+        if not path.startswith("vendor/"):
+            scripts.add(f"frontend/static/js/{path}")
+    partials = [f"{_TEMPLATES_PREFIX}/{ref}" for ref in names[1:]]
+    return (
+        ", ".join(sorted(set(partials))),
+        ", ".join(sorted(apis)),
+        ", ".join(sorted(scripts)),
+    )
+
+
+def _handler_location(endpoint: Any) -> str:
+    if endpoint is None:
+        return ""
+    try:
+        src = inspect.getsourcefile(endpoint) or inspect.getfile(endpoint)
+        rel = Path(src).resolve().relative_to(project_root())
+        lineno = inspect.getsourcelines(endpoint)[1]
+        return f"{rel.as_posix()}:{lineno}"
+    except Exception:
+        logger.debug("Nie udało się ustalić pliku handlera strony", exc_info=True)
+        return ""
+
+
+def _copy_text(info: dict[str, str]) -> str:
+    lines = []
+    for key in _COPY_KEYS:
+        value = info.get(key) or ""
+        if value:
+            lines.append(f"{key}: {value}")
+    return "\n".join(lines)
+
+
+def build_dev_page_info(request: Request, env: Environment, template_name: str) -> dict[str, str]:
+    route = request.scope.get("route")
+    route_path = str(getattr(route, "path", "") or "") if route is not None else ""
+    actual_path = request.url.path
+    partials, apis, extra_js = _scan_page_assets(env, template_name)
+    info = {
+        "url": str(request.url),
+        "template": f"{_TEMPLATES_PREFIX}/{template_name}",
+        "partials": partials,
+        "api": apis,
+        "js": extra_js,
+        "file": _handler_location(request.scope.get("endpoint")),
+    }
+    if route_path and route_path != actual_path:
+        info["route"] = route_path
+    info["copy_text"] = _copy_text(info)
+    return info

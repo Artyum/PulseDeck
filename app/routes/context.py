@@ -211,9 +211,7 @@ def render(request: Request, name: str, *, status_code: int = 200, **extra):
     ctx = common_context(request, **extra)
     if ctx.get("is_dev"):
         try:
-            ctx["dev_page_info"] = build_dev_page_info(
-                request, _templates.env, name, list(extra.keys())
-            )
+            ctx["dev_page_info"] = build_dev_page_info(request, _templates.env, name)
         except Exception:
             logger.exception("Dev page info failed for template %s", name)
             ctx["dev_page_info"] = None

@@ -87,22 +87,7 @@
         </div>
       </div>
     </dialog>
-    {% if is_dev and dev_page_info %}
-      <div class="dev-frame" role="status" aria-label="{{ t('ui.dev.aria') }}">
-        <span class="dev-frame__badge">Dev</span>
-        <span class="dev-frame__meta"
-              title="{{ dev_page_info.method }} {{ dev_page_info.route_path }}">
-          <span class="dev-frame__method">{{ dev_page_info.method }}</span>
-          <span class="dev-frame__path">{{ dev_page_info.route_path }}</span>
-        </span>
-        <button type="button"
-                id="dev-page-copy"
-                class="dev-frame__copy"
-                data-dev-page-info="{{ dev_page_info | tojson | forceescape }}"
-                aria-label="{{ t('ui.dev.copy_aria') }}">{{ t("ui.dev.copy") }}</button>
-      </div>
-      <script src="{{ static_url('js/dev-page-copy.js') }}" defer></script>
-    {% endif %}
+    {% include "partials/dev_panel.html" %}
     <script src="{{ static_url('js/pwa.js') }}" defer></script>
   </body>
 </html>

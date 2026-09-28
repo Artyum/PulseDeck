@@ -1,0 +1,134 @@
+{% if is_dev and dev_page_info %}
+  <div class="fixed bottom-4 left-4 z-[10050] max-w-[min(22rem,calc(100vw-2rem))] font-mono text-[11px] leading-snug"
+       x-data="{
+        open: (function () { try { return sessionStorage.getItem('devPanelOpen') === '1'; } catch (e) { return false; } })(),
+        copied: false,
+        toggle() {
+            this.open = !this.open;
+            try { sessionStorage.setItem('devPanelOpen', this.open ? '1' : '0'); } catch (e) {}
+        },
+        copy() {
+            var text = this.$refs.copyText.textContent || '';
+            var done = function (self) {
+                self.copied = true;
+                setTimeout(function () { self.copied = false; }, 1600);
+            };
+            var self = this;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function () { done(self); }).catch(function () {
+                    self._fallbackCopy(text); done(self);
+                });
+            } else {
+                this._fallbackCopy(text); done(this);
+            }
+        },
+        _fallbackCopy(text) {
+            var el = document.createElement('textarea');
+            el.value = text;
+            el.setAttribute('readonly', '');
+            el.style.position = 'fixed';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(el);
+        }
+     }"
+       role="region"
+       aria-label="{{ t('ui.dev.aria') }}">
+    <pre class="hidden" x-ref="copyText">{{ dev_page_info.copy_text }}</pre>
+    <div class="rounded-lg border border-amber-400/80 bg-[#172735]/95 text-white shadow-lg backdrop-blur-sm">
+      <div class="flex items-center gap-2 px-2 py-1.5">
+        <span class="inline-flex h-7 items-center justify-center rounded bg-amber-400 px-2 text-[11px] font-bold uppercase leading-none text-[#172735]">{{ t("ui.dev.label") }}</span>
+        <button type="button"
+                class="ml-auto inline-flex h-10 min-w-11 items-center justify-center rounded-md px-3 text-white/90 hover:bg-white/10"
+                @click="copy()"
+                :title="copied ? '{{ t('ui.dev.copied') }}' : '{{ t('ui.dev.copy') }}'"
+                :aria-label="copied ? '{{ t('ui.dev.copied') }}' : '{{ t('ui.dev.copy') }}'">
+          <svg class="size-5"
+               x-show="copied"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+          <svg class="size-5"
+               x-show="!copied"
+               x-cloak
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               aria-hidden="true">
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+          </svg>
+        </button>
+        <button type="button"
+                class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-white/90 hover:bg-white/10"
+                @click="toggle()"
+                :title="open ? '{{ t('ui.dev.collapse') }}' : '{{ t('ui.dev.expand') }}'"
+                :aria-expanded="open"
+                :aria-label="open ? '{{ t('ui.dev.collapse') }}' : '{{ t('ui.dev.expand') }}'">
+          <svg class="size-5"
+               x-show="open"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <svg class="size-5"
+               x-show="!open"
+               x-cloak
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+      <dl x-show="open"
+          x-cloak
+          class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 gap-y-1 border-t border-white/15 px-2 py-2 text-white/90">
+        <dt class="text-white/50">{{ t("ui.dev.url") }}</dt>
+        <dd class="min-w-0 break-all">{{ dev_page_info.url }}</dd>
+        <dt class="text-white/50">{{ t("ui.dev.template") }}</dt>
+        <dd class="min-w-0 break-all">{{ dev_page_info.template }}</dd>
+        {% if dev_page_info.partials %}
+          <dt class="text-white/50">{{ t("ui.dev.partials") }}</dt>
+          <dd class="min-w-0 break-all">{{ dev_page_info.partials }}</dd>
+        {% endif %}
+        {% if dev_page_info.api %}
+          <dt class="text-white/50">{{ t("ui.dev.api") }}</dt>
+          <dd class="min-w-0 break-all">{{ dev_page_info.api }}</dd>
+        {% endif %}
+        {% if dev_page_info.js %}
+          <dt class="text-white/50">{{ t("ui.dev.js") }}</dt>
+          <dd class="min-w-0 break-all">{{ dev_page_info.js }}</dd>
+        {% endif %}
+        {% if dev_page_info.route %}
+          <dt class="text-white/50">{{ t("ui.dev.route") }}</dt>
+          <dd class="min-w-0 break-all">{{ dev_page_info.route }}</dd>
+        {% endif %}
+        {% if dev_page_info.file %}
+          <dt class="text-white/50">{{ t("ui.dev.file") }}</dt>
+          <dd class="min-w-0 break-all">{{ dev_page_info.file }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+  </div>
+{% endif %}
