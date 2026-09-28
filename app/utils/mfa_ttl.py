@@ -1,4 +1,12 @@
-PROTECTED_ENVIRONMENTS = frozenset({"production", "staging", "prod", "preprod"})
+ALLOWED_ENVIRONMENTS = frozenset({"development", "preprod", "prod"})
+PROTECTED_ENVIRONMENTS = frozenset({"preprod", "prod"})
+
+
+def normalize_environment(environment: str) -> str:
+    value = (environment or "").strip().lower()
+    if value not in ALLOWED_ENVIRONMENTS:
+        raise ValueError("ENVIRONMENT must be development, preprod or prod")
+    return value
 
 
 def parse_mfa_ttl_days(raw: str) -> int:

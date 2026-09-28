@@ -62,7 +62,7 @@ PulseDeck is a lightweight helpdesk for homelabs and small teams: staff manage p
 | ------------------------- | ----------------------------------- | ---------------------------------------------------- |
 | `DATABASE_URL`            | —                                   | PostgreSQL SQLAlchemy URL (required)                 |
 | `STORAGE_SECRET`          | dev placeholder                     | Session signing secret; must be strong in production |
-| `ENVIRONMENT`             | `dev`                               | `dev`, `preprod`, or `prod`                          |
+| `ENVIRONMENT`             | `development`                       | `development`, `preprod`, or `prod`                  |
 | `APP_BASE_URL`            | `http://localhost:8000`             | Public base URL for links in email                   |
 | `ALLOWED_HOSTS`           | `localhost,127.0.0.1,pulsedeck.lan` | Comma-separated trusted hostnames                    |
 | `ADMIN_EMAIL`             | —                                   | Bootstrap admin email (first run)                    |
@@ -202,7 +202,7 @@ You still need PostgreSQL, Node.js (for CSS/JS build), and a configured `deploy/
 ```bash
 export DATABASE_URL=postgresql+psycopg://pulsedeck:pulsedeck@127.0.0.1:5432/pulsedeck
 export STORAGE_SECRET=dev-only-change-me
-export ENVIRONMENT=dev
+export ENVIRONMENT=development
 alembic upgrade head
 python -m app.bootstrap
 npm run build
@@ -221,7 +221,7 @@ python -m app.workers.mail
 | ------ | ------------- | ------------ |
 | `GET`  | `/api/health` | Health check |
 
-OpenAPI docs are disabled in production builds.
+OpenAPI docs are disabled in every environment.
 
 ## License
 

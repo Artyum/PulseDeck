@@ -137,7 +137,7 @@ jobs:
             --network pulsedeck-ci \
             -e DATABASE_URL=postgresql+psycopg://pulsedeck:pulsedeck@pulsedeck-ci-db:5432/pulsedeck \
             -e STORAGE_SECRET=ci-only-secret \
-            -e ENVIRONMENT=staging \
+            -e ENVIRONMENT=preprod \
             -e PUBLIC_BASE=https://example.com \
             -e API_BASE=http://127.0.0.1:8000 \
             -e UVICORN_WORKERS=1 \

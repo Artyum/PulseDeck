@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     database_url: str
     storage_secret: str = _DEV_STORAGE_SECRET
-    environment: str = "dev"
+    environment: str = "development"
     app_base_url: str = Field(
         default="http://localhost:8000", validation_alias="APP_BASE_URL"
     )
@@ -129,17 +129,19 @@ class Settings(BaseSettings):
             msg = f"DATABASE_URL is not a valid SQLAlchemy URL: {exc}"
             raise ValueError(msg) from exc
 
-        if self.environment == "prod" and (
+        from app.utils.mfa_ttl import is_protected_environment, normalize_environment, parse_mfa_ttl_days
+
+        self.environment = normalize_environment(self.environment)
+
+        if is_protected_environment(self.environment) and (
             not self.storage_secret or self.storage_secret == _DEV_STORAGE_SECRET
         ):
-            msg = "STORAGE_SECRET must be set to a strong value when ENVIRONMENT=prod"
+            msg = "STORAGE_SECRET must be set to a strong value when ENVIRONMENT=preprod or prod"
             raise ValueError(msg)
 
         if self.password_min_len > self.password_max_len:
             msg = "PASSWORD_MIN_LEN must be <= PASSWORD_MAX_LEN"
             raise ValueError(msg)
-
-        from app.utils.mfa_ttl import is_protected_environment, parse_mfa_ttl_days
 
         try:
             parse_mfa_ttl_days(self.mfa_ttl)
@@ -153,7 +155,7 @@ class Settings(BaseSettings):
             and not self.smtp_configured
         ):
             raise ValueError(
-                "MFA_ENABLED requires SMTP when ENVIRONMENT is prod or preprod"
+                "MFA_ENABLED requires SMTP when ENVIRONMENT is preprod or prod"
             )
 
         self.app_base_url = self.app_base_url.strip().rstrip("/")

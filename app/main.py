@@ -24,6 +24,7 @@ from app.middleware.session_sliding import SessionSlidingMiddleware
 from app.rate_limit import client_ip_key, limiter
 from app.routes import admin, auth, health, open_reply, portal
 from app.utils.i18n import LANG_STORAGE_KEY, set_lang_cookie
+from app.utils.mfa_ttl import is_protected_environment
 
 logger = logging.getLogger("pulsedeck.app")
 security_logger = logging.getLogger("pulsedeck.security")
@@ -74,7 +75,7 @@ def build_fastapi_app() -> FastAPI:
         return response
 
     hosts = settings.trusted_hosts_list()
-    if settings.environment == "dev":
+    if settings.environment == "development":
         hosts = list({*hosts, "testserver", "localhost", "127.0.0.1", "pulsedeck.lan"})
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts)
     app.add_middleware(SlowAPIMiddleware)
@@ -86,7 +87,7 @@ def build_fastapi_app() -> FastAPI:
         session_cookie="pulsedeck_session",
         max_age=settings.session_max_age_seconds,
         same_site="lax",
-        https_only=settings.environment == "prod",
+        https_only=is_protected_environment(settings.environment),
     )
 
     mimetypes.add_type("application/manifest+json", ".webmanifest")
