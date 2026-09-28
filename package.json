@@ -8,7 +8,8 @@
     "css:watch": "tailwindcss -i frontend/static/css/tailwind.css -o frontend/static/css/app.css --watch",
     "js:build": "esbuild frontend/js/editor.js --bundle --minify --outfile=frontend/static/js/editor.bundle.js --format=iife --target=es2020",
     "js:watch": "esbuild frontend/js/editor.js --bundle --outfile=frontend/static/js/editor.bundle.js --format=iife --target=es2020 --watch",
-    "build": "npm run css:build && npm run js:build",
+    "vendor:alpine": "bash scripts/vendor-static.sh",
+    "build": "npm run vendor:alpine && npm run css:build && npm run js:build",
     "format": "prettier --write \"**/*.{html,css,md,json,js}\"",
     "format:check": "prettier --check \"**/*.{html,css,md,json,js}\"",
     "lint:css": "node --disable-warning=ExperimentalWarning ./node_modules/stylelint/bin/stylelint.mjs \"frontend/static/css/**/*.css\"",
@@ -26,10 +27,10 @@
     "tailwindcss": "^4.3.3"
   },
   "dependencies": {
+    "@alpinejs/csp": "^3.17.4",
     "@tiptap/core": "^3.31.3",
     "@tiptap/markdown": "^3.31.3",
     "@tiptap/pm": "^3.31.3",
-    "@tiptap/starter-kit": "^3.31.3",
-    "alpinejs": "^3.17.3"
+    "@tiptap/starter-kit": "^3.31.3"
   }
 }

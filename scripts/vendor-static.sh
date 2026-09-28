@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE="${ROOT}/node_modules/alpinejs/dist/cdn.min.js"
+SOURCE="${ROOT}/node_modules/@alpinejs/csp/dist/cdn.min.js"
 DEST="${ROOT}/frontend/static/vendor/alpine.min.js"
 
 if [[ ! -f "${SOURCE}" ]]; then

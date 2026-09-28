@@ -27,7 +27,7 @@ def _request_is_secure_context(request: Request) -> bool:
 def _content_security_policy(*, upgrade_insecure: bool = False) -> str:
     policy = (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-eval'; "
+        "script-src 'self'; "
         "script-src-attr 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' data: https://fonts.gstatic.com; "

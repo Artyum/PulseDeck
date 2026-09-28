@@ -1,39 +1,6 @@
 {% if is_dev and dev_page_info %}
   <div class="fixed bottom-4 left-4 z-[10050] max-w-[min(22rem,calc(100vw-2rem))] font-mono text-[11px] leading-snug"
-       x-data="{
-        open: (function () { try { return sessionStorage.getItem('devPanelOpen') === '1'; } catch (e) { return false; } })(),
-        copied: false,
-        toggle() {
-            this.open = !this.open;
-            try { sessionStorage.setItem('devPanelOpen', this.open ? '1' : '0'); } catch (e) {}
-        },
-        copy() {
-            var text = this.$refs.copyText.textContent || '';
-            var done = function (self) {
-                self.copied = true;
-                setTimeout(function () { self.copied = false; }, 1600);
-            };
-            var self = this;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(function () { done(self); }).catch(function () {
-                    self._fallbackCopy(text); done(self);
-                });
-            } else {
-                this._fallbackCopy(text); done(this);
-            }
-        },
-        _fallbackCopy(text) {
-            var el = document.createElement('textarea');
-            el.value = text;
-            el.setAttribute('readonly', '');
-            el.style.position = 'fixed';
-            el.style.left = '-9999px';
-            document.body.appendChild(el);
-            el.select();
-            try { document.execCommand('copy'); } catch (e) {}
-            document.body.removeChild(el);
-        }
-     }"
+       x-data="devPanel"
        role="region"
        aria-label="{{ t('ui.dev.aria') }}">
     <pre class="hidden" x-ref="copyText">{{ dev_page_info.copy_text }}</pre>
