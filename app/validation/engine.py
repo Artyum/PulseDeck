@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Any
 
 from markupsafe import Markup
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.utils.i18n import DEFAULT_LANG, t
 from app.validation.fields import FIELDS
@@ -24,6 +26,11 @@ __all__ = [
     "format_error",
 ]
 
+_TICKET_TEXT_FIELDS = {
+    "ticket.description": "ticket_description_max_len",
+    "comment.content": "ticket_reply_max_len",
+}
+
 
 def field_spec(field_id: str) -> FieldSpec:
     try:
@@ -34,7 +41,18 @@ def field_spec(field_id: str) -> FieldSpec:
         from app.validation.spec import password as password_field
 
         return password_field(required=spec.required)
-    return spec
+    attr = _TICKET_TEXT_FIELDS.get(field_id)
+    if attr is None:
+        return spec
+    try:
+        from app.services.portal_settings import get_portal_settings
+
+        max_len = getattr(get_portal_settings(), attr)
+    except (ImportError, SQLAlchemyError, AttributeError):
+        return spec
+    if not isinstance(max_len, int) or max_len < 1:
+        return spec
+    return replace(spec, max_len=max_len)
 
 
 def validate(field_id: str, value: Any) -> Any:

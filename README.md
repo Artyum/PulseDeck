@@ -58,25 +58,27 @@ PulseDeck is a lightweight helpdesk for homelabs and small teams: staff manage p
 
 ### Environment variables
 
-| Variable                  | Default                             | Description                                          |
-| ------------------------- | ----------------------------------- | ---------------------------------------------------- |
-| `DATABASE_URL`            | —                                   | PostgreSQL SQLAlchemy URL (required)                 |
-| `STORAGE_SECRET`          | dev placeholder                     | Session signing secret; must be strong in production |
-| `ENVIRONMENT`             | `development`                       | `development`, `preprod`, or `prod`                  |
-| `APP_BASE_URL`            | `http://localhost:8000`             | Public base URL for links in email                   |
-| `ALLOWED_HOSTS`           | `localhost,127.0.0.1,pulsedeck.lan` | Comma-separated trusted hostnames                    |
-| `ADMIN_EMAIL`             | —                                   | Bootstrap admin email (first run)                    |
-| `ADMIN_PASSWORD`          | —                                   | Bootstrap admin password (first run)                 |
-| `SMTP_SERVER`             | empty                               | SMTP host; leave empty to disable outbound mail      |
-| `SMTP_PORT`               | `587`                               | SMTP port                                            |
-| `SMTP_USER` / `SMTP_PASS` | empty                               | SMTP credentials                                     |
-| `EMAIL_FROM`              | empty                               | From address for outbound mail                       |
-| `UVICORN_HOST`            | `127.0.0.1`                         | Bind address inside container                        |
-| `UVICORN_PORT`            | `8000`                              | HTTP port                                            |
-| `UVICORN_WORKERS`         | `1`                                 | Uvicorn worker processes                             |
-| `UVICORN_PROXY_HEADERS`   | `false`                             | Enable when behind a reverse proxy                   |
-| `SESSION_MAX_AGE_SECONDS` | `28800`                             | Session cookie lifetime                              |
-| `TICKET_REOPEN_DAYS`      | `7`                                 | Days after close when clients may reopen             |
+| Variable                     | Default                             | Description                                          |
+| ---------------------------- | ----------------------------------- | ---------------------------------------------------- |
+| `DATABASE_URL`               | —                                   | PostgreSQL SQLAlchemy URL (required)                 |
+| `STORAGE_SECRET`             | dev placeholder                     | Session signing secret; must be strong in production |
+| `ENVIRONMENT`                | `development`                       | `development`, `preprod`, or `prod`                  |
+| `APP_BASE_URL`               | `http://localhost:8000`             | Public base URL for links in email                   |
+| `ALLOWED_HOSTS`              | `localhost,127.0.0.1,pulsedeck.lan` | Comma-separated trusted hostnames                    |
+| `ADMIN_EMAIL`                | —                                   | Bootstrap admin email (first run)                    |
+| `ADMIN_PASSWORD`             | —                                   | Bootstrap admin password (first run)                 |
+| `SMTP_SERVER`                | empty                               | SMTP host; leave empty to disable outbound mail      |
+| `SMTP_PORT`                  | `587`                               | SMTP port                                            |
+| `SMTP_USER` / `SMTP_PASS`    | empty                               | SMTP credentials                                     |
+| `EMAIL_FROM`                 | empty                               | From address for outbound mail                       |
+| `UVICORN_HOST`               | `127.0.0.1`                         | Bind address inside container                        |
+| `UVICORN_PORT`               | `8000`                              | HTTP port                                            |
+| `UVICORN_WORKERS`            | `1`                                 | Uvicorn worker processes                             |
+| `UVICORN_PROXY_HEADERS`      | `false`                             | Enable when behind a reverse proxy                   |
+| `SESSION_MAX_AGE_SECONDS`    | `28800`                             | Session cookie lifetime                              |
+| `TICKET_REOPEN_DAYS`         | `7`                                 | Days after close when clients may reopen             |
+| `TICKET_DESCRIPTION_MAX_LEN` | `100000`                            | Seed for ticket description character limit          |
+| `TICKET_REPLY_MAX_LEN`       | `100000`                            | Seed for ticket reply character limit                |
 
 See [`deploy/example/.env.dev.example`](deploy/example/.env.dev.example) and [`deploy/example/.env.prod.example`](deploy/example/.env.prod.example) for the full list.
 
@@ -192,7 +194,7 @@ Typical flow:
 ./stop_app.sh           # when done
 ```
 
-Dev compose file: [`deploy/docker-compose.dev.yml`](deploy/docker-compose.dev.yml).  
+Dev compose file: [`deploy/docker-compose.dev.yml`](deploy/docker-compose.dev.yml).
 By default the app is exposed through Traefik at `pulsedeck.lan`; adjust labels or publish port `8000` if needed.
 
 ### Run without Docker

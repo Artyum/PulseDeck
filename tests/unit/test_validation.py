@@ -62,8 +62,8 @@ class TestRegistryCompleteness:
             "project.key": 5,
             "project.description": 2000,
             "ticket.title": 300,
-            "ticket.description": 10000,
-            "comment.content": 10000,
+            "ticket.description": 100000,
+            "comment.content": 100000,
             "tag.name": 80,
             "search.q": 200,
             "filter.tag": 80,
@@ -369,3 +369,30 @@ class TestFieldAttrs:
     def test_every_field_has_attrs(self):
         for field_id in FIELDS:
             assert isinstance(str(field_attrs(field_id)), str)
+
+
+class TestTicketTextLimits:
+    def test_portal_settings_override_max_len(self, db_session):
+        from app.services.portal_settings import invalidate_cache, update_section
+
+        update_section(
+            db_session,
+            "tickets",
+            {
+                "ticket_description_max_len": 50,
+                "ticket_reply_max_len": 40,
+            },
+        )
+        invalidate_cache()
+        assert field_spec("ticket.description").max_len == 50
+        assert field_spec("comment.content").max_len == 40
+        assert clean("ticket.description", "x" * 50) == "x" * 50
+        assert clean("comment.content", "y" * 40) == "y" * 40
+        with pytest.raises(ValidationValueError) as desc_exc:
+            clean("ticket.description", "x" * 51)
+        assert desc_exc.value.code == "too_long"
+        with pytest.raises(ValidationValueError) as reply_exc:
+            clean("comment.content", "y" * 41)
+        assert reply_exc.value.code == "too_long"
+        assert 'maxlength="50"' in str(field_attrs("ticket.description"))
+        assert 'maxlength="40"' in str(field_attrs("comment.content"))

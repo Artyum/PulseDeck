@@ -97,12 +97,16 @@ def admin_settings_tickets_save(
     user: AdminUser,
     db: DbSession,
     ticket_reopen_days: Annotated[str, Form()],
+    ticket_description_max_len: Annotated[str, Form()],
+    ticket_reply_max_len: Annotated[str, Form()],
     auth_link_ttl_days: Annotated[str, Form()],
     email_confirm_ttl_minutes: Annotated[str, Form()],
 ):
     lang = resolve_lang(request)
     form = {
         "ticket_reopen_days": ticket_reopen_days,
+        "ticket_description_max_len": ticket_description_max_len,
+        "ticket_reply_max_len": ticket_reply_max_len,
         "auth_link_ttl_days": auth_link_ttl_days,
         "email_confirm_ttl_minutes": email_confirm_ttl_minutes,
     }

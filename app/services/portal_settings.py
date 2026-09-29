@@ -31,6 +31,8 @@ SMTP_SECURITY_VALUES = frozenset(
 SECTION_KEYS: dict[str, tuple[str, ...]] = {
     "tickets": (
         "ticket_reopen_days",
+        "ticket_description_max_len",
+        "ticket_reply_max_len",
         "auth_link_ttl_days",
         "email_confirm_ttl_minutes",
     ),
@@ -61,6 +63,8 @@ class SettingDef:
 
 REGISTRY: dict[str, SettingDef] = {
     "ticket_reopen_days": SettingDef("int", min_int=0, max_int=3650),
+    "ticket_description_max_len": SettingDef("int", min_int=1, max_int=1_000_000),
+    "ticket_reply_max_len": SettingDef("int", min_int=1, max_int=1_000_000),
     "auth_link_ttl_days": SettingDef("int", min_int=1, max_int=365),
     "email_confirm_ttl_minutes": SettingDef("int", min_int=5, max_int=10_080),
     "upload_max_image_bytes": SettingDef("int", min_int=1, max_int=100 * 1024 * 1024),
@@ -78,6 +82,8 @@ REGISTRY: dict[str, SettingDef] = {
 @dataclass(frozen=True, slots=True)
 class PortalSettings:
     ticket_reopen_days: int
+    ticket_description_max_len: int
+    ticket_reply_max_len: int
     auth_link_ttl_days: int
     email_confirm_ttl_minutes: int
     upload_max_image_bytes: int
@@ -141,6 +147,8 @@ def _env_seed_plain() -> dict[str, Any]:
     s = get_settings()
     return {
         "ticket_reopen_days": s.ticket_reopen_days,
+        "ticket_description_max_len": s.ticket_description_max_len,
+        "ticket_reply_max_len": s.ticket_reply_max_len,
         "auth_link_ttl_days": s.auth_link_ttl_days,
         "email_confirm_ttl_minutes": s.email_confirm_ttl_minutes,
         "upload_max_image_bytes": s.upload_max_image_bytes,

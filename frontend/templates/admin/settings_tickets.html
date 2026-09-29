@@ -19,6 +19,31 @@
         <p class="admin-field-hint">{{ t("ui.admin.settings.tickets.reopen_days_hint") }}</p>
       </div>
       <div class="admin-field">
+        <label class="label"
+               for="ticket_description_max_len">{{ t("ui.admin.settings.tickets.description_max_len") }}</label>
+        <input id="ticket_description_max_len"
+               name="ticket_description_max_len"
+               type="number"
+               min="1"
+               max="1000000"
+               required
+               value="{{ form.ticket_description_max_len }}"
+               class="input">
+        <p class="admin-field-hint">{{ t("ui.admin.settings.tickets.description_max_len_hint") }}</p>
+      </div>
+      <div class="admin-field">
+        <label class="label" for="ticket_reply_max_len">{{ t("ui.admin.settings.tickets.reply_max_len") }}</label>
+        <input id="ticket_reply_max_len"
+               name="ticket_reply_max_len"
+               type="number"
+               min="1"
+               max="1000000"
+               required
+               value="{{ form.ticket_reply_max_len }}"
+               class="input">
+        <p class="admin-field-hint">{{ t("ui.admin.settings.tickets.reply_max_len_hint") }}</p>
+      </div>
+      <div class="admin-field">
         <label class="label" for="auth_link_ttl_days">{{ t("ui.admin.settings.tickets.auth_link_ttl_days") }}</label>
         <input id="auth_link_ttl_days"
                name="auth_link_ttl_days"

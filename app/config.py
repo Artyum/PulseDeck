@@ -94,6 +94,12 @@ class Settings(BaseSettings):
     reply_token_get_rate_limit: str = "60/minute"
     reply_token_post_rate_limit: str = "10/minute"
     ticket_reopen_days: int = Field(default=7, validation_alias="TICKET_REOPEN_DAYS")
+    ticket_description_max_len: int = Field(
+        default=100_000, ge=1, validation_alias="TICKET_DESCRIPTION_MAX_LEN"
+    )
+    ticket_reply_max_len: int = Field(
+        default=100_000, ge=1, validation_alias="TICKET_REPLY_MAX_LEN"
+    )
 
     @field_validator("*", mode="before")
     @classmethod

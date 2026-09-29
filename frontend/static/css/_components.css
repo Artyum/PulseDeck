@@ -2800,6 +2800,7 @@
   .issue-page {
     --app-header-h: calc(2.1rem + 1.4rem * var(--space-scale) + var(--app-header-border-w, 0px));
     --issue-sidebar-w: calc(22 * var(--layout-rem));
+    --issue-side-stack: calc(1rem * var(--space-scale));
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--issue-sidebar-w);
@@ -3046,7 +3047,7 @@
   }
 
   .issue-side-block {
-    padding: calc(1.15rem * var(--space-scale)) 0;
+    padding: var(--issue-side-stack, calc(0.8rem * var(--space-scale))) 0;
     border-top: 1px solid var(--color-line);
   }
 
@@ -3062,7 +3063,7 @@
 
   .issue-side-block > .issue-section-title,
   .issue-side-block > .issue-section-bar {
-    margin: 0 0 calc(0.9rem * var(--space-scale));
+    margin: 0 0 var(--issue-side-stack, calc(0.8rem * var(--space-scale)));
   }
 
   .issue-sidebar .issue-section-bar .nav-back {
@@ -3074,7 +3075,7 @@
   .issue-side-fields {
     display: flex;
     flex-direction: column;
-    gap: calc(1.15rem * var(--space-scale));
+    gap: var(--issue-side-stack, calc(0.8rem * var(--space-scale)));
   }
 
   .issue-sidebar #feed-filters .issue-side-fields .feed-filter-actions {
