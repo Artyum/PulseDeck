@@ -7,6 +7,7 @@ set -e
 HOST="${UVICORN_HOST:-0.0.0.0}"
 PORT="${UVICORN_PORT:-8000}"
 WORKERS="${UVICORN_WORKERS:-1}"
+RELOAD=false
 
 set -- app.main:fastapi_app --host "$HOST" --port "$PORT"
 
@@ -16,7 +17,17 @@ case "${UVICORN_PROXY_HEADERS}" in
         ;;
 esac
 
-[ "$WORKERS" -gt 1 ] 2>/dev/null && set -- "$@" --workers "$WORKERS"
+case "${UVICORN_RELOAD}" in
+  true|1|yes|TRUE|YES)
+    RELOAD=true
+    set -- "$@" --reload
+    for dir in ${UVICORN_RELOAD_DIRS:-/app/app}; do
+      [ -d "$dir" ] && set -- "$@" --reload-dir "$dir"
+    done
+    ;;
+esac
+
+[ "$RELOAD" = false ] && [ "$WORKERS" -gt 1 ] 2>/dev/null && set -- "$@" --workers "$WORKERS"
 set -- "$@" --no-server-header
 
 exec uvicorn "$@"

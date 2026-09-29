@@ -23,11 +23,16 @@ services:
   web:
     image: pulsedeck:latest
     container_name: pulsedeck_dev
+    environment:
+      UVICORN_RELOAD: "true"
+      UVICORN_RELOAD_DIRS: "/app/app /app/frontend"
+      WATCHFILES_FORCE_POLLING: "true"
     env_file:
       - .env.dev
     volumes:
       - ../app:/app/app
       - ../frontend:/app/frontend
+      - ../deploy/entrypoint.sh:/app/deploy/entrypoint.sh:ro
       - ../alembic:/app/alembic
       - ../alembic.ini:/app/alembic.ini:ro
       - ../mount/uploads:/app/data/uploads
