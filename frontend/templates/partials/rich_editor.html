@@ -24,6 +24,24 @@
               title="{{ t('ui.editor.italic') }}"><em>I</em></button>
       <button type="button"
               class="rich-editor-btn"
+              data-rich-cmd="toggleHeading"
+              data-heading-level="1"
+              aria-label="{{ t('ui.editor.heading_1') }}"
+              title="{{ t('ui.editor.heading_1') }}">H1</button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleHeading"
+              data-heading-level="2"
+              aria-label="{{ t('ui.editor.heading_2') }}"
+              title="{{ t('ui.editor.heading_2') }}">H2</button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="toggleHeading"
+              data-heading-level="3"
+              aria-label="{{ t('ui.editor.heading_3') }}"
+              title="{{ t('ui.editor.heading_3') }}">H3</button>
+      <button type="button"
+              class="rich-editor-btn"
               data-rich-cmd="setLink"
               aria-label="{{ t('ui.editor.link') }}"
               title="{{ t('ui.editor.link') }}">Link</button>
@@ -50,6 +68,11 @@
               {% if quote_coachmark %}data-coachmark="compose-quote"{% endif %}
               aria-label="{{ t('ui.editor.blockquote') }}"
               title="{{ t('ui.editor.blockquote') }}">❝</button>
+      <button type="button"
+              class="rich-editor-btn"
+              data-rich-cmd="setHorizontalRule"
+              aria-label="{{ t('ui.editor.horizontal_rule') }}"
+              title="{{ t('ui.editor.horizontal_rule') }}">─</button>
       <button type="button"
               class="rich-editor-btn"
               data-rich-paste-md

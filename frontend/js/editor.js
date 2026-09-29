@@ -1,6 +1,7 @@
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "@tiptap/markdown";
+import { TableKit } from "@tiptap/extension-table";
 import { attachDictation, detachDictation, stopDictation } from "./dictation.js";
 
 var CMD_ACTIVE = {
@@ -10,6 +11,7 @@ var CMD_ACTIVE = {
   toggleOrderedList: "orderedList",
   toggleCodeBlock: "codeBlock",
   toggleBlockquote: "blockquote",
+  setHorizontalRule: "horizontalRule",
   setLink: "link",
 };
 
@@ -106,21 +108,22 @@ function setPasteMarkdownArmed(root, on) {
   btn.setAttribute("aria-pressed", on ? "true" : "false");
 }
 
-function normalizeMarkdownForEditor(text) {
-  return String(text || "")
-    .replace(/^(\s*)(#{1,6})(?=\s|$)/gm, "$1\\$2")
-    .replace(/^(\s*)([-*_])(?:[ \t]*\2){2,}[ \t]*$/gm, "$1\\$2$2$2");
-}
-
 function normalizeMarkdownJson(node, schema) {
   if (Array.isArray(node)) {
-    return node.map(function (child) {
-      return normalizeMarkdownJson(child, schema);
+    var acc = [];
+    node.forEach(function (child) {
+      var next = normalizeMarkdownJson(child, schema);
+      if (Array.isArray(next)) acc = acc.concat(next);
+      else if (next) acc.push(next);
     });
+    return acc;
   }
   if (!node || typeof node !== "object") return node;
   var out = Object.assign({}, node);
   if (out.content) out.content = normalizeMarkdownJson(out.content, schema);
+  if (out.type && out.type !== "text" && schema.nodes && !schema.nodes[out.type]) {
+    return out.content || [];
+  }
   if (out.marks) {
     out.marks = out.marks.filter(function (mark) {
       return mark && mark.type && schema.marks[mark.type];
@@ -144,7 +147,7 @@ function insertMarkdownFromText(editor, text) {
       toastPasteMarkdownFail();
       return false;
     }
-    var json = normalizeMarkdownJson(editor.markdown.parse(normalizeMarkdownForEditor(text)), editor.schema);
+    var json = normalizeMarkdownJson(editor.markdown.parse(String(text || "")), editor.schema);
     var content = json && json.type === "doc" && json.content ? json.content : json;
     var ok = editor.chain().focus().insertContent(content).run();
     if (!ok) {
@@ -228,8 +231,15 @@ function trimMarkdownEdges(md) {
 
 function updateToolbar(root, editor) {
   root.querySelectorAll("[data-rich-cmd]").forEach(function (btn) {
-    var mark = CMD_ACTIVE[btn.getAttribute("data-rich-cmd")];
-    var active = !!(mark && editor.isActive(mark));
+    var cmd = btn.getAttribute("data-rich-cmd");
+    var active = false;
+    if (cmd === "toggleHeading") {
+      var level = parseInt(btn.getAttribute("data-heading-level") || "", 10);
+      active = Number.isFinite(level) && editor.isActive("heading", { level: level });
+    } else {
+      var mark = CMD_ACTIVE[cmd];
+      active = !!(mark && editor.isActive(mark));
+    }
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-pressed", active ? "true" : "false");
   });
@@ -333,8 +343,6 @@ function initEditor(root) {
     element: surface,
     extensions: [
       StarterKit.configure({
-        heading: false,
-        horizontalRule: false,
         strike: false,
         dropcursor: false,
         gapcursor: false,
@@ -353,6 +361,7 @@ function initEditor(root) {
           },
         },
       }),
+      TableKit,
       Markdown.configure({
         indentation: { style: "space", size: 4 },
       }),
@@ -409,6 +418,12 @@ function initEditor(root) {
       }
       closeLinkPop(root);
       var chain = editor.chain().focus();
+      if (cmd === "toggleHeading") {
+        var level = parseInt(btn.getAttribute("data-heading-level") || "", 10);
+        if (!Number.isFinite(level) || typeof chain.toggleHeading !== "function") return;
+        chain.toggleHeading({ level: level }).run();
+        return;
+      }
       if (!cmd || typeof chain[cmd] !== "function") return;
       chain[cmd]().run();
     });

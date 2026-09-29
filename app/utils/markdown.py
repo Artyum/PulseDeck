@@ -18,6 +18,19 @@ _ALLOWED_TAGS = {
     "pre",
     "blockquote",
     "a",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "hr",
+    "table",
+    "thead",
+    "tbody",
+    "tr",
+    "th",
+    "td",
 }
 
 _ALLOWED_ATTRIBUTES = {
@@ -27,8 +40,6 @@ _ALLOWED_ATTRIBUTES = {
 _URL_SCHEMES = {"http", "https"}
 
 _DISABLED_RULES = (
-    "heading",
-    "lheading",
     "image",
     "html_inline",
     "html_block",
@@ -38,7 +49,7 @@ _DISABLED_RULES = (
 
 _md = (
     MarkdownIt("commonmark", {"html": False, "linkify": True})
-    .enable("linkify")
+    .enable(["linkify", "table"])
     .disable(_DISABLED_RULES)
 )
 

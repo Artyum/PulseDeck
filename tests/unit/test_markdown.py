@@ -46,10 +46,25 @@ class TestRenderMarkdownSafe:
         assert "<blockquote>" in html
         assert "quote" in html
 
-    def test_heading_stays_plain(self):
-        html = render_markdown_safe("# heading stays")
-        assert "<h1>" not in html
-        assert "# heading stays" in html
+    def test_headings(self):
+        html = render_markdown_safe("# one\n\n## two\n\n### three")
+        assert "<h1>" in html and "one" in html
+        assert "<h2>" in html and "two" in html
+        assert "<h3>" in html and "three" in html
+        assert "# one" not in html
+
+    def test_thematic_break(self):
+        html = render_markdown_safe("before\n\n---\n\nafter")
+        assert "<hr" in html
+        assert "before" in html
+        assert "after" in html
+
+    def test_table(self):
+        html = render_markdown_safe("| A | B |\n| --- | --- |\n| 1 | 2 |")
+        assert "<table>" in html
+        assert "<th>" in html
+        assert "A" in html
+        assert "2" in html
 
     def test_strips_raw_html_and_script(self):
         html = render_markdown_safe("<script>alert(1)</script>")
