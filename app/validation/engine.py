@@ -5,6 +5,7 @@ from typing import Any
 
 from markupsafe import Markup
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from app.utils.i18n import DEFAULT_LANG, t
 from app.validation.fields import FIELDS
@@ -32,7 +33,7 @@ _TICKET_TEXT_FIELDS = {
 }
 
 
-def field_spec(field_id: str) -> FieldSpec:
+def field_spec(field_id: str, *, db: Session | None = None) -> FieldSpec:
     try:
         spec = FIELDS[field_id]
     except KeyError as exc:
@@ -47,7 +48,7 @@ def field_spec(field_id: str) -> FieldSpec:
     try:
         from app.services.portal_settings import get_portal_settings
 
-        max_len = getattr(get_portal_settings(), attr)
+        max_len = getattr(get_portal_settings(db), attr)
     except (ImportError, SQLAlchemyError, AttributeError):
         return spec
     if not isinstance(max_len, int) or max_len < 1:
@@ -55,8 +56,8 @@ def field_spec(field_id: str) -> FieldSpec:
     return replace(spec, max_len=max_len)
 
 
-def validate(field_id: str, value: Any) -> Any:
-    spec = field_spec(field_id)
+def validate(field_id: str, value: Any, *, db: Session | None = None) -> Any:
+    spec = field_spec(field_id, db=db)
     normalized = normalize_raw(value, spec)
     if normalized is None or normalized == "":
         if spec.required:
@@ -88,19 +89,23 @@ def format_error(lang: str, err: FieldValidationError) -> str:
     return t(lang, f"messages.fields.{err.code}", **params)
 
 
-def clean(field_id: str, value: Any, *, lang: str | None = None) -> Any:
+def clean(
+    field_id: str, value: Any, *, lang: str | None = None, db: Session | None = None
+) -> Any:
     lang = lang or DEFAULT_LANG
     try:
-        return validate(field_id, value)
+        return validate(field_id, value, db=db)
     except FieldValidationError as exc:
         raise ValidationValueError(
             format_error(lang, exc), field=exc.field, code=exc.code
         ) from exc
 
 
-def clean_many(values: dict[str, Any], *, lang: str | None = None) -> dict[str, Any]:
+def clean_many(
+    values: dict[str, Any], *, lang: str | None = None, db: Session | None = None
+) -> dict[str, Any]:
     return {
-        field_id: clean(field_id, value, lang=lang)
+        field_id: clean(field_id, value, lang=lang, db=db)
         for field_id, value in values.items()
     }
 

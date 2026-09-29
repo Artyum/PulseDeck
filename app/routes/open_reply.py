@@ -214,7 +214,7 @@ def open_reply_post(
 
     owner, ticket = ctx
     try:
-        text = clean("comment.content", content or "", lang=lang)
+        text = clean("comment.content", content or "", lang=lang, db=db)
     except ValueError as exc:
         return _thread_page(
             request,

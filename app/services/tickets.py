@@ -52,16 +52,16 @@ _FEED_LIST_LOAD = (
 )
 
 
-def _clean_or_400(field_id: str, value, *, lang: str):
+def _clean_or_400(db: Session, field_id: str, value, *, lang: str):
     try:
-        return clean(field_id, value, lang=lang)
+        return clean(field_id, value, lang=lang, db=db)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-def _clean_many_or_400(values: dict, *, lang: str) -> dict:
+def _clean_many_or_400(db: Session, values: dict, *, lang: str) -> dict:
     try:
-        return clean_many(values, lang=lang)
+        return clean_many(values, lang=lang, db=db)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -539,7 +539,7 @@ def _build_feed_query(
         except ValueError:
             pass
     if tag:
-        tag = _clean_or_400("filter.tag", tag, lang=DEFAULT_LANG)
+        tag = _clean_or_400(db, "filter.tag", tag, lang=DEFAULT_LANG)
         if tag:
             stmt = (
                 stmt.join(TicketTag, TicketTag.ticket_id == Ticket.id)
@@ -547,7 +547,7 @@ def _build_feed_query(
                 .where(func.lower(Tag.name) == tag.lower())
             )
     if q:
-        raw = _clean_or_400("search.q", q, lang=DEFAULT_LANG)
+        raw = _clean_or_400(db, "search.q", q, lang=DEFAULT_LANG)
         if raw:
             pattern = f"%{raw}%"
             author_match = (
@@ -650,6 +650,7 @@ def create_ticket(
 ) -> Ticket:
     lang = lang or DEFAULT_LANG
     data = _clean_many_or_400(
+        db,
         {
             "ticket.title": title,
             "ticket.description": description,
@@ -745,7 +746,7 @@ def add_comment(
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.internal_staff_only")
         )
-    text = _clean_or_400("comment.content", content, lang=lang)
+    text = _clean_or_400(db, "comment.content", content, lang=lang)
     prev_status = ticket.status
     prev_assignee_id = ticket.assignee_id
     comment = Comment(
@@ -834,7 +835,7 @@ def update_comment(
         raise HTTPException(
             status_code=403, detail=t(lang, "messages.tickets.no_edit_comment")
         )
-    text = _clean_or_400("comment.content", content, lang=lang)
+    text = _clean_or_400(db, "comment.content", content, lang=lang)
     comment.content = text
     comment.edited_at = datetime.now(timezone.utc)
     comment.edited_by_id = actor.id
@@ -1085,6 +1086,7 @@ def update_ticket(
         )
     lang = lang or DEFAULT_LANG
     data = _clean_many_or_400(
+        db,
         {
             "ticket.title": title,
             "ticket.description": description,
@@ -1172,7 +1174,7 @@ def _get_or_create_tag(
     db: Session, project_id: int, name: str, *, lang: str | None = None
 ) -> Tag:
     lang = lang or DEFAULT_LANG
-    cleaned = _clean_or_400("tag.name", name, lang=lang)
+    cleaned = _clean_or_400(db, "tag.name", name, lang=lang)
     existing = db.scalar(
         select(Tag).where(
             Tag.project_id == project_id,
