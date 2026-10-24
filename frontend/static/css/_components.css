@@ -1155,7 +1155,7 @@
     flex-direction: column;
     border: 1px solid var(--color-frame);
     border-radius: 0.85rem;
-    overflow: visible;
+    overflow: hidden;
     background: var(--color-surface);
   }
 
@@ -5052,7 +5052,7 @@
     flex: 1;
     min-height: 0;
     max-height: min(92vh, 52rem);
-    overflow: visible;
+    overflow: hidden;
     border: 1px solid color-mix(in oklab, var(--color-pulse) 40%, var(--color-frame));
     border-radius: 1.1rem;
     background: var(--surface-gradient);
@@ -5182,10 +5182,6 @@
     overflow-x: hidden;
   }
 
-  .modal-body:has(.is-menu-open) {
-    overflow: visible;
-  }
-
   .modal-body .admin-field {
     gap: 0.45rem;
   }
@@ -5218,6 +5214,11 @@
 
   .modal-body .form-select-menu {
     width: 100%;
+  }
+
+  .modal-body .form-select-menu .issue-filter-panel {
+    width: max-content;
+    min-width: 10rem;
   }
 
   .modal-body .textarea {
