@@ -75,7 +75,7 @@ PulseDeck is a lightweight helpdesk for homelabs and small teams: staff manage p
 | `UVICORN_PORT`               | `8000`                              | HTTP port                                            |
 | `UVICORN_WORKERS`            | `1`                                 | Uvicorn worker processes                             |
 | `UVICORN_PROXY_HEADERS`      | `false`                             | Enable when behind a reverse proxy                   |
-| `SESSION_MAX_AGE_SECONDS`    | `28800`                             | Session cookie lifetime                              |
+| `SESSION_MAX_AGE_SECONDS`    | `28800`                             | Max idle seconds; user activity extends the session  |
 | `TICKET_REOPEN_DAYS`         | `7`                                 | Days after close when clients may reopen             |
 | `TICKET_DESCRIPTION_MAX_LEN` | `100000`                            | Seed for ticket description character limit          |
 | `TICKET_REPLY_MAX_LEN`       | `100000`                            | Seed for ticket reply character limit                |

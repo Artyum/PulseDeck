@@ -91,7 +91,7 @@ ui:
       mfa_title: "Email code"
       mfa_hint: "Enter the 6-digit code we sent to your email."
       mfa_submit: "Confirm code"
-      mfa_trust: "Trust this device for {days} days"
+      mfa_trust: "Don't ask for a code on this device for {days} days"
       mfa_resend: "Resend code"
       mfa_invalid: "Invalid or expired code."
       mfa_expired: "Verification session expired. Sign in again."

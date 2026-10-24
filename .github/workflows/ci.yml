@@ -99,12 +99,25 @@ jobs:
           platforms: linux/amd64
           load: true
           push: false
+          pull: true
+          build-args: |
+            APT_REFRESH=${{ github.run_id }}-${{ github.run_attempt }}
           tags: |
             pulsedeck:ci
             ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=main
           cache-to: ${{ github.event_name != 'pull_request' && 'type=gha,mode=min,scope=main' || '' }}
+
+      - name: Scan Docker image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          version: v0.76.0
+          image-ref: pulsedeck:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
 
       - name: Start smoke-test database
         run: |

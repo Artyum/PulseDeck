@@ -43,6 +43,8 @@ TRIVY_IMAGE="${TRIVY_IMAGE:-pulsedeck:latest}"
 docker build \
     --file deploy/Dockerfile \
     --tag "${TRIVY_IMAGE}" \
+    --pull \
+    --build-arg "APT_REFRESH=$(date +%s)" \
     .
 
 TRIVY_JSON="$(mktemp)"

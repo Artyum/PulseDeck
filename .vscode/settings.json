@@ -42,6 +42,20 @@
     "editor.tabSize": 2,
     "editor.insertSpaces": true
   },
+
+  // Konfiguracja dla plików JavaScript
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
   "css.lint.unknownAtRules": "ignore",
 
   // Konfiguracja dla plików Markdown (.md, .mdc)

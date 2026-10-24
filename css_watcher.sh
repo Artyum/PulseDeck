@@ -14,9 +14,7 @@ if [[ ! -x node_modules/.bin/tailwindcss ]]; then
     npm ci
 fi
 
-if [[ ! -f frontend/static/vendor/alpine.min.js ]]; then
-    "${ROOT}/scripts/vendor-static.sh"
-fi
+"${ROOT}/scripts/vendor-static.sh"
 
 echo "[CSS] Tailwind watch — frontend/static/css/app.css (Ctrl+C to stop)"
 exec npm run css:watch

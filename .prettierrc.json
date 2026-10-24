@@ -18,6 +18,12 @@
       }
     },
     {
+      "files": ["*.js", "*.mjs", "*.cjs", "*.jsx"],
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
       "files": ["*.css"],
       "options": {
         "tabWidth": 2,

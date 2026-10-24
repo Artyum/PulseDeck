@@ -91,7 +91,7 @@ ui:
       mfa_title: "Kod z e-maila"
       mfa_hint: "Wpisz 6-cyfrowy kod, który wysłaliśmy na Twój adres e-mail."
       mfa_submit: "Potwierdź kod"
-      mfa_trust: "Dodaj to urządzenie do zaufanych na {days} dni"
+      mfa_trust: "Nie pytaj o kod na tym urządzeniu przez {days} dni"
       mfa_resend: "Wyślij kod ponownie"
       mfa_invalid: "Nieprawidłowy lub wygasły kod."
       mfa_expired: "Sesja weryfikacji wygasła. Zaloguj się ponownie."
