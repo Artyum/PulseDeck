@@ -138,6 +138,10 @@ def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> di
         ),
         "visible_participants": ticket_service.list_visible_participants(ticket),
         "staff_members": staff_members,
+        "project_staff_ids": {m.id for m in staff_members},
+        "member_role_by_user": (
+            project_service.member_roles_for(ticket.project) if ticket.project else {}
+        ),
         "project_members": members,
         "project_tags": ticket_service.list_project_tags(db, ticket.project_id),
         "back_to_feed_url": back_to_feed_url,

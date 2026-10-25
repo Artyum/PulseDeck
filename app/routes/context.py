@@ -10,6 +10,7 @@ from jinja2 import pass_context
 
 from app.config import get_settings, project_root
 from app.models.enums import (
+    ProjectMemberRole,
     TicketPriority,
     TicketStatus,
     TicketType,
@@ -181,10 +182,14 @@ def common_context(request: Request, **extra) -> dict:
         "ticket_statuses": TicketStatus,
         "ticket_priorities": TicketPriority,
         "user_roles": UserRole,
+        "member_roles": ProjectMemberRole,
         "type_labels": _enum_label_map(lang, "ticket_type", TicketType),
         "status_labels": _enum_label_map(lang, "ticket_status", TicketStatus),
         "priority_labels": _enum_label_map(lang, "ticket_priority", TicketPriority),
         "role_labels": _enum_label_map(lang, "user_role", UserRole),
+        "member_role_labels": _enum_label_map(lang, "member_role", ProjectMemberRole),
+        "member_role_by_user": {},
+        "project_staff_ids": frozenset(),
         "ticket_reopen_days": portal.ticket_reopen_days,
         "mfa_ttl_days": settings.mfa_ttl_days,
         "upload_max_files": max(1, portal.upload_max_files),

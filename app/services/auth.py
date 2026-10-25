@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
-from app.models.enums import MagicTokenPurpose, UserRole
+from app.models.enums import MagicTokenPurpose, ProjectMemberRole, UserRole
 from app.models.ticket import MagicToken
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
@@ -202,16 +202,6 @@ def set_user_role(
             raise ValueError(
                 t(lang or DEFAULT_LANG, "messages.auth.cannot_demote_last_admin")
             )
-    if project_service.user_has_staff_ops(user) and role == UserRole.USER:
-        for mid in db.scalars(
-            select(ProjectMember.project_id).where(ProjectMember.user_id == user.id)
-        ).all():
-            if project_service.would_leave_project_without_staff(
-                db, int(mid), excluding_user_id=user.id
-            ):
-                raise ValueError(
-                    t(lang or DEFAULT_LANG, "messages.projects.last_staff")
-                )
     user.role = role
     db.commit()
     db.refresh(user)
@@ -229,7 +219,7 @@ def set_active(
     lang = lang or DEFAULT_LANG
     if target.id == actor.id:
         raise ValueError(t(lang, "messages.auth.cannot_block_self"))
-    if not active and project_service.user_has_staff_ops(target):
+    if not active:
         for mid in db.scalars(
             select(ProjectMember.project_id).where(ProjectMember.user_id == target.id)
         ).all():
@@ -515,7 +505,13 @@ def create_user(
     db.add(user)
     db.flush()
     for pid in resolved_ids:
-        db.add(ProjectMember(project_id=pid, user_id=user.id))
+        db.add(
+            ProjectMember(
+                project_id=pid,
+                user_id=user.id,
+                role=ProjectMemberRole.CLIENT,
+            )
+        )
     if activate:
         mark_activated(user)
     db.commit()

@@ -123,6 +123,30 @@ class TestAdminProjects:
         )
         assert r.status_code == 303
 
+    def test_set_member_role(
+        self, client, db_session, admin_user, project_with_members, client_user
+    ):
+        from sqlalchemy import select
+
+        from app.models.enums import ProjectMemberRole
+        from app.models.user import ProjectMember
+
+        login_admin(client)
+        r = client.post(
+            f"/admin/projects/{project_with_members.key}/members/{client_user.id}/role",
+            data={"role": "STAFF"},
+            follow_redirects=False,
+        )
+        assert r.status_code == 303
+        row = db_session.scalar(
+            select(ProjectMember).where(
+                ProjectMember.project_id == project_with_members.id,
+                ProjectMember.user_id == client_user.id,
+            )
+        )
+        assert row is not None
+        assert row.role == ProjectMemberRole.STAFF
+
     def test_remove_project_member(
         self, client, db_session, admin_user, project_with_members, client_user
     ):
@@ -256,7 +280,7 @@ class TestAdminUsers:
                 "last_name": client_user.last_name,
                 "email": client_user.email,
                 "phone": "",
-                "role": "STAFF",
+                "role": "ADMIN",
             },
             follow_redirects=False,
         )

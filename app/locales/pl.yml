@@ -204,13 +204,13 @@ ui:
       font_title: "Wielkość czcionki"
       notify_intro: "Konfiguracja powiadomień e-mail o zmianach w zgłoszeniach."
       notify_new_ticket: "Nowe zgłoszenia"
-      notify_new_ticket_hint: "E-mail, gdy ktoś założy nowe zgłoszenie w projekcie, w którym jesteś Staff."
+      notify_new_ticket_hint: "E-mail, gdy ktoś założy nowe zgłoszenie w projekcie, w którym jesteś obsługą."
       notify_new_ticket_hint_client: "E-mail, gdy zespół utworzy zgłoszenie w Twoim projekcie."
       notify_reply: "Odpowiedzi"
       notify_reply_hint: "E-mail o nowych komentarzach w zgłoszeniach, w których uczestniczysz."
       notify_ticket_update: "Status, typ i priorytet"
       notify_ticket_update_hint: "E-mail o zmianie statusu, typu lub priorytetu w zgłoszeniach, w których uczestniczysz."
-    admin_all_projects_hint: "Administratorzy widzą wszystkie projekty (odczyt). Żeby obsługiwać zgłoszenia, dodaj ich do projektu jako członków."
+    admin_all_projects_hint: "Administratorzy widzą wszystkie projekty (odczyt). Żeby obsługiwać zgłoszenia i dostawać o nich maile, dodaj ich do projektu jako obsługę."
   portal:
     empty:
       title: "Brak projektów"
@@ -454,8 +454,8 @@ ui:
       key_title: "1–5 znaków A–Z / 0–9"
       description: "Opis"
       initial_staff: "Opiekun projektu"
-      initial_staff_placeholder: "Wybierz osobę z obsługi…"
-      no_staff_candidates: "Najpierw utwórz użytkownika Staff lub Admin."
+      initial_staff_placeholder: "Wybierz użytkownika…"
+      no_staff_candidates: "Najpierw utwórz aktywnego użytkownika."
       list: "Lista projektów"
       filter_active: "Aktywne"
       filter_disabled: "Wyłączone"
@@ -476,6 +476,7 @@ ui:
       members: "Członkowie"
       members_empty: "Brak członków w projekcie."
       add_user: "Dodaj użytkownika"
+      member_role: "Rola w projekcie"
       col_action: "Akcja"
     users:
       title: "Użytkownicy"
@@ -572,9 +573,11 @@ enums:
     NORMAL: "Normalny"
     HIGH: "Wysoki"
   user_role:
-    USER: "Klient"
-    STAFF: "Obsługa"
+    USER: "Użytkownik"
     ADMIN: "Administrator"
+  member_role:
+    CLIENT: "Klient"
+    STAFF: "Obsługa"
 
 themes:
   morning-mist:
@@ -683,8 +686,8 @@ messages:
   projects:
     name_exists: "Projekt o tej nazwie już istnieje."
     key_exists: "Ten klucz projektu jest już zajęty."
-    staff_required: "Wybierz co najmniej jedną osobę z obsługi (Staff lub Admin)."
-    staff_invalid: "Wybrany użytkownik nie może być staffem projektu."
+    staff_required: "Wybierz co najmniej jedną osobę, która będzie obsługiwać projekt."
+    staff_invalid: "Wybrany użytkownik nie istnieje albo jest nieaktywny."
     last_staff: "Projekt musi mieć co najmniej jedną aktywną osobę z obsługi."
     at_least_one: "Wybierz co najmniej jeden projekt."
     invalid: "Ten projekt jest nieprawidłowy."

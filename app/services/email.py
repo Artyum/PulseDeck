@@ -27,7 +27,7 @@ from app.services import projects as project_service
 from app.services import reply_token as reply_token_service
 from app.services.auth import login_blocked_reason
 from app.services.portal_settings import PortalSettings, get_portal_settings
-from app.services.tickets import is_ticket_involved, is_ticket_watcher
+from app.services.tickets import is_ticket_watcher
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
 from app.utils.unsubscribe import make_unsubscribe_url
 from app.utils.unwatch import make_unwatch_url
@@ -397,17 +397,10 @@ def _pipeline_recipients(
     *,
     actor_id: int | None,
     pref: str | None,
-    ticket: Ticket | None = None,
 ) -> list[User]:
     by_email: dict[str, User] = {}
     for user in users:
         if not user.is_active:
-            continue
-        if (
-            ticket is not None
-            and user.is_admin
-            and not is_ticket_involved(user, ticket)
-        ):
             continue
         if actor_id is not None and user.id == actor_id:
             continue
@@ -480,9 +473,7 @@ def _emit_group(
     pref: str | None,
     ctx: dict | None = None,
 ) -> None:
-    recipients = _pipeline_recipients(
-        group, actor_id=actor_id, pref=pref, ticket=ticket
-    )
+    recipients = _pipeline_recipients(group, actor_id=actor_id, pref=pref)
     if not recipients:
         return
     if pref is None:
@@ -519,7 +510,7 @@ def emit_ticket_created(db: Session, ticket: Ticket, *, actor_id: int) -> None:
         project
         and project.notify_clients_on_staff_ticket
         and author
-        and project_service.user_has_staff_ops(author)
+        and project_service.is_project_staff(db, project.id, author)
     ):
         group |= set(project_service.list_project_clients(db, project.id))
     _emit_group(
@@ -544,7 +535,6 @@ def emit_comment(
         comment_recipients(db, loaded, internal=is_internal),
         actor_id=author_id,
         pref="notify_reply",
-        ticket=loaded,
     )
     if not recipients:
         return
@@ -598,9 +588,7 @@ def emit_ticket_assigned(
     if previous is not None and previous.id == new.id:
         return
     loaded = _load_ticket(db, ticket.id) or ticket
-    recipients = _pipeline_recipients(
-        [new], actor_id=actor_id, pref=None, ticket=loaded
-    )
+    recipients = _pipeline_recipients([new], actor_id=actor_id, pref=None)
     if not recipients:
         return
     ctx = _ticket_mail_ctx(loaded)

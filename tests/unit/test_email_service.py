@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from sqlalchemy import select
 
 from app.models.email_outbox import EmailOutbox
-from app.models.enums import EmailOutboxPriority, UserRole
+from app.models.enums import EmailOutboxPriority, ProjectMemberRole, UserRole
 from app.services import email as email_service
 from app.services import projects as project_service
 from app.services import tickets as ticket_service
@@ -20,8 +20,8 @@ def _staff_peer(db, project, email: str, *, first: str = "Other", last: str = "S
         email,
         first_name=first,
         last_name=last,
-        role=UserRole.STAFF,
         project=project,
+        member_role=ProjectMemberRole.STAFF,
     )
     user.notify_reply = True
     db.commit()
@@ -211,15 +211,13 @@ class TestNotify:
     def test_notify_new_ticket_from_staff_notifies_other_staff(
         self, db_session, project_with_members, staff_user
     ):
-        from app.models.enums import UserRole
-
         other_staff = make_user(
             db_session,
             "staff2@test.local",
             first_name="Staff",
             last_name="Two",
-            role=UserRole.STAFF,
             project=project_with_members,
+            member_role=ProjectMemberRole.STAFF,
         )
         other_staff.notify_new_ticket = True
         staff_user.notify_new_ticket = True
@@ -406,7 +404,10 @@ class TestNotify:
         self, db_session, project_with_members, staff_user, admin_user
     ):
         project_service.add_project_member(
-            db_session, project_with_members.id, admin_user.id
+            db_session,
+            project_with_members.id,
+            admin_user.id,
+            role=ProjectMemberRole.STAFF,
         )
         admin_user.notify_reply = True
         db_session.commit()
@@ -477,6 +478,23 @@ class TestNotify:
 
         rows = list(db_session.scalars(select(EmailOutbox)).all())
         assert all(r.to_email != admin_user.email.lower() for r in rows)
+
+    def test_admin_project_staff_receives_new_ticket(
+        self, db_session, project_with_members, client_user, admin_user
+    ):
+        project_service.add_project_member(
+            db_session,
+            project_with_members.id,
+            admin_user.id,
+            role=ProjectMemberRole.STAFF,
+        )
+        admin_user.notify_new_ticket = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Admin staff mail"
+        )
+        email_service.notify_new_ticket(db_session, ticket)
+        assert admin_user.email.lower() in _outbox_emails(db_session)
 
     def test_notify_uses_recipient_ui_lang(
         self, db_session, project_with_members, client_user, staff_user

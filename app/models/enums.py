@@ -5,8 +5,12 @@ import enum
 
 class UserRole(str, enum.Enum):
     USER = "USER"
-    STAFF = "STAFF"
     ADMIN = "ADMIN"
+
+
+class ProjectMemberRole(str, enum.Enum):
+    CLIENT = "CLIENT"
+    STAFF = "STAFF"
 
 
 class TicketType(str, enum.Enum):

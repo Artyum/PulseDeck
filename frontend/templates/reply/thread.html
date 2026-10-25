@@ -57,7 +57,7 @@
               <div class="issue-thread-messages">
                 {% for group in comment_groups %}
                   {% set lead = group[0] %}
-                  <article class="comment {% if lead.author and lead.author.is_staff %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
+                  <article class="comment {% if lead.author and lead.author.id in project_staff_ids %}comment-staff{% endif %}{% if lead.is_internal %} comment-internal{% endif %}">
                     {% for c in group %}
                       <div class="comment-segment">
                         <header class="comment-meta">

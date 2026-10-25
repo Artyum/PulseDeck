@@ -9,7 +9,7 @@ from pathlib import Path
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.orm import Session
 
-from app.models.enums import UserRole
+from app.models.enums import ProjectMemberRole, UserRole
 from app.models.ticket import Tag, Ticket
 from app.models.user import Project, ProjectMember, User
 
@@ -91,19 +91,13 @@ def ensure_project(
     project = get_project(db, name)
     if project is not None:
         return project
-    from app.models.enums import UserRole
     from app.services.projects import create_project
 
     staff = db.scalar(
-        select(User)
-        .where(
-            User.role.in_((UserRole.STAFF, UserRole.ADMIN)), User.is_active.is_(True)
-        )
-        .order_by(User.id)
-        .limit(1)
+        select(User).where(User.is_active.is_(True)).order_by(User.id).limit(1)
     )
     if staff is None:
-        raise RuntimeError("No Staff/Admin user available to create the perf project.")
+        raise RuntimeError("No active user available to create the perf project.")
     project = create_project(
         db,
         name,
@@ -255,6 +249,7 @@ def ensure_perf_users(
     locale: str,
     seed: int | None,
     role: UserRole = UserRole.USER,
+    member_role: ProjectMemberRole = ProjectMemberRole.CLIENT,
     email_fn=perf_user_email,
 ) -> list[User]:
     from faker import Faker
@@ -287,7 +282,18 @@ def ensure_perf_users(
             )
         )
         if membership is None:
-            db.add(ProjectMember(project_id=project_id, user_id=user.id))
+            db.add(
+                ProjectMember(
+                    project_id=project_id,
+                    user_id=user.id,
+                    role=member_role,
+                )
+            )
+        elif (
+            member_role == ProjectMemberRole.STAFF
+            and membership.role != ProjectMemberRole.STAFF
+        ):
+            membership.role = ProjectMemberRole.STAFF
         users.append(user)
 
     db.commit()
@@ -311,7 +317,8 @@ def ensure_perf_staff(
         count,
         locale=locale,
         seed=staff_seed,
-        role=UserRole.STAFF,
+        role=UserRole.USER,
+        member_role=ProjectMemberRole.STAFF,
         email_fn=perf_staff_email,
     )
 
@@ -373,7 +380,13 @@ def pick_ticket_tags(
     return rng.sample(tags, min(count, len(tags)))
 
 
-def ensure_project_membership(db: Session, project_id: int, user_id: int) -> None:
+def ensure_project_membership(
+    db: Session,
+    project_id: int,
+    user_id: int,
+    *,
+    role: ProjectMemberRole = ProjectMemberRole.CLIENT,
+) -> None:
     exists = db.scalar(
         select(ProjectMember).where(
             ProjectMember.project_id == project_id,
@@ -381,7 +394,10 @@ def ensure_project_membership(db: Session, project_id: int, user_id: int) -> Non
         )
     )
     if exists is None:
-        db.add(ProjectMember(project_id=project_id, user_id=user_id))
+        db.add(ProjectMember(project_id=project_id, user_id=user_id, role=role))
+        return
+    if role == ProjectMemberRole.STAFF and exists.role != ProjectMemberRole.STAFF:
+        exists.role = ProjectMemberRole.STAFF
 
 
 def resolve_viewers(db: Session, project_id: int) -> list[User]:
@@ -394,7 +410,7 @@ def resolve_viewers(db: Session, project_id: int) -> list[User]:
     def add(user: User | None) -> None:
         if user is None or user.id in seen:
             return
-        if user.role not in (UserRole.STAFF, UserRole.ADMIN):
+        if user.role != UserRole.ADMIN:
             return
         if is_perf_test_email(user.email):
             return
@@ -406,19 +422,15 @@ def resolve_viewers(db: Session, project_id: int) -> list[User]:
         add(db.scalar(select(User).where(User.email == admin_email)))
 
     for user in db.scalars(
-        select(User)
-        .where(User.role.in_([UserRole.STAFF, UserRole.ADMIN]))
-        .order_by(User.id)
+        select(User).where(User.role == UserRole.ADMIN).order_by(User.id)
     ).all():
         add(user)
 
     if not viewers:
-        raise SystemExit(
-            "No staff/admin available — cannot assign tickets to the mine view."
-        )
+        raise SystemExit("No admin available — cannot assign tickets to the mine view.")
 
     for user in viewers:
-        ensure_project_membership(db, project_id, user.id)
+        ensure_project_membership(db, project_id, user.id, role=ProjectMemberRole.STAFF)
     db.flush()
     return viewers
 

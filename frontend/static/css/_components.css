@@ -1159,6 +1159,10 @@
     background: var(--color-surface);
   }
 
+  .admin-list-menu {
+    overflow: visible;
+  }
+
   .admin-list > .empty {
     border: none;
     border-radius: 0;
@@ -1311,7 +1315,13 @@
   }
 
   .admin-users-table-actions {
-    --admin-users-cols: minmax(0, 1fr) minmax(0, 8rem) auto;
+    --admin-users-cols: minmax(0, 1fr) minmax(9.5rem, 12rem) auto;
+  }
+
+  .admin-entity-clickable .admin-users-cell.admin-users-role {
+    z-index: 1;
+    overflow: visible;
+    pointer-events: auto;
   }
 
   .admin-users-actions {
@@ -1393,6 +1403,11 @@
     gap: 0.45rem 1rem;
     padding: 0.7rem 1.1rem;
     min-height: 3rem;
+  }
+
+  .admin-users-row:has(.is-menu-open) {
+    position: relative;
+    z-index: 40;
   }
 
   .admin-users-row:nth-child(even) {
@@ -1603,6 +1618,10 @@
 
   .admin-form-row-2 {
     grid-template-columns: minmax(14rem, 1fr) max-content;
+  }
+
+  .admin-form-row-3 {
+    grid-template-columns: minmax(14rem, 1fr) minmax(9rem, 12rem) max-content;
   }
 
   .admin-settings-test-row {
@@ -2620,6 +2639,12 @@
     background: var(--color-soft-teal);
     border-color: var(--color-chip-teal-border);
     color: var(--color-chip-teal-fg);
+  }
+
+  .chip-role-client {
+    background: var(--color-chip-neutral);
+    border-color: var(--color-chip-neutral-border);
+    color: var(--color-steel);
   }
 
   .chip-blocked,

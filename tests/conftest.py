@@ -143,7 +143,7 @@ def staff_user(db_session):
         email="staff@test.local",
         first_name="Staff",
         last_name="Test",
-        role=UserRole.STAFF,
+        role=UserRole.USER,
         activated_at=datetime.now(timezone.utc),
     )
     set_password(user, "Staff123!abcd")

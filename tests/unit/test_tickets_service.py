@@ -3,7 +3,12 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from fastapi import HTTPException
 
-from app.models.enums import TicketPriority, TicketStatus, TicketType, UserRole
+from app.models.enums import (
+    ProjectMemberRole,
+    TicketPriority,
+    TicketStatus,
+    TicketType,
+)
 from app.services import tickets as ticket_service
 from tests.helpers import make_ticket, make_user, peer_participant_ticket
 
@@ -514,6 +519,15 @@ class TestTicketMutations:
         assert refreshed.assignee_id == staff_user.id
         assert all(p.user_id != staff_user.id for p in refreshed.participants)
 
+    def test_admin_comment_does_not_assign_without_project_staff(
+        self, db_session, project_with_members, client_user, admin_user
+    ):
+        t = make_ticket(db_session, project_with_members, client_user)
+        ticket_service.add_comment(db_session, t, admin_user, "Admin reply")
+        refreshed = ticket_service.get_ticket(db_session, t.id)
+        assert refreshed is not None
+        assert refreshed.assignee_id is None
+
     def test_staff_comment_becomes_participant_when_not_assignee(
         self, db_session, project_with_members, client_user, staff_user
     ):
@@ -522,8 +536,8 @@ class TestTicketMutations:
             "staff-other@test.local",
             first_name="Other",
             last_name="Staff",
-            role=UserRole.STAFF,
             project=project_with_members,
+            member_role=ProjectMemberRole.STAFF,
         )
 
         t = make_ticket(db_session, project_with_members, client_user)

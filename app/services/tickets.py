@@ -350,17 +350,27 @@ def _client_author_can_add(db: Session, ticket: Ticket, actor: User) -> bool:
     )
 
 
-def can_add_participant(db: Session, actor: User, ticket: Ticket) -> bool:
-    return is_project_staff(db, ticket.project_id, actor) or _client_author_can_add(
-        db, ticket, actor
+def _can_add_any_project_member(db: Session, project_id: int, actor: User) -> bool:
+    if is_project_staff(db, project_id, actor):
+        return True
+    return (
+        actor.is_active
+        and can_moderate(actor)
+        and is_project_member(db, project_id, actor.id)
     )
+
+
+def can_add_participant(db: Session, actor: User, ticket: Ticket) -> bool:
+    return _can_add_any_project_member(
+        db, ticket.project_id, actor
+    ) or _client_author_can_add(db, ticket, actor)
 
 
 def _addable_participant_candidates(
     db: Session, ticket: Ticket, actor: User
 ) -> list[User]:
     members = list_project_member_users(db, ticket.project)
-    if is_project_staff(db, ticket.project_id, actor):
+    if _can_add_any_project_member(db, ticket.project_id, actor):
         return members
     if _client_author_can_add(db, ticket, actor):
         return [
@@ -377,7 +387,7 @@ def can_add_as_participant(
 ) -> bool:
     if target.id in _participant_exclude_ids(ticket) or not target.is_active:
         return False
-    if is_project_staff(db, ticket.project_id, actor):
+    if _can_add_any_project_member(db, ticket.project_id, actor):
         return is_project_member(db, ticket.project_id, target.id)
     if _client_author_can_add(db, ticket, actor):
         return _is_project_client(db, ticket.project_id, target)
@@ -761,7 +771,9 @@ def add_comment(
     if not is_internal:
         if staff:
             ticket.status = TicketStatus.WAITING_ON_CLIENT
-            if ticket.assignee_id is None:
+            if ticket.assignee_id is None and is_project_staff(
+                db, ticket.project_id, author
+            ):
                 ticket.assignee_id = author.id
         else:
             ticket.status = TicketStatus.IN_PROGRESS
@@ -1271,7 +1283,7 @@ def add_participant(
     if not target or not can_add_as_participant(db, ticket, actor, target):
         detail = (
             t(lang, "messages.tickets.user_must_be_member")
-            if is_project_staff(db, ticket.project_id, actor)
+            if _can_add_any_project_member(db, ticket.project_id, actor)
             else t(lang, "messages.tickets.participant_not_allowed")
         )
         raise HTTPException(status_code=400, detail=detail)

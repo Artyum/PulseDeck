@@ -207,7 +207,7 @@
       <label class="pref-toggle">
         <span class="pref-toggle-meta">
           <span class="pref-toggle-label">{{ t("ui.profile.settings.notify_new_ticket") }}</span>
-          <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_new_ticket_hint" if edit_user.is_staff else "ui.profile.settings.notify_new_ticket_hint_client") }}</span>
+          <span class="pref-toggle-desc">{{ t("ui.profile.settings.notify_new_ticket_hint" if edit_user.has_staff_membership else "ui.profile.settings.notify_new_ticket_hint_client") }}</span>
         </span>
         <span class="theme-gradient-switch">
           <input type="checkbox"

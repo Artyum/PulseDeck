@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.deps.auth import AdminUser, DbSession, get_last_project_key
-from app.models.enums import UserRole
+from app.models.enums import ProjectMemberRole, UserRole
 from app.models.ticket import Tag
 from app.models.user import Project, User
 from app.rate_limit import limiter
@@ -115,6 +115,13 @@ def _form_text(form, key: str) -> str:
 def _parse_role(raw: str, *, lang: str) -> UserRole:
     try:
         return UserRole(raw)
+    except ValueError:
+        raise ValueError(t(lang, "messages.admin.invalid_role")) from None
+
+
+def _parse_member_role(raw: str, *, lang: str) -> ProjectMemberRole:
+    try:
+        return ProjectMemberRole(raw)
     except ValueError:
         raise ValueError(t(lang, "messages.admin.invalid_role")) from None
 
@@ -283,6 +290,7 @@ def _project_detail_ctx(
         "members": project_service.list_project_member_users(
             db, project, sort=sort, sort_dir=sort_dir
         ),
+        "member_role_by_user": project_service.member_roles_for(project),
         "all_users": project_service.list_addable_users(db, project),
         "sort": sort,
         "sort_dir": sort_dir,
@@ -371,9 +379,53 @@ def add_member(
     user: AdminUser,
     db: DbSession,
     user_id: Annotated[int, Form()],
+    role: Annotated[str, Form()] = "",
 ):
-    project = _admin_project(db, key, lang=resolve_lang(request))
-    project_service.add_project_member(db, project.id, user_id)
+    lang = resolve_lang(request)
+    project = _admin_project(db, key, lang=lang)
+    try:
+        member_role = _parse_member_role(
+            role or ProjectMemberRole.CLIENT.value, lang=lang
+        )
+        project_service.add_project_member(db, project.id, user_id, role=member_role)
+    except ValueError as exc:
+        return render(
+            request,
+            "admin/project_detail.html",
+            user=user,
+            error=str(exc),
+            **_project_detail_ctx(db, project),
+        )
+    return RedirectResponse(admin_project_path(project), status_code=303)
+
+
+@router.post("/projects/{key}/members/{member_id}/role")
+def set_member_role(
+    request: Request,
+    key: str,
+    member_id: int,
+    user: AdminUser,
+    db: DbSession,
+    role: Annotated[str, Form()],
+):
+    lang = resolve_lang(request)
+    project = _admin_project(db, key, lang=lang)
+    try:
+        project_service.set_member_role(
+            db,
+            project.id,
+            member_id,
+            _parse_member_role(role, lang=lang),
+            lang=lang,
+        )
+    except ValueError as exc:
+        return render(
+            request,
+            "admin/project_detail.html",
+            user=user,
+            error=str(exc),
+            **_project_detail_ctx(db, project),
+        )
     return RedirectResponse(admin_project_path(project), status_code=303)
 
 

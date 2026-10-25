@@ -88,9 +88,20 @@ class TestSetActiveAndRole:
             is True
         )
 
+    def test_account_role_change_ignores_last_project_staff(
+        self, db_session, admin_user, project_with_members, staff_user
+    ):
+        auth_service.set_user_role(db_session, staff_user, UserRole.ADMIN)
+        auth_service.set_user_role(db_session, staff_user, UserRole.USER)
+        assert staff_user.role == UserRole.USER
+        assert project_service.is_project_staff(
+            db_session, project_with_members.id, staff_user
+        )
+        assert admin_user.role == UserRole.ADMIN
+
     def test_cannot_demote_last_admin(self, db_session, admin_user):
         with pytest.raises(ValueError):
-            auth_service.set_user_role(db_session, admin_user, UserRole.STAFF)
+            auth_service.set_user_role(db_session, admin_user, UserRole.USER)
 
 
 class TestEmailChange:

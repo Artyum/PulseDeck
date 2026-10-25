@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException
 
-from app.models.enums import UserRole
+from app.models.enums import ProjectMemberRole, UserRole
 from app.services import projects as project_service
 from tests.helpers import make_user
 
@@ -157,6 +157,15 @@ class TestMembership:
         assert project_service.is_project_member(
             db_session, project_with_members.id, admin_user.id
         )
+        assert not project_service.is_project_staff(
+            db_session, project_with_members.id, admin_user
+        )
+        project_service.set_member_role(
+            db_session,
+            project_with_members.id,
+            admin_user.id,
+            ProjectMemberRole.STAFF,
+        )
         assert project_service.is_project_staff(
             db_session, project_with_members.id, admin_user
         )
@@ -170,6 +179,23 @@ class TestMembership:
         assert not project_service.is_project_staff(
             db_session, project_with_members.id, admin_user
         )
+
+    def test_demote_last_staff_fails(
+        self, db_session, project_with_members, staff_user
+    ):
+        with pytest.raises(ValueError):
+            project_service.set_member_role(
+                db_session,
+                project_with_members.id,
+                staff_user.id,
+                ProjectMemberRole.CLIENT,
+            )
+
+    def test_create_project_staff_can_be_portal_user(self, db_session, client_user):
+        project = project_service.create_project(
+            db_session, "Owned", "OWN", initial_staff_ids=[client_user.id]
+        )
+        assert project_service.is_project_staff(db_session, project.id, client_user)
 
     def test_remove_last_staff_fails(
         self, db_session, project_with_members, staff_user

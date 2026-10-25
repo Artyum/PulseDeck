@@ -4,6 +4,7 @@ from app.models.email_outbox import EmailOutbox
 from app.models.enums import (
     EmailOutboxPriority,
     EmailOutboxStatus,
+    ProjectMemberRole,
     TicketEventType,
     TicketPriority,
     TicketStatus,
@@ -36,6 +37,7 @@ __all__ = [
     "PortalSetting",
     "Project",
     "ProjectMember",
+    "ProjectMemberRole",
     "Tag",
     "Ticket",
     "TicketEvent",

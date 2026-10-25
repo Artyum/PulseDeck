@@ -98,10 +98,14 @@
     {% if all_users %}
       <form method="post"
             action="{{ url_for('add_member', key=project.key) }}"
-            class="admin-form-row admin-form-row-2">
+            class="admin-form-row admin-form-row-3">
         <div class="admin-form-field">
           <label class="label-tight" for="add-member">{{ t("ui.admin.project.add_user") }}</label>
           {{ form_select_menu('user_id', t('ui.admin.project.add_user') , all_users, all_users[0].id, value_attr='id', id='add-member', show_role_badge=true) }}
+        </div>
+        <div class="admin-form-field">
+          <label class="label-tight" for="add-member-role">{{ t("ui.admin.project.member_role") }}</label>
+          {{ form_select_menu('role', t('ui.admin.project.member_role') , member_roles, 'CLIENT', member_role_labels, id='add-member-role') }}
         </div>
         <div class="admin-form-field">
           <span class="label-tight admin-form-spacer" aria-hidden="true">&nbsp;</span>
@@ -110,11 +114,11 @@
       </form>
     {% endif %}
     <ul id="project-members-results"
-        class="admin-list admin-users-table admin-users-table-actions">
+        class="admin-list admin-list-menu admin-users-table admin-users-table-actions">
       {% if members %}
         <li class="admin-users-head">
           {{ admin_sort_th('name', t('ui.admin.users.col_name') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#project-members-results', filter_sync=false) }}
-          {{ admin_sort_th('role', t('ui.admin.users.filter_role') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#project-members-results', filter_sync=false) }}
+          {{ admin_sort_th('role', t('ui.admin.project.member_role') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#project-members-results', filter_sync=false) }}
           <span>{{ t("ui.admin.project.col_action") }}</span>
         </li>
       {% endif %}
@@ -126,9 +130,12 @@
           <span class="admin-users-cell admin-users-name"
                 data-label="{{ t('ui.admin.users.col_name') }}"
                 title="{{ u.display_name }}">{{ u.display_name }}</span>
-          <span class="admin-users-cell"
-                data-label="{{ t('ui.admin.users.filter_role') }}">
-            <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
+          <span class="admin-users-cell admin-users-role"
+                data-label="{{ t('ui.admin.project.member_role') }}">
+            <form method="post"
+                  action="{{ url_for('set_member_role', key=project.key, member_id=u.id) }}">
+              {{ form_select_menu('role', t('ui.admin.project.member_role') , member_roles, member_role_by_user[u.id], member_role_labels, submit_on_pick=true, compact=true) }}
+            </form>
           </span>
           <span class="admin-users-cell admin-users-actions"
                 data-label="{{ t('ui.admin.project.col_action') }}">

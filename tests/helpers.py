@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from app.models.enums import TicketPriority, TicketStatus, TicketType, UserRole
+from app.models.enums import (
+    ProjectMemberRole,
+    TicketPriority,
+    TicketStatus,
+    TicketType,
+    UserRole,
+)
 from app.models.user import User
 from app.services import projects as project_service
 from app.services import tickets as ticket_service
@@ -10,7 +16,6 @@ from app.services.auth import set_password
 
 _DEFAULT_PASSWORDS = {
     UserRole.ADMIN: "Admin123!abcd",
-    UserRole.STAFF: "Staff123!abcd",
     UserRole.USER: "Client123!ab",
 }
 
@@ -53,6 +58,7 @@ def make_user(
     role: UserRole = UserRole.USER,
     password: str | None = None,
     project=None,
+    member_role: ProjectMemberRole | None = None,
     activated: bool = True,
     **attrs,
 ) -> User:
@@ -72,7 +78,12 @@ def make_user(
     db.commit()
     db.refresh(user)
     if project is not None:
-        project_service.add_project_member(db, project.id, user.id)
+        project_service.add_project_member(
+            db,
+            project.id,
+            user.id,
+            role=member_role or ProjectMemberRole.CLIENT,
+        )
     return user
 
 

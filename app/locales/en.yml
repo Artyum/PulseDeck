@@ -204,13 +204,13 @@ ui:
       font_title: "Font size"
       notify_intro: "Email notification settings for ticket changes."
       notify_new_ticket: "New tickets"
-      notify_new_ticket_hint: "Email when someone creates a new ticket in a project where you are Staff."
+      notify_new_ticket_hint: "Email when someone creates a new ticket in a project where you are staff."
       notify_new_ticket_hint_client: "Email when the team creates a ticket in your project."
       notify_reply: "Replies"
       notify_reply_hint: "Email about new comments on tickets you participate in."
       notify_ticket_update: "Status, type and priority"
       notify_ticket_update_hint: "Email when status, type or priority changes on tickets you participate in."
-    admin_all_projects_hint: "Administrators can view all projects. To handle tickets, add them to the project as members."
+    admin_all_projects_hint: "Administrators can view all projects. To handle tickets and receive ticket emails, add them to the project as staff."
   portal:
     empty:
       title: "No projects"
@@ -454,8 +454,8 @@ ui:
       key_title: "1–5 characters A–Z / 0–9"
       description: "Description"
       initial_staff: "Project staff"
-      initial_staff_placeholder: "Select a staff member…"
-      no_staff_candidates: "Create a Staff or Admin user first."
+      initial_staff_placeholder: "Select a user…"
+      no_staff_candidates: "Create an active user first."
       list: "List of projects"
       filter_active: "Active"
       filter_disabled: "Disabled"
@@ -476,6 +476,7 @@ ui:
       members: "Members"
       members_empty: "No members in the project."
       add_user: "Add user"
+      member_role: "Project role"
       col_action: "Action"
     users:
       title: "Users"
@@ -572,9 +573,11 @@ enums:
     NORMAL: "Normal"
     HIGH: "High"
   user_role:
-    USER: "Client"
-    STAFF: "Staff"
+    USER: "User"
     ADMIN: "Administrator"
+  member_role:
+    CLIENT: "Client"
+    STAFF: "Staff"
 
 themes:
   morning-mist:
@@ -683,8 +686,8 @@ messages:
   projects:
     name_exists: "A project with this name already exists."
     key_exists: "This project key is already taken."
-    staff_required: "Pick at least one staff member (Staff or Admin)."
-    staff_invalid: "The selected user cannot be project staff."
+    staff_required: "Pick at least one user to handle the project."
+    staff_invalid: "The selected user is missing or inactive."
     last_staff: "A project must keep at least one active staff member."
     at_least_one: "Pick at least one project."
     invalid: "That project isn't valid."

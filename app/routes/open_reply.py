@@ -84,12 +84,16 @@ def _thread_page(
 ):
     groups = _visible_comment_groups(user, ticket, db)
     visible_group = groups[-1] if groups else []
+    staff_ids = {
+        u.id for u in project_service.list_project_staff(db, ticket.project_id)
+    }
     return render(
         request,
         "reply/thread.html",
         token=token,
         ticket=ticket,
         project=ticket.project,
+        project_staff_ids=staff_ids,
         comment_groups=[visible_group] if visible_group else [],
         has_earlier_messages=len(groups) > 1,
         can_comment=ticket_service.can_comment(db, user, ticket),

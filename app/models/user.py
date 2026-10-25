@@ -17,7 +17,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, BigInt
-from app.models.enums import UserRole
+from app.models.enums import ProjectMemberRole, UserRole
 
 if TYPE_CHECKING:
     from app.models.ticket import Ticket
@@ -110,8 +110,11 @@ class User(Base):
         return self.role == UserRole.ADMIN
 
     @property
-    def is_staff(self) -> bool:
-        return self.role in (UserRole.STAFF, UserRole.ADMIN)
+    def has_staff_membership(self) -> bool:
+        return any(
+            membership.role == ProjectMemberRole.STAFF
+            for membership in self.memberships
+        )
 
 
 class Project(Base):
@@ -154,6 +157,17 @@ class ProjectMember(Base):
     )
     user_id: Mapped[int] = mapped_column(
         BigInt, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    role: Mapped[ProjectMemberRole] = mapped_column(
+        Enum(
+            ProjectMemberRole,
+            name="project_member_role",
+            native_enum=False,
+            length=20,
+        ),
+        nullable=False,
+        default=ProjectMemberRole.CLIENT,
+        server_default=ProjectMemberRole.CLIENT.value,
     )
 
     project: Mapped[Project] = relationship(back_populates="members")

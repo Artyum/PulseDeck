@@ -9,7 +9,13 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.email_outbox import EmailOutbox
-from app.models.enums import EmailOutboxStatus, TicketStatus, TicketType, UserRole
+from app.models.enums import (
+    EmailOutboxStatus,
+    ProjectMemberRole,
+    TicketStatus,
+    TicketType,
+    UserRole,
+)
 from app.models.ticket import Comment, Tag, Ticket, TicketTag
 from app.models.user import Project, ProjectMember, User
 from app.utils.i18n import DEFAULT_LANG, t
@@ -293,54 +299,59 @@ def list_project_summaries(
     ]
 
 
+def _membership_row(db: Session, project_id: int, user_id: int) -> ProjectMember | None:
+    return db.scalar(
+        select(ProjectMember).where(
+            ProjectMember.project_id == project_id,
+            ProjectMember.user_id == user_id,
+        )
+    )
+
+
+def is_project_member(db: Session, project_id: int, user_id: int) -> bool:
+    return _membership_row(db, project_id, user_id) is not None
+
+
 def can_view_project(db: Session, user: User, project_id: int) -> bool:
     if user.is_admin:
         return db.get(Project, project_id) is not None
     return is_project_member(db, project_id, user.id)
 
 
-def user_has_staff_ops(user: User) -> bool:
-    return user.role in (UserRole.STAFF, UserRole.ADMIN)
-
-
 def is_project_staff(db: Session, project_id: int, user: User) -> bool:
-    if not user.is_active or not user_has_staff_ops(user):
+    if not user.is_active:
         return False
-    return is_project_member(db, project_id, user.id)
+    row = _membership_row(db, project_id, user.id)
+    return row is not None and row.role == ProjectMemberRole.STAFF
 
 
 def has_staff_capabilities(db: Session, project_id: int, user: User) -> bool:
     return user.is_admin or is_project_staff(db, project_id, user)
 
 
-def list_project_staff(db: Session, project_id: int) -> list[User]:
+def _members_with_role(
+    db: Session, project_id: int, role: ProjectMemberRole
+) -> list[User]:
     return list(
         db.scalars(
             select(User)
             .join(ProjectMember, ProjectMember.user_id == User.id)
             .where(
                 ProjectMember.project_id == project_id,
+                ProjectMember.role == role,
                 User.is_active.is_(True),
-                User.role.in_((UserRole.STAFF, UserRole.ADMIN)),
             )
             .order_by(User.last_name, User.first_name)
         ).all()
     )
+
+
+def list_project_staff(db: Session, project_id: int) -> list[User]:
+    return _members_with_role(db, project_id, ProjectMemberRole.STAFF)
 
 
 def list_project_clients(db: Session, project_id: int) -> list[User]:
-    return list(
-        db.scalars(
-            select(User)
-            .join(ProjectMember, ProjectMember.user_id == User.id)
-            .where(
-                ProjectMember.project_id == project_id,
-                User.is_active.is_(True),
-                User.role == UserRole.USER,
-            )
-            .order_by(User.last_name, User.first_name)
-        ).all()
-    )
+    return _members_with_role(db, project_id, ProjectMemberRole.CLIENT)
 
 
 def count_active_project_staff(db: Session, project_id: int) -> int:
@@ -351,8 +362,8 @@ def count_active_project_staff(db: Session, project_id: int) -> int:
             .join(ProjectMember, ProjectMember.user_id == User.id)
             .where(
                 ProjectMember.project_id == project_id,
+                ProjectMember.role == ProjectMemberRole.STAFF,
                 User.is_active.is_(True),
-                User.role.in_((UserRole.STAFF, UserRole.ADMIN)),
             )
         )
         or 0
@@ -372,11 +383,12 @@ def would_leave_project_without_staff(
     if excluding_user_id is None:
         return remaining < 1
     user = db.get(User, excluding_user_id)
+    row = _membership_row(db, project_id, excluding_user_id)
     if (
         user
         and user.is_active
-        and user_has_staff_ops(user)
-        and is_project_member(db, project_id, excluding_user_id)
+        and row is not None
+        and row.role == ProjectMemberRole.STAFF
     ):
         remaining -= 1
     return remaining < 1
@@ -437,24 +449,25 @@ def list_project_member_users(
     sort: str | None = None,
     sort_dir: str | None = None,
 ) -> list[User]:
-    members = [m.user for m in project.members if m.user]
+    rows = [m for m in project.members if m.user]
     if not include_admins:
-        members = [u for u in members if not u.is_admin]
+        rows = [m for m in rows if not m.user.is_admin]
     descending = (sort_dir or "").strip().lower() == "desc"
     col = (sort or "").strip().lower()
 
-    def _member_key(user: User):
+    def _member_key(row: ProjectMember):
+        user = row.user
         name = (
             (user.last_name or "").casefold(),
             (user.first_name or "").casefold(),
             user.id,
         )
         if col == "role":
-            return (user.role, *name)
+            return (row.role.value, *name)
         return name
 
-    members.sort(key=_member_key, reverse=descending)
-    return members
+    rows.sort(key=_member_key, reverse=descending)
+    return [row.user for row in rows]
 
 
 def list_addable_users(db: Session, project: Project) -> list[User]:
@@ -466,13 +479,14 @@ def list_staff_candidates(db: Session) -> list[User]:
     return list(
         db.scalars(
             select(User)
-            .where(
-                User.is_active.is_(True),
-                User.role.in_((UserRole.STAFF, UserRole.ADMIN)),
-            )
+            .where(User.is_active.is_(True))
             .order_by(User.last_name, User.first_name)
         ).all()
     )
+
+
+def member_roles_for(project: Project) -> dict[int, ProjectMemberRole]:
+    return {row.user_id: row.role for row in project.members}
 
 
 def get_project_by_key(db: Session, key: str) -> Project | None:
@@ -559,7 +573,7 @@ def create_project(
     staff_users: list[User] = []
     for uid in staff_ids:
         user = db.get(User, uid)
-        if not user or not user.is_active or not user_has_staff_ops(user):
+        if not user or not user.is_active:
             raise ValueError(t(lang, "messages.projects.staff_invalid"))
         staff_users.append(user)
     project = Project(
@@ -570,7 +584,13 @@ def create_project(
     db.add(project)
     db.flush()
     for user in staff_users:
-        db.add(ProjectMember(project_id=project.id, user_id=user.id))
+        db.add(
+            ProjectMember(
+                project_id=project.id,
+                user_id=user.id,
+                role=ProjectMemberRole.STAFF,
+            )
+        )
     db.commit()
     db.refresh(project)
     return project
@@ -618,33 +638,39 @@ def set_project_active(db: Session, project: Project, *, active: bool) -> Projec
     return project
 
 
-def _membership_row(db: Session, project_id: int, user_id: int) -> ProjectMember | None:
-    return db.scalar(
-        select(ProjectMember).where(
-            ProjectMember.project_id == project_id,
-            ProjectMember.user_id == user_id,
-        )
-    )
-
-
-def is_project_member(db: Session, project_id: int, user_id: int) -> bool:
-    return _membership_row(db, project_id, user_id) is not None
-
-
 def add_project_member(
     db: Session,
     project_id: int,
     user_id: int,
     *,
-    lang: str | None = None,
+    role: ProjectMemberRole = ProjectMemberRole.CLIENT,
 ) -> None:
-    lang = lang or DEFAULT_LANG
     user = db.get(User, user_id)
     if not user:
         return
     if _membership_row(db, project_id, user_id) is not None:
         return
-    db.add(ProjectMember(project_id=project_id, user_id=user_id))
+    db.add(ProjectMember(project_id=project_id, user_id=user_id, role=role))
+    db.commit()
+
+
+def set_member_role(
+    db: Session,
+    project_id: int,
+    user_id: int,
+    role: ProjectMemberRole,
+    *,
+    lang: str | None = None,
+) -> None:
+    lang = lang or DEFAULT_LANG
+    row = _membership_row(db, project_id, user_id)
+    if not row or row.role == role:
+        return
+    if role == ProjectMemberRole.CLIENT and would_leave_project_without_staff(
+        db, project_id, excluding_user_id=user_id
+    ):
+        raise ValueError(t(lang, "messages.projects.last_staff"))
+    row.role = role
     db.commit()
 
 
@@ -708,5 +734,11 @@ def set_user_projects(
                 raise ValueError(t(lang, "messages.projects.last_staff"))
             db.delete(row)
     for pid in wanted - current_ids:
-        db.add(ProjectMember(project_id=pid, user_id=user_id))
+        db.add(
+            ProjectMember(
+                project_id=pid,
+                user_id=user_id,
+                role=ProjectMemberRole.CLIENT,
+            )
+        )
     db.flush()

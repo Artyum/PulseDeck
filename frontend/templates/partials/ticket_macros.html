@@ -73,15 +73,21 @@
     </div>
   </a>
 {%- endmacro %}
+{% macro role_chip(user) -%}
+  {% set mrole = member_role_by_user.get(user.id) %}
+  {% if mrole %}
+    <span class="chip chip-role-{{ mrole.value|lower }}">{{ member_role_labels[mrole] }}</span>
+  {% else %}
+    <span class="chip chip-role-{{ user.role.value|lower }}">{{ role_labels[user.role] }}</span>
+  {% endif %}
+{%- endmacro %}
 {% macro user_menu_item(user, field_name, show_role_badge=false) -%}
   <button type="submit"
           name="{{ field_name }}"
           value="{{ user.id }}"
           class="issue-menu-item{% if show_role_badge %} issue-menu-item-split{% endif %}">
     <span class="issue-menu-item-name">{{ user.display_name }}</span>
-    {% if show_role_badge %}
-      <span class="chip chip-role-{{ user.role.value|lower }}">{{ role_labels[user.role] }}</span>
-    {% endif %}
+    {% if show_role_badge %}{{ role_chip(user) }}{% endif %}
   </button>
 {%- endmacro %}
 {% macro issue_field_menu(aria_label, post_url, field_name, choices, current_value, labels=none, value_attr='value', empty_value=none, empty_label=none, show_role_badge=false) -%}
@@ -214,7 +220,7 @@
                 {% if item_value == ns.current %}aria-current="true"{% endif %}>
           {% if show_role_badge and value_attr == "id" %}
             <span class="issue-menu-item-name">{{ item_label }}</span>
-            <span class="chip chip-role-{{ item.role.value|lower }}">{{ role_labels[item.role] }}</span>
+            {{ role_chip(item) }}
           {% else %}
             {{ item_label }}
           {% endif %}
