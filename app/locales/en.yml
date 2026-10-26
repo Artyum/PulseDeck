@@ -132,32 +132,6 @@ ui:
       confirm: "Confirm"
       done: "You've been removed from participants of ticket {label}."
       invalid: "This link is invalid or has expired."
-  reply:
-    badge: "Quick reply"
-    login_cta: "Go to sign in"
-    attach_login_hint: "To attach a file, sign in to the portal."
-    attachments_hidden: "Attachments are hidden."
-    earlier_hidden: "Earlier messages are hidden."
-    earlier_hidden_login: "Sign in to view the full thread."
-    used:
-      title: "Link already used"
-      body: "Sign in to open the thread in PulseDeck."
-    expired:
-      title: "Link expired"
-      body: "This reply link has expired. Sign in to open the thread."
-    invalid:
-      title: "Invalid link"
-      body: "This reply link is invalid."
-    forbidden:
-      title: "Access denied"
-      body: "You no longer have access to this thread, or the account is unavailable."
-    conflict:
-      title: "Different account"
-      body: "This link belongs to a different account. Sign out to continue."
-      logout: "Sign out"
-    thanks:
-      title: "Thank you"
-      body: "Your reply has been added to the thread. Sign in anytime to continue the conversation."
   profile:
     aside_label: "Account"
     nav_aria: "Profile"
@@ -391,7 +365,7 @@ ui:
         description_max_len: "Ticket description (characters)"
         description_max_len_hint: "Maximum length of the ticket description, including markdown."
         reply_max_len: "Reply (characters)"
-        reply_max_len_hint: "Maximum length of a comment or open-link reply, including markdown."
+        reply_max_len_hint: "Maximum length of a comment or reply, including markdown."
         auth_link_ttl_days: "Activation / password reset (days)"
         auth_link_ttl_days_hint: "How long the email link stays valid for account activation or password reset."
         email_confirm_ttl_minutes: "Email confirmation (minutes)"
@@ -930,10 +904,7 @@ email:
   new_comment:
     subject: "New message on a ticket"
     body: "A new message appeared in ticket {ticket}. Go to the ticket to see the content and reply."
-    dual_hint: "Use the quick reply link or sign in."
-    cta: "Quick reply"
-    cta_login: "Sign in"
-    cta_open: "Go to the ticket"
+    cta: "Open in {app}"
   ticket_update:
     subject: "Ticket update"
     body: "The status, type, or priority of ticket {ticket} was changed."

@@ -48,12 +48,7 @@ def apply_security_headers(request: Request, response: Response) -> Response:
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
     path = request.url.path
-    if path.startswith("/open/"):
-        response.headers["Referrer-Policy"] = "no-referrer"
-    else:
-        response.headers.setdefault(
-            "Referrer-Policy", "strict-origin-when-cross-origin"
-        )
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     response.headers["Permissions-Policy"] = (
         "accelerometer=(), camera=(), geolocation=(), gyroscope=(), "
         "magnetometer=(), microphone=(self), payment=(), usb=()"

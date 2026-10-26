@@ -24,8 +24,6 @@ from app.models.enums import EmailOutboxPriority, EmailOutboxStatus
 from app.models.ticket import Ticket, TicketParticipant
 from app.models.user import User
 from app.services import projects as project_service
-from app.services import reply_token as reply_token_service
-from app.services.auth import login_blocked_reason
 from app.services.portal_settings import PortalSettings, get_portal_settings
 from app.services.tickets import is_ticket_watcher
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
@@ -539,7 +537,6 @@ def emit_comment(
     if not recipients:
         return
     base_ctx = _ticket_mail_ctx(loaded)
-    base = get_settings().app_base_url.rstrip("/")
     for user in recipients:
         lang = normalize_lang(user.ui_lang)
         unsub = make_unsubscribe_url(user.id, "notify_reply")
@@ -548,11 +545,6 @@ def emit_comment(
             if is_ticket_watcher(loaded, user.id)
             else None
         )
-        if login_blocked_reason(user) is None:
-            raw = reply_token_service.create_reply_token(db, user, loaded)
-            reply_url = f"{base}/open/{raw}"
-        else:
-            reply_url = None
         enqueue_email(
             db,
             to_email=user.email,
@@ -561,9 +553,6 @@ def emit_comment(
                 "new_comment.html",
                 {
                     **base_ctx,
-                    "url": reply_url or base_ctx["url"],
-                    "reply_url": reply_url,
-                    "login_url": f"{base}/login",
                     "user": user,
                     "unsubscribe_url": unsub,
                     "unwatch_url": unwatch,

@@ -298,14 +298,6 @@
     white-space: nowrap;
   }
 
-  .reply-mode-label {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    color: var(--color-steel);
-    white-space: nowrap;
-  }
-
   .nav-project-panel .issue-menu-item,
   .nav-mobile-panel .issue-menu-item:has(.nav-project-option-name) {
     align-items: baseline;

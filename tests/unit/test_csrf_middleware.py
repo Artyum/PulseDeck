@@ -46,10 +46,6 @@ class TestIsExempt:
     def test_login_post(self):
         assert _is_exempt("/auth/login", "POST") is True
 
-    def test_open_reply_post_not_exempt(self):
-        assert _is_exempt("/open/abcToken", "POST") is False
-        assert _is_exempt("/open/abcToken", "GET") is False
-
     def test_other_path(self):
         assert _is_exempt("/profile", "POST") is False
 
@@ -149,8 +145,8 @@ class TestCSRFProtectMiddleware:
                 "http_version": "1.1",
                 "method": "POST",
                 "scheme": "http",
-                "path": "/open/tok",
-                "raw_path": b"/open/tok",
+                "path": "/profile",
+                "raw_path": b"/profile",
                 "query_string": b"",
                 "headers": [
                     (b"content-type", b"application/x-www-form-urlencoded"),

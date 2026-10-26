@@ -88,11 +88,6 @@ class Settings(BaseSettings):
     email_confirm_ttl_minutes: int = Field(
         default=60, validation_alias="EMAIL_CONFIRM_TTL_MINUTES"
     )
-    reply_token_ttl_hours: int = Field(
-        default=48, validation_alias="REPLY_TOKEN_TTL_HOURS"
-    )
-    reply_token_get_rate_limit: str = "60/minute"
-    reply_token_post_rate_limit: str = "10/minute"
     ticket_reopen_days: int = Field(default=7, validation_alias="TICKET_REOPEN_DAYS")
     ticket_description_max_len: int = Field(
         default=100_000, ge=1, validation_alias="TICKET_DESCRIPTION_MAX_LEN"

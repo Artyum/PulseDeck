@@ -60,7 +60,6 @@ class TicketEventType(str, enum.Enum):
 class MagicTokenPurpose(str, enum.Enum):
     EMAIL_CONFIRM = "email_confirm"
     PASSWORD_SET = "password_set"
-    TICKET_REPLY = "ticket_reply"
 
 
 class EmailOutboxPriority(str, enum.Enum):

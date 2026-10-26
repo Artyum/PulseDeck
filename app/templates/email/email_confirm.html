@@ -3,6 +3,6 @@
 {% block title %}{{ t("email.confirm.subject") }}{% endblock title %}
 {% block body %}
   <p style="margin:0 0 12px;">{{ t('email.common.greeting', name=user.first_name) }}</p>
-  <p style="margin:0 0 20px;">{{ t('email.confirm.body', app=app_name, minutes=ttl_minutes) }}</p>
+  <p style="margin:0;">{{ t('email.confirm.body', app=app_name, minutes=ttl_minutes) }}</p>
   {{ cta(url, t("email.confirm.cta") ) }}
 {% endblock body %}

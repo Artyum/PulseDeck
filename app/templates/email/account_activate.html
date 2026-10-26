@@ -3,6 +3,6 @@
 {% block title %}{{ t("email.activate.subject") }}{% endblock title %}
 {% block body %}
   <p style="margin:0 0 12px;">{{ t('email.common.greeting', name=user.first_name) }}</p>
-  <p style="margin:0 0 20px;">{{ t('email.activate.body', app=app_name, days=ttl_days) }}</p>
+  <p style="margin:0;">{{ t('email.activate.body', app=app_name, days=ttl_days) }}</p>
   {{ cta(url, t("email.activate.cta") ) }}
 {% endblock body %}

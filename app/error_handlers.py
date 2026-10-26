@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from urllib.parse import quote
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -10,6 +11,7 @@ from starlette.requests import ClientDisconnect
 
 from app.routes.context import render
 from app.utils.i18n import resolve_lang, t
+from app.utils.urls import safe_next_path
 
 logger = logging.getLogger("pulsedeck.app")
 
@@ -70,6 +72,16 @@ def _server_error_response(request: Request):
     return HTMLResponse(f"<p>{message}</p>", status_code=500)
 
 
+def _login_redirect(request: Request) -> RedirectResponse:
+    raw = request.url.path
+    if request.url.query:
+        raw = f"{raw}?{request.url.query}"
+    dest = safe_next_path(raw, default="")
+    if not dest or dest == "/login" or dest.startswith("/login?"):
+        return RedirectResponse("/login", status_code=303)
+    return RedirectResponse("/login?next=" + quote(dest, safe="/"), status_code=303)
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def validation_exc_handler(request: Request, exc: RequestValidationError):
@@ -94,7 +106,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             )
         if exc.status_code in (401, 403) and not request.url.path.startswith("/api/"):
             if exc.status_code == 401:
-                return RedirectResponse("/login", status_code=303)
+                return _login_redirect(request)
             if request.headers.get("HX-Request"):
                 return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
             return RedirectResponse("/", status_code=303)

@@ -7,6 +7,7 @@ from app.models.enums import EmailOutboxPriority, ProjectMemberRole, UserRole
 from app.services import email as email_service
 from app.services import projects as project_service
 from app.services import tickets as ticket_service
+from app.utils.urls import ticket_path
 from tests.helpers import make_ticket, make_user, peer_participant_ticket
 
 
@@ -374,8 +375,9 @@ class TestNotify:
 
         row = db_session.scalar(select(EmailOutbox))
         assert row is not None
-        assert "/open/" in row.html_body
-        assert "/login" in row.html_body
+        assert ticket_path(ticket) in row.html_body
+        assert "Open in PulseDeck" in row.html_body
+        assert "/open/" not in row.html_body
 
     def test_notify_internal_comment_unassigned_broadcasts_staff(
         self, db_session, project_with_members, staff_user, client_user

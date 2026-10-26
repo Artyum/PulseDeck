@@ -153,19 +153,11 @@ def create_magic_token(
     user: User,
     *,
     purpose: MagicTokenPurpose,
-    ticket_id: int | None = None,
 ) -> tuple[MagicToken, str]:
-    settings = get_settings()
     portal = get_portal_settings(db)
     if purpose == MagicTokenPurpose.PASSWORD_SET:
         expires_at = datetime.now(timezone.utc) + timedelta(
             days=portal.auth_link_ttl_days
-        )
-    elif purpose == MagicTokenPurpose.TICKET_REPLY:
-        if ticket_id is None:
-            raise ValueError("ticket_id required for ticket_reply tokens")
-        expires_at = datetime.now(timezone.utc) + timedelta(
-            hours=settings.reply_token_ttl_hours
         )
     else:
         expires_at = datetime.now(timezone.utc) + timedelta(
@@ -174,7 +166,6 @@ def create_magic_token(
     raw = secrets.token_urlsafe(32)
     row = MagicToken(
         user_id=user.id,
-        ticket_id=ticket_id,
         token=hash_magic_token(raw),
         purpose=purpose.value,
         expires_at=expires_at,

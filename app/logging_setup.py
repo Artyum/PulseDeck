@@ -18,11 +18,9 @@ _DOMAIN_FILES: tuple[tuple[str, str], ...] = (
     ("pulsedeck.mail", "mail.log"),
     ("pulsedeck.db", "db.log"),
     ("pulsedeck.auth", "auth.log"),
-    ("pulsedeck.reply_token", "auth.log"),
     ("pulsedeck.security", "security.log"),
 )
 
-_FILE_ONLY = frozenset({"pulsedeck.reply_token"})
 _HEALTH_CHECK_PATHS = ("/api/health", "/healthz")
 
 
@@ -91,10 +89,6 @@ def setup_logging() -> None:
         handler = handlers_by_file[filename]
         if handler not in lg.handlers:
             lg.addHandler(handler)
-        if logger_name in _FILE_ONLY:
-            lg.propagate = False
-            if error_handler not in lg.handlers:
-                lg.addHandler(error_handler)
 
     db_handler = handlers_by_file["db.log"]
     for name in ("sqlalchemy.engine", "sqlalchemy.pool"):

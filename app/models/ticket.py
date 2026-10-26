@@ -289,12 +289,6 @@ class MagicToken(Base):
         nullable=False,
         index=True,
     )
-    ticket_id: Mapped[int | None] = mapped_column(
-        BigInt,
-        ForeignKey("tickets.id", ondelete="CASCADE"),
-        nullable=True,
-        index=True,
-    )
     token: Mapped[str] = mapped_column(
         String(128), unique=True, index=True, nullable=False
     )
@@ -315,4 +309,3 @@ class MagicToken(Base):
     )
 
     user: Mapped[User] = relationship()
-    ticket: Mapped[Ticket | None] = relationship()

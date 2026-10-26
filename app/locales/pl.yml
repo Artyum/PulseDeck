@@ -132,32 +132,6 @@ ui:
       confirm: "Potwierdzam"
       done: "Usunięto Cię z uczestników zgłoszenia {label}."
       invalid: "Ten link jest nieprawidłowy lub wygasł."
-  reply:
-    badge: "Szybka odpowiedź"
-    login_cta: "Przejdź do logowania"
-    attach_login_hint: "Aby dołączyć plik, zaloguj się w portalu."
-    attachments_hidden: "Załączniki są ukryte."
-    earlier_hidden: "Wcześniejsza korespondencja jest ukryta."
-    earlier_hidden_login: "Zaloguj się, aby zobaczyć cały wątek."
-    used:
-      title: "Link już wykorzystany"
-      body: "Zaloguj się, aby otworzyć wątek w PulseDeck."
-    expired:
-      title: "Link wygasł"
-      body: "Ten link do odpowiedzi wygasł. Zaloguj się, aby otworzyć wątek."
-    invalid:
-      title: "Nieprawidłowy link"
-      body: "Ten link do odpowiedzi jest nieprawidłowy."
-    forbidden:
-      title: "Brak dostępu"
-      body: "Nie masz już dostępu do tego wątku albo konto jest niedostępne."
-    conflict:
-      title: "Inne konto"
-      body: "Ten odnośnik jest przypisany do innego konta. Wyloguj się, aby uzyskać dostęp."
-      logout: "Wyloguj się"
-    thanks:
-      title: "Dziękujemy"
-      body: "Twoja odpowiedź została dodana do wątku. Zaloguj się, gdy chcesz kontynuować rozmowę."
   profile:
     aside_label: "Konto"
     nav_aria: "Profil"
@@ -391,7 +365,7 @@ ui:
         description_max_len: "Opis zgłoszenia (znaki)"
         description_max_len_hint: "Maksymalna długość opisu zgłoszenia, łącznie z markdownem."
         reply_max_len: "Odpowiedź (znaki)"
-        reply_max_len_hint: "Maksymalna długość komentarza lub odpowiedzi z linku, łącznie z markdownem."
+        reply_max_len_hint: "Maksymalna długość komentarza lub odpowiedzi, łącznie z markdownem."
         auth_link_ttl_days: "Aktywacja / reset hasła (dni)"
         auth_link_ttl_days_hint: "Jak długo działa link z e-maila przy aktywacji konta lub resecie hasła."
         email_confirm_ttl_minutes: "Potwierdzenie e-mail (minuty)"
@@ -930,10 +904,7 @@ email:
   new_comment:
     subject: "Nowa wiadomość w zgłoszeniu"
     body: "W zgłoszeniu {ticket} pojawiła się nowa wiadomość. Przejdź do zgłoszenia, aby zobaczyć treść i odpowiedzieć."
-    dual_hint: "Użyj linku szybkiej odpowiedzi lub zaloguj się."
-    cta: "Szybka odpowiedź"
-    cta_login: "Zaloguj się"
-    cta_open: "Przejdź do zgłoszenia"
+    cta: "Otwórz w {app}"
   ticket_update:
     subject: "Aktualizacja w zgłoszeniu"
     body: "W zgłoszeniu {ticket} zmieniono status, typ lub priorytet."

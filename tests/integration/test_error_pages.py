@@ -1,6 +1,6 @@
 """Tests for error handling: 404, 403, 401 responses."""
 
-from tests.helpers import login_admin
+from tests.helpers import login, login_admin
 
 
 def test_404_api(client):
@@ -39,4 +39,17 @@ def test_health_endpoint(client):
 
 def test_protected_endpoint_without_login(client):
     r = client.get("/profile", follow_redirects=False)
-    assert r.status_code in (303, 401)
+    assert r.status_code == 303
+    assert r.headers["location"] == "/login?next=/profile"
+
+
+def test_ticket_without_login_returns_to_ticket(client):
+    r = client.get("/t/DEMO-1", follow_redirects=False)
+    assert r.status_code == 303
+    assert r.headers["location"] == "/login?next=/t/DEMO-1"
+
+
+def test_login_with_next_opens_ticket(client, client_user):
+    dest = "/t/DEMO-1"
+    r = login(client, client_user.email, "Client123!ab", next_path=dest)
+    assert r.headers["location"] == dest

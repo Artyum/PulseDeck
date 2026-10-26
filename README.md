@@ -13,7 +13,6 @@ PulseDeck is a lightweight helpdesk for homelabs and small teams: staff manage p
 - Rich-text comments (Markdown) with internal notes for staff
 - User roles: client, staff, admin
 - Email notifications with an outbox worker (SMTP)
-- Magic reply links for clients without a full account
 - Bilingual UI (English / Polish; English by default)
 - Multiple color themes with light/dark pairs
 - PWA basics (service worker, offline page)
