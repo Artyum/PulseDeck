@@ -80,6 +80,13 @@ def _parse_ticket_ref(ticket_ref: str, *, lang: str) -> tuple[str, int]:
     return match.group(1), int(match.group(2))
 
 
+def _parse_reply_status(raw: str) -> TicketStatus | None:
+    try:
+        return TicketStatus(raw)
+    except ValueError:
+        return None
+
+
 def _load_ticket(
     db: Session, ticket_ref: str, user: User, *, lang: str
 ) -> tuple[Project, Ticket]:
@@ -146,6 +153,10 @@ def _header_ctx(db: Session, user: User, ticket: Ticket, request: Request) -> di
         "project_tags": ticket_service.list_project_tags(db, ticket.project_id),
         "back_to_feed_url": back_to_feed_url,
         "seen_comment_id": ticket_service.latest_visible_comment_id(db, ticket, user),
+        "reply_status_options": ticket_service.reply_status_options(db, user, ticket),
+        "suggested_reply_status": ticket_service.suggested_reply_status(
+            db, user, ticket
+        ),
     }
 
 
@@ -527,6 +538,7 @@ async def add_comment(
     content: Annotated[str, Form()],
     is_internal: Annotated[str, Form()] = "",
     seen_comment_id: Annotated[int, Form()] = 0,
+    status: Annotated[str, Form()] = "",
     attachments: Annotated[list[UploadFile] | None, File()] = None,
 ):
     lang = resolve_lang(request)
@@ -538,27 +550,56 @@ async def add_comment(
     internal = bool(is_internal) and project_service.has_staff_capabilities(
         db, ticket.project_id, user
     )
+    chosen = None if internal else _parse_reply_status(status)
     latest = ticket_service.latest_visible_comment_id(db, ticket, user)
     if latest > max(seen_comment_id, 0):
         ticket = ticket_service.get_ticket(db, ticket.id) or ticket
+        kept = ""
+        if chosen is not None and chosen in ticket_service.reply_status_options(
+            db, user, ticket
+        ):
+            kept = chosen.value
         response = render(
             request,
             "partials/ticket_view.html",
             status_code=409,
             reply_draft=content,
             reply_internal=internal,
+            reply_status=kept,
             **_header_ctx(db, user, ticket, request),
         )
         response.headers["X-PD-Stale-Thread"] = "1"
         return response
+    if not internal and chosen is None:
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.invalid_status")
+        )
+    prev_status = ticket.status
     comment = ticket_service.add_comment(
-        db, ticket, user, content, is_internal=internal, lang=lang
+        db,
+        ticket,
+        user,
+        content,
+        is_internal=internal,
+        reply_status=chosen,
+        lang=lang,
     )
     await _attach_many(
         db, attachments, ticket_id=ticket.id, comment_id=comment.id, lang=lang
     )
     ticket = ticket_service.get_ticket(db, ticket.id) or ticket
     emit_comment(db, ticket, user.id, is_internal=internal)
+    if (
+        not internal
+        and prev_status != ticket.status
+        and ticket.status == TicketStatus.DONE
+    ):
+        emit_ticket_closed(
+            db,
+            ticket,
+            user.id,
+            change_key=f"enums.ticket_status.{ticket.status.value}",
+        )
     return _ticket_mutation_response(request, db, user, ticket)
 
 

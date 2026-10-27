@@ -737,6 +737,40 @@ def latest_visible_comment_id(db: Session, ticket: Ticket, user: User) -> int:
     return int(db.scalar(q) or 0)
 
 
+def suggested_reply_status(db: Session, user: User, ticket: Ticket) -> TicketStatus:
+    if has_staff_capabilities(db, ticket.project_id, user):
+        return TicketStatus.WAITING_ON_CLIENT
+    return TicketStatus.IN_PROGRESS
+
+
+def reply_status_options(db: Session, user: User, ticket: Ticket) -> list[TicketStatus]:
+    options = [TicketStatus.IN_PROGRESS, TicketStatus.WAITING_ON_CLIENT]
+    if can_set_done(user, ticket, db):
+        options.append(TicketStatus.DONE)
+    return options
+
+
+def _apply_reply_status(
+    db: Session,
+    ticket: Ticket,
+    author: User,
+    reply_status: TicketStatus | None,
+    *,
+    lang: str,
+) -> None:
+    if reply_status is None or reply_status not in reply_status_options(
+        db, author, ticket
+    ):
+        raise HTTPException(
+            status_code=400, detail=t(lang, "messages.tickets.invalid_status")
+        )
+    if reply_status == ticket.status:
+        return
+    ticket.status = reply_status
+    if reply_status == TicketStatus.DONE:
+        ticket.closed_at = datetime.now(timezone.utc)
+
+
 def add_comment(
     db: Session,
     ticket: Ticket,
@@ -744,6 +778,7 @@ def add_comment(
     content: str,
     *,
     is_internal: bool = False,
+    reply_status: TicketStatus | None = None,
     lang: str | None = None,
     commit: bool = True,
 ) -> Comment:
@@ -759,6 +794,12 @@ def add_comment(
     text = _clean_or_400(db, "comment.content", content, lang=lang)
     prev_status = ticket.status
     prev_assignee_id = ticket.assignee_id
+    if not is_internal:
+        _apply_reply_status(db, ticket, author, reply_status, lang=lang)
+        if ticket.assignee_id is None and is_project_staff(
+            db, ticket.project_id, author
+        ):
+            ticket.assignee_id = author.id
     comment = Comment(
         ticket_id=ticket.id,
         author_id=author.id,
@@ -767,16 +808,6 @@ def add_comment(
     )
     db.add(comment)
     lock_author_edits(ticket)
-    staff = has_staff_capabilities(db, ticket.project_id, author)
-    if not is_internal:
-        if staff:
-            ticket.status = TicketStatus.WAITING_ON_CLIENT
-            if ticket.assignee_id is None and is_project_staff(
-                db, ticket.project_id, author
-            ):
-                ticket.assignee_id = author.id
-        else:
-            ticket.status = TicketStatus.IN_PROGRESS
     _sync_participant_watch(db, ticket, author.id)
     db.flush()
     record_ticket_event(

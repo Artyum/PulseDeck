@@ -65,13 +65,25 @@ def test_staff_reply_sets_waiting_on_client(
         ticket_type=TicketType.QUESTION,
     )
     assert ticket.status == TicketStatus.NEW
-    ticket_service.add_comment(db_session, ticket, staff_user, "Pracujemy nad tym")
+    ticket_service.add_comment(
+        db_session,
+        ticket,
+        staff_user,
+        "Pracujemy nad tym",
+        reply_status=TicketStatus.WAITING_ON_CLIENT,
+    )
     ticket = ticket_service.get_ticket(db_session, ticket.id)
     assert ticket is not None
     assert ticket.status == TicketStatus.WAITING_ON_CLIENT
     assert ticket.assignee_id == staff_user.id
 
-    ticket_service.add_comment(db_session, ticket, client_user, "Dzięki")
+    ticket_service.add_comment(
+        db_session,
+        ticket,
+        client_user,
+        "Dzięki",
+        reply_status=TicketStatus.IN_PROGRESS,
+    )
     ticket = ticket_service.get_ticket(db_session, ticket.id)
     assert ticket is not None
     assert ticket.status == TicketStatus.IN_PROGRESS

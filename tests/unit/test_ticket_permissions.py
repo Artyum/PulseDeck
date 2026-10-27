@@ -134,7 +134,13 @@ class TestCanEditTicket:
         self, db_session, project_with_members, client_user, staff_user
     ):
         ticket = make_ticket(db_session, project_with_members, client_user)
-        c1 = ticket_service.add_comment(db_session, ticket, client_user, "first")
+        c1 = ticket_service.add_comment(
+            db_session,
+            ticket,
+            client_user,
+            "first",
+            reply_status=TicketStatus.IN_PROGRESS,
+        )
         ticket = _reload_ticket(db_session, ticket.id)
         assert ticket.author_edits_locked_at is not None
         assert (

@@ -1,68 +1,81 @@
 ---
-description: PulseDeck project rules
+description: Zasady projektu
 alwaysApply: true
 ---
 
-# Rules
+# Zasady projektu
 
-## General
+## Zasady nadrzędne
 
-- Save tokens, be concrete, no fluff.
-- Ask before destructive operations (install, file deletion, config changes). Safe commands (git status, read) run without asking.
-- The app and CSS watcher run through `start_app.sh` and Docker Compose. Do not start or rebuild them automatically. If something does not work, ask for a manual start/restart.
-- Dev: <http://pulsedeck.lan/> (`deploy/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, not 127.0.0.1).
-- Never run tests yourself — point out how to run them manually.
-- Host Python: `.venv/bin/python`, `./run_lint_check.sh`, `./run_tests.sh`.
-- Linux environment — commands in Bash.
+1. **Oszczędzaj tokeny** — każde działanie ma minimalizować zużycie tokenów.
+2. **Bądź konkretny** — krótkie, precyzyjne odpowiedzi bez lania wody.
+3. **Pytaj przed niszczącymi operacjami** — przed instalacją pakietów, usuwaniem plików, zmianami konfiguracji systemu wymagaj potwierdzenia.
+4. **Bezpieczne polecenia wykonuj bez pytania** — `git status`, odczyt plików, diagnostyka bez zmian w systemie.
+5. **Nie duplikuj procesów** — aplikacja i CSS watcher są już uruchomione (`start_app.sh`, Docker Compose). Nie startuj ich ani nie przebudowuj CSS samodzielnie. Jeśli nie odpowiada, poproś o ręczne uruchomienie lub restart.
+6. **Środowisko: natywny Linux + Docker** — polecenia diagnostyczne i skrypty w bash. Dev: `./start_app.sh` → `http://pulsedeck.lan/` (`deploy/.env.dev`, `UVICORN_HOST=0.0.0.0` — DNS `.lan` → LAN IP, nie 127.0.0.1). Host Python: `.venv/bin/python`, `./run_lint_check.sh`, `./run_tests.sh`. Dane i logi w `mount/`.
+7. **Nie uruchamiaj testów ani lint check** — napisz tylko kod i wskaż, jak uruchomić testy ręcznie.
+8. **Optymalizuj kod** — przed końcem uprość implementację (wspólny helper, gdy skraca wynik) i usuń zbędne pozostałości. Nie zatrzymuj się na „działa”.
 
-- Before finishing: rethink the implementation — simplify as far as reasonable (reuse or add shared helpers if that shortens the result), then strip leftovers. Do not stop at "it works".
+## Zasady pisania kodu
 
-## URL (public / portal)
-
-- No UUIDs in UI links. Project: `/p/{key}`, ticket: `/t/{key}-{number}` (number per project, from 1).
-- Helpers: `app/utils/urls.py` (`project_path`, `ticket_path`, `ticket_label`, `admin_project_path`).
-- Project `key`: manual `[A-Z0-9]{1,5}`, unique; name independent, unique case-insensitive.
-- Key/name change without redirects — old links stop working.
-- In DB: all entities have bigint PK (autoincrement). Project key and `ticket.number` only for routing and labels.
-
-## Forms / CSRF
-
-- Session POST requires `X-CSRF-Token` (meta + interceptor in `base.html` or `hx-headers`).
-- Form interceptor: `fetch` with `redirect: "follow"` (not `manual` — causes a blank page).
-- After success with redirect: navigate to `r.url` when `r.redirected`.
-
-## Code
-
-- Log errors in key operations and try/except.
-- Secure code resistant to known attacks.
-- No comments (unless the user requires them). Structural CSS section banners `/* === … === */` are allowed.
-- Never edit `frontend/static/css/app.css` — generated (`css:watch` / `css:build`).
-- Reuse existing styles — consistency before new CSS.
-- KISS / YAGNI / DRY; SOLID when it makes sense, no over-architecture.
+1. **Logowanie błędów** — kluczowe operacje i `try/except` muszą mieć jasne logowanie ułatwiające diagnostykę.
+2. **DRY, KISS, YAGNI** — unikaj kopiowania logiki; najprostsze rozwiązanie; nie pisz kodu na zapas. SOLID, gdy ma sens; bez nadmiarowej architektury.
+3. **Bezpieczny kod** — zgodny z dobrymi praktykami, odporny na znane ataki.
+4. **Bez komentarzy** — pisz sam kod bez komentarzy, chyba że użytkownik wyraźnie tego wymaga. W CSS dozwolone banery sekcji `/* === … === */`.
+5. **Tłumaczenia** — stałe treści przez `app/locales/{pl,en}.yml` i `t()`.
+6. **Klucze obce: ID, nie slug.** W bazie każda encja ma bigint PK (autoincrement).
+7. **URL w UI** — bez UUID. Projekt: `/p/{key}`, ticket: `/t/{key}-{number}` (numer w projekcie od 1). Helpery: `app/utils/urls.py` (`project_path`, `ticket_path`, `ticket_label`, `admin_project_path`). `key`: ręczny `[A-Z0-9]{1,5}`, unikalny; nazwa niezależna, unikalna bez względu na wielkość liter. Zmiana key/nazwy bez przekierowań — stare linki przestają działać. Key i `ticket.number` tylko do routingu i etykiet.
+8. **Formularze / CSRF** — POST sesji wymaga `X-CSRF-Token` (meta + interceptor w `base.html` albo `hx-headers`). Interceptor: `fetch` z `redirect: "follow"` (`manual` daje pustą stronę). Po sukcesie z przekierowaniem: przejdź do `r.url`, gdy `r.redirected`.
 
 ## CSS/UI
 
-- Tailwind + custom components in `_components.css` (`.btn`, `.input`, `.modal`…). Avoid unnecessary custom CSS and inline styles.
-- First look for an existing component / class in `_components.css` / `_primitives.css`, then combine Tailwind classes.
-- Use colors from `@theme` (`bg-primary`, `text-secondary`, `bg-base-100`).
-- Banery sekcji `/* === … === */` w CSS są dozwolone; innych komentarzy unikać.
+1. **Tailwind + własne komponenty** w `_components.css` (`.btn`, `.input`, `.modal`…). Unikaj zbędnego niestandardowego CSS i inline style.
+2. **Najpierw istniejąca klasa** w `_components.css` / `_primitives.css`, potem klasy Tailwind.
+3. **Kolory z tokenów** (`bg-primary`, `text-secondary`, `bg-base-100`). Tła, cienie i chrome komponentów tylko przez `var(--…)`.
+4. **Motywy** — osie: `data-theme` = paleta; `data-scheme` = light/dark; `data-theme-gradient` = on (głębia) / off (płaski). Jedno źródło głębokości: `frontend/static/css/_themes.css` (bloki `Depth: light` / `Depth: dark` / `Depth: flat`, te same nazwy tokenów). Grupy: surfaces (`--surface-*`, `--comment-bg`) · shadows (`--shadow-*`) · edges (`--edge-line`, `--edge-shadow-*`; cast też w `--header-shadow` / `--aside-shadow`) · chrome (`--header-*`, `--aside-*`, `--nav-item-active-*`, `--modal-*-bg`) · buttons (`--btn-*`). Palety: zostaw hexy `--color-*` i charakter `--page/aside/rail-gradient`; depth/btn wolno ujednolicić. Nie hardcoduj nowych glow/gradientów głębokości ani przycisków. Flat override w `_components.css` tylko na non-token (np. `background-image: none`). Nowa para: `THEME_PAIRS` + `_THEMES` + paleta w `_themes.css` + i18n (drugi ID w parze = dark, `DARK_THEME_IDS` liczone automatycznie).
+5. **Bez `stone-*` i `amber-*`** — role neutralne przez tokeny semantyczne (`base-*` i odpowiedniki z motywu).
+6. **Nie edytuj `frontend/static/css/app.css`** — plik generowany (`css:watch` / `css:build` ze źródła `frontend/static/css/tailwind.css`).
+7. **Bez CDN** — zakaz `cdn.tailwindcss.com`, unpkg, jsDelivr, Google Fonts CDN i innych. JS/CSS/fonty tylko z `frontend/static` (npm / vendor).
 
-## Themes / CSS tokens
+## Stack technologiczny
 
-- Osie: `data-theme` = paleta; `data-scheme` = light/dark depth; `data-theme-gradient` = on (głębia) / off (płaski).
-- **Jedno źródło głębokości:** `frontend/static/css/_themes.css` — bloki `Depth: light` / `Depth: dark` / `Depth: flat` (te same nazwy tokenów).
-- Grupy tokenów depth: surfaces (`--surface-*`, `--comment-bg`) · shadows (`--shadow-*`) · edges (`--edge-line`, `--edge-shadow-*`; cast też w `--header-shadow` / `--aside-shadow`) · chrome (`--header-*`, `--aside-*`, `--nav-item-active-*`, `--modal-*-bg`) · buttons (`--btn-*`).
-- Palety: zachować hexy `--color-*` i charakter `--page/aside/rail-gradient`; depth/btn wolno uspójniać.
-- Komponenty: tła/cienie/chrome tylko przez `var(--…)`; nie hardcodować nowych glow/gradientów głębokości ani btn. Flat overrides w `_components.css` tylko na non-token (np. `background-image: none`).
-- Nowa para motywów: wpis w `THEME_PAIRS` + `_THEMES` + paleta w `_themes.css` + i18n (drugi ID w parze = dark, `DARK_THEME_IDS` liczone automatycznie).
-- Nie edytować `frontend/static/css/app.css` — generated (`css:watch` / `css:build`).
+1. **Backend: FastAPI + SQLAlchemy + PostgreSQL + Alembic**
+2. **CSS: Tailwind CSS z npm** — źródło `frontend/static/css/tailwind.css`, build `npm run css:build` → `frontend/static/css/app.css`. Szablony: klasy Tailwind + komponenty z `_components.css`.
+3. **Start:** `start_app.sh`. Zależności npm: `update_npm.sh`.
 
-## Stack
+## Sieć i przeglądarka
 
-Backend: FastAPI + SQLAlchemy + PostgreSQL + Alembic. CSS: Tailwind + custom components. Start: `start_app.sh`, npm: `update_npm.sh`.
+- Nie pobieraj pełnych stron HTML ani treści pod URL (użytkownik wkleja dane ręcznie).
+- Dozwolone: sprawdzenie statusu HTTP i nagłówków (bez body lub z ignorowaniem body).
+- **Zabronione:** scrapowanie, nawigacja po wielu podstronach, automatyczne odświeżanie.
+- Przeglądarkę / browser MCP używaj tylko gdy użytkownik wyraźnie poprosi lub do krótkiego testu (< 50 linii kontekstu).
 
-## Network
+## Output po wykonaniu kodu
 
-- Do not fetch full HTML pages — the user pastes data manually.
-- Allowed: checking HTTP status and headers.
-- Browser only on explicit request or a short test (<50 lines).
+- Krótkie podsumowanie + najważniejsze wyniki, **max ~20 linii** outputu.
+- Długi stack trace: tylko ostatnie 5–10 linii.
+
+## Limity narzędzi (Cursor)
+
+Preferencja (od najtańszego):
+
+1. `Shell` — najtańsze
+2. `Read` / `Grep` — środkowe (czytaj fragmenty, nie całe duże pliki)
+3. `Write` / `StrReplace` — droższe (minimalny diff)
+4. Browser MCP — najdroższe (unikaj)
+
+Dla plików > 500 linii — czytaj zakresy (`offset`/`limit`) lub szukaj symbolem (`Grep`), nie cały plik.
+
+```bash
+# Struktura pliku (pierwsze 50 linii)
+head -n 50 plik.py
+
+# Kontekst wokół linii
+sed -n '40,50p' plik.py
+
+# Status HTTP (bez body)
+curl -sI -o /dev/null -w '%{http_code}\n' https://example.com
+
+# Logi — ostatnie błędy
+grep -i error mount/logs/app.log | tail -n 20
+```

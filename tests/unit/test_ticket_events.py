@@ -72,7 +72,13 @@ class TestTicketEventLogging:
         self, db_session, project_with_members, client_user
     ):
         ticket = make_ticket(db_session, project_with_members, client_user)
-        ticket_service.add_comment(db_session, ticket, client_user, "Hello")
+        ticket_service.add_comment(
+            db_session,
+            ticket,
+            client_user,
+            "Hello",
+            reply_status=TicketStatus.IN_PROGRESS,
+        )
         types = _types(db_session, ticket, staff=False)
         assert TicketEventType.COMMENT_ADDED in types
         assert TicketEventType.STATUS_CHANGED in types
@@ -81,7 +87,13 @@ class TestTicketEventLogging:
         self, db_session, project_with_members, client_user
     ):
         ticket = make_ticket(db_session, project_with_members, client_user)
-        ticket_service.add_comment(db_session, ticket, client_user, "Hello")
+        ticket_service.add_comment(
+            db_session,
+            ticket,
+            client_user,
+            "Hello",
+            reply_status=TicketStatus.IN_PROGRESS,
+        )
         events = event_service.list_ticket_events(db_session, ticket, staff=False)
         rows = event_service.format_ticket_events(db_session, events, lang="en")
         comment_group = next(

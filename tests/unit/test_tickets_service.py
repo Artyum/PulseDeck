@@ -513,6 +513,7 @@ class TestTicketMutations:
             t,
             staff_user,
             "Staff reply",
+            reply_status=TicketStatus.WAITING_ON_CLIENT,
         )
         refreshed = ticket_service.get_ticket(db_session, t.id)
         assert refreshed is not None
@@ -523,7 +524,13 @@ class TestTicketMutations:
         self, db_session, project_with_members, client_user, admin_user
     ):
         t = make_ticket(db_session, project_with_members, client_user)
-        ticket_service.add_comment(db_session, t, admin_user, "Admin reply")
+        ticket_service.add_comment(
+            db_session,
+            t,
+            admin_user,
+            "Admin reply",
+            reply_status=TicketStatus.WAITING_ON_CLIENT,
+        )
         refreshed = ticket_service.get_ticket(db_session, t.id)
         assert refreshed is not None
         assert refreshed.assignee_id is None
@@ -547,6 +554,7 @@ class TestTicketMutations:
             t,
             other_staff,
             "Another staff reply",
+            reply_status=TicketStatus.WAITING_ON_CLIENT,
         )
         refreshed = ticket_service.get_ticket(db_session, t.id)
         assert refreshed is not None

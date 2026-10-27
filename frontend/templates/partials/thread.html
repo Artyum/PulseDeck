@@ -92,17 +92,62 @@
         {{ rich_editor('content', 'comment.content', reply_draft|default('') , placeholder=t('ui.ticket.reply_placeholder') , quote_coachmark=true) }}
         <div class="issue-composer-bar">
           {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
-          <div class="issue-composer-actions">
+          <div class="issue-composer-actions"
+               x-data="{ internal: {{ 'true' if reply_internal|default(false) else 'false' }} }">
             {% if is_project_staff %}
               <label class="issue-composer-opt" data-coachmark="compose-internal">
                 <input type="checkbox"
                        name="is_internal"
                        value="1"
                        class="checkbox"
+                       x-model="internal"
                        {% if reply_internal|default(false) %}checked{% endif %}>
                 {{ t("ui.ticket.internal_note") }}
               </label>
             {% endif %}
+            {% set picked = reply_status|default('') %}
+            {% set status_pick = namespace(current=suggested_reply_status) %}
+            {% for st in reply_status_options %}
+              {% if picked == st.value or (not picked and st == suggested_reply_status) %}
+                {% set status_pick.current = st %}
+              {% endif %}
+            {% endfor %}
+            <div x-data="dropdown"
+                 @click.outside="close()"
+                 x-effect="if ($parent.internal && open) close()"
+                 :class="{'is-menu-open': open}"
+                 :data-disabled="$parent.internal ? '' : null"
+                 class="issue-menu form-select-menu issue-composer-status"
+                 data-form-select>
+              <input type="hidden"
+                     name="status"
+                     value="{{ status_pick.current.value }}"
+                     data-form-select-input
+                     :disabled="$parent.internal">
+              <button type="button"
+                      @click="toggle()"
+                      :aria-expanded="open"
+                      class="issue-menu-trigger"
+                      aria-label="{{ t('ui.ticket.status') }}"
+                      title="{{ t('ui.ticket.status') }}">
+                <span class="select issue-filter-face"
+                      data-form-select-face>{{ status_labels[status_pick.current] }}</span>
+              </button>
+              <div x-show="open"
+                   x-transition
+                   x-cloak
+                   class="issue-menu-panel issue-menu-panel-end"
+                   role="listbox">
+                {% for st in reply_status_options %}
+                  <button type="button"
+                          class="issue-menu-item{% if st == status_pick.current %} is-active{% endif %}"
+                          data-form-select-option
+                          data-value="{{ st.value }}"
+                          data-label="{{ status_labels[st] }}"
+                          {% if st == status_pick.current %}aria-current="true"{% endif %}>{{ status_labels[st] }}</button>
+                {% endfor %}
+              </div>
+            </div>
             <button type="submit" class="btn btn-primary issue-composer-send">{{ t("ui.common.send") }}</button>
           </div>
         </div>

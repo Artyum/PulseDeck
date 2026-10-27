@@ -129,6 +129,7 @@ class TestComments:
             f"/t/{project_with_members.key}-{ticket.number}/comments",
             data={
                 "content": "This is a comment",
+                "status": "IN_PROGRESS",
             },
             follow_redirects=False,
         )
@@ -181,7 +182,11 @@ class TestComments:
             db_session, project_with_members, client_user, title="Stale race"
         )
         first = ticket_service.add_comment(
-            db_session, ticket, client_user, "First reply"
+            db_session,
+            ticket,
+            client_user,
+            "First reply",
+            reply_status=TicketStatus.IN_PROGRESS,
         )
         other = make_user(
             db_session,
@@ -193,7 +198,11 @@ class TestComments:
         path = f"/t/{project_with_members.key}-{ticket.number}/comments"
         r = client.post(
             path,
-            data={"content": "My draft reply", "seen_comment_id": "0"},
+            data={
+                "content": "My draft reply",
+                "seen_comment_id": "0",
+                "status": "WAITING_ON_CLIENT",
+            },
             headers={"HX-Request": "true"},
             follow_redirects=False,
         )
@@ -201,6 +210,14 @@ class TestComments:
         assert r.headers.get("X-PD-Stale-Thread") == "1"
         assert "My draft reply" in r.text
         assert "First reply" in r.text
+        assert re.search(
+            r'name="status"[^>]*value="WAITING_ON_CLIENT"',
+            r.text,
+        )
+        assert re.search(
+            r'is-active[^>]*data-value="WAITING_ON_CLIENT"',
+            r.text,
+        )
         assert re.search(
             rf'name="seen_comment_id"\s+value="{first.id}"',
             r.text,
@@ -214,7 +231,11 @@ class TestComments:
 
         r2 = client.post(
             path,
-            data={"content": "My draft reply", "seen_comment_id": str(first.id)},
+            data={
+                "content": "My draft reply",
+                "seen_comment_id": str(first.id),
+                "status": "WAITING_ON_CLIENT",
+            },
             headers={"HX-Request": "true"},
             follow_redirects=False,
         )
@@ -247,7 +268,11 @@ class TestComments:
         login_client(client)
         r = client.post(
             f"/t/{project_with_members.key}-{ticket.number}/comments",
-            data={"content": "Client reply", "seen_comment_id": "0"},
+            data={
+                "content": "Client reply",
+                "seen_comment_id": "0",
+                "status": "IN_PROGRESS",
+            },
             headers={"HX-Request": "true"},
             follow_redirects=False,
         )

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import os
+import tempfile
 from datetime import datetime, timezone
+from pathlib import Path
+
+_runtime = tempfile.TemporaryDirectory(prefix="pulsedeck-pytest-")
+_runtime_path = Path(_runtime.name)
 
 # Must set before importing app — override any inherited env vars (e.g. from .env.dev)
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
@@ -13,8 +18,8 @@ os.environ.pop("ADMIN_EMAIL", None)
 os.environ.pop("ADMIN_PASSWORD", None)
 os.environ["SECURITY_CSRF_ENABLED"] = "false"
 os.environ["MFA_ENABLED"] = "false"
-os.environ["LOG_DIR"] = "logs"
-os.environ["UPLOAD_DIR"] = "data/uploads"
+os.environ["LOG_DIR"] = str(_runtime_path / "logs")
+os.environ["UPLOAD_DIR"] = str(_runtime_path / "uploads")
 os.environ["AUTH_LOGIN_RATE_LIMIT"] = "100/minute"
 os.environ["AUTH_FORGOT_PASSWORD_RATE_LIMIT"] = "100/minute"
 os.environ["AUTH_ACTIVATE_RATE_LIMIT"] = "100/minute"
@@ -29,6 +34,7 @@ from sqlalchemy.pool import StaticPool
 
 import app.db.session as db_session_module
 import app.models  # noqa: F401
+from app.config import get_settings
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import build_fastapi_app
@@ -37,6 +43,8 @@ from app.models.user import User
 from app.services import projects as project_service
 from app.services.auth import set_password
 from app.services.portal_settings import ensure_portal_settings_seed, invalidate_cache
+
+get_settings.cache_clear()
 
 
 @pytest.fixture()

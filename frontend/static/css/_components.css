@@ -4539,6 +4539,28 @@
     min-width: 8rem;
   }
 
+  .issue-composer-status.form-select-menu {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .issue-composer-status.form-select-menu > .issue-menu-trigger {
+    width: auto;
+  }
+
+  .issue-composer-status .issue-filter-face {
+    width: auto;
+    min-width: 13.5rem;
+    padding-right: 1.45rem;
+  }
+
+  .issue-composer-status .issue-filter-face::after {
+    right: 0.4rem;
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+
   .issue-composer-opt {
     display: inline-flex;
     align-items: center;
