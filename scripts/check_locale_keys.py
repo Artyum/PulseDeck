@@ -93,11 +93,14 @@ def flatten(data: dict, prefix: str = "") -> dict[str, str]:
     return out
 
 
-def load_locales(root: Path) -> tuple[dict[str, dict[str, str]], list[str]]:
+def load_locales(
+    root: Path,
+) -> tuple[dict[str, dict[str, str]], dict[str, Path], list[str]]:
     locales_dir = root / LOCALES_DIR
     if not locales_dir.is_dir():
         raise RuntimeError(f"Missing locales directory: {locales_dir}")
     catalogs: dict[str, dict[str, str]] = {}
+    paths: dict[str, Path] = {}
     for path in sorted(locales_dir.glob("*.yml")):
         try:
             raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -105,9 +108,15 @@ def load_locales(root: Path) -> tuple[dict[str, dict[str, str]], list[str]]:
             raise RuntimeError(f"Cannot read {path}: {error}") from error
         if not isinstance(raw, dict):
             raise TypeError(f"Locale file is not a mapping: {path}")
-        catalogs[path.stem.lower()] = flatten(
+        lang = path.stem.lower()
+        if lang in catalogs:
+            raise RuntimeError(
+                f"Duplicate locale file for {lang}: {path} and {paths[lang]}"
+            )
+        catalogs[lang] = flatten(
             {key: value for key, value in raw.items() if key != "meta"}
         )
+        paths[lang] = path
     if SOURCE_LOCALE not in catalogs:
         raise RuntimeError(f"Missing source locale: {SOURCE_LOCALE}.yml")
     source = set(catalogs[SOURCE_LOCALE])
@@ -120,7 +129,7 @@ def load_locales(root: Path) -> tuple[dict[str, dict[str, str]], list[str]]:
         )
         if diff
     ]
-    return catalogs, errors
+    return catalogs, paths, errors
 
 
 def iter_sources(root: Path) -> list[Path]:
@@ -425,7 +434,7 @@ def rewrite(path: Path, unused: set[str]) -> None:
 
 
 def run_unused(
-    root: Path,
+    paths: dict[str, Path],
     catalogs: dict[str, dict[str, str]],
     found: Scan,
     write: bool,
@@ -448,9 +457,11 @@ def run_unused(
         return 0
     for lang in sorted(catalogs):
         try:
-            rewrite(root / LOCALES_DIR / f"{lang}.yml", set(unused))
+            rewrite(paths[lang], set(unused))
         except (OSError, RuntimeError) as error:
-            print(f"[ERROR] Cannot rewrite {lang}.yml: {error}", file=sys.stderr)
+            print(
+                f"[ERROR] Cannot rewrite {paths[lang].name}: {error}", file=sys.stderr
+            )
             return 2
     print(f"Removed {len(unused)} keys from {len(catalogs)} locale files.")
     return 0
@@ -510,7 +521,7 @@ def main() -> int:
     root = args.root.resolve()
 
     try:
-        catalogs, errors = load_locales(root)
+        catalogs, paths, errors = load_locales(root)
     except (RuntimeError, TypeError) as error:
         print(f"[ERROR] {error}", file=sys.stderr)
         return 2
@@ -525,7 +536,7 @@ def main() -> int:
     found = scan(root, references=wants_references, requests=wants_requests)
     status = run_missing(catalogs, found) if wants_requests else 0
     if wants_references:
-        status = max(status, run_unused(root, catalogs, found, args.write, args.check))
+        status = max(status, run_unused(paths, catalogs, found, args.write, args.check))
     return status
 
 
