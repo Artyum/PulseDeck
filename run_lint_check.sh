@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${ROOT}"
 LOG="${ROOT}/report/lint_check.log"
-TOTAL=10
+TOTAL=11
 VENV="${ROOT}/.venv"
 mkdir -p report
 
@@ -74,15 +74,16 @@ run_djlint_reformat() {
 }
 
 run_step 1 "ruff format" ruff format . --color=never
-run_step 2 "djlint --reformat" run_djlint_reformat
-run_step 3 "npm run format" npm run format
-run_step 4 "ruff check --fix-only --show-fixes" ruff check . --fix-only --show-fixes --color=never
-run_step 5 "ruff check" ruff check . --output-format=concise --color=never
-run_step 6 "basedpyright" basedpyright --pythonpath "${VENV}/bin/python" app alembic scripts tests
-run_step 7 "djlint --lint" djlint frontend/templates/ --lint
+run_step 2 "ruff check --fix-only --show-fixes" ruff check . --fix-only --show-fixes --color=never
+run_step 3 "ruff check" ruff check . --output-format=concise --color=never
+run_step 4 "basedpyright" basedpyright --pythonpath "${VENV}/bin/python" app alembic scripts tests
+run_step 5 "djlint --reformat" run_djlint_reformat
+run_step 6 "djlint --lint" djlint frontend/templates/ --lint
+run_step 7 "npm run format" npm run format
 run_step 8 "npm run format:check" npm run format:check
-run_step 9 "npm run lint:css" npm run lint:css
-run_step 10 "jscpd" bash scripts/jscpd_summary.sh
+run_step 9 "npm run lint:css:fix" npm run lint:css:fix
+run_step 10 "npm run lint:js" npm run lint:js
+run_step 11 "jscpd" bash scripts/jscpd_summary.sh
 
 echo ""
 echo "============ SUMMARY ============"

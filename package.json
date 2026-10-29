@@ -13,11 +13,18 @@
     "format": "prettier --write \"**/*.{html,css,md,json,js}\"",
     "format:check": "prettier --check \"**/*.{html,css,md,json,js}\"",
     "lint:css": "node --disable-warning=ExperimentalWarning ./node_modules/stylelint/bin/stylelint.mjs \"frontend/static/css/**/*.css\"",
+    "lint:css:fix": "node --disable-warning=ExperimentalWarning ./node_modules/stylelint/bin/stylelint.mjs --fix \"frontend/static/css/**/*.css\"",
+    "lint:js": "eslint frontend/js frontend/static/js frontend/static/sw.js --max-warnings 0",
+    "lint:js:fix": "eslint --fix frontend/js frontend/static/js frontend/static/sw.js --max-warnings 0",
     "lint:dup": "jscpd . --threshold 5"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/cli": "^4.3.3",
     "esbuild": "^0.28.2",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
     "jscpd": "^5.2.1",
     "prettier": "^3.9.7",
     "prettier-plugin-jinja-template": "^2.2.0",

@@ -232,7 +232,7 @@ function trimMarkdownEdges(md) {
 function updateToolbar(root, editor) {
   root.querySelectorAll("[data-rich-cmd]").forEach(function (btn) {
     var cmd = btn.getAttribute("data-rich-cmd");
-    var active = false;
+    var active;
     if (cmd === "toggleHeading") {
       var level = parseInt(btn.getAttribute("data-heading-level") || "", 10);
       active = Number.isFinite(level) && editor.isActive("heading", { level: level });

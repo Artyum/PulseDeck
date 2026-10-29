@@ -59,6 +59,9 @@ jobs:
       - name: stylelint
         run: npm run lint:css
 
+      - name: ESLint
+        run: npm run lint:js
+
       - name: jscpd
         run: npm run lint:dup
 

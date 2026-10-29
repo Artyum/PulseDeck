@@ -1074,8 +1074,8 @@
       var input = root.querySelector("[data-form-select-input]");
       var form = root.closest("form");
       if (!form && input) {
-        var formId = input.getAttribute("form");
-        if (formId) form = document.getElementById(formId);
+        var inputFormId = input.getAttribute("form");
+        if (inputFormId) form = document.getElementById(inputFormId);
       }
       if (form) form.requestSubmit();
     }
