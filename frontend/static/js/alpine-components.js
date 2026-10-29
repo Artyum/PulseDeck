@@ -9,6 +9,20 @@ document.addEventListener("alpine:init", () => {
       this.open = false;
     },
   }));
+  Alpine.data("replyComposer", () => ({
+    internal: false,
+    open: false,
+    init() {
+      this.internal = this.$el.dataset.internal === "1";
+    },
+    toggle() {
+      if (this.internal) return;
+      this.open = !this.open;
+    },
+    close() {
+      this.open = false;
+    },
+  }));
   Alpine.data("devPanel", () => ({
     open: false,
     copied: false,

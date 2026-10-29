@@ -93,7 +93,8 @@
         <div class="issue-composer-bar">
           {{ attach_picker('comment-attachments', 'zone', max_files=upload_max_files, coachmark='compose-attach') }}
           <div class="issue-composer-actions"
-               x-data="{ internal: {{ 'true' if reply_internal|default(false) else 'false' }} }">
+               x-data="replyComposer"
+               data-internal="{{ '1' if reply_internal|default(false) else '0' }}">
             {% if is_project_staff %}
               <label class="issue-composer-opt" data-coachmark="compose-internal">
                 <input type="checkbox"
@@ -112,21 +113,21 @@
                 {% set status_pick.current = st %}
               {% endif %}
             {% endfor %}
-            <div x-data="dropdown"
-                 @click.outside="close()"
-                 x-effect="if ($parent.internal && open) close()"
+            <div @click.outside="close()"
+                 x-effect="if (internal && open) close()"
                  :class="{'is-menu-open': open}"
-                 :data-disabled="$parent.internal ? '' : null"
+                 :data-disabled="internal ? '' : null"
                  class="issue-menu form-select-menu issue-composer-status"
                  data-form-select>
               <input type="hidden"
                      name="status"
                      value="{{ status_pick.current.value }}"
                      data-form-select-input
-                     :disabled="$parent.internal">
+                     :disabled="internal">
               <button type="button"
                       @click="toggle()"
                       :aria-expanded="open"
+                      :aria-disabled="internal ? 'true' : null"
                       class="issue-menu-trigger"
                       aria-label="{{ t('ui.ticket.status') }}"
                       title="{{ t('ui.ticket.status') }}">
