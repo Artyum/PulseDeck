@@ -16,8 +16,6 @@ ui:
     none: "Brak"
     back_to_portal: "Wróć do portalu"
     back_home: "Strona główna"
-    logout: "Wyloguj"
-    optional: "Opcjonalnie"
     active: "Aktywny"
     sidebar_show: "Pokaż panel"
     sidebar_hide: "Ukryj panel"
@@ -30,8 +28,6 @@ ui:
     language: "Język"
   confirm:
     title: "Potwierdzenie"
-    message_default: "Czy na pewno chcesz kontynuować?"
-    continue: "Kontynuować?"
     disable_project:
       title: "Wyłączyć projekt?"
       message: "Projekt „{name}” ({key}) zostanie wyłączony i zniknie z portalu."
@@ -93,8 +89,6 @@ ui:
       mfa_submit: "Potwierdź kod"
       mfa_trust: "Nie pytaj o kod na tym urządzeniu przez {days} dni"
       mfa_resend: "Wyślij kod ponownie"
-      mfa_invalid: "Nieprawidłowy lub wygasły kod."
-      mfa_expired: "Sesja weryfikacji wygasła. Zaloguj się ponownie."
     activate:
       title_pending: "Aktywacja konta"
       title_reset: "Ustaw hasło"
@@ -437,7 +431,6 @@ ui:
       meta: "{members} członków · {tickets} zgłoszeń"
       empty: "Brak projektów. Utwórz pierwszy powyżej."
       empty_disabled: "Brak wyłączonych projektów."
-      edit_aria: "Edytuj {name}"
       disabled: "Wyłączony"
       disable: "Wyłącz"
       enable: "Włącz"
@@ -674,7 +667,6 @@ messages:
     internal_staff_only: "Notatki wewnętrzne są tylko dla obsługi."
     no_assign: "Nie możesz przypisać zgłoszenia."
     assignee_must_be_staff: "Przypisać można tylko osobę z obsługi lub administratora."
-    assignee_must_be_member: "Ta osoba musi należeć do projektu."
     no_change_reporter: "Nie możesz zmienić zgłaszającego."
     reporter_must_be_member: "Zgłaszający musi mieć dostęp do projektu."
     no_status: "Nie możesz zmienić statusu."
@@ -754,7 +746,6 @@ messages:
         tag: "Filtr tagu"
   http:
     not_found: "Nie znaleźliśmy tego, czego szukasz."
-    forbidden: "Nie masz do tego dostępu."
     server_error: "Coś poszło nie tak — spróbuj za chwilę."
     login_required: "Zaloguj się, aby kontynuować."
     admin_required: "Potrzebujesz uprawnień administratora."
@@ -825,8 +816,6 @@ js:
   attach:
     remove: "Usuń {name}"
     too_many: "Możesz dodać maksymalnie {count} plików."
-  copy_ok: "Skopiowano"
-  copy_err: "Nie udało się skopiować"
   coachmarks:
     next: "Dalej"
     back: "Wstecz"

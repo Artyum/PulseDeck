@@ -16,8 +16,6 @@ ui:
     none: "None"
     back_to_portal: "Back to portal"
     back_home: "Home"
-    logout: "Log out"
-    optional: "Optional"
     active: "Active"
     sidebar_show: "Show panel"
     sidebar_hide: "Hide panel"
@@ -30,8 +28,6 @@ ui:
     language: "Language"
   confirm:
     title: "Confirmation"
-    message_default: "Are you sure you want to continue?"
-    continue: "Continue?"
     disable_project:
       title: "Disable project?"
       message: "Project “{name}” ({key}) will be disabled and hidden from the portal."
@@ -93,8 +89,6 @@ ui:
       mfa_submit: "Confirm code"
       mfa_trust: "Don't ask for a code on this device for {days} days"
       mfa_resend: "Resend code"
-      mfa_invalid: "Invalid or expired code."
-      mfa_expired: "Verification session expired. Sign in again."
     activate:
       title_pending: "Account activation"
       title_reset: "Set password"
@@ -437,7 +431,6 @@ ui:
       meta: "{members} members · {tickets} tickets"
       empty: "No projects. Create the first one above."
       empty_disabled: "No disabled projects."
-      edit_aria: "Edit {name}"
       disabled: "Disabled"
       disable: "Disable"
       enable: "Enable"
@@ -674,7 +667,6 @@ messages:
     internal_staff_only: "Internal notes are for staff only."
     no_assign: "You can't assign this ticket."
     assignee_must_be_staff: "You can only assign staff or an administrator."
-    assignee_must_be_member: "That person needs to be on the project."
     no_change_reporter: "You can't change the reporter."
     reporter_must_be_member: "The reporter needs access to the project."
     no_status: "You can't change the status."
@@ -754,7 +746,6 @@ messages:
         tag: "Tag filter"
   http:
     not_found: "We couldn't find what you're looking for."
-    forbidden: "You don't have access to this."
     server_error: "Something went wrong — try again in a moment."
     login_required: "Sign in to continue."
     admin_required: "You need administrator access."
@@ -825,8 +816,6 @@ js:
   attach:
     remove: "Remove {name}"
     too_many: "You can attach up to {count} files."
-  copy_ok: "Copied"
-  copy_err: "Couldn't copy"
   coachmarks:
     next: "Next"
     back: "Back"
