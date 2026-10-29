@@ -14,6 +14,9 @@ document.addEventListener("alpine:init", () => {
     open: false,
     init() {
       this.internal = this.$el.dataset.internal === "1";
+      this.$watch("internal", (value) => {
+        if (value) this.open = false;
+      });
     },
     toggle() {
       if (this.internal) return;

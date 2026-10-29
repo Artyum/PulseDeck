@@ -114,7 +114,6 @@
               {% endif %}
             {% endfor %}
             <div @click.outside="close()"
-                 x-effect="if (internal && open) close()"
                  :class="{'is-menu-open': open}"
                  :data-disabled="internal ? '' : null"
                  class="issue-menu form-select-menu issue-composer-status"
