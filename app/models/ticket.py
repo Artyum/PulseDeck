@@ -50,7 +50,7 @@ class Ticket(Base):
         nullable=True,
         index=True,
     )
-    title: Mapped[str] = mapped_column(String(300), nullable=False)
+    title: Mapped[str] = mapped_column(String(150), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     type: Mapped[TicketType] = mapped_column(
         Enum(TicketType, name="ticket_type", native_enum=False, length=20),

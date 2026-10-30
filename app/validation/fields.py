@@ -32,7 +32,7 @@ FIELDS = {
     "project.name": text(max_len=200),
     "project.key": key(),
     "project.description": text(required=False, max_len=2000),
-    "ticket.title": text(max_len=300),
+    "ticket.title": text(max_len=150),
     "ticket.description": text(max_len=100000, trim_blank_edges=True),
     "ticket.type": enum_field(TicketType),
     "ticket.status": enum_field(TicketStatus),

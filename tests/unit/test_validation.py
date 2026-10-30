@@ -61,7 +61,7 @@ class TestRegistryCompleteness:
             "project.name": 200,
             "project.key": 5,
             "project.description": 2000,
-            "ticket.title": 300,
+            "ticket.title": 150,
             "ticket.description": 100000,
             "comment.content": 100000,
             "tag.name": 80,
