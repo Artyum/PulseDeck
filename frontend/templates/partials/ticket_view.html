@@ -8,6 +8,7 @@
     <a href="{{ url_for('ticket_detail', ticket_ref=ticket|ticket_label) }}"
        class="issue-key"
        aria-current="page">{{ ticket|ticket_label }}</a>
+    {% include "partials/ticket_back_link.html" %}
   </nav>
   {% if ticket.deleted_at %}
     <p class="alert alert-muted">{{ t("ui.ticket.deleted_banner") }}</p>
