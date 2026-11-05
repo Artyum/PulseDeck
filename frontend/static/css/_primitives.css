@@ -4,6 +4,13 @@
     --layout-rem: 16px;
     --layout-shell-max: 1440px;
     --font-size-root: 17.5px;
+    --chip-min-height: 1.25rem;
+    --chip-padding-inline: 0.5rem;
+    --chip-font-size: 0.6875rem;
+    --chip-font-weight: 650;
+    --chip-letter-spacing: 0.01em;
+    --chip-line-height: 1;
+    --chip-radius: 9999px;
     font-size: var(--font-size-root);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;

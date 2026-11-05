@@ -1267,12 +1267,6 @@
   .admin-entity-badges .chip,
   .admin-page-sub .chip {
     flex-shrink: 0;
-    font-family: var(--font-sans);
-    font-size: 0.68rem;
-    font-weight: 650;
-    letter-spacing: 0.02em;
-    line-height: 1;
-    padding: 0.2rem 0.55rem 0.18rem;
   }
 
   a.admin-entity-title:hover {
@@ -2485,13 +2479,6 @@
     font-size: 0.8125rem;
   }
 
-  .ticket-row-meta .chip,
-  .ticket-row-tags .chip {
-    padding: 0.14rem 0.45rem 0.12rem;
-    font-size: 0.72rem;
-    line-height: 1;
-  }
-
   .ticket-row-reporter {
     display: inline-flex;
     flex-wrap: wrap;
@@ -2605,29 +2592,30 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+    vertical-align: middle;
     width: max-content;
     max-width: 100%;
-    border-radius: 9999px;
-    padding: 0.24rem 0.6rem 0.22rem;
-    font-size: 0.72rem;
-    font-weight: 650;
-    letter-spacing: 0.01em;
-    line-height: 1;
+    min-height: var(--chip-min-height);
+    padding: 0 var(--chip-padding-inline);
+    border-radius: var(--chip-radius);
+    font-family: var(--font-sans);
+    font-size: var(--chip-font-size);
+    font-weight: var(--chip-font-weight);
+    letter-spacing: var(--chip-letter-spacing);
+    line-height: var(--chip-line-height);
     background: var(--color-chip-neutral);
     color: var(--color-steel);
     border: 1px solid var(--color-chip-neutral-border);
   }
 
-  .chip-role-admin,
-  .chip-new,
-  .chip-type-question {
+  .chip-role-admin {
     background: var(--color-soft-blue);
     border-color: var(--color-chip-blue-border);
     color: var(--color-chip-blue-fg);
   }
 
-  .chip-role-staff,
-  .chip-type-task {
+  .chip-role-staff {
     background: var(--color-soft-teal);
     border-color: var(--color-chip-teal-border);
     color: var(--color-chip-teal-fg);
@@ -2639,36 +2627,94 @@
     color: var(--color-steel);
   }
 
-  .chip-blocked,
-  .chip-type-bug,
-  .chip-high {
+  .chip-blocked {
     background: var(--color-soft-red);
     border-color: var(--color-chip-red-border);
     color: var(--color-chip-red-fg);
   }
 
-  .chip-pending,
-  .chip-type-change,
-  .chip-waiting {
+  .chip-pending {
     background: var(--color-soft-purple);
     border-color: var(--color-chip-purple-border);
     color: var(--color-chip-purple-fg);
   }
 
-  .chip-progress,
-  .chip-internal,
-  .chip-normal {
+  .chip-internal {
     background: var(--color-soft-orange);
     border-color: var(--color-chip-orange-border);
     color: var(--color-chip-orange-fg);
   }
 
-  .chip-done,
-  .chip-active,
-  .chip-low {
+  .chip-active {
     background: var(--color-soft-green);
     border-color: var(--color-chip-green-border);
     color: var(--color-chip-green-fg);
+  }
+
+  .chip-ticket-type-bug {
+    background: var(--chip-ticket-type-bug-bg);
+    border-color: var(--chip-ticket-type-bug-border);
+    color: var(--chip-ticket-type-bug-fg);
+  }
+
+  .chip-ticket-type-question {
+    background: var(--chip-ticket-type-question-bg);
+    border-color: var(--chip-ticket-type-question-border);
+    color: var(--chip-ticket-type-question-fg);
+  }
+
+  .chip-ticket-type-change {
+    background: var(--chip-ticket-type-change-bg);
+    border-color: var(--chip-ticket-type-change-border);
+    color: var(--chip-ticket-type-change-fg);
+  }
+
+  .chip-ticket-type-task {
+    background: var(--chip-ticket-type-task-bg);
+    border-color: var(--chip-ticket-type-task-border);
+    color: var(--chip-ticket-type-task-fg);
+  }
+
+  .chip-ticket-status-new {
+    background: var(--chip-ticket-status-new-bg);
+    border-color: var(--chip-ticket-status-new-border);
+    color: var(--chip-ticket-status-new-fg);
+  }
+
+  .chip-ticket-status-progress {
+    background: var(--chip-ticket-status-progress-bg);
+    border-color: var(--chip-ticket-status-progress-border);
+    color: var(--chip-ticket-status-progress-fg);
+  }
+
+  .chip-ticket-status-waiting {
+    background: var(--chip-ticket-status-waiting-bg);
+    border-color: var(--chip-ticket-status-waiting-border);
+    color: var(--chip-ticket-status-waiting-fg);
+  }
+
+  .chip-ticket-status-done {
+    background: var(--chip-ticket-status-done-bg);
+    border-color: var(--chip-ticket-status-done-border);
+    color: var(--chip-ticket-status-done-fg);
+  }
+
+  .chip-ticket-priority-high {
+    background: var(--chip-ticket-priority-high-bg);
+    border-color: var(--chip-ticket-priority-high-border);
+    color: var(--chip-ticket-priority-high-fg);
+  }
+
+  .chip-ticket-priority-normal {
+    background: var(--chip-ticket-priority-normal-bg);
+    border-color: var(--chip-ticket-priority-normal-border);
+    color: var(--chip-ticket-priority-normal-fg);
+  }
+
+  .chip-ticket-priority-low {
+    background: var(--chip-ticket-priority-low-bg);
+    border-color: var(--chip-ticket-priority-low-border);
+    color: var(--chip-ticket-priority-low-fg);
   }
 
   .chip-outline {
@@ -3358,8 +3404,6 @@
 
   .issue-menu-item-split .chip {
     flex-shrink: 0;
-    font-size: 0.6875rem;
-    padding: 0.15rem 0.4rem;
   }
 
   .issue-menu-item.is-active {

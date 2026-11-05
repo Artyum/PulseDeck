@@ -787,6 +787,44 @@ html[data-theme="rose-night"] {
   --rail-gradient: radial-gradient(ellipse 84% 40% at 50% -16%, rgb(220 110 150 / 0.07), transparent 62%), linear-gradient(180deg, #22161c 0%, #1c1318 46%, #181016 100%);
 }
 
+/* === Ticket chips: type · status · priority === */
+:root,
+html[data-theme] {
+  --chip-ticket-type-bug-bg: var(--color-soft-red);
+  --chip-ticket-type-bug-border: var(--color-chip-red-border);
+  --chip-ticket-type-bug-fg: var(--color-chip-red-fg);
+  --chip-ticket-type-question-bg: var(--color-soft-blue);
+  --chip-ticket-type-question-border: var(--color-chip-blue-border);
+  --chip-ticket-type-question-fg: var(--color-chip-blue-fg);
+  --chip-ticket-type-change-bg: var(--color-soft-purple);
+  --chip-ticket-type-change-border: var(--color-chip-purple-border);
+  --chip-ticket-type-change-fg: var(--color-chip-purple-fg);
+  --chip-ticket-type-task-bg: var(--color-soft-teal);
+  --chip-ticket-type-task-border: var(--color-chip-teal-border);
+  --chip-ticket-type-task-fg: var(--color-chip-teal-fg);
+  --chip-ticket-status-new-bg: var(--color-soft-yellow);
+  --chip-ticket-status-new-border: var(--color-chip-yellow-border);
+  --chip-ticket-status-new-fg: var(--color-chip-yellow-fg);
+  --chip-ticket-status-progress-bg: var(--color-soft-orange);
+  --chip-ticket-status-progress-border: var(--color-chip-orange-border);
+  --chip-ticket-status-progress-fg: var(--color-chip-orange-fg);
+  --chip-ticket-status-waiting-bg: color-mix(in oklab, var(--color-soft-purple) 58%, var(--color-soft-yellow) 42%);
+  --chip-ticket-status-waiting-border: color-mix(in oklab, var(--color-chip-purple-border) 52%, var(--color-chip-yellow-border) 48%);
+  --chip-ticket-status-waiting-fg: color-mix(in oklab, var(--color-chip-purple-fg) 50%, var(--color-chip-yellow-fg) 50%);
+  --chip-ticket-status-done-bg: var(--color-soft-green);
+  --chip-ticket-status-done-border: var(--color-chip-green-border);
+  --chip-ticket-status-done-fg: var(--color-chip-green-fg);
+  --chip-ticket-priority-high-bg: color-mix(in oklab, var(--color-soft-red) 82%, var(--color-soft-orange) 18%);
+  --chip-ticket-priority-high-border: var(--color-chip-red-border);
+  --chip-ticket-priority-high-fg: var(--color-chip-red-fg);
+  --chip-ticket-priority-normal-bg: color-mix(in oklab, var(--color-chip-neutral) 48%, var(--color-soft-orange) 52%);
+  --chip-ticket-priority-normal-border: var(--color-chip-orange-border);
+  --chip-ticket-priority-normal-fg: var(--color-chip-orange-fg);
+  --chip-ticket-priority-low-bg: var(--color-chip-neutral);
+  --chip-ticket-priority-low-border: var(--color-chip-neutral-border);
+  --chip-ticket-priority-low-fg: var(--color-steel);
+}
+
 /* === Depth: flat ===
    Kill-switch głębi. Te same nazwy co light/dark → none / solid.
 */

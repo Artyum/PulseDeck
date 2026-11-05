@@ -1,12 +1,12 @@
 {% from "partials/icons.html" import icon %}
 {% macro status_chip(status) -%}
-  <span class="chip {% if status.value == 'NEW' %}chip-new{% elif status.value == 'IN_PROGRESS' %}chip-progress{% elif status.value == 'WAITING_ON_CLIENT' %}chip-waiting{% else %}chip-done{% endif %}">{{ status_labels[status] }}</span>
+  <span class="chip {% if status.value == 'NEW' %}chip-ticket-status-new{% elif status.value == 'IN_PROGRESS' %}chip-ticket-status-progress{% elif status.value == 'WAITING_ON_CLIENT' %}chip-ticket-status-waiting{% else %}chip-ticket-status-done{% endif %}">{{ status_labels[status] }}</span>
 {%- endmacro %}
 {% macro priority_chip(priority) -%}
-  <span class="chip {% if priority.value == 'HIGH' %}chip-high{% elif priority.value == 'NORMAL' %}chip-normal{% else %}chip-low{% endif %}">{{ priority_labels[priority] }}</span>
+  <span class="chip {% if priority.value == 'HIGH' %}chip-ticket-priority-high{% elif priority.value == 'NORMAL' %}chip-ticket-priority-normal{% else %}chip-ticket-priority-low{% endif %}">{{ priority_labels[priority] }}</span>
 {%- endmacro %}
 {% macro type_chip(ticket_type) -%}
-  <span class="chip {% if ticket_type.value == 'BUG' %}chip-type-bug{% elif ticket_type.value == 'QUESTION' %}chip-type-question{% elif ticket_type.value == 'CHANGE' %}chip-type-change{% else %}chip-type-task{% endif %}">{{ type_labels[ticket_type] }}</span>
+  <span class="chip {% if ticket_type.value == 'BUG' %}chip-ticket-type-bug{% elif ticket_type.value == 'QUESTION' %}chip-ticket-type-question{% elif ticket_type.value == 'CHANGE' %}chip-ticket-type-change{% else %}chip-ticket-type-task{% endif %}">{{ type_labels[ticket_type] }}</span>
 {%- endmacro %}
 {% macro attachment_list(attachments, extra_class='') -%}
   {% if attachments %}
