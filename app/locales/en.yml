@@ -533,7 +533,7 @@ enums:
   ticket_status:
     NEW: "New"
     IN_PROGRESS: "In progress"
-    WAITING_ON_CLIENT: "Waiting for a reply"
+    WAITING_ON_CLIENT: "With reporter"
     DONE: "Done"
   ticket_priority:
     LOW: "Low"
