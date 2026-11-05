@@ -15,7 +15,7 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, query_expression, relationship
 
 from app.db.base import Base, BigInt
 from app.models.enums import TicketEventType, TicketPriority, TicketStatus, TicketType
@@ -89,6 +89,7 @@ class Ticket(Base):
         onupdate=func.now(),
         nullable=False,
     )
+    last_activity_at: Mapped[datetime | None] = query_expression()
 
     project: Mapped[Project] = relationship(back_populates="tickets")
     author: Mapped[User] = relationship(

@@ -64,10 +64,11 @@
         {{ status_chip(tkt.status) }}
         {{ priority_chip(tkt.priority) }}
       </div>
-      {% if tkt.updated_at %}
+      {% set activity_at = tkt.last_activity_at or tkt.updated_at %}
+      {% if activity_at %}
         <div class="ticket-row-activity">
           <span class="ticket-row-activity-label">{{ t("ui.portal.feed.updated") }}</span>
-          <span>{{ tkt.updated_at|format_dt }}</span>
+          <span>{{ activity_at|format_dt }}</span>
         </div>
       {% endif %}
     </div>

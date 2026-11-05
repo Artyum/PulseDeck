@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.enums import TicketEventType
@@ -59,13 +60,16 @@ def record_ticket_event(
     event_type: TicketEventType,
     payload: dict[str, Any] | None = None,
 ) -> TicketEvent:
+    now = datetime.now(timezone.utc)
     row = TicketEvent(
         ticket_id=ticket_id,
         actor_id=actor_id,
         event_type=event_type,
         payload=payload,
+        created_at=now,
     )
     db.add(row)
+    db.execute(update(Ticket).where(Ticket.id == ticket_id).values(updated_at=now))
     return row
 
 

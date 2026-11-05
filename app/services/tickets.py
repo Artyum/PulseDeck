@@ -9,7 +9,7 @@ from typing import cast
 
 from fastapi import HTTPException, status
 from sqlalchemy import Select, case, func, or_, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, selectinload, with_expression
 
 from app.models.enums import TicketEventType, TicketPriority, TicketStatus, TicketType
 from app.models.ticket import (
@@ -17,6 +17,7 @@ from app.models.ticket import (
     Comment,
     Tag,
     Ticket,
+    TicketEvent,
     TicketParticipant,
     TicketTag,
 )
@@ -500,7 +501,21 @@ def _apply_mine_scope(stmt, user: User):
     return stmt.where(_ticket_involvement_filter(user))
 
 
+def _last_activity_at_subquery():
+    return (
+        select(func.max(TicketEvent.created_at))
+        .where(TicketEvent.ticket_id == Ticket.id)
+        .correlate(Ticket)
+        .scalar_subquery()
+    )
+
+
+def _activity_timestamp():
+    return func.coalesce(_last_activity_at_subquery(), Ticket.updated_at)
+
+
 def _apply_sort(stmt: Select[tuple[Ticket]], sort: str | None) -> Select[tuple[Ticket]]:
+    activity = _activity_timestamp()
     if sort == "created_at":
         return stmt.order_by(Ticket.created_at.desc(), Ticket.id.desc())
     if sort == "priority":
@@ -509,8 +524,8 @@ def _apply_sort(stmt: Select[tuple[Ticket]], sort: str | None) -> Select[tuple[T
             (Ticket.priority == TicketPriority.NORMAL, 1),
             else_=2,
         )
-        return stmt.order_by(priority_order, Ticket.updated_at.desc(), Ticket.id.desc())
-    return stmt.order_by(Ticket.updated_at.desc(), Ticket.id.desc())
+        return stmt.order_by(priority_order, activity.desc(), Ticket.id.desc())
+    return stmt.order_by(activity.desc(), Ticket.id.desc())
 
 
 def _build_feed_query(
@@ -622,8 +637,15 @@ def list_tickets(
         or 0
     )
     page = min(parse_positive_int(page), max(1, math.ceil(total / page_size)))
+    last_activity = _last_activity_at_subquery()
     stmt = (
-        _apply_sort(base_stmt.options(*_FEED_LIST_LOAD), sort)
+        _apply_sort(
+            base_stmt.options(
+                *_FEED_LIST_LOAD,
+                with_expression(Ticket.last_activity_at, last_activity),
+            ),
+            sort,
+        )
         .offset((page - 1) * page_size)
         .limit(page_size)
     )

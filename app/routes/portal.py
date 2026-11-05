@@ -523,6 +523,7 @@ def ticket_history(
     return render(
         request,
         "partials/ticket_history.html",
+        user=user,
         ticket=ticket,
         history_events=ticket_event_service.format_ticket_events(db, events, lang=lang),
     )
