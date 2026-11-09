@@ -2647,70 +2647,54 @@
     color: var(--color-chip-green-fg);
   }
 
-  .chip-ticket-type-bug {
-    background: var(--chip-ticket-type-bug-bg);
-    border-color: var(--chip-ticket-type-bug-border);
-    color: var(--chip-ticket-type-bug-fg);
-  }
-
-  .chip-ticket-type-question {
-    background: var(--chip-ticket-type-question-bg);
-    border-color: var(--chip-ticket-type-question-border);
-    color: var(--chip-ticket-type-question-fg);
-  }
-
-  .chip-ticket-type-change {
-    background: var(--chip-ticket-type-change-bg);
-    border-color: var(--chip-ticket-type-change-border);
-    color: var(--chip-ticket-type-change-fg);
-  }
-
-  .chip-ticket-type-task {
-    background: var(--chip-ticket-type-task-bg);
-    border-color: var(--chip-ticket-type-task-border);
-    color: var(--chip-ticket-type-task-fg);
-  }
-
-  .chip-ticket-status-new {
-    background: var(--chip-ticket-status-new-bg);
-    border-color: var(--chip-ticket-status-new-border);
-    color: var(--chip-ticket-status-new-fg);
-  }
-
-  .chip-ticket-status-progress {
-    background: var(--chip-ticket-status-progress-bg);
-    border-color: var(--chip-ticket-status-progress-border);
-    color: var(--chip-ticket-status-progress-fg);
-  }
-
-  .chip-ticket-status-waiting {
-    background: var(--chip-ticket-status-waiting-bg);
-    border-color: var(--chip-ticket-status-waiting-border);
-    color: var(--chip-ticket-status-waiting-fg);
-  }
-
-  .chip-ticket-status-done {
-    background: var(--chip-ticket-status-done-bg);
-    border-color: var(--chip-ticket-status-done-border);
-    color: var(--chip-ticket-status-done-fg);
-  }
-
-  .chip-ticket-priority-high {
-    background: var(--chip-ticket-priority-high-bg);
-    border-color: var(--chip-ticket-priority-high-border);
-    color: var(--chip-ticket-priority-high-fg);
-  }
-
-  .chip-ticket-priority-normal {
-    background: var(--chip-ticket-priority-normal-bg);
-    border-color: var(--chip-ticket-priority-normal-border);
-    color: var(--chip-ticket-priority-normal-fg);
-  }
-
+  .chip-ticket-type-bug,
+  .chip-ticket-type-question,
+  .chip-ticket-type-change,
+  .chip-ticket-type-task,
+  .chip-ticket-status-new,
+  .chip-ticket-status-progress,
+  .chip-ticket-status-waiting,
+  .chip-ticket-status-done,
+  .chip-ticket-priority-high,
+  .chip-ticket-priority-normal,
   .chip-ticket-priority-low {
-    background: var(--chip-ticket-priority-low-bg);
-    border-color: var(--chip-ticket-priority-low-border);
-    color: var(--chip-ticket-priority-low-fg);
+    background: oklch(from var(--chip-hue) var(--chip-ticket-fill-l) calc(c * var(--chip-ticket-fill-c)) h);
+    border-color: oklch(from var(--chip-hue) var(--chip-ticket-stroke-l) calc(c * var(--chip-ticket-stroke-c)) h);
+    color: oklch(from var(--chip-hue) var(--chip-ticket-label-l) calc(c * var(--chip-ticket-label-c)) h);
+  }
+
+  .chip-ticket-type-bug {
+    --chip-hue: var(--chip-hue-bug);
+  }
+  .chip-ticket-type-question {
+    --chip-hue: var(--chip-hue-question);
+  }
+  .chip-ticket-type-change {
+    --chip-hue: var(--chip-hue-change);
+  }
+  .chip-ticket-type-task {
+    --chip-hue: var(--chip-hue-task);
+  }
+  .chip-ticket-status-new {
+    --chip-hue: var(--chip-hue-new);
+  }
+  .chip-ticket-status-progress {
+    --chip-hue: var(--chip-hue-progress);
+  }
+  .chip-ticket-status-waiting {
+    --chip-hue: var(--chip-hue-waiting);
+  }
+  .chip-ticket-status-done {
+    --chip-hue: var(--chip-hue-done);
+  }
+  .chip-ticket-priority-high {
+    --chip-hue: var(--chip-hue-high);
+  }
+  .chip-ticket-priority-normal {
+    --chip-hue: var(--chip-hue-normal);
+  }
+  .chip-ticket-priority-low {
+    --chip-hue: var(--chip-hue-low);
   }
 
   .chip-outline {

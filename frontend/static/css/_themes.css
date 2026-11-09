@@ -74,6 +74,12 @@
   --coachmark-border: color-mix(in oklab, var(--coachmark-accent) 72%, var(--color-frame));
   --selection-bg: color-mix(in oklab, var(--color-pulse) 28%, var(--color-soft-blue));
   --selection-fg: var(--color-ink);
+  --chip-ticket-fill-l: 0.94;
+  --chip-ticket-fill-c: 0.26;
+  --chip-ticket-stroke-l: 0.76;
+  --chip-ticket-stroke-c: 0.5;
+  --chip-ticket-label-l: 0.48;
+  --chip-ticket-label-c: 0.78;
   color-scheme: light;
 }
 
@@ -129,6 +135,12 @@ html[data-scheme="dark"] {
   --coachmark-border: color-mix(in oklab, var(--coachmark-accent) 58%, var(--color-frame));
   --selection-bg: color-mix(in oklab, var(--color-pulse) 48%, transparent);
   --selection-fg: var(--color-ink);
+  --chip-ticket-fill-l: 0.36;
+  --chip-ticket-fill-c: 0.3;
+  --chip-ticket-stroke-l: 0.5;
+  --chip-ticket-stroke-c: 0.54;
+  --chip-ticket-label-l: 0.8;
+  --chip-ticket-label-c: 0.74;
   color-scheme: dark;
 }
 
@@ -790,39 +802,17 @@ html[data-theme="rose-night"] {
 /* === Ticket chips: type · status · priority === */
 :root,
 html[data-theme] {
-  --chip-ticket-type-bug-bg: var(--color-soft-red);
-  --chip-ticket-type-bug-border: var(--color-chip-red-border);
-  --chip-ticket-type-bug-fg: var(--color-chip-red-fg);
-  --chip-ticket-type-question-bg: var(--color-soft-blue);
-  --chip-ticket-type-question-border: var(--color-chip-blue-border);
-  --chip-ticket-type-question-fg: var(--color-chip-blue-fg);
-  --chip-ticket-type-change-bg: var(--color-soft-purple);
-  --chip-ticket-type-change-border: var(--color-chip-purple-border);
-  --chip-ticket-type-change-fg: var(--color-chip-purple-fg);
-  --chip-ticket-type-task-bg: var(--color-soft-teal);
-  --chip-ticket-type-task-border: var(--color-chip-teal-border);
-  --chip-ticket-type-task-fg: var(--color-chip-teal-fg);
-  --chip-ticket-status-new-bg: var(--color-soft-yellow);
-  --chip-ticket-status-new-border: var(--color-chip-yellow-border);
-  --chip-ticket-status-new-fg: var(--color-chip-yellow-fg);
-  --chip-ticket-status-progress-bg: var(--color-soft-orange);
-  --chip-ticket-status-progress-border: var(--color-chip-orange-border);
-  --chip-ticket-status-progress-fg: var(--color-chip-orange-fg);
-  --chip-ticket-status-waiting-bg: color-mix(in oklab, var(--color-soft-purple) 58%, var(--color-soft-yellow) 42%);
-  --chip-ticket-status-waiting-border: color-mix(in oklab, var(--color-chip-purple-border) 52%, var(--color-chip-yellow-border) 48%);
-  --chip-ticket-status-waiting-fg: color-mix(in oklab, var(--color-chip-purple-fg) 50%, var(--color-chip-yellow-fg) 50%);
-  --chip-ticket-status-done-bg: var(--color-soft-green);
-  --chip-ticket-status-done-border: var(--color-chip-green-border);
-  --chip-ticket-status-done-fg: var(--color-chip-green-fg);
-  --chip-ticket-priority-high-bg: color-mix(in oklab, var(--color-soft-red) 82%, var(--color-soft-orange) 18%);
-  --chip-ticket-priority-high-border: var(--color-chip-red-border);
-  --chip-ticket-priority-high-fg: var(--color-chip-red-fg);
-  --chip-ticket-priority-normal-bg: color-mix(in oklab, var(--color-chip-neutral) 48%, var(--color-soft-orange) 52%);
-  --chip-ticket-priority-normal-border: var(--color-chip-orange-border);
-  --chip-ticket-priority-normal-fg: var(--color-chip-orange-fg);
-  --chip-ticket-priority-low-bg: var(--color-chip-neutral);
-  --chip-ticket-priority-low-border: var(--color-chip-neutral-border);
-  --chip-ticket-priority-low-fg: var(--color-steel);
+  --chip-hue-bug: oklch(0.62 0.14 28);
+  --chip-hue-question: oklch(0.55 0.14 255);
+  --chip-hue-change: oklch(0.55 0.14 315);
+  --chip-hue-task: oklch(0.62 0.1 185);
+  --chip-hue-new: oklch(0.72 0.11 90);
+  --chip-hue-progress: oklch(0.65 0.13 55);
+  --chip-hue-waiting: oklch(0.62 0.11 220);
+  --chip-hue-done: oklch(0.62 0.12 150);
+  --chip-hue-high: oklch(0.6 0.15 350);
+  --chip-hue-normal: oklch(0.52 0.14 285);
+  --chip-hue-low: oklch(0.65 0.12 125);
 }
 
 /* === Depth: flat ===
