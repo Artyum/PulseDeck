@@ -6282,6 +6282,15 @@
       padding: 0.45rem;
     }
 
+    .comment {
+      max-width: 100%;
+      align-self: stretch;
+    }
+
+    .comment-staff {
+      align-self: stretch;
+    }
+
     .btn-sm {
       min-height: 1.85rem;
       padding: 0.25rem 0.55rem;
