@@ -612,7 +612,17 @@ def emit_ticket_updated(
 def emit_ticket_closed(
     db: Session, ticket: Ticket, actor_id: int, *, change_key: str
 ) -> None:
-    emit_ticket_updated(db, ticket, actor_id, change_key=change_key)
+    loaded = _load_ticket(db, ticket.id) or ticket
+    group = _client_recipients(db, loaded) | _staff_recipients(db, loaded)
+    _emit_group(
+        db,
+        loaded,
+        actor_id=actor_id,
+        group=group,
+        mail_key="ticket_update",
+        pref="notify_ticket_update",
+        ctx=_ticket_mail_ctx(loaded, change_key=change_key),
+    )
 
 
 def emit_ticket_reopened(

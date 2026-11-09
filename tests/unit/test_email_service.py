@@ -517,20 +517,63 @@ class TestNotify:
         assert 'lang="pl"' in row.html_body
         assert "Nowe zgłoszenie" in row.subject
 
-    def test_notify_ticket_update(
+    def test_notify_ticket_update_non_done_clients_only(
         self, db_session, project_with_members, client_user, staff_user
     ):
         client_user.notify_ticket_update = True
+        staff_user.notify_ticket_update = True
         db_session.commit()
         ticket = make_ticket(
             db_session, project_with_members, client_user, title="Update"
         )
         email_service.notify_ticket_update(
-            db_session, ticket, staff_user.id, change_key="enums.ticket_status.DONE"
+            db_session,
+            ticket,
+            staff_user.id,
+            change_key="enums.ticket_status.IN_PROGRESS",
         )
-        from sqlalchemy import select
+        assert _outbox_emails(db_session) == {client_user.email.lower()}
 
-        assert db_session.scalar(select(EmailOutbox)) is not None
+    def test_notify_ticket_closed_notifies_client_and_staff(
+        self, db_session, project_with_members, client_user, staff_user
+    ):
+        client_user.notify_ticket_update = True
+        staff_user.notify_ticket_update = True
+        closer = _staff_peer(db_session, project_with_members, "closer@example.com")
+        closer.notify_ticket_update = False
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, client_user, title="Close"
+        )
+        email_service.notify_ticket_update(
+            db_session, ticket, closer.id, change_key="enums.ticket_status.DONE"
+        )
+        assert _outbox_emails(db_session) == {
+            client_user.email.lower(),
+            staff_user.email.lower(),
+        }
+
+    def test_notify_ticket_closed_dedupes_staff_author(
+        self, db_session, project_with_members, staff_user
+    ):
+        staff_user.notify_ticket_update = True
+        db_session.commit()
+        ticket = make_ticket(
+            db_session, project_with_members, staff_user, title="Staff authored"
+        )
+        closer = _staff_peer(
+            db_session, project_with_members, "other-close@example.com"
+        )
+        closer.notify_ticket_update = True
+        db_session.commit()
+        email_service.emit_ticket_closed(
+            db_session,
+            ticket,
+            closer.id,
+            change_key="enums.ticket_status.DONE",
+        )
+        emails = _outbox_emails(db_session)
+        assert emails == {staff_user.email.lower()}
 
     def test_notify_assignment(
         self, db_session, project_with_members, client_user, staff_user

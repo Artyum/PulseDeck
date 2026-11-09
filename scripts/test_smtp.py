@@ -167,18 +167,6 @@ def main() -> int:
             },
             None,
         ),
-        (
-            t(LANG, "email.unassignment.subject"),
-            "unassignment.html",
-            {
-                "ticket": ticket,
-                "url": ticket_url,
-                "label": "DEMO-1",
-                "project_name": "Demo",
-                "user": user,
-            },
-            None,
-        ),
     ]
 
     print(

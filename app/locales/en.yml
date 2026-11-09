@@ -902,10 +902,6 @@ email:
     subject: "Ticket assignment"
     body: "You’ve been assigned ticket {ticket}. Open it in {app} to review the details."
     cta: "Open in {app}"
-  unassignment:
-    subject: "Ticket unassignment"
-    body: "You’re no longer the assignee for ticket {ticket}. If this seems wrong, contact your team."
-    cta: "Open in {app}"
   common:
     greeting: "Hi {name},"
     link_hint: "If the button doesn’t work, copy and paste this link into your browser:"

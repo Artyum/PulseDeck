@@ -902,10 +902,6 @@ email:
     subject: "Przypisanie zgłoszenia"
     body: "Przypisano Ci obsługę zgłoszenia {ticket}. Otwórz je w {app}, aby zapoznać się ze szczegółami."
     cta: "Otwórz w {app}"
-  unassignment:
-    subject: "Cofnięcie przypisania"
-    body: "Nie jesteś już osobą obsługującą zgłoszenie {ticket}. Jeśli to pomyłka, skontaktuj się z zespołem."
-    cta: "Otwórz w {app}"
   common:
     greeting: "Cześć {name},"
     link_hint: "Jeśli przycisk nie działa, skopiuj i wklej ten link do przeglądarki:"
