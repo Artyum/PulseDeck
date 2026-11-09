@@ -15,11 +15,6 @@
             <span class="section-icon" aria-hidden="true">{{ icon("people") }}</span>
             {{ t("ui.profile.nav.profile") }}
           </a>
-          <a href="{{ url_for('profile_data_page') }}"
-             class="admin-nav-item{% if section == 'data' %} is-active{% endif %}">
-            <span class="section-icon" aria-hidden="true">{{ icon("details") }}</span>
-            {{ t("ui.profile.nav.data") }}
-          </a>
           <a href="{{ url_for('profile_password_page') }}"
              class="admin-nav-item{% if section == 'password' %} is-active{% endif %}">
             <span class="section-icon" aria-hidden="true">{{ icon("lock") }}</span>

@@ -1087,15 +1087,7 @@
     return decodeURIComponent(parts.pop().split(";").shift() || "") || null;
   }
 
-  function writeCookie(name, value) {
-    var maxAge = 60 * 60 * 24 * 365 * 5;
-    document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; Path=/; Max-Age=" + maxAge + "; SameSite=Lax";
-  }
-
   function currentPref(root, key, fallback) {
-    if (root && root.getAttribute("data-ui-cookie") === "1") {
-      return readCookie(key) || fallback;
-    }
     try {
       return localStorage.getItem(key) || fallback;
     } catch (e) {
@@ -1252,18 +1244,6 @@
       syncPrefPicker(root);
       return;
     }
-    var prefsRoot = el.closest("[data-datetime-prefs]");
-    if (prefsRoot && el.hasAttribute("data-datetime-pref") && (el instanceof HTMLSelectElement || el.hasAttribute("data-form-select-input"))) {
-      var prefsUrl = prefsRoot.getAttribute("data-datetime-prefs-url");
-      var formatInput = prefsRoot.querySelector('[data-datetime-pref="format"]');
-      var tzInput = prefsRoot.querySelector('[data-datetime-pref="timezone"]');
-      if (!prefsUrl || !formatInput || !tzInput) return;
-      postForm(prefsUrl, {
-        datetime_format: formatInput.value,
-        timezone: tzInput.value,
-      }).catch(function () {});
-      return;
-    }
     var projectNotifRoot = el.closest("[data-project-notif-prefs]");
     if (projectNotifRoot && el.hasAttribute("data-project-notif-pref")) {
       var projectNotifUrl = projectNotifRoot.getAttribute("data-project-notif-prefs-url");
@@ -1288,17 +1268,6 @@
       }).catch(function () {});
       return;
     }
-    if (el.getAttribute("data-ui-cookie") !== "1") return;
-    if (!(el instanceof HTMLSelectElement) && !el.hasAttribute("data-form-select-input")) return;
-    var key = el.getAttribute("data-ui-storage-key");
-    var value = el.value;
-    if (!key || !value) return;
-    writeCookie(key, value);
-    postForm("/profile/language", { lang: value })
-      .catch(function () {})
-      .finally(function () {
-        window.location.reload();
-      });
   });
 
   document.addEventListener("click", function (ev) {

@@ -131,7 +131,6 @@ ui:
     nav_aria: "Profil"
     nav:
       profile: "Profil"
-      data: "Dane"
       password: "Zmiana hasła"
       notifications: "Powiadomienia"
       appearance: "Wygląd"
@@ -148,7 +147,7 @@ ui:
       phone: "Telefon"
     email_change_hint: "Zmiana e-maila wymaga potwierdzenia na nowy adres. Do potwierdzenia logujesz się obecnym adresem."
     email_pending: "Oczekuje na potwierdzenie: {email}"
-    save_data: "Zapisz dane"
+    save: "Zapisz"
     password:
       section: "Hasło"
       current: "Obecne hasło"

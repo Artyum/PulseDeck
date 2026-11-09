@@ -2,109 +2,114 @@
 {% from "partials/icons.html" import icon %}
 {% set sec = profile_section|default('profile') %}
 {% set show_profile = not is_admin_edit and sec == 'profile' %}
-{% set show_data = is_admin_edit or sec == 'data' %}
+{% set show_data = is_admin_edit or show_profile %}
 {% set show_password = is_admin_edit or sec == 'password' %}
 {% set show_notifications = is_admin_edit or sec == 'notifications' %}
 {% set show_appearance = not is_admin_edit and sec == 'appearance' %}
-{% if show_profile %}
-  <section class="admin-section" id="language-settings">
-    <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
-    <div class="admin-form-stack">
-      <div class="admin-field">
-        {{ form_select_menu('', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang', input_attrs='data-ui-pref="lang" data-ui-storage-key="' ~ lang_storage_key ~ '" data-ui-fallback="' ~ ui_lang ~ '" data-ui-cookie="1"') }}
-      </div>
-    </div>
-  </section>
-  <section class="admin-section" id="datetime-settings">
-    <h2 class="issue-section-title">{{ t("ui.profile.settings.datetime_title") }}</h2>
-    <div class="admin-form-stack"
-         data-datetime-prefs
-         data-datetime-prefs-url="{{ url_for('update_datetime_prefs') }}">
-      <div class="admin-field">
-        <span class="label">{{ t("ui.profile.settings.datetime_format") }}</span>
-        {{ form_select_menu('datetime_format', t('ui.profile.settings.datetime_format') , datetime_format_choices, ui_datetime_format, value_attr='id', id='ui-datetime-format', input_attrs='data-datetime-pref="format"') }}
-      </div>
-      <div class="admin-field">
-        <span class="label">{{ t("ui.profile.settings.timezone") }}</span>
-        {{ form_select_menu('timezone', t('ui.profile.settings.timezone') , timezone_choices, ui_timezone, value_attr='id', id='ui-timezone', input_attrs='data-datetime-pref="timezone"') }}
-      </div>
-    </div>
-  </section>
-{% endif %}
 {% if show_data %}
   {% if is_admin_edit %}
     <section class="admin-section">
       <h2 class="issue-section-title"><span class="section-icon"
       aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.profile.title.data") }}</h2>
       <div class="admin-narrow">
+        <form method="post"
+              action="{{ url_for('admin_user_update', user_id=edit_user.id) }}"
+              class="admin-form-stack">
+  {% else %}
+    <form method="post"
+          action="{{ url_for('update_profile') }}"
+          class="admin-form-stack">
+      <section class="admin-section">
+        <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("details") }}</span>{{ t("ui.profile.title.data") }}</h2>
   {% endif %}
-  <form method="post"
-        action="{%- if is_admin_edit -%}{{ url_for('admin_user_update', user_id=edit_user.id) }}{%- else -%}{{ url_for('update_profile') }}{%- endif -%}"
-        class="admin-form-stack">
-    <div class="form-grid">
-      <div class="admin-field">
-        <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
-        <input id="first_name"
-               name="first_name"
-               {{ field_attrs("user.first_name") }}
-               value="{{ edit_user.first_name }}"
-               class="input">
-      </div>
-      <div class="admin-field">
-        <label class="label" for="last_name">{{ t("ui.profile.field.last_name") }}</label>
-        <input id="last_name"
-               name="last_name"
-               {{ field_attrs("user.last_name") }}
-               value="{{ edit_user.last_name }}"
-               class="input">
-      </div>
-      <div class="admin-field">
-        <label class="label" for="email">{{ t("ui.profile.field.email") }}</label>
-        <input id="email"
-               name="email"
-               {{ field_attrs("user.email") }}
-               value="{{ edit_user.email }}"
-               class="input">
-        {% if not is_admin_edit %}
-          <p class="admin-field-hint">{{ t("ui.profile.email_change_hint") }}</p>
-        {% endif %}
-        {% if edit_user.pending_email %}
-          <p class="admin-field-hint">{{ t('ui.profile.email_pending', email=edit_user.pending_email) }}</p>
-        {% endif %}
-      </div>
-      <div class="admin-field">
-        <label class="label" for="phone">{{ t("ui.profile.field.phone") }}</label>
-        <input id="phone"
-               name="phone"
-               {{ field_attrs("user.phone") }}
-               value="{{ edit_user.phone|format_phone }}"
-               placeholder="+48 123 456 789"
-               class="input">
-      </div>
-      {% if is_admin_edit %}
-        <div class="admin-field">
-          <label class="label" for="edit-user-role">{{ t("ui.admin.user_new.role") }}</label>
-          {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, edit_user.role.value, role_labels, id='edit-user-role', input_attrs='data-role-select', disabled=(edit_user.id == user.id)) }}
-        </div>
-        <div class="admin-field">
-          <label class="label" for="edit-user-lang">{{ t("ui.settings.language") }}</label>
-          {{ form_select_menu('ui_lang', t('ui.settings.language') , lang_choices, edit_user.ui_lang, value_attr='id', id='edit-user-lang') }}
-        </div>
+  <div class="form-grid">
+    <div class="admin-field">
+      <label class="label" for="first_name">{{ t("ui.profile.field.first_name") }}</label>
+      <input id="first_name"
+             name="first_name"
+             {{ field_attrs("user.first_name") }}
+             value="{{ edit_user.first_name }}"
+             class="input">
+    </div>
+    <div class="admin-field">
+      <label class="label" for="last_name">{{ t("ui.profile.field.last_name") }}</label>
+      <input id="last_name"
+             name="last_name"
+             {{ field_attrs("user.last_name") }}
+             value="{{ edit_user.last_name }}"
+             class="input">
+    </div>
+    <div class="admin-field">
+      <label class="label" for="email">{{ t("ui.profile.field.email") }}</label>
+      <input id="email"
+             name="email"
+             {{ field_attrs("user.email") }}
+             value="{{ edit_user.email }}"
+             class="input">
+      {% if not is_admin_edit %}
+        <p class="admin-field-hint">{{ t("ui.profile.email_change_hint") }}</p>
+      {% endif %}
+      {% if edit_user.pending_email %}
+        <p class="admin-field-hint">{{ t('ui.profile.email_pending', email=edit_user.pending_email) }}</p>
       {% endif %}
     </div>
+    <div class="admin-field">
+      <label class="label" for="phone">{{ t("ui.profile.field.phone") }}</label>
+      <input id="phone"
+             name="phone"
+             {{ field_attrs("user.phone") }}
+             value="{{ edit_user.phone|format_phone }}"
+             placeholder="+48 123 456 789"
+             class="input">
+    </div>
     {% if is_admin_edit %}
-      <div data-projects-field
-           data-required-msg="{{ t('ui.admin.projects_required') }}"
-           {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
-      <p class="admin-field-hint"
-         data-admin-projects-hint
-         {% if not edit_user.is_admin %}hidden{% endif %}>{{ t("ui.profile.admin_all_projects_hint") }}</p>
+      <div class="admin-field">
+        <label class="label" for="edit-user-role">{{ t("ui.admin.user_new.role") }}</label>
+        {{ form_select_menu('role', t('ui.admin.user_new.role') , user_roles, edit_user.role.value, role_labels, id='edit-user-role', input_attrs='data-role-select', disabled=(edit_user.id == user.id)) }}
+      </div>
+      <div class="admin-field">
+        <label class="label" for="edit-user-lang">{{ t("ui.settings.language") }}</label>
+        {{ form_select_menu('ui_lang', t('ui.settings.language') , lang_choices, edit_user.ui_lang, value_attr='id', id='edit-user-lang') }}
+      </div>
     {% endif %}
-    <button type="submit" class="btn btn-primary">{{ t("ui.profile.save_data") }}</button>
-  </form>
+  </div>
   {% if is_admin_edit %}
+    <div data-projects-field
+         data-required-msg="{{ t('ui.admin.projects_required') }}"
+         {% if edit_user.is_admin %}hidden{% endif %}>{{ project_checkboxes(projects, form_project_ids) }}</div>
+    <p class="admin-field-hint"
+       data-admin-projects-hint
+       {% if not edit_user.is_admin %}hidden{% endif %}>{{ t("ui.profile.admin_all_projects_hint") }}</p>
+  {% endif %}
+  {% if is_admin_edit %}
+    <button type="submit" class="btn btn-primary">{{ t("ui.profile.save") }}</button>
+    </form>
     </div>
     </section>
+  {% else %}
+    </section>
+    <section class="admin-section" id="language-settings">
+      <h2 class="issue-section-title">{{ t("ui.settings.language") }}</h2>
+      <div class="admin-field">
+        {{ form_select_menu('ui_lang', t('ui.settings.language') , lang_choices, ui_lang, value_attr='id', id='ui-lang') }}
+      </div>
+    </section>
+    <section class="admin-section" id="datetime-settings">
+      <h2 class="issue-section-title">{{ t("ui.profile.settings.datetime_title") }}</h2>
+      <div class="form-grid">
+        <div class="admin-field">
+          <span class="label">{{ t("ui.profile.settings.datetime_format") }}</span>
+          {{ form_select_menu('datetime_format', t('ui.profile.settings.datetime_format') , datetime_format_choices, ui_datetime_format, value_attr='id', id='ui-datetime-format') }}
+        </div>
+        <div class="admin-field">
+          <span class="label">{{ t("ui.profile.settings.timezone") }}</span>
+          {{ form_select_menu('timezone', t('ui.profile.settings.timezone') , timezone_choices, ui_timezone, value_attr='id', id='ui-timezone') }}
+        </div>
+      </div>
+    </section>
+    <button type="submit" class="btn btn-primary">{{ t("ui.profile.save") }}</button>
+    </form>
   {% endif %}
 {% endif %}
 {% if show_password %}

@@ -686,10 +686,6 @@
     max-width: calc(36 * var(--layout-rem));
   }
 
-  .profile-shell [data-datetime-prefs] {
-    gap: calc(1rem * var(--space-scale));
-  }
-
   .profile-shell .admin-field {
     gap: 0.45rem;
   }

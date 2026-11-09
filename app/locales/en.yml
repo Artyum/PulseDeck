@@ -131,7 +131,6 @@ ui:
     nav_aria: "Profile"
     nav:
       profile: "Profile"
-      data: "Data"
       password: "Change password"
       notifications: "Notifications"
       appearance: "Appearance"
@@ -148,7 +147,7 @@ ui:
       phone: "Phone"
     email_change_hint: "Changing your email requires confirmation at the new address. You keep signing in with your current address until you confirm."
     email_pending: "Pending confirmation: {email}"
-    save_data: "Save data"
+    save: "Save"
     password:
       section: "Password"
       current: "Current password"

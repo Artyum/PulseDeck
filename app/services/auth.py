@@ -14,7 +14,7 @@ from app.models.ticket import MagicToken
 from app.models.user import ProjectMember, User
 from app.services import projects as project_service
 from app.services.portal_settings import get_portal_settings
-from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
+from app.utils.i18n import DEFAULT_LANG, available_lang_ids, normalize_lang, t
 from app.utils.password import (
     hash_password,
     verify_password,
@@ -230,6 +230,31 @@ def set_active(
     return target
 
 
+def stage_profile_page_prefs(
+    user: User,
+    *,
+    ui_lang: str = "",
+    datetime_format: str = "",
+    timezone: str = "",
+    lang: str | None = None,
+) -> None:
+    lang = lang or DEFAULT_LANG
+    lang_id = ui_lang.strip().lower()
+    if lang_id in available_lang_ids():
+        user.ui_lang = clean("user.ui_lang", lang_id, lang=normalize_lang(None))
+    if datetime_format.strip() or timezone.strip():
+        data = clean_many(
+            {
+                "user.datetime_format": datetime_format,
+                "user.timezone": timezone,
+            },
+            lang=lang,
+        )
+        user.datetime_format = data["user.datetime_format"]
+        user.timezone = data["user.timezone"]
+        user.datetime_prefs_locked = True
+
+
 def update_profile_fields(
     db: Session,
     user: User,
@@ -273,30 +298,6 @@ def update_notification_prefs(
 
 def update_ui_lang(db: Session, user: User, lang: str) -> User:
     user.ui_lang = clean("user.ui_lang", lang, lang=normalize_lang(None))
-    db.commit()
-    db.refresh(user)
-    return user
-
-
-def update_datetime_prefs(
-    db: Session,
-    user: User,
-    *,
-    datetime_format: str,
-    timezone: str,
-    lang: str | None = None,
-) -> User:
-    lang = lang or DEFAULT_LANG
-    data = clean_many(
-        {
-            "user.datetime_format": datetime_format,
-            "user.timezone": timezone,
-        },
-        lang=lang,
-    )
-    user.datetime_format = data["user.datetime_format"]
-    user.timezone = data["user.timezone"]
-    user.datetime_prefs_locked = True
     db.commit()
     db.refresh(user)
     return user

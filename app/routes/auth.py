@@ -101,7 +101,6 @@ _PROFILE_OK_FLASH = {
 
 _PROFILE_PATHS = {
     "profile": "/profile",
-    "data": "/profile/data",
     "password": "/profile/password",
     "notifications": "/profile/notifications",
     "appearance": "/profile/appearance",
@@ -116,7 +115,7 @@ def _render_profile(
     error: str | None = None,
     success: str | None = None,
 ):
-    if section not in ("profile", "data", "password", "notifications", "appearance"):
+    if section not in ("profile", "password", "notifications", "appearance"):
         section = "profile"
     if success is None:
         ok = (request.query_params.get("ok") or "").strip()
@@ -360,11 +359,6 @@ def profile_page(request: Request, user: CurrentUser):
     return _render_profile(request, user, section="profile")
 
 
-@router.get("/profile/data", response_class=HTMLResponse)
-def profile_data_page(request: Request, user: CurrentUser):
-    return _render_profile(request, user, section="data")
-
-
 @router.get("/profile/password", response_class=HTMLResponse)
 def profile_password_page(request: Request, user: CurrentUser):
     return _render_profile(request, user, section="password")
@@ -380,7 +374,7 @@ def profile_appearance_page(request: Request, user: CurrentUser):
     return _render_profile(request, user, section="appearance")
 
 
-@router.post("/profile/data")
+@router.post("/profile")
 def update_profile(
     request: Request,
     user: CurrentUser,
@@ -389,6 +383,9 @@ def update_profile(
     last_name: Annotated[str, Form()],
     email: Annotated[str, Form()],
     phone: Annotated[str, Form()] = "",
+    ui_lang: Annotated[str, Form()] = "",
+    datetime_format: Annotated[str, Form()] = "",
+    timezone: Annotated[str, Form()] = "",
 ):
     lang = resolve_lang(request)
     try:
@@ -398,6 +395,13 @@ def update_profile(
             first_name=first_name,
             last_name=last_name,
             phone=phone,
+            lang=lang,
+        )
+        auth_service.stage_profile_page_prefs(
+            user,
+            ui_lang=ui_lang,
+            datetime_format=datetime_format,
+            timezone=timezone,
             lang=lang,
         )
         new_email = auth_service.normalize_email(email)
@@ -415,7 +419,11 @@ def update_profile(
     ok = (
         "email_confirm" if success_key == "flash.auth.email_confirm_sent" else "updated"
     )
-    return _profile_redirect("data", ok=ok)
+    saved_lang = user.ui_lang.strip().lower()
+    response = _profile_redirect("profile", ok=ok)
+    if saved_lang in available_lang_ids():
+        set_lang_cookie(response, saved_lang)
+    return response
 
 
 @router.post("/profile/password")
@@ -464,37 +472,6 @@ def update_notifications(
         notify_ticket_update=bool(notify_ticket_update),
     )
     return _profile_redirect("notifications", ok="notifications")
-
-
-@router.post("/profile/language")
-def update_language(
-    request: Request,
-    user: CurrentUser,
-    db: DbSession,
-    lang: Annotated[str, Form()],
-):
-    auth_service.update_ui_lang(db, user, lang)
-    response = PlainTextResponse("ok")
-    set_lang_cookie(response, lang)
-    return response
-
-
-@router.post("/profile/datetime-prefs")
-def update_datetime_prefs(
-    request: Request,
-    user: CurrentUser,
-    db: DbSession,
-    datetime_format: Annotated[str, Form()],
-    timezone: Annotated[str, Form()],
-):
-    auth_service.update_datetime_prefs(
-        db,
-        user,
-        datetime_format=datetime_format,
-        timezone=timezone,
-        lang=resolve_lang(request),
-    )
-    return PlainTextResponse("ok")
 
 
 @router.post("/profile/datetime-prefs-auto")

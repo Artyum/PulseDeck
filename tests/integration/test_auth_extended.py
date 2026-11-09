@@ -99,7 +99,6 @@ class TestProfile:
         login_client(client)
         for path in (
             "/profile",
-            "/profile/data",
             "/profile/password",
             "/profile/notifications",
             "/profile/appearance",
@@ -110,12 +109,15 @@ class TestProfile:
     def test_profile_update(self, client, client_user):
         login_client(client)
         r = client.post(
-            "/profile/data",
+            "/profile",
             data={
                 "first_name": "Updated",
                 "last_name": "Name",
                 "email": "client@test.local",
                 "phone": "",
+                "ui_lang": "pl",
+                "datetime_format": "ISO_8601",
+                "timezone": "Europe/Warsaw",
             },
             follow_redirects=False,
         )
