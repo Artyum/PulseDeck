@@ -13,11 +13,11 @@ A ticket is one request. The label in the interface is `{key}-{number}`, for exa
 
 Staff set type, status, and priority from the ticket. A public reply can set the status at the same time: staff replies default toward **With reporter**, a client reply defaults toward **In progress**. Either side can also mark it **Done** when they are allowed to close it (staff, or the reporter).
 
-An internal note does not change the status.
+A public reply can change the status. An internal note keeps the current status.
 
 ## Reopening
 
-Staff can reopen a closed ticket at any time. The reporter can reopen it for the number of days in **Administration → Settings → Tickets** (default 7). `0` means only staff can reopen. Closed tickets do not take new comments until they are reopened.
+Staff can reopen a closed ticket at any time. The reporter can reopen it for the number of days in **Administration → Settings → Tickets** (default 7). `0` limits reopening to staff. Reopen a ticket to add comments.
 
 ## People
 
@@ -39,10 +39,10 @@ Files can be added on the ticket or on a comment: pick, drop, or paste. Limits a
 
 ## History
 
-**History** lists changes: title, description, status, type, priority, reporter, assignee, participants, tags, attachments, and deleted comments. Clients do not see events that belong only to internal notes.
+**History** lists changes: title, description, status, type, priority, reporter, assignee, participants, tags, attachments, and deleted comments. Staff also see events for internal notes.
 
 ## Deleting
 
 Only an administrator can delete a ticket or a comment. A deleted ticket is hidden from everyone else. Administrators still see it, with a banner, and it stays out of the normal list as a deleted item.
 
-Next: [Comments and email](comments-and-mail.md)
+Previous: [Portal](portal.md) · Next: [Comments and email](comments-and-mail.md)

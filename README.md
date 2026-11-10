@@ -2,7 +2,7 @@
 
 A self-hosted support desk for one team and its clients. Projects, tickets, comments, email, and a bilingual UI — FastAPI and PostgreSQL.
 
-Staff work in a portal. Clients see only their projects. There is no public sign-up and no second organization inside the same deployment.
+Staff work in a portal. Clients see the projects they belong to. An administrator creates accounts. One deployment serves one organization.
 
 ## Guides
 
@@ -30,12 +30,6 @@ Staff work in a portal. Clients see only their projects. There is no public sign
 - Light and dark theme pairs, spacing, and font size
 - PWA basics (service worker, offline page)
 - Docker image on GHCR
-
-## What it does not do
-
-- No multi-tenant SaaS — one deployment, one organization
-- No PostgreSQL container in the production compose file — bring your own database
-- No LDAP or OAuth — email and password, plus an optional email code
 
 ## First run
 

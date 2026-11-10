@@ -4,13 +4,13 @@ Open **Profile** from the user menu. The page has four sections.
 
 ## Profile
 
-Name, phone, and email. A new email is not used for sign-in until you open the confirmation link sent to that address. Until then you keep signing in with the old one. The link lifetime is **Email confirmation** in portal settings.
+Name, phone, and email. Sign-in keeps using the current address until you open the confirmation link sent to the new one. The link lifetime is **Email confirmation** in portal settings.
 
 ## Password
 
 The form asks for the current password and the new one twice. The rule on the form is the live one (by default at least 12 characters, with lower case, upper case, a digit, and a symbol). Saving it signs other sessions out and forgets browsers you marked as trusted for the email code. This browser stays signed in.
 
-**Forgot your password** on the sign-in page emails a reset link to an existing, unblocked account. The screen does not say whether the address was found.
+**Forgot your password** on the sign-in page emails a reset link to an existing, unblocked account. The page then shows the same confirmation for every address.
 
 ## Notifications
 
@@ -47,4 +47,4 @@ Theme, depth, spacing, and font size are saved in this browser only.
 | Heather Bloom | Velvet Berry    |
 | Blush Glow    | Crimson Veil    |
 
-Next: [Portal](portal.md)
+Previous: [Comments and email](comments-and-mail.md) · Next: [Administration](admin.md)

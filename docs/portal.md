@@ -2,7 +2,7 @@
 
 The portal is the ticket list. The address of a project is `/p/{key}`, where `key` is the short code chosen in administration (1–5 letters or digits).
 
-If you have no projects, the page asks you to wait for an administrator to add you.
+The portal lists the projects you belong to. An administrator adds you to a project.
 
 ## Switching project
 
@@ -28,7 +28,7 @@ The view tabs change with your project role.
 - **Only mine** keeps tickets you reported, are assigned to, or watch.
 - Sort by last activity, creation date, or priority.
 
-A disabled project disappears from this list. Its address in the portal answers “not found” until an administrator enables it again. The tickets stay in the database.
+The header lists **active** projects. Enable a project in Administration to show it in the portal again. Its tickets stay in the database.
 
 ## Creating a ticket
 
@@ -36,4 +36,4 @@ A disabled project disappears from this list. Its address in the portal answers 
 
 Types: Bug, Question, Change, New feature. Priorities: Low, Normal, High.
 
-Next: [Tickets](tickets.md)
+Previous: [Roles](roles.md) · Next: [Tickets](tickets.md)

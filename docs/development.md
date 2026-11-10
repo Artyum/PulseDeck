@@ -54,9 +54,9 @@ Typical flow:
 ./stop_app.sh
 ```
 
-Compose file: [`deploy/docker-compose.dev.yml`](../deploy/docker-compose.dev.yml). By default the app is published through Traefik at `http://pulsedeck.lan/`. The dev env sets `UVICORN_HOST=0.0.0.0` so that name resolves to the machine’s LAN address, not to `127.0.0.1` on another device.
+Compose file: [`deploy/docker-compose.dev.yml`](../deploy/docker-compose.dev.yml). By default the app is published through Traefik at `http://pulsedeck.lan/`. The dev env sets `UVICORN_HOST=0.0.0.0` so that hostname reaches the machine’s LAN address.
 
-Do not start a second app or CSS watcher if one is already running. Do not edit `frontend/static/css/app.css`. It is generated from `frontend/static/css/tailwind.css`.
+`start_app.sh` is enough when the image is already built. Edit `frontend/static/css/tailwind.css`; `app.css` is generated from it.
 
 ## Without Docker
 
@@ -80,6 +80,6 @@ python -m app.workers.mail
 
 ## Health
 
-`GET /api/health` returns the process health check. Interactive API docs are disabled.
+`GET /api/health` returns the process health check.
 
-Next: [Architecture](architecture.md) · [Install](install.md)
+Previous: [Administration](admin.md) · Next: [Architecture](architecture.md)

@@ -1,6 +1,6 @@
 # Install
 
-One organization, one deployment. PulseDeck does not ship a database container. You bring PostgreSQL, then start the app from the published image.
+One organization, one deployment. Point `DATABASE_URL` at PostgreSQL, then start the published image.
 
 ## What you need
 
@@ -44,7 +44,7 @@ One organization, one deployment. PulseDeck does not ship a database container. 
 
 5. Open `APP_BASE_URL` and sign in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`. That account is created on the first run only.
 
-6. In **Administration → Settings → Mail**, set SMTP and send a test message. Leave SMTP empty if you do not want outbound mail yet. See [Configuration](configuration.md).
+6. In **Administration → Settings → Mail**, set SMTP and send a test message when you want outbound mail. See [Configuration](configuration.md).
 
 Uploads and logs are stored in `deploy/data/uploads` and `deploy/logs`.
 
@@ -68,10 +68,10 @@ To make the package public: GitHub → **Packages** → **pulsedeck** → **Pack
 
 ## First steps after sign-in
 
-1. Create a project and add at least one staff member. A project cannot be left without staff.
+1. Create a project with at least one staff member. Every project keeps at least one staff member.
 2. Create users. New accounts get an activation link by email, or you can create them already active.
 3. Add each person to the projects they should see, as **Client** or **Staff**.
 
 Administrators can open every project. They still need a staff membership on a project to be assigned tickets and to receive ticket email. See [Roles](roles.md).
 
-Next: [Configuration](configuration.md) · [Roles](roles.md)
+Previous: [README](../README.md) · Next: [Configuration](configuration.md)

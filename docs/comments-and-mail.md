@@ -6,19 +6,19 @@ The thread can be read oldest-first or newest-first.
 
 ## Who can reply
 
-Comments are allowed on a ticket that is not closed and not deleted, for:
+Comments are allowed on an open ticket for:
 
 - staff of the project and administrators
 - the reporter
 - a participant
 
-Other project members can read the ticket. They do not get a reply box unless they are added as participants.
+Other project members can read the ticket. Add them as participants to give them a reply box.
 
-A comment locks the ticket as soon as it is saved, so the reporter cannot edit that comment afterwards. Administrators can edit any comment. Only administrators can delete a comment. Title and description follow the same lock; see [Tickets](tickets.md).
+A comment locks the ticket as soon as it is saved. After that, administrators can edit comments, the title, and the description. Only administrators can delete a comment. See [Tickets](tickets.md).
 
 ## Internal notes
 
-Staff can mark a reply as an **internal note**. Clients never see that message, and it is omitted from their history. An internal note does not change the ticket status and does not count as the public reply that moves the ticket to **With reporter**.
+Staff can mark a reply as an **internal note**. Internal notes are visible to staff, including in history. Public replies can move the ticket to **With reporter**.
 
 ## What email is sent
 
@@ -32,7 +32,7 @@ Mail is sent only when SMTP is configured. Each message includes a link to the t
 | Status, type, or priority change | People involved in the ticket who allow that switch                                                             |
 | Assignment                       | The new assignee                                                                                                |
 
-The reporter, assignee, and participants count as involved. Profile switches are global, not per ticket. See [Profile](profile.md).
+The reporter, assignee, and participants count as involved. Profile switches apply to every ticket. See [Profile](profile.md).
 
 Every notification has two one-shot links:
 
@@ -45,4 +45,4 @@ Activation, password reset, and email-change messages use the same outbox. Their
 
 The `worker` service delivers the queue. If mail piles up, check that the worker is running and that a test message from **Settings → Mail** succeeds.
 
-Next: [Profile](profile.md) · [Administration](admin.md)
+Previous: [Tickets](tickets.md) · Next: [Profile](profile.md)
