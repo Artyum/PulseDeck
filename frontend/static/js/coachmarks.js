@@ -20,21 +20,12 @@
 
   function readSeen() {
     var key = storageKey();
-    if (!key) return {};
-    try {
-      var parsed = JSON.parse(localStorage.getItem(key) || "{}");
-      return parsed && typeof parsed === "object" ? parsed : {};
-    } catch (e) {
-      return {};
-    }
+    return key ? window.pulseDeckLocalPrefs.readJsonObject(key) : {};
   }
 
   function writeSeen(map) {
     var key = storageKey();
-    if (!key) return;
-    try {
-      localStorage.setItem(key, JSON.stringify(map));
-    } catch (e) {}
+    if (key) window.pulseDeckLocalPrefs.writeJsonObject(key, map);
   }
 
   function markSeen(id) {

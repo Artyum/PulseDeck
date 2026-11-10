@@ -52,7 +52,7 @@ def normalize_project_key(key: str) -> str:
 
 def default_feed_path(key: str) -> str:
     clean = normalize_project_key(key)
-    return f"/p/{clean}?view=all&mine=1"
+    return f"/p/{clean}?view=all"
 
 
 def build_feed_path(

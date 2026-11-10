@@ -53,8 +53,7 @@ class TestSessionHelpers:
             == "/p/DEMO?view=open&mine=1"
         )
         assert (
-            deps_auth.resolve_last_feed_url(_request({}), "DEMO")
-            == "/p/DEMO?view=all&mine=1"
+            deps_auth.resolve_last_feed_url(_request({}), "DEMO") == "/p/DEMO?view=all"
         )
 
     def test_last_feed_rejects_invalid(self):

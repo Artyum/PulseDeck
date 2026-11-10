@@ -326,7 +326,7 @@ def project_feed(
         filter_mine = mine_on
         filter_mine_paused = False
     else:
-        filter_mine = mine_on or paused_on or (not has_query)
+        filter_mine = mine_on or paused_on
         filter_mine_paused = False
     filter_sort = sort_filter or "created_at"
     page_size = ticket_service.normalize_feed_page_size(per_page)
@@ -381,9 +381,7 @@ def project_feed(
         filter_q=q_filter or "",
         filter_sort=filter_sort,
         project_tags=project_service.list_used_project_tags(db, project.id),
-        default_feed_url=build_feed_path(
-            project.key, view="all", mine=True, per_page=page_size
-        ),
+        default_feed_url=build_feed_path(project.key, view="all", per_page=page_size),
         is_project_staff=is_staff,
         is_project_member=is_member,
         can_create_ticket=is_member or user.is_admin,

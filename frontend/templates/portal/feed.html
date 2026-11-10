@@ -129,6 +129,7 @@
     </div>
     <aside class="issue-sidebar">
       <form id="feed-filters"
+            data-project-key="{{ project.key }}"
             method="get"
             action="{{ url_for('project_feed', key=project.key) }}"
             hx-get="{{ url_for('project_feed', key=project.key) }}"

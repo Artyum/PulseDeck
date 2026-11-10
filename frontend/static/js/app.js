@@ -1029,12 +1029,12 @@
     var clearBtn = ev.target.closest("[data-feed-filter-clear]");
     if (clearBtn) {
       ev.preventDefault();
+      var clearForm = clearBtn.closest("form");
       var clearUrl = clearBtn.getAttribute("data-feed-filter-clear-url");
       if (clearUrl) {
         window.location.assign(clearUrl);
         return;
       }
-      var clearForm = clearBtn.closest("form");
       if (!clearForm) return;
       clearForm.querySelectorAll("input[name='q'], input[name='tag']").forEach(function (el) {
         el.value = "";
@@ -1087,29 +1087,18 @@
     return decodeURIComponent(parts.pop().split(";").shift() || "") || null;
   }
 
+  var prefs = window.pulseDeckLocalPrefs;
+
   function currentPref(root, key, fallback) {
-    try {
-      return localStorage.getItem(key) || fallback;
-    } catch (e) {
-      return fallback;
-    }
+    return prefs.getItem(key, fallback);
   }
 
   function readGradientMap(key) {
-    if (!key) return {};
-    try {
-      var parsed = JSON.parse(localStorage.getItem(key) || "{}");
-      return parsed && typeof parsed === "object" ? parsed : {};
-    } catch (e) {
-      return {};
-    }
+    return prefs.readJsonObject(key);
   }
 
   function writeGradientMap(key, map) {
-    if (!key) return;
-    try {
-      localStorage.setItem(key, JSON.stringify(map));
-    } catch (e) {}
+    prefs.writeJsonObject(key, map);
   }
 
   function isGradientOn(map, themeId) {
@@ -1167,9 +1156,7 @@
     var attr = root.getAttribute("data-ui-attr");
     var value = btn.getAttribute("data-ui-value");
     if (!key || !attr || !value) return;
-    try {
-      localStorage.setItem(key, value);
-    } catch (e) {}
+    prefs.setItem(key, value);
     document.documentElement.setAttribute(attr, value);
     if (attr === "data-theme") applyThemeScheme(value, root);
     var gradientKey = root.getAttribute("data-ui-gradient-key");
@@ -1234,9 +1221,7 @@
       var themeAttr = root.getAttribute("data-ui-attr") || "data-theme";
       var fallback = root.getAttribute("data-ui-fallback") || "";
       if (currentPref(root, themeKey, fallback) !== themeId) {
-        try {
-          localStorage.setItem(themeKey, themeId);
-        } catch (e) {}
+        prefs.setItem(themeKey, themeId);
         document.documentElement.setAttribute(themeAttr, themeId);
       }
       if (themeAttr === "data-theme") applyThemeScheme(themeId, root);

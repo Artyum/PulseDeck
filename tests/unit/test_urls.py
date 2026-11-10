@@ -72,7 +72,7 @@ class TestSafeNextPath:
 
 class TestDefaultFeedPath:
     def test_default(self):
-        assert default_feed_path("demo") == "/p/DEMO?view=all&mine=1"
+        assert default_feed_path("demo") == "/p/DEMO?view=all"
 
 
 class TestBuildFeedPath:
