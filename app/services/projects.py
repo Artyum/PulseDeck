@@ -31,7 +31,6 @@ class ProjectSummary:
     project: Project
     member_count: int
     ticket_count: int
-    tags: tuple[Tag, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -348,13 +347,11 @@ def list_project_summaries(
             .group_by(Ticket.project_id)
         ).all()
     }
-    tags_by_project = list_project_tags_for_projects(db, ids)
     return [
         ProjectSummary(
             project=p,
             member_count=member_counts.get(p.id, 0),
             ticket_count=ticket_counts.get(p.id, 0),
-            tags=tuple(tags_by_project.get(p.id, [])),
         )
         for p in projects
     ]
@@ -482,24 +479,6 @@ def list_used_project_tags(db: Session, project_id: int) -> list[Tag]:
             .order_by(Tag.name)
         ).all()
     )
-
-
-def list_project_tags_for_projects(
-    db: Session, project_ids: list[int]
-) -> dict[int, list[Tag]]:
-    if not project_ids:
-        return {}
-    rows = db.scalars(
-        select(Tag)
-        .join(TicketTag, TicketTag.tag_id == Tag.id)
-        .where(Tag.project_id.in_(project_ids))
-        .distinct()
-        .order_by(Tag.name)
-    ).all()
-    result: dict[int, list[Tag]] = {pid: [] for pid in project_ids}
-    for tag in rows:
-        result[tag.project_id].append(tag)
-    return result
 
 
 def list_project_member_users(

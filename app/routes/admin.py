@@ -9,13 +9,13 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.deps.auth import AdminUser, DbSession, get_last_project_key
 from app.models.enums import ProjectMemberRole, UserRole
-from app.models.ticket import Tag
 from app.models.user import Project, User
 from app.rate_limit import limiter
 from app.routes import admin_settings
 from app.routes.context import render
 from app.services import auth as auth_service
 from app.services import projects as project_service
+from app.services import tickets as ticket_service
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, resolve_lang, t
 from app.utils.pagination import empty_page
 from app.utils.urls import admin_list_path, admin_project_path
@@ -278,6 +278,7 @@ def _project_detail_ctx(
 ) -> dict:
     return {
         "project": project,
+        "tags": ticket_service.list_project_tags(db, project.id),
         "members": project_service.list_project_member_users(
             db, project, sort=sort, sort_dir=sort_dir
         ),
@@ -445,18 +446,16 @@ def remove_member(
 
 @router.post("/projects/{key}/tags/{tag_id}/delete")
 def delete_project_tag(
+    request: Request,
     key: str,
     tag_id: int,
     user: AdminUser,
     db: DbSession,
 ):
-    project = _admin_project(db, key)
-    tag = db.get(Tag, tag_id)
-    if not tag or tag.project_id != project.id:
-        raise HTTPException(status_code=404)
-    db.delete(tag)
-    db.commit()
-    return RedirectResponse("/admin/projects", status_code=303)
+    lang = resolve_lang(request)
+    project = _admin_project(db, key, lang=lang)
+    ticket_service.delete_project_tag(db, project, tag_id, lang=lang)
+    return RedirectResponse(admin_project_path(project), status_code=303)
 
 
 _USER_OK_FLASH = {

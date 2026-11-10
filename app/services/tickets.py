@@ -1201,6 +1201,24 @@ def list_project_tags(db: Session, project_id: int) -> list[Tag]:
     )
 
 
+def delete_project_tag(
+    db: Session, project: Project, tag_id: int, *, lang: str | None = None
+) -> None:
+    lang = lang or DEFAULT_LANG
+    tag = db.get(Tag, tag_id)
+    if not tag or tag.project_id != project.id:
+        raise HTTPException(status_code=404, detail=t(lang, "messages.http.not_found"))
+    tag_name = tag.name
+    db.delete(tag)
+    db.commit()
+    logger.info(
+        "Deleted project tag id=%s name=%s project_id=%s",
+        tag_id,
+        tag_name,
+        project.id,
+    )
+
+
 def _get_or_create_tag(
     db: Session, project_id: int, name: str, *, lang: str | None = None
 ) -> Tag:

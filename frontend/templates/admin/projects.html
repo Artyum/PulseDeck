@@ -66,14 +66,6 @@
               </form>
             </div>
           </div>
-          <details class="admin-project-row-tags">
-            <summary>{{ t("ui.admin.projects.tags", count=item.tags|length) }}</summary>
-            <div id="project-{{ p.id }}-tags">
-              {% with project=p, tags=item.tags %}
-                {% include "admin/partials/project_tags.html" %}
-              {% endwith %}
-            </div>
-          </details>
         </article>
       {% else %}
         <p class="empty">{{ t("ui.admin.projects.empty_disabled" if show_disabled else "ui.admin.projects.empty") }}</p>

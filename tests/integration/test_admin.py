@@ -366,6 +366,9 @@ class TestAdminProjectTags:
             follow_redirects=False,
         )
         assert r.status_code == 303
+        assert (
+            r.headers.get("location") == f"/admin/projects/{project_with_members.key}"
+        )
         tag_id = tag.id
         db_session.expunge_all()
         assert db_session.get(Tag, tag_id) is None

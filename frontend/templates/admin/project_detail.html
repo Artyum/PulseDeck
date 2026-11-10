@@ -88,6 +88,31 @@
       </form>
     </div>
   </section>
+  <section class="admin-section">
+    <h2 class="issue-section-title"><span class="section-icon"
+      aria-hidden="true">{{ icon("tags") }}</span>{{ t("ui.admin.project.tags") }}</h2>
+    {% if tags %}
+      <div class="issue-tags">
+        {% for tag in tags %}
+          <form method="post"
+                action="{{ url_for('delete_project_tag', key=project.key, tag_id=tag.id) }}"
+                class="chip chip-outline inline-flex items-center gap-1"
+                data-confirm-title="{{ t('ui.confirm.delete_tag.title') }}"
+                data-confirm="{{ t('ui.confirm.delete_tag.message', name=tag.name) }}"
+                data-confirm-action="{{ t('ui.confirm.delete_tag.action') }}"
+                data-confirm-danger>
+            <a href="{{ url_for('project_feed', key=project.key) }}?tag={{ tag.name|urlencode }}">{{ tag.name }}</a>
+            <button type="submit"
+                    class="text-steel hover:text-ink"
+                    title="{{ t('ui.common.delete') }}"
+                    aria-label="{{ t('ui.admin.project.delete_tag_aria', name=tag.name) }}">×</button>
+          </form>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty empty-compact">{{ t("ui.admin.project.tags_empty") }}</p>
+    {% endif %}
+  </section>
   <section class="admin-section" data-coachmark="admin-project-members">
     <div class="issue-section-bar">
       <div class="issue-section-title-row">
