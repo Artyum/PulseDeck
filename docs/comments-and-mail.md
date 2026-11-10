@@ -22,7 +22,7 @@ Staff can mark a reply as an **internal note**. Clients never see that message, 
 
 ## What email is sent
 
-Mail is sent only when SMTP is configured. Each message links to the ticket. Opening the link requires a normal sign-in. There is no anonymous reply link.
+Mail is sent only when SMTP is configured. Each message includes a link to the ticket in the portal. You need to be signed in to read or reply.
 
 | Message                          | Who receives it                                                                                                 |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------- |

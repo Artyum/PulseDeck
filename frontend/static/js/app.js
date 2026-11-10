@@ -10,6 +10,7 @@
     }
   }
   window.__i18n = loadI18n();
+  var prefs = window.pulseDeckLocalPrefs;
 
   function i18n(key, fallback) {
     var dict = window.__i18n || {};
@@ -1086,8 +1087,6 @@
     if (parts.length < 2) return null;
     return decodeURIComponent(parts.pop().split(";").shift() || "") || null;
   }
-
-  var prefs = window.pulseDeckLocalPrefs;
 
   function currentPref(root, key, fallback) {
     return prefs.getItem(key, fallback);

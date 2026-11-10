@@ -36,7 +36,6 @@ Staff work in a portal. Clients see only their projects. There is no public sign
 - No multi-tenant SaaS — one deployment, one organization
 - No PostgreSQL container in the production compose file — bring your own database
 - No LDAP or OAuth — email and password, plus an optional email code
-- No anonymous reply from an email link — the message opens the ticket after sign-in
 
 ## First run
 
