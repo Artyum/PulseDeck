@@ -52,11 +52,16 @@ services:
   worker:
     image: pulsedeck:latest
     container_name: pulsedeck_dev_worker
+    environment:
+      WORKER_RELOAD: "true"
+      WORKER_RELOAD_DIRS: "/app/app"
+      WATCHFILES_FORCE_POLLING: "true"
     env_file:
       - .env.dev
     entrypoint: ["/bin/sh", "/app/deploy/entrypoint_worker.sh"]
     volumes:
       - ../app:/app/app
+      - ../deploy/entrypoint_worker.sh:/app/deploy/entrypoint_worker.sh:ro
       - ../mount/logs:/app/logs
     depends_on:
       migrate:
