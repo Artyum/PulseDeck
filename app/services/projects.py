@@ -5,7 +5,7 @@ from enum import Enum
 from typing import TypeVar
 
 from fastapi import HTTPException
-from sqlalchemy import func, or_, select
+from sqlalchemy import Select, func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.email_outbox import EmailOutbox
@@ -19,9 +19,11 @@ from app.models.enums import (
 from app.models.ticket import Comment, Tag, Ticket, TicketTag
 from app.models.user import Project, ProjectMember, User
 from app.utils.i18n import DEFAULT_LANG, t
+from app.utils.pagination import PageResult, page_window, paginate_list
 from app.validation import clean, clean_many
 
 _E = TypeVar("_E", bound=Enum)
+_USER_LIST_LOAD = (selectinload(User.memberships),)
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,7 +120,9 @@ def admin_project_stats(
     *,
     sort: str | None = None,
     sort_dir: str | None = None,
-) -> tuple[AdminProjectStats, list[AdminProjectUserActivity]] | None:
+    page: int | str | None = 1,
+    page_size: int | str | None = None,
+) -> tuple[AdminProjectStats, PageResult[AdminProjectUserActivity]] | None:
     if db.get(Project, project_id) is None:
         return None
 
@@ -191,11 +195,10 @@ def admin_project_stats(
         return name
 
     activity.sort(key=_activity_key, reverse=descending)
-    return stats, activity
+    return stats, paginate_list(activity, page, page_size)
 
 
-def list_users(
-    db: Session,
+def _users_stmt(
     *,
     role: UserRole | None = None,
     project_id: int | None = None,
@@ -204,9 +207,9 @@ def list_users(
     sort: str | None = None,
     sort_dir: str | None = None,
     lang: str | None = None,
-) -> list[User]:
+) -> Select:
     lang = lang or DEFAULT_LANG
-    stmt = select(User).options(selectinload(User.memberships))
+    stmt = select(User)
     status_key = (status or "").strip().lower()
     if status_key == "active":
         stmt = stmt.where(User.is_active.is_(True))
@@ -259,7 +262,65 @@ def list_users(
         first = User.first_name.desc() if descending else User.first_name.asc()
         last = User.last_name.desc() if descending else User.last_name.asc()
         stmt = stmt.order_by(first, last, User.id)
+    return stmt
+
+
+def list_users(
+    db: Session,
+    *,
+    role: UserRole | None = None,
+    project_id: int | None = None,
+    q: str | None = None,
+    status: str | None = None,
+    sort: str | None = None,
+    sort_dir: str | None = None,
+    lang: str | None = None,
+) -> list[User]:
+    stmt = _users_stmt(
+        role=role,
+        project_id=project_id,
+        q=q,
+        status=status,
+        sort=sort,
+        sort_dir=sort_dir,
+        lang=lang,
+    ).options(*_USER_LIST_LOAD)
     return list(db.scalars(stmt).all())
+
+
+def list_users_page(
+    db: Session,
+    *,
+    role: UserRole | None = None,
+    project_id: int | None = None,
+    q: str | None = None,
+    status: str | None = None,
+    sort: str | None = None,
+    sort_dir: str | None = None,
+    lang: str | None = None,
+    page: int | str | None = 1,
+    page_size: int | str | None = None,
+) -> PageResult[User]:
+    stmt = _users_stmt(
+        role=role,
+        project_id=project_id,
+        q=q,
+        status=status,
+        sort=sort,
+        sort_dir=sort_dir,
+        lang=lang,
+    )
+    total = (
+        db.scalar(
+            select(func.count()).select_from(stmt.with_only_columns(User.id).subquery())
+        )
+        or 0
+    )
+    page_n, offset, size = page_window(page, total, page_size)
+    items = list(
+        db.scalars(stmt.options(*_USER_LIST_LOAD).offset(offset).limit(size)).all()
+    )
+    return PageResult(items=items, total=total, page=page_n, page_size=size)
 
 
 def list_project_summaries(

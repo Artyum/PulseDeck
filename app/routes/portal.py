@@ -49,6 +49,7 @@ from app.services.uploads import (
     save_upload,
 )
 from app.utils.i18n import resolve_lang, t
+from app.utils.pagination import normalize_page_size
 from app.utils.parse import parse_positive_int
 from app.utils.urls import build_feed_path, ticket_label, ticket_path
 
@@ -329,7 +330,7 @@ def project_feed(
         filter_mine = mine_on or paused_on
         filter_mine_paused = False
     filter_sort = sort_filter or "created_at"
-    page_size = ticket_service.normalize_feed_page_size(per_page)
+    page_size = normalize_page_size(per_page)
     ticket_list = ticket_service.list_tickets(
         db,
         project.id,
@@ -370,7 +371,6 @@ def project_feed(
         projects=projects,
         ticket_list=ticket_list,
         feed_query=feed_query,
-        feed_page_sizes=ticket_service.FEED_PAGE_SIZES,
         current_view=current_view,
         filter_mine=filter_mine,
         filter_mine_paused=filter_mine_paused,

@@ -10,6 +10,7 @@ from app.models.enums import (
     TicketType,
 )
 from app.services import tickets as ticket_service
+from app.utils.pagination import normalize_page_size
 from tests.helpers import make_ticket, make_user, peer_participant_ticket
 
 
@@ -406,10 +407,10 @@ class TestListTicketsPagination:
         assert len(second.items) == 20
 
     def test_normalize_feed_page_size(self):
-        assert ticket_service.normalize_feed_page_size(None) == 25
-        assert ticket_service.normalize_feed_page_size(50) == 50
-        assert ticket_service.normalize_feed_page_size(99) == 25
-        assert ticket_service.normalize_feed_page_size("10") == 10
+        assert normalize_page_size(None) == 25
+        assert normalize_page_size(50) == 50
+        assert normalize_page_size(99) == 25
+        assert normalize_page_size("10") == 10
 
 
 class TestTicketMutations:

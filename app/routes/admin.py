@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Annotated
-from urllib.parse import urlencode
 
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -18,7 +17,8 @@ from app.routes.context import render
 from app.services import auth as auth_service
 from app.services import projects as project_service
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, resolve_lang, t
-from app.utils.urls import admin_project_path
+from app.utils.pagination import empty_page
+from app.utils.urls import admin_list_path, admin_project_path
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 router.include_router(admin_settings.router)
@@ -32,20 +32,6 @@ _USER_SORT_COLS = ("name", "email", "phone", "role", "status")
 _ACTIVITY_SORT_COLS = ("name", "role", "tickets", "last_login")
 _MEMBER_SORT_COLS = ("name", "role")
 _USER_STATUS_FILTERS = ("active", "blocked", "pending")
-
-
-def _admin_path(base: str, **params: str) -> str:
-    clean: dict[str, str] = {}
-    for key, value in params.items():
-        if not value:
-            continue
-        if key == "sort" and value == "name":
-            continue
-        if key == "order" and value == "asc":
-            continue
-        clean[key] = value
-    qs = urlencode(clean)
-    return f"{base}?{qs}" if qs else base
 
 
 def _parse_sort(
@@ -67,10 +53,10 @@ def _sort_links(
     *,
     sort: str,
     order: str,
-    **filters: str,
+    **filters: object,
 ) -> dict[str, str]:
     return {
-        col: _admin_path(
+        col: admin_list_path(
             base,
             sort=col,
             order=("desc" if col == sort and order == "asc" else "asc"),
@@ -162,11 +148,13 @@ def admin_home(
     project: Annotated[str, Query()] = "",
     sort: Annotated[str, Query()] = "",
     order: Annotated[str, Query()] = "",
+    page: Annotated[str, Query()] = "",
+    per_page: Annotated[str, Query()] = "",
 ):
     projects = project_service.list_projects(db, active_only=True)
     selected_project = None
     project_stats = None
-    project_activity = []
+    project_activity = empty_page(per_page)
     sort_col, sort_dir = _parse_sort(sort, order, allowed=_ACTIVITY_SORT_COLS)
     if projects:
         raw = (project or "").strip()
@@ -182,6 +170,8 @@ def admin_home(
             selected_project.id,
             sort=sort_col,
             sort_dir=sort_dir,
+            page=page,
+            page_size=per_page,
         )
         if result is not None:
             project_stats, project_activity = result
@@ -202,6 +192,7 @@ def admin_home(
             sort=sort_col,
             order=sort_dir,
             project=str(selected_project.id) if selected_project else "",
+            per_page=project_activity.page_size,
         ),
     )
 
@@ -512,6 +503,8 @@ def admin_users(
     status: str | None = None,
     sort: str | None = None,
     order: str | None = None,
+    page: str | None = None,
+    per_page: str | None = None,
 ):
     lang = resolve_lang(request)
     ok = request.query_params.get("ok") or ""
@@ -543,7 +536,7 @@ def admin_users(
 
     error = None
     try:
-        users = project_service.list_users(
+        users = project_service.list_users_page(
             db,
             role=role_filter,
             project_id=project_id,
@@ -552,9 +545,11 @@ def admin_users(
             sort=sort_col,
             sort_dir=sort_dir,
             lang=lang,
+            page=page,
+            page_size=per_page,
         )
     except ValueError as exc:
-        users = []
+        users = empty_page(per_page)
         error = str(exc)
 
     return render(
@@ -587,6 +582,7 @@ def admin_users(
             role=filter_role,
             project=filter_project,
             status=filter_status,
+            per_page=users.page_size,
         ),
         error=error,
         flash=t(lang, flash_key) if flash_key else None,

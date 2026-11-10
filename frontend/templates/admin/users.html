@@ -1,8 +1,20 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import project_checkboxes, modal_header, form_select_menu, admin_sort_th with context %}
+{% from "partials/pagination.html" import pagination with context %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.users.title") }}{% endblock title %}
 {% block content %}
+  {% macro users_link(page=1, per_page=none) -%}
+    {{ admin_list_path(url_for('admin_users'),
+      q=filter_q,
+      role=filter_role,
+      project=filter_project,
+      status=filter_status,
+      sort=sort,
+      order=sort_dir,
+      page=page,
+      per_page=per_page if per_page is not none else users.page_size) }}
+  {%- endmacro %}
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.users.title") }}</h1>
   </div>
@@ -27,6 +39,7 @@
           hx-trigger="submit, input changed delay:300ms from:input[name='q']">
       <input type="hidden" name="sort" value="{{ sort }}">
       <input type="hidden" name="order" value="{{ sort_dir }}">
+      <input type="hidden" name="per_page" value="{{ users.page_size }}">
       <div class="admin-form-field">
         <label class="label-tight" for="users-q">{{ t("ui.admin.users.filter_search") }}</label>
         <input id="users-q"
@@ -57,50 +70,53 @@
                 data-feed-filter-clear-url="{{ url_for('admin_users') }}">{{ t("ui.admin.users.filter_clear") }}</button>
       </div>
     </form>
-    <ul id="users-results" class="admin-list admin-users-table">
-      {% if users %}
-        <li class="admin-users-head">
-          {{ admin_sort_th('name', t('ui.admin.users.col_name') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
-          {{ admin_sort_th('email', t('ui.profile.field.email') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
-          {{ admin_sort_th('phone', t('ui.profile.field.phone') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
-          {{ admin_sort_th('role', t('ui.admin.users.filter_role') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
-          {{ admin_sort_th('status', t('ui.admin.users.col_status') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
-        </li>
-      {% endif %}
-      {% for u in users %}
-        <li class="admin-entity admin-users-row admin-entity-clickable">
-          <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
-             class="admin-entity-hit"
-             aria-label="{{ t('ui.admin.users.edit_aria', name=u.display_name) }}"></a>
-          <span class="admin-users-cell admin-users-name"
-                data-label="{{ t('ui.admin.users.col_name') }}"
-                title="{{ u.display_name }}">{{ u.display_name }}</span>
-          <span class="admin-users-cell admin-users-meta"
-                data-label="{{ t('ui.profile.field.email') }}"
-                title="{{ u.email }}">{{ u.email }}</span>
-          <span class="admin-users-cell admin-users-meta"
-                data-label="{{ t('ui.profile.field.phone') }}"
-                {% if u.phone %}title="{{ u.phone|format_phone }}"{% endif %}>{{ u.phone|format_phone }}</span>
-          <span class="admin-users-cell"
-                data-label="{{ t('ui.admin.users.filter_role') }}">
-            <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
-          </span>
-          <span class="admin-users-cell admin-users-status"
-                data-label="{{ t('ui.admin.users.col_status') }}">
-            <span class="admin-users-status-value">
-              {% if u.is_active %}
-                <span class="chip chip-active">{{ t("ui.common.active") }}</span>
-              {% else %}
-                <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
-              {% endif %}
-              {% if u.is_pending %}<span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>{% endif %}
+    <div id="users-results">
+      <ul class="admin-list admin-users-table">
+        {% if users.items %}
+          <li class="admin-users-head">
+            {{ admin_sort_th('name', t('ui.admin.users.col_name') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+            {{ admin_sort_th('email', t('ui.profile.field.email') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+            {{ admin_sort_th('phone', t('ui.profile.field.phone') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+            {{ admin_sort_th('role', t('ui.admin.users.filter_role') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+            {{ admin_sort_th('status', t('ui.admin.users.col_status') , sort_links, sort, sort_dir, 'ui.admin.users.sort_', '#users-results', filter_sync=true) }}
+          </li>
+        {% endif %}
+        {% for u in users.items %}
+          <li class="admin-entity admin-users-row admin-entity-clickable">
+            <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
+               class="admin-entity-hit"
+               aria-label="{{ t('ui.admin.users.edit_aria', name=u.display_name) }}"></a>
+            <span class="admin-users-cell admin-users-name"
+                  data-label="{{ t('ui.admin.users.col_name') }}"
+                  title="{{ u.display_name }}">{{ u.display_name }}</span>
+            <span class="admin-users-cell admin-users-meta"
+                  data-label="{{ t('ui.profile.field.email') }}"
+                  title="{{ u.email }}">{{ u.email }}</span>
+            <span class="admin-users-cell admin-users-meta"
+                  data-label="{{ t('ui.profile.field.phone') }}"
+                  {% if u.phone %}title="{{ u.phone|format_phone }}"{% endif %}>{{ u.phone|format_phone }}</span>
+            <span class="admin-users-cell"
+                  data-label="{{ t('ui.admin.users.filter_role') }}">
+              <span class="chip chip-role-{{ u.role.value|lower }}">{{ role_labels[u.role] }}</span>
             </span>
-          </span>
-        </li>
-      {% else %}
-        <li class="empty">{{ t("ui.admin.users.empty") }}</li>
-      {% endfor %}
-    </ul>
+            <span class="admin-users-cell admin-users-status"
+                  data-label="{{ t('ui.admin.users.col_status') }}">
+              <span class="admin-users-status-value">
+                {% if u.is_active %}
+                  <span class="chip chip-active">{{ t("ui.common.active") }}</span>
+                {% else %}
+                  <span class="chip chip-blocked">{{ t("ui.admin.users.blocked") }}</span>
+                {% endif %}
+                {% if u.is_pending %}<span class="chip chip-pending">{{ t("ui.admin.users.pending") }}</span>{% endif %}
+              </span>
+            </span>
+          </li>
+        {% else %}
+          <li class="empty">{{ t("ui.admin.users.empty") }}</li>
+        {% endfor %}
+      </ul>
+      {{ pagination(users, users_link, t('ui.admin.users.pagination.label'), '#users-results') }}
+    </div>
   </section>
   <dialog id="new-user" class="modal modal-fill">
     <form method="post"

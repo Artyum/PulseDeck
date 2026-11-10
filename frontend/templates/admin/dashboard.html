@@ -1,6 +1,7 @@
 {% extends "admin/base_admin.html" %}
 {% from "partials/icons.html" import icon %}
 {% from "partials/ticket_macros.html" import form_select_menu, admin_sort_th with context %}
+{% from "partials/pagination.html" import pagination with context %}
 {% macro count_card(label, value, href=none) -%}
   {% if href %}
     <a href="{{ href }}" class="admin-count-card">
@@ -23,6 +24,14 @@
 {%- endmacro %}
 {% block title %}{{ app_name }} - {{ t("ui.admin.dashboard.title") }}{% endblock title %}
 {% block content %}
+  {% macro activity_link(page=1, per_page=none) -%}
+    {{ admin_list_path(url_for('admin_home'),
+      project=selected_project.id if selected_project else '',
+      sort=activity_sort,
+      order=activity_sort_dir,
+      page=page,
+      per_page=per_page if per_page is not none else project_activity.page_size) }}
+  {%- endmacro %}
   <div class="admin-page-head">
     <h1 class="issue-title">{{ t("ui.admin.dashboard.title") }}</h1>
   </div>
@@ -72,6 +81,9 @@
               hx-trigger="submit">
           <input type="hidden" name="sort" value="{{ activity_sort }}">
           <input type="hidden" name="order" value="{{ activity_sort_dir }}">
+          <input type="hidden"
+                 name="per_page"
+                 value="{{ project_activity.page_size }}">
           <label class="label-tight" for="admin-project-select">{{ t("ui.admin.dashboard.select_project") }}</label>
           {{ form_select_menu('project', t('ui.admin.dashboard.select_project') , projects, selected_project.id if selected_project else none, value_attr='id', id='admin-project-select', submit_on_pick=true) }}
         </form>
@@ -94,7 +106,7 @@
             </div>
             <div class="admin-count-group">
               <p class="label-tight">{{ t("ui.admin.dashboard.user_activity") }}</p>
-              {% if project_activity %}
+              {% if project_activity.items %}
                 <table class="admin-mini-table admin-mini-table-activity">
                   <thead>
                     <tr>
@@ -105,7 +117,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {% for row in project_activity %}
+                    {% for row in project_activity.items %}
                       <tr>
                         <td data-label="{{ t('ui.admin.users.col_name') }}">
                           <span class="admin-kv-value">
@@ -127,6 +139,7 @@
                     {% endfor %}
                   </tbody>
                 </table>
+                {{ pagination(project_activity, activity_link, t('ui.admin.dashboard.pagination.label'), '#project-panel') }}
               {% else %}
                 <p class="admin-entity-meta">{{ t("ui.admin.project.members_empty") }}</p>
               {% endif %}

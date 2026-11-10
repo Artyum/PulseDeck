@@ -19,6 +19,13 @@ ui:
     active: "Active"
     sidebar_show: "Show panel"
     sidebar_hide: "Hide panel"
+    pagination:
+      first: "First page"
+      prev: "Previous"
+      next: "Next"
+      last: "Last page"
+      range: "{start}–{end} of {total}"
+      per_page_label: "Per page"
   errors:
     not_found:
       title: "Not found"
@@ -210,12 +217,6 @@ ui:
       filter_clear: "Clear"
       pagination:
         label: "Ticket list pagination"
-        first: "First page"
-        prev: "Previous"
-        next: "Next"
-        last: "Last page"
-        range: "{start}–{end} of {total}"
-        per_page_label: "Per page"
       modal_title: "Create ticket"
       field:
         title: "Title"
@@ -413,6 +414,8 @@ ui:
       by_status: "By status"
       by_type: "By type"
       empty_projects: "No projects."
+      pagination:
+        label: "User activity pagination"
     projects:
       title: "Projects"
       new: "New project"
@@ -449,6 +452,8 @@ ui:
       new: "New user"
       list: "List of users"
       empty: "No users."
+      pagination:
+        label: "User list pagination"
       blocked: "Blocked"
       pending: "Pending"
       resend: "Send activation link"

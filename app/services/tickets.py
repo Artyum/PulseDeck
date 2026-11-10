@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import math
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -36,14 +35,18 @@ from app.services.ticket_events import (
     record_ticket_event,
 )
 from app.utils.i18n import DEFAULT_LANG, t
-from app.utils.parse import parse_positive_int
-from app.utils.urls import FEED_PER_PAGE_DEFAULT
+from app.utils.pagination import (
+    PAGE_SIZE_DEFAULT as FEED_PAGE_SIZE_DEFAULT,
+)
+from app.utils.pagination import (
+    PageResult as TicketListResult,
+)
+from app.utils.pagination import (
+    page_window,
+)
 from app.validation import clean, clean_many
 
 logger = logging.getLogger("pulsedeck.app.tickets")
-
-FEED_PAGE_SIZE_DEFAULT = FEED_PER_PAGE_DEFAULT
-FEED_PAGE_SIZES = (10, FEED_PAGE_SIZE_DEFAULT, 50)
 
 _FEED_LIST_LOAD = (
     selectinload(Ticket.author),
@@ -87,42 +90,6 @@ _TICKET_LOAD = (
     .selectinload(ProjectMember.user),
     selectinload(Ticket.ticket_tags).selectinload(TicketTag.tag),
 )
-
-
-def normalize_feed_page_size(value: int | str | None) -> int:
-    try:
-        n = int(value)  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return FEED_PAGE_SIZE_DEFAULT
-    return n if n in FEED_PAGE_SIZES else FEED_PAGE_SIZE_DEFAULT
-
-
-@dataclass(frozen=True)
-class TicketListResult:
-    items: list[Ticket]
-    total: int
-    page: int
-    page_size: int
-
-    @property
-    def last_page(self) -> int:
-        return max(1, math.ceil(self.total / self.page_size))
-
-    @property
-    def has_prev(self) -> bool:
-        return self.page > 1
-
-    @property
-    def has_next(self) -> bool:
-        return self.page < self.last_page
-
-    @property
-    def range_start(self) -> int:
-        return 0 if self.total == 0 else (self.page - 1) * self.page_size + 1
-
-    @property
-    def range_end(self) -> int:
-        return min(self.page * self.page_size, self.total)
 
 
 @dataclass(frozen=True)
@@ -614,7 +581,6 @@ def list_tickets(
         view = None
     elif view and view != "all":
         status_filter = None
-    page_size = normalize_feed_page_size(page_size)
     base_stmt = _build_feed_query(
         db,
         project_id,
@@ -636,7 +602,7 @@ def list_tickets(
         )
         or 0
     )
-    page = min(parse_positive_int(page), max(1, math.ceil(total / page_size)))
+    page, offset, page_size = page_window(page, total, page_size)
     last_activity = _last_activity_at_subquery()
     stmt = (
         _apply_sort(
@@ -646,7 +612,7 @@ def list_tickets(
             ),
             sort,
         )
-        .offset((page - 1) * page_size)
+        .offset(offset)
         .limit(page_size)
     )
     items = cast(list[Ticket], list(db.scalars(stmt).all()))

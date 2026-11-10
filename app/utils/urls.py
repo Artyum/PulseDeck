@@ -3,11 +3,34 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from urllib.parse import urlencode
 
+from app.utils.pagination import PAGE_SIZE_DEFAULT
+
 if TYPE_CHECKING:
     from app.models.ticket import Attachment, Ticket
     from app.models.user import Project
 
-FEED_PER_PAGE_DEFAULT = 25
+FEED_PER_PAGE_DEFAULT = PAGE_SIZE_DEFAULT
+
+
+def admin_list_path(base: str, **params: object) -> str:
+    clean: dict[str, str] = {}
+    for key, value in params.items():
+        if value is None:
+            continue
+        text = str(value).strip()
+        if not text:
+            continue
+        if key == "sort" and text == "name":
+            continue
+        if key == "order" and text == "asc":
+            continue
+        if key == "page" and text == "1":
+            continue
+        if key == "per_page" and text == str(PAGE_SIZE_DEFAULT):
+            continue
+        clean[key] = text
+    qs = urlencode(clean)
+    return f"{base}?{qs}" if qs else base
 
 
 def project_path(project: Project) -> str:

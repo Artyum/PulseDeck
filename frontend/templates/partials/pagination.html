@@ -1,0 +1,46 @@
+{% macro page_btn(enabled, href, label, icon_name) -%}
+  {% if enabled %}
+    <a href="{{ href }}"
+       class="feed-pagination-btn"
+       aria-label="{{ label }}">
+  {% else %}
+    <span class="feed-pagination-btn is-disabled"
+          aria-disabled="true"
+          aria-label="{{ label }}">
+  {% endif %}
+    <span class="section-icon feed-pagination-icon" aria-hidden="true">{{ icon(icon_name) }}</span>
+    {% if enabled %}
+      </a>
+    {% else %}
+      </span>
+    {% endif %}
+{%- endmacro %}
+{% macro pagination(result, link, aria_label, hx_target, hx_select='') -%}
+  {% if result.total > page_sizes[0] %}
+    {% set select = hx_select or hx_target %}
+    <nav class="feed-pagination"
+         aria-label="{{ aria_label }}"
+         hx-boost="true"
+         hx-target="{{ hx_target }}"
+         hx-select="{{ select }}"
+         hx-swap="outerHTML show:top"
+         hx-push-url="true">
+      <div class="feed-pagination-sizes">
+        <span class="label-tight">{{ t("ui.common.pagination.per_page_label") }}</span>
+        <div class="feed-pagination-chips">
+          {% for size in page_sizes %}
+            <a href="{{ link(page=1, per_page=size) }}"
+               class="filter-chip {% if result.page_size == size %}filter-chip-active{% endif %}">{{ size }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="feed-pagination-nav">
+        {{ page_btn(result.has_prev, link(page=1), t('ui.common.pagination.first'), 'page_first') }}
+        {{ page_btn(result.has_prev, link(page=result.page - 1), t('ui.common.pagination.prev'), 'page_prev') }}
+        <span class="feed-pagination-range">{{ t("ui.common.pagination.range", start=result.range_start, end=result.range_end, total=result.total) }}</span>
+        {{ page_btn(result.has_next, link(page=result.page + 1), t('ui.common.pagination.next'), 'page_next') }}
+        {{ page_btn(result.has_next, link(page=result.last_page), t('ui.common.pagination.last'), 'page_last') }}
+      </div>
+    </nav>
+  {% endif %}
+{%- endmacro %}

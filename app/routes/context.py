@@ -30,6 +30,7 @@ from app.utils.i18n import (
 )
 from app.utils.icons import render_icon
 from app.utils.markdown import render_markdown_safe
+from app.utils.pagination import PAGE_SIZES
 from app.utils.phone import format_phone
 from app.utils.static_assets import static_url
 from app.utils.themes import (
@@ -60,6 +61,7 @@ from app.utils.timefmt import (
     normalize_timezone,
 )
 from app.utils.urls import (
+    admin_list_path,
     admin_project_path,
     attachment_path,
     build_feed_path,
@@ -114,6 +116,8 @@ _templates.env.globals["icon"] = render_icon
 _templates.env.globals["icon_svg"] = render_icon
 _templates.env.globals["field_attrs"] = field_attrs
 _templates.env.globals["build_feed_path"] = build_feed_path
+_templates.env.globals["admin_list_path"] = admin_list_path
+_templates.env.globals["page_sizes"] = PAGE_SIZES
 
 
 def _enum_label_map(lang: str, group: str, enum_cls: type[Enum]) -> dict:
