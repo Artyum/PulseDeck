@@ -18,7 +18,7 @@ The web process inserts a row into `email_outbox`. The worker sends it over SMTP
 
 Every table uses a bigint primary key. URLs use the project `key` and the ticket `number`.
 
-A project has a `key` of 1–5 characters `A–Z` / `0–9`. A ticket has `number`, allocated per project from 1. Routes are `/p/{key}` and `/t/{key}-{number}`. The key is stored uppercase. The live address is the current key.
+A project has a `key` of 1–5 characters `A–Z` / `0–9`. A ticket has `number`, allocated per project from 1. Routes are `/p/{key}` and `/t/{key}-{number}`, for example `/p/HELP` and `/t/HELP-12`. The key is stored uppercase. The live address is the current key. Changing the key or the project name does not redirect the old address.
 
 `key` and `number` are for routes and labels. Authorization uses the integer ids.
 
@@ -64,7 +64,7 @@ The extension whitelist is enforced, then the bytes. Images (including GIF) are 
 
 ## Interface language
 
-Copy lives in `app/locales/en.yml` and `app/locales/pl.yml` and is read with `t()`. English is the default. `users.ui_lang`, the date format, and the time zone are columns. Theme, gradient, density, and font size are `localStorage` in the browser.
+Interface copy lives in `app/locales/{code}.yml` and is read with `t()`. English (`en.yml`) is the source and the default. The other files were generated from that English with the help of AI, the same way the rest of the application was written. The languages are listed in [Profile](profile.md). `users.ui_lang`, the date format, and the time zone are columns. Theme, gradient, density, and font size stay in `localStorage` in the browser.
 
 Schema changes go through Alembic.
 

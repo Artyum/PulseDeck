@@ -6,13 +6,7 @@ The thread can be read oldest-first or newest-first.
 
 ## Who can reply
 
-Comments are allowed on an open ticket for:
-
-- staff of the project and administrators
-- the reporter
-- a participant
-
-Other project members can read the ticket. Add them as participants to give them a reply box.
+On an open ticket, the people who can reply are the project staff, administrators, the reporter, and anyone added as a participant. Other members of the project can still read the ticket. Add them as participants if they should have a reply box.
 
 A comment locks the ticket as soon as it is saved. After that, administrators can edit comments, the title, and the description. Only administrators can delete a comment. See [Tickets](tickets.md).
 
@@ -34,12 +28,7 @@ Mail is sent only when SMTP is configured. Each message includes a link to the t
 
 The reporter, assignee, and participants count as involved. Profile switches apply to every ticket. See [Profile](profile.md).
 
-Every notification has two one-shot links:
-
-- **Unsubscribe** turns off that kind of notification on the account (replies, new tickets, or status changes).
-- **Stop watching** removes you from that one ticket’s participants.
-
-Both links ask for confirmation and expire if they are invalid.
+Every notification carries two one-shot links. **Unsubscribe** turns off that kind of mail on the account (replies, new tickets, or status changes). **Stop watching** removes you from that one ticket. Both links ask you to confirm, and an invalid link simply expires.
 
 Activation, password reset, and email-change messages use the same outbox. Their lifetime is set under **Administration → Settings → Tickets** (days for activation and reset, minutes for an email change).
 

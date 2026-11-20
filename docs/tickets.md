@@ -1,6 +1,6 @@
 # Tickets
 
-A ticket is one request. The label in the interface is `{key}-{number}`, for example `HELP-12`, and the address is `/t/HELP-12`.
+A ticket is one request. In the list it shows with a short label, for example HELP-12.
 
 ## Status
 
@@ -21,9 +21,7 @@ Staff can reopen a closed ticket at any time. The reporter can reopen it for the
 
 ## People
 
-- **Assign me** and the assignee field are for staff. The assignee must be staff on this project.
-- **Participants** are people who watch the ticket. Staff add or remove them. **Stop watching** removes you.
-- Removing a watcher stops reply email for this ticket only. Account-wide notification switches are in the profile.
+**Assign me** and the assignee field are for staff. The assignee has to be staff on this project. **Participants** are the people watching the ticket. Staff add or remove them, and **Stop watching** takes you off the list. Taking someone off stops reply email for this ticket only. The switches that apply to every ticket live in the profile.
 
 ## Tags
 

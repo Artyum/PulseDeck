@@ -26,17 +26,29 @@ An unsubscribe link in a message turns the matching switch off.
 
 ## Appearance
 
-Language, date format, and time zone are saved on the account.
+Language, date format, and time zone are saved on the account. English is the default. You can also pick:
 
-- **Language** — English or Polish. English is the default.
-- **Date and time format** and **time zone** — how timestamps are shown to you.
+- Arabic
+- Czech
+- German
+- Spanish
+- French
+- Hungarian
+- Italian
+- Japanese
+- Korean
+- Dutch
+- Polish
+- Portuguese
+- Russian
+- Slovak
+- Turkish
+- Ukrainian
+- Chinese (simplified)
 
-Theme, depth, spacing, and font size are saved in this browser only.
+Those translations, like the rest of the application, were made with the help of AI, from the English text. The date format and the time zone only change how timestamps look for you.
 
-- **Color theme** — six pairs. Each pair is the same palette in a light and a dark scheme.
-- **Background gradient** — Depth (soft glow) or Flat.
-- **Spacing** — Tight, Balanced, or Airy.
-- **Font size** — Compact, Natural, or Large.
+Theme, depth, spacing, and font size stay in this browser. There are six colour pairs, and each pair is the same palette in a light and a dark scheme. Background can be Depth (a soft glow) or Flat. Spacing is Tight, Balanced, or Airy. Type size is Compact, Natural, or Large.
 
 | Light         | Dark            |
 | ------------- | --------------- |

@@ -1,8 +1,10 @@
 # PulseDeck
 
-A self-hosted support desk for one team and its clients. Projects, tickets, comments, email, and a bilingual UI — FastAPI and PostgreSQL.
+PulseDeck is a support desk you host yourself, for one team and the people that team helps. Staff work in a portal. Clients see only the projects they belong to. An administrator creates the accounts. One installation serves one organization.
 
-Staff work in a portal. Clients see the projects they belong to. An administrator creates accounts. One deployment serves one organization.
+Each ticket has a type, a status, a priority, tags, someone assigned to it, and people who follow it. Replies are written in Markdown. Staff can leave a note that clients never see. When mail is set up, people hear about new tickets and replies, and a message includes a link to turn that kind of mail off. Sign-in can ask for a short code by email. The interface is in eighteen languages. Each colour theme has a light and a dark version, and you can change spacing and type size. If the network drops, a small offline page is there.
+
+The application, and the translations of its interface, were made with the help of AI. English is the source text. The other languages were generated from it, so a phrase may still sound a little stiff.
 
 ## Guides
 
@@ -18,18 +20,6 @@ Staff work in a portal. Clients see the projects they belong to. An administrato
 | [Administration](docs/admin.md)                 | Users, projects, portal settings, statistics     |
 | [Development](docs/development.md)              | Local Docker workflow, tests, lint               |
 | [Architecture](docs/architecture.md)            | Processes, sessions, mail queue, uploads         |
-
-## What it does
-
-- Ticket portal with readable addresses: `/p/{key}`, `/t/{key}-{number}`
-- Types, statuses, priorities, tags, assignee, participants
-- Markdown comments and internal notes for staff
-- Email from an outbox worker (SMTP), with unsubscribe links
-- Optional email sign-in code (`MFA_ENABLED`)
-- English and Polish
-- Light and dark theme pairs, spacing, and font size
-- PWA basics (service worker, offline page)
-- Docker image on GHCR
 
 ## First run
 

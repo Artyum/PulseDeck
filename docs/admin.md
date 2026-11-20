@@ -8,10 +8,7 @@ Counts for projects, users, open tickets, messages, accounts waiting for activat
 
 ## Users
 
-Create a user with a name, email, account role (**User** or **Administrator**), and at least one project.
-
-- **Create and send activation link** — the person sets a password from the email.
-- **Create without activation** — the account can sign in once a password is set for it.
+Create a user with a name, email, account role (**User** or **Administrator**), and at least one project. You can send an activation link so the person sets their own password from the email, or create the account without that mail and set a password for them yourself.
 
 The list filters by role, project, status (active, blocked, pending activation), and text (name, email, phone).
 
@@ -19,17 +16,11 @@ From a user you can edit the account, resend the activation link, or block and u
 
 ## Projects
 
-A project has a **name** (unique, case-insensitive) and a **key** of 1–5 characters `A–Z` or `0–9` (unique). The key is part of every ticket address: `/p/HELP`, `/t/HELP-3`. After a rename, use the new URL.
+A project has a **name** (unique, case-insensitive) and a short **key** of 1–5 letters or digits (unique). The key is what people see on tickets, as in HELP-3. If you change the name or the key, old links stop working.
 
 Each new project needs an initial staff member.
 
-On the project page:
-
-- **Open in portal** jumps to the ticket list.
-- **Disable** hides it from day-to-day use. **Enable** brings it back. Disabled projects are a separate filter on the project list.
-- **Notify clients about team-created tickets** — off by default. Turn it on when clients should get email about tickets the team opens.
-- **Members** — add a person as **Client** or **Staff**, or change that role. A project always keeps at least one staff member.
-- **Tags** — tags already used in the project. Deleting one removes it from the project.
+**Open in portal** jumps to the ticket list. **Disable** hides the project from day-to-day use, and **Enable** brings it back. Disabled projects stay on the project list behind their own filter. **Notify clients about team-created tickets** is off by default. Turn it on when clients should get email about tickets the team opens. Under **Members** you add a person as **Client** or **Staff**, or change that role. A project always keeps at least one staff member. **Tags** lists the tags already used in the project. Deleting one removes it from the project.
 
 ## Settings
 
