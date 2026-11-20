@@ -38,8 +38,7 @@ class TestResolveLang:
         assert resolve_lang(explicit="pl") == "pl"
 
     def test_explicit_invalid_falls_back(self):
-        lang = resolve_lang(explicit="de")
-        assert lang in ("en", "pl")  # defaults to default
+        assert resolve_lang(explicit="xx") == "en"
 
     def test_cookie_preferred(self):
         request = cast(
@@ -62,7 +61,7 @@ class TestResolveLang:
     def test_normalize_lang_invalid(self):
         from app.utils.i18n import normalize_lang
 
-        assert normalize_lang("de") == "en"
+        assert normalize_lang("xx") == "en"
         assert normalize_lang(None) == "en"
 
     def test_default_lang(self):
