@@ -1,0 +1,909 @@
+meta:
+  name: 简体中文
+ui:
+  common:
+    close: 关闭
+    cancel: 取消
+    confirm: 确认
+    save: 保存
+    create: 创建
+    edit: 编辑
+    delete: 删除
+    add: 添加
+    send: 发送
+    empty_dash: —
+    none: 无
+    back_to_portal: 返回门户
+    back_home: 首页
+    active: 活跃
+    sidebar_show: 显示面板
+    sidebar_hide: 隐藏面板
+    pagination:
+      first: 第一页
+      prev: 上一页
+      next: 下一步
+      last: 最后一页
+      range: '{start}–{end} 或 {total}'
+      per_page_label: 每页
+  errors:
+    not_found:
+      title: 未找到
+      heading: 找不到页面
+      body: 该地址不存在或已被删除。
+  settings:
+    language: 语言
+  confirm:
+    title: 确认
+    disable_project:
+      title: 禁用项目？
+      message: 项目“{name}”({key}) 将被禁用并在门户中隐藏。
+      action: 禁用
+    delete_tag:
+      title: 删除标签？
+      message: 您确定要删除标签“{name}”吗？它将从所有门票中删除。
+      action: 删除
+    change_key:
+      title: 更改项目密钥
+      message: 更改密钥将破坏旧的 /p/... 和 /t/... 链接。继续？
+      action: 更改密钥
+    remove_member:
+      title: 删除会员？
+      message: 从项目“{project}”中删除 {name}？
+      action: 删除
+    block_user:
+      title: 封锁账户？
+      message: 帐户“{name}”将失去门户访问权限。消息和票证保留。
+      action: 块
+    delete_comment:
+      title: 删除评论？
+      message: 该评论及其附件将被永久删除。
+      action: 删除
+    delete_ticket:
+      title: 删除票吗？
+      message: 门票将被隐藏。管理员仍然可以查看历史记录。
+      action: 删除
+    stop_watching:
+      title: 停止观看？
+      message: 您将从该票证的参与者中删除，并停止接收有关该票证的电子邮件通知。
+      action: 停止观看
+    remove_participant:
+      title: 删除参与者？
+      message: 从该工单的参与者中删除 {name} 吗？他们将不再收到有关此事的电子邮件通知。
+      action: 删除
+  nav:
+    aria: 导航
+    project: 项目
+    select_project: 选择项目
+    user_menu: 用户菜单
+    menu: 菜单
+    admin: 行政管理
+    profile: 公司简介
+    logout: 退出
+  auth:
+    login:
+      title: 登录
+      email: 电子邮件
+      password: 密码
+      submit: 登录
+      forgot_label: 忘记密码
+      forgot_placeholder: 地址@company.com
+      forgot_submit: 发送密码修改链接
+      forgot_back: 返回登录
+      forgot_sent: 如果该帐户存在且未被阻止，我们已通过电子邮件发送了链接。
+      mfa_title: 电子邮件代码
+      mfa_hint: 输入我们发送到您的电子邮件的 6 位数代码。
+      mfa_submit: 确认码
+      mfa_trust: '{days} 天内请勿在此设备上索要验证码'
+      mfa_resend: 重新发送代码
+    activate:
+      title_pending: 账户激活
+      title_reset: 设置密码
+      subtitle_pending: 设置密码以激活您的帐户
+      subtitle_reset: 设置新密码
+      password: 密码
+      password_confirm: 重复密码
+      phone: 电话（可选）
+      phone_placeholder: +48 123 456 789
+      submit_pending: 激活账户
+      submit_reset: 保存密码
+    confirm_email:
+      title: 确认电子邮件
+      subtitle: 确认您的电子邮件地址更改
+      submit: 确认电子邮件
+    unsubscribe:
+      title: 退订
+      heading: 取消订阅
+      heading_invalid: 链接无效
+      heading_confirm: 确认关闭通知
+      confirm_body:
+        notify_reply: 回复通知将被关闭。您将不再收到任何票证的这些消息。您可以在个人资料设置中更改此设置。
+        notify_new_ticket: 新票通知将被关闭。您将不再收到任何票证的这些消息。您可以在个人资料设置中更改此设置。
+        notify_ticket_update: 有关状态、类型和优先级更改的通知将被关闭。您将不再收到任何票证的这些消息。您可以在个人资料设置中更改此设置。
+      confirm: 确认
+      done: “{type}”通知已在您的个人资料设置中关闭。
+      invalid: 此取消订阅链接无效或已过期。
+      manage: 通知首选项
+    unwatch:
+      title: 关闭观看
+      heading: 您不再观看这张门票
+      heading_invalid: 链接无效
+      heading_confirm: 确认关闭此票证的观看
+      confirm_body: 您将从票证 {label} 的参与者列表中删除。您将不再收到有关新消息的更新。
+      confirm: 确认
+      done: 您已从票证 {label} 的参与者中删除。
+      invalid: 该链接无效或已过期。
+  profile:
+    aside_label: 账户
+    nav_aria: 公司简介
+    nav:
+      profile: 公司简介
+      password: 更改密码
+      notifications: 通知
+      appearance: 外观
+    title:
+      profile: 公司简介
+      data: 账户数据
+      password: 更改密码
+      notifications: 通知
+      appearance: 外观
+    field:
+      first_name: 名字
+      last_name: 姓氏
+      email: 电子邮件
+      phone: 电话
+    email_change_hint: 更改电子邮件需要在新地址进行确认。您将继续使用当前地址登录，直到您确认为止。
+    email_pending: 待确认：{email}
+    save: 保存
+    password:
+      section: 密码
+      current: 当前密码
+      new: 新密码
+      confirm: 重复新密码
+      hint: 至少 {min} 个字符，包含一个小写字母、一个大写字母、一个数字和一个特殊字符。
+      save: 保存密码
+      set: 设置密码
+      send_activation: 发送激活链接
+      send_reset: 发送密码重置链接
+    settings:
+      language: 语言
+      datetime_title: 日期和时间
+      datetime_format: 日期和时间格式
+      timezone: 时区
+      theme_title: 色彩主题
+      gradient_toggle: 背景渐变
+      gradient_on: 深度
+      gradient_off: 平
+      density_title: 间距
+      font_title: 字体大小
+      notify_intro: 票证变更的电子邮件通知设置。
+      notify_new_ticket: 新门票
+      notify_new_ticket_hint: 当有人在您担任员工的项目中创建新票证时发送电子邮件。
+      notify_new_ticket_hint_client: 当团队在您的项目中创建票证时发送电子邮件。
+      notify_reply: 回复
+      notify_reply_hint: 通过电子邮件告知您参与的门票的新评论。
+      notify_ticket_update: 状态、类型和优先级
+      notify_ticket_update_hint: 当您参与的工单的状态、类型或优先级发生变化时发送电子邮件。
+    admin_all_projects_hint: 管理员可以查看所有项目。要处理票证并接收票证电子邮件，请将他们作为员工添加到项目中。
+  portal:
+    empty:
+      title: 没有项目
+      heading: 您还没有任何项目
+      body: 请管理员邀请您或将您添加到项目中。
+    feed:
+      tickets: 门票
+      create: 创建票证
+      empty: 此视图中没有门票。
+      deleted_badge: 已删除
+      view: 查看
+      filters: 过滤器
+      search: 搜索
+      search_placeholder: 标题、编号或报告人...
+      search_submit: 查找
+      search_clear: 清除搜索
+      type: 类型
+      status: 状态
+      priority: 优先级
+      tag: 标签
+      mine_only: 只有我的
+      sort: 排序
+      filter_any: 任意
+      sort_options:
+        updated: 上次活动
+        created: 创建日期
+        priority: 优先级
+      updated: 已更新
+      filter_submit: 过滤器
+      filter_clear: 清除
+      pagination:
+        label: 门票列表分页
+      modal_title: 创建票证
+      field:
+        title: 标题
+        type: 类型
+        priority: 优先级
+        description: 描述
+    view:
+      all: 全部
+      open: 打开
+      done: 关闭
+      staff:
+        needs_us: 处理
+        unassigned: 未分配
+      client:
+        waiting_on_me: 等待回复
+  ticket:
+    doc_title: 门票{label}
+    description: 描述
+    edit: 编辑
+    deleted_banner: 这张票已被隐藏。只有管​​理员才能看到。
+    attachments: 附件
+    edit_modal: 编辑票证
+    lightbox_aria: 附件预览
+    self_assign: 指派我
+    back_to_list: 返回列表
+    details: 详情
+    created: 已创建
+    closed: 关闭
+    type: 类型
+    status: 状态
+    priority: 优先级
+    change_type: 变更类型
+    change_status: 更改状态
+    change_priority: 更改优先级
+    reopen: 重新开放
+    people: 人
+    reporter: 记者
+    change_reporter: 改变记者
+    assignee: 受让人
+    change_assignee: 变更受托人
+    assignee_none: — 无 —
+    participants: 参加者
+    add_participant: 添加参与者
+    no_participants_to_add: 没有可添加的人
+    stop_watching: 停止观看
+    remove_participant: 从观看中删除
+    remove_participant_aria: 从观看中删除 {name}
+    tags: 标签
+    add_tag_placeholder: 添加标签...
+    activity: 活动
+    history: 历史
+    history_aria: 门票历史记录
+    history_empty: 还没有活动。
+    history_loading: 加载中...
+    history_unknown_user: 未知用户
+    event:
+      CREATED: 创建票证（{type}、{priority}）
+      COMMENT_ADDED: 已添加评论
+      COMMENT_ADDED_INTERNAL: 添加了内部注释
+      COMMENT_EDITED: 评论已编辑
+      COMMENT_EDITED_INTERNAL: 内部注释已编辑
+      COMMENT_DELETED: 评论已删除
+      COMMENT_DELETED_INTERNAL: 内部注释已删除
+      TITLE_CHANGED: 标题已更改
+      DESCRIPTION_CHANGED: 描述已更改
+      STATUS_CHANGED: 状态更改：{from} → {to}
+      PRIORITY_CHANGED: 优先级更改：{from} → {to}
+      TYPE_CHANGED: 类型更改：{from} → {to}
+      ASSIGNEE_CHANGED: 受让人变更：{from} → {to}
+      REPORTER_CHANGED: 记者更改：{from} → {to}
+      PARTICIPANT_ADDED: 参与者添加：{name}
+      PARTICIPANT_REMOVED: 已删除参与者：{name}
+      TAG_ADDED: 添加标签：{name}
+      TAG_REMOVED: 标签已删除：{name}
+      ATTACHMENT_ADDED: 添加附件：{name}
+      ATTACHMENT_REMOVED: 附件已删除：{name}
+      DELETED: 票证已删除
+    reply: 回复
+    thread_order_aria: 留言订购
+    thread_oldest: 最老的在前
+    thread_newest: 最新的优先
+    internal: 内部
+    edited_by: 编辑：{name}
+    edit_comment: 编辑评论
+    save_comment: 保存评论
+    cancel_edit: 取消编辑
+    delete_comment: 删除评论
+    delete: 删除票证
+    reply_placeholder: 写回复...
+    internal_note: 内部注释
+    closed_notice: 票已关闭。
+    reopen_hint_staff: 您可以通过单击状态重新打开它。
+    reopen_hint_client: 关闭后 {days} 天内可重新开放。
+    no_comment_permission: 您没有发表评论的权限。
+    attach:
+      add_files: 添加、粘贴或删除文件
+      file_one: 文件
+      file_many: 文件
+      hint_icon: 最大 {count} {file_word} · 最大 5 MB
+      button: 附加文件
+      remove: 删除 {name}
+  editor:
+    toolbar: 格式化
+    bold: 大胆
+    italic: 斜体
+    heading_1: 标题 1
+    heading_2: 标题 2
+    heading_3: 标题 3
+    link: 链接
+    link_apply: 添加链接
+    bullet_list: 项目符号列表
+    ordered_list: 编号列表
+    code_block: 代码块
+    blockquote: 报价
+    horizontal_rule: 分频器
+    dictate: 口授
+    dictate_stop: 停止听写
+    paste_markdown: 粘贴 Markdown
+  admin:
+    aside_label: 行政管理
+    nav_aria: 管理员
+    nav:
+      overview: 统计数据
+      projects: 项目
+      users: 用户
+      settings: 设置
+    settings:
+      title: 门户设置
+      nav_aria: 门户设置部分
+      save: 保存
+      nav:
+        tickets: 门票
+        uploads: 附件
+        mail: 邮件
+      tickets:
+        heading: 门票和链接政策
+        hint: 客户限制以及电子邮件链接的有效期限。
+        reopen_days: 重新打开窗口（天）
+        reopen_days_hint: 关闭客户后多少天可以重新打开工单。工作人员可以随时重新开放。 0 = 仅限员工。
+        description_max_len: 门票说明（字符）
+        description_max_len_hint: 票证描述的最大长度，包括降价。
+        reply_max_len: 回复（字符）
+        reply_max_len_hint: 评论或回复的最大长度，包括 Markdown。
+        auth_link_ttl_days: 激活/密码重置（天）
+        auth_link_ttl_days_hint: 电子邮件链接对于帐户激活或密码重置的有效期有多长。
+        email_confirm_ttl_minutes: 电子邮件确认（分钟）
+        email_confirm_ttl_minutes_hint: 更改个人资料中的电子邮件时，链接的有效期有多长。
+      uploads:
+        heading: 附件限制
+        hint: 每个限制适用于单个票证或评论。
+        max_files: 文件数量
+        max_files_hint: 一张票证或评论的最大附件数。
+        max_image_mb: 图像大小（MB）
+        max_image_formats: JPG、PNG、WebP、GIF
+        max_file_mb: 文件大小（MB）
+        max_file_formats: PDF、DOCX、XLSX、PPTX、TXT、CSV、LOG、JSON、XML、ZIP、RAR、7Z
+      mail:
+        smtp_heading: 邮件传输协议
+        smtp_server: SMTP服务器
+        smtp_port: 港口
+        smtp_security: 连接安全
+        smtp_security_none: 无
+        smtp_security_starttls: 启动TLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: 用户名
+        smtp_pass: 密码
+        smtp_pass_hint: 留空以保留当前密码。
+        email_from: 发件人地址
+        test_heading: 发送测试电子邮件
+        test_hint: 使用保存的 SMTP 设置。测试前保存更改。
+        test_email: 收件人
+        test_send: 发送测试
+    dashboard:
+      title: 统计数据
+      stat_projects: 项目
+      stat_users: 用户
+      stat_open_tickets: 开放门票
+      stat_messages: 留言
+      stat_pending_users: 待激活的帐户
+      stat_emails_sent: 已发送电子邮件
+      stat_members: 会员
+      stat_tickets: 门票
+      per_project: 项目统计
+      select_project: 项目
+      user_activity: 用户活动
+      col_tickets_created: 已创建门票
+      sort_name_asc: 按名称升序排序
+      sort_name_desc: 按名称降序排序
+      sort_role_asc: 按角色升序排序
+      sort_role_desc: 按角色降序排序
+      sort_tickets_asc: 按创建的票证升序排序
+      sort_tickets_desc: 按创建的工单降序排序
+      sort_last_login_asc: 按上次登录升序排序
+      sort_last_login_desc: 按上次登录降序排序
+      by_status: 按状态
+      by_type: 按类型
+      empty_projects: 没有项目。
+      pagination:
+        label: 用户活动分页
+    projects:
+      title: 项目
+      new: 新项目
+      name: 名称
+      key: 钥匙
+      key_title: 1–5 个字符 A–Z / 0–9
+      description: 描述
+      initial_staff: 项目人员
+      initial_staff_placeholder: 选择一个用户...
+      no_staff_candidates: 首先创建一个活跃用户。
+      list: 项目清单
+      filter_active: 活跃
+      filter_disabled: 残疾人
+      meta: '{members} 会员 · {tickets} 门票'
+      empty: 没有项目。创建上面的第一个。
+      empty_disabled: 没有禁用项目。
+      disabled: 残疾人
+      disable: 禁用
+      enable: 启用
+    project:
+      open_portal: 在门户中打开
+      settings: 设置
+      notifications: 通知
+      notify_clients_on_staff_ticket: 通知客户有关团队创建的票证
+      notify_clients_on_staff_ticket_note: 默认情况下，客户不会收到有关团队创建的新工单的通知。启用此选项以允许双向通信。
+      tags: 标签
+      tags_empty: 项目中没有标签。
+      delete_tag_aria: 删除标签 {name}
+      members: 会员
+      members_empty: 项目中没有成员。
+      add_user: 添加用户
+      member_role: 项目角色
+      col_action: 行动
+    users:
+      title: 用户
+      new: 新用户
+      list: 用户列表
+      empty: 没有用户。
+      pagination:
+        label: 用户列表分页
+      blocked: 被阻止
+      pending: 待定
+      resend: 发送激活链接
+      block: 块
+      unblock: 解锁
+      edit_aria: 编辑 {name}
+      filter_role: 角色
+      filter_project: 项目
+      filter_status: 状态
+      filter_status_active: 畅通无阻
+      filter_status_blocked: 被阻止
+      filter_status_pending: 待定
+      filter_status_all: 全部
+      filter_search: 搜索
+      filter_search_placeholder: 姓名、电子邮件或电话...
+      filter_all: 全部
+      filter_clear: 清除
+      col_name: 名称
+      col_status: 状态
+      sort_name_asc: 按名字升序排序
+      sort_name_desc: 按名字降序排序
+      sort_email_asc: 按电子邮件升序排序
+      sort_email_desc: 按电子邮件降序排序
+      sort_phone_asc: 按电话升序排序
+      sort_phone_desc: 按电话降序排序
+      sort_role_asc: 按角色升序排序
+      sort_role_desc: 按角色降序排序
+      sort_status_asc: 按状态升序排序
+      sort_status_desc: 按状态降序排序
+      col_last_login: 上次登录
+    user_new:
+      title: 新用户
+      role: 角色
+      submit: 创建并发送激活链接
+      submit_active: 无需激活即可创建
+    user_edit:
+      title: 编辑用户
+      heading: 编辑帐户
+    projects_fieldset: 项目
+    projects_empty: 没有项目。
+    projects_required: 至少需要一个项目
+  dev:
+    aria: 开发者模式
+    label: 开发者
+    copy: 复制
+    copied: 已复制
+    expand: 展开
+    collapse: 崩溃
+    url: 网址
+    template: 模板
+    partials: 偏音
+    api: 应用程序编程接口
+    js: JS
+    route: 路线格局
+    file: 处理程序
+  time:
+    today_at: 今天在 {time}
+    yesterday_at: 昨天在 {time}
+    am: 调幅
+    pm: 下午
+    month_abbr:
+      1: 扬
+      2: 二月
+      3: 三月
+      4: 四月
+      5: 五月
+      6: 君
+      7: 七月
+      8: 八月
+      9: 九月
+      10: 十月
+      11: 十一月
+      12: 十二月
+enums:
+  ticket_type:
+    BUG: 错误
+    QUESTION: 问题
+    CHANGE: 改变
+    TASK: 新功能
+  ticket_status:
+    NEW: 新
+    IN_PROGRESS: 进行中
+    WAITING_ON_CLIENT: 与记者
+    DONE: 完成
+  ticket_priority:
+    LOW: 低
+    NORMAL: 正常
+    HIGH: 高
+  user_role:
+    USER: 用户
+    ADMIN: 管理员
+  member_role:
+    CLIENT: 客户
+    STAFF: 员工
+themes:
+  morning-mist:
+    label: 晨雾
+    description: 珍珠蓝色，散发着柔和的光芒。
+  sandy-dawn:
+    label: 桑迪海岸
+    description: 温和的洗涤使温暖的沙子和蜂蜜般的琥珀融为一体。
+  green-meadow:
+    label: 绿色草地
+    description: 鼠尾草和苔藓散发着安静、亲密的光芒。
+  graphite-day:
+    label: 石墨日
+    description: 在安静的钢洗中冷却石墨。
+  berry-dawn:
+    label: 希瑟·布鲁姆
+    description: 柔和的石南花和浆果香气，明亮、温和。
+  rose-dawn:
+    label: 腮红光泽
+    description: 温暖的玫瑰色和粉状腮红，明亮、柔和。
+  deep-ocean:
+    label: 深海
+    description: 蓝宝石般的深度，散发着柔和的深渊光芒。
+  amber-night:
+    label: 琥珀余烬
+    description: 带有温暖香槟余烬的浓缩咖啡。
+  northern-spruce:
+    label: 北方云杉
+    description: 黑暗的森林散发着晶莹的薄荷光芒。
+  charcoal-dusk:
+    label: 木炭黄昏
+    description: 安静的黄昏中，木炭与冷钢银。
+  midnight-berry:
+    label: 丝绒浆果
+    description: 成熟的浆果呈现出温暖的紫色半光。
+  rose-night:
+    label: 深红面纱
+    description: 温暖、天鹅绒般的半光中呈现出深玫瑰色。
+  density:
+    tight:
+      label: 紧
+      description: 间距更小，屏幕上显示的内容更多。
+    balanced:
+      label: 平衡
+      description: 默认 PulseDeck 间距。
+    airy:
+      label: 艾里
+      description: 元素之间有更多的呼吸空间。
+  font_size:
+    compact:
+      label: 紧凑型
+      description: 屏幕上显示更多文字。
+    natural:
+      label: 自然
+      description: 默认 PulseDeck 大小。
+    large:
+      label: 大号
+      description: 阅读更舒适。
+flash:
+  auth:
+    invalid_credentials: 该电子邮件或密码看起来不正确。
+    account_blocked: 该帐户已被封锁。
+    account_not_activated: 该帐户尚未激活 - 请检查您的电子邮件或使用“忘记密码”。
+    profile_updated: 个人资料已保存。
+    email_confirm_sent: 我们已向您的新电子邮件发送了链接。继续使用您当前的地址登录，直到您确认为止。
+    password_changed: 新密码已保存。
+    notifications_updated: 已保存通知首选项。
+    current_password_invalid: 您当前的密码不匹配。
+    confirm_link_invalid: 该确认链接已过期或无效。
+    email_confirmed: 电子邮件已确认 — 使用新地址登录。
+    activation_link_invalid: 该激活链接已过期或无效。
+    mfa_invalid: 代码无效或过期。
+    mfa_expired: 验证会话已过期。再次登录。
+    mfa_delivery: 无法发送代码。请稍后重试。
+  admin:
+    user_created: 帐户已创建 - 我们已发送激活链接。
+    user_created_active: 帐户已创建并处于活动状态 — 在下面设置密码。
+    user_updated: 已保存用户详细信息。
+    password_link_sent: 我们已发送一封包含密码链接的电子邮件。
+    password_set: 密码已设置。
+    activation_resent: 激活链接再次发送。
+    user_blocked: 帐户被阻止 — 用户没有门户访问权限。
+    user_unblocked: 账户已解封。
+    notifications_updated: 已保存通知首选项。
+    settings_saved: 门户设置已保存。
+    settings_test_sent: 测试电子邮件已发送。
+    settings_test_failed: 无法发送测试电子邮件 - 检查 SMTP 和日志。
+    settings_smtp_missing: 未配置 SMTP — 首先设置并保存服务器。
+messages:
+  auth:
+    passwords_mismatch: 密码需要匹配。
+    cannot_demote_last_admin: 这是最后一位管理员 - 该角色无法删除。
+    cannot_block_self: 您无法阻止自己的帐户。
+    email_unchanged: 新电子邮件与当前电子邮件相同。
+    email_taken: 此电子邮件已被占用
+    user_exists_resend: 使用此电子邮件的帐户已存在 - 打开用户页面并重新发送激活链接
+  admin:
+    invalid_role: 选择一个有效的角色。
+    unknown_action: 那个动作是做不到的。
+    already_activated: 该帐户已处于活动状态。
+    settings_invalid_int: 输入有效号码。
+    settings_out_of_range: 该值超出了允许的范围。
+    settings_invalid_choice: 选择一个有效的选项。
+  projects:
+    name_exists: 已存在同名的项目。
+    key_exists: 该项目密钥已被占用。
+    staff_required: 至少选择一名用户来处理该项目。
+    staff_invalid: 所选用户缺失或处于非活动状态。
+    last_staff: 一个项目必须至少保留一名在职员工。
+    at_least_one: 至少选择一个项目。
+    invalid: 该项目无效。
+  tickets:
+    no_project_access: 您无权访问该项目。
+    no_comment: 您无法在此处添加评论。
+    no_edit_comment: 您无法编辑评论。
+    no_delete_comment: 您无法删除评论。
+    comment_not_found: 该评论已不再存在。
+    internal_staff_only: 内部注释仅供员工使用。
+    no_assign: 您无法分配此票证。
+    assignee_must_be_staff: 您只能分配员工或管理员。
+    no_change_reporter: 你无法改变记者。
+    reporter_must_be_member: 记者需要进入该项目。
+    no_status: 您无法更改状态。
+    cannot_reopen: 此票证无法重新打开。
+    no_edit: 您无法编辑此内容。
+    no_delete: 您无法删除此票证。
+    no_priority: 您无法更改优先级。
+    no_type: 您无法更改类型。
+    tags_staff_only: 只有员工可以管理标签。
+    no_add_participant: 您无法添加参与者。
+    no_stop_watching: 你无法停止观看这张票。
+    not_participant: 你没有看这张票。
+    user_must_be_member: 该人需要参与该项目。
+    participant_not_allowed: 您无法将此人添加为参与者。
+    invalid_status: 选择一个有效的状态。
+    invalid_type: 选择一个有效的类型。
+    invalid_priority: 选择一个有效的优先级。
+    select_user: 选择一个用户。
+  uploads:
+    empty: 该文件是空的。
+    too_large_image: 该图像太大（最大 {mb} MB）。
+    too_large_file: 该文件太大（最大 {mb} MB）。
+    invalid_image: 图像文件无效。
+    image_too_large: 那个图片太大了。
+    invalid_file: 不支持的文件格式。
+    formats: 使用 JPG、PNG、WEBP、GIF、PDF、DOCX、XLSX、PPTX、TXT、CSV、LOG、JSON、XML、ZIP、RAR 或 7Z。
+  validation:
+    missing_user: 选择一个用户
+    missing_field: 填写{label}
+    invalid_int: 输入有效号码。
+    invalid_form: 检查表格——它包含错误。
+    field:
+      user_id: 一个用户
+      content: 消息
+      title: 标题
+      name: 名字
+      key: 关键
+      description: 描述
+      email: 电子邮件地址
+      password: 一个密码
+      tag: 一个标签
+      required: 必填字段
+  fields:
+    required: '{field} 是必需的。'
+    invalid: '{field} 无效。'
+    too_short: '{field} 太短（最小 {min}）。'
+    too_long: '{field} 太长（最大 {max}）。'
+    pattern: '{field} 的格式无效。'
+    labels:
+      user:
+        email: 电子邮件
+        password: 密码
+        first_name: 名字
+        last_name: 姓氏
+        phone: 电话
+        role: 角色
+        ui_lang: 语言
+        datetime_format: 日期和时间格式
+        timezone: 时区
+      project:
+        name: 项目名称
+        key: 项目重点
+        description: 项目描述
+      ticket:
+        title: 标题
+        description: 描述
+        type: 类型
+        status: 状态
+        priority: 优先级
+      comment:
+        content: 评论
+      tag:
+        name: 标签
+      search:
+        q: 搜索
+      filter:
+        tag: 标签过滤器
+  http:
+    not_found: 我们找不到您要找的东西。
+    server_error: 出了点问题 - 请稍后重试。
+    login_required: 登录以继续。
+    admin_required: 您需要管理员访问权限。
+  csrf:
+    missing: 您的会话已过期。
+    invalid: 您的会话已过期。
+    refresh_hint: 刷新页面并重试。
+  password:
+    min_length: 至少使用 {min} 个字符。
+    too_long: 该密码太长了。
+    need_lower: 添加一个小写字母。
+    need_upper: 添加一个大写字母。
+    need_digit: 添加一个数字。
+    need_special: 添加特殊字符。
+  phone:
+    e164: 输入号码，例如 +48 123 456 789。
+  project_key:
+    invalid: 键：{min}–{max} 字符 A–Z / 0–9（无连字符）
+js:
+  errors:
+    forbidden: 您无权访问此内容。
+    not_found: 我们找不到您要找的东西。
+    validation: 检查表格——它包含错误
+    rate_limit: 尝试次数过多——请稍等。
+    server: 出了点问题——再试一次。
+    generic: 出了点问题——再试一次。
+    submit_failed: 无法提交表格。
+    network: 无法到达服务器。
+    comment_empty: 在评论里写点什么
+    content_too_long: 文本太长（最多 {max} 个字符）
+    paste_markdown: 无法粘贴 Markdown。
+  ticket:
+    stale_reply: 出现一条新消息 - 发送前请检查线程。
+  editor:
+    char_count: '{used} 个字符，共 {max} 个字符'
+    dictate_denied: 麦克风访问被拒绝
+    dictate_no_mic: 找不到麦克风
+    dictate_network: 听写功能不可用。检查您的连接。
+    paste_markdown_hint: 使用 Ctrl+V 粘贴 — Markdown 将被格式化。
+  validation:
+    missing_user: 选择一个用户
+    missing_field: 填写{label}
+    field:
+      user_id: 一个用户
+      content: 消息
+      title: 标题
+      name: 名字
+      key: 关键
+      first_name: 名字
+      last_name: 姓氏
+      description: 描述
+      email: 电子邮件地址
+      password: 一个密码
+      tag: 一个标签
+      project_ids: 一个项目
+      required: 必填字段
+  confirm:
+    title: 确认
+    message_default: 您确定要继续吗？
+    continue: 继续？
+    confirm_label: 确认
+    discard_ticket:
+      title: 丢票？
+      message: 表格已填写数据。取消并放弃更改？
+      action: 取消创建
+      cancel: 返回编辑
+  attach:
+    remove: 删除 {name}
+    too_many: 您最多可以附加 {count} 文件。
+  coachmarks:
+    next: 下一步
+    back: 返回
+    done: 完成
+    skip: 跳过
+    replay: 此页面的提示
+    step: '{current}/{total}'
+    tour_label: 温馨提示
+    nav-project:
+      body: 在您的项目之间快速切换。
+    nav-appearance:
+      body: 根据您的喜好调整主题和颜色。
+      cta: 改变外观
+    feed-create:
+      body: 有问题吗？在此创建新票证。
+    feed-needs-us:
+      body: 门票等待您团队的回复。
+    feed-mine:
+      body: 出示您作为记者、受托人或观察员的门票。
+    feed-filters:
+      body: 按类型、状态、优先级或标签缩小列表范围。
+    feed-filter-clear:
+      body: 重置过滤器并清除您选择的条件。
+    ticket-status:
+      body: 单击可更改票证状态。
+    ticket-done:
+      body: 问题解决后，将票证标记为已完成 - 如果需要，您可以稍后重新打开它。
+    ticket-assignee:
+      body: 指派一名团队成员来处理此票证。
+    ticket-thread-order:
+      body: 消息顺序：最旧的在前或最新的在前。
+    ticket-history:
+      body: 打开工单时间线 — 状态、分配和其他更改。
+    admin-projects-name:
+      body: 项目的显示名称。
+    admin-projects-key:
+      body: 构成票号一部分的唯一密钥。
+    admin-projects-description:
+      body: 项目列表中显示可选的简短摘要。
+    admin-project-members:
+      body: 将人员添加到项目中，以便他们可以查看并处理其票证。
+    compose-attach:
+      body: 通过从磁盘选择文件、将其拖至此处或从剪贴板粘贴 (Ctrl+V) 来添加文件。
+    compose-quote:
+      body: 选择消息中的文本，然后单击“引用”。
+    compose-dictate:
+      body: 单击麦克风来口述您的回复。某些浏览器或设备可能会阻止麦克风访问。
+    compose-internal:
+      body: 内部注释仅对员工可见，客户看不到它们。
+email:
+  mfa:
+    subject: 登录码
+    body: 您的登录验证码：
+    ttl: 该代码的有效期为 {minutes} 分钟。
+  confirm:
+    subject: 确认您的新电子邮件
+    body: 我们收到了更改您的电子邮件地址 {app} 的请求。使用下面的按钮确认新地址。该链接的有效期为 {minutes} 分钟。如果这不是您本人，您可以忽略此消息。
+    cta: 确认电子邮件
+  activate:
+    subject: 激活您的帐户
+    body: 已在 {app} 中为您创建了一个帐户。设置密码以激活并登录。该链接的有效期为 {days} 天。
+    cta: 设置密码
+  reset:
+    subject: 密码重置
+    body: 我们收到了重置您的 {app} 密码的请求。使用下面的按钮设置新密码。该链接的有效期为 {days} 天。如果这不是您本人，您可以忽略此消息。
+    cta: 设置新密码
+  smtp_test:
+    subject: 测试电子邮件
+    body: 这是来自 {app} 的测试消息。如果您可以在品牌布局中阅读此内容，则 SMTP 正在运行。
+  new_ticket:
+    subject: 新票
+    body: 创建了一个新票证：{ticket}。在 {app} 中打开它以查看详细信息并采取行动。
+    cta: 开放时间 {app}
+  new_comment:
+    subject: 票证上有新消息
+    body: 工单 {ticket} 中出现一条新消息。前往工单查看内容并回复。
+    cta: 开放时间 {app}
+  ticket_update:
+    subject: 票务更新
+    body: 票证 {ticket} 的状态、类型或优先级已更改。
+    new_value: 新值：{value}
+    cta: 开放时间 {app}
+  assignment:
+    subject: 票务分配
+    body: 您已被分配票证 {ticket}。在 {app} 中打开它以查看详细信息。
+    cta: 开放时间 {app}
+  common:
+    greeting: 嗨{name}，
+    link_hint: 如果该按钮不起作用，请复制此链接并将其粘贴到您的浏览器中：
+    unsubscribe: 如果您不想再收到这些通知，请单击此处
+    unwatch: 如果您不想再观看此票，请点击此处

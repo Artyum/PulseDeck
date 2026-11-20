@@ -1,0 +1,909 @@
+meta:
+  name: Українська
+ui:
+  common:
+    close: Закрити
+    cancel: Скасувати
+    confirm: Підтвердити
+    save: зберегти
+    create: Створити
+    edit: Редагувати
+    delete: Видалити
+    add: додати
+    send: Надіслати
+    empty_dash: —
+    none: Жодного
+    back_to_portal: Назад до порталу
+    back_home: додому
+    active: Активний
+    sidebar_show: Показати панель
+    sidebar_hide: Приховати панель
+    pagination:
+      first: Перша сторінка
+      prev: Попередній
+      next: Далі
+      last: Остання сторінка
+      range: '{start}–{end} з {total}'
+      per_page_label: На сторінку
+  errors:
+    not_found:
+      title: Не знайдено
+      heading: Сторінка не знайдена
+      body: Ця адреса не існує або була видалена.
+  settings:
+    language: Мова
+  confirm:
+    title: Підтвердження
+    disable_project:
+      title: Відключити проект?
+      message: Проект «{name}» ({key}) буде вимкнено та приховано на порталі.
+      action: Вимкнути
+    delete_tag:
+      title: Видалити тег?
+      message: Ви впевнені, що хочете видалити тег “{name}”? Його буде видалено з усіх квитків.
+      action: Видалити
+    change_key:
+      title: Змінити ключ проекту
+      message: Зміна ключа призведе до руйнування старих посилань /p/… і /t/…. Продовжити?
+      action: Змінити ключ
+    remove_member:
+      title: Видалити учасника?
+      message: Видалити {name} з проекту «{project}»?
+      action: видалити
+    block_user:
+      title: Заблокувати обліковий запис?
+      message: Обліковий запис «{name}» втратить доступ до порталу. Повідомлення та квитки залишаються.
+      action: Блокувати
+    delete_comment:
+      title: Видалити коментар?
+      message: Коментар буде остаточно видалено разом із вкладеннями.
+      action: Видалити
+    delete_ticket:
+      title: Видалити квиток?
+      message: Квиток буде приховано. Історія залишається доступною для адміністраторів.
+      action: Видалити
+    stop_watching:
+      title: Перестати дивитися?
+      message: Вас буде видалено зі списку учасників цього квитка, і ви перестанете отримувати сповіщення електронною поштою про це.
+      action: Припиніть дивитися
+    remove_participant:
+      title: Видалити учасника?
+      message: Видалити {name} з учасників цього квитка? Вони більше не отримуватимуть сповіщень електронною поштою про це.
+      action: видалити
+  nav:
+    aria: Навігація
+    project: Проект
+    select_project: Виберіть проект
+    user_menu: Меню користувача
+    menu: Меню
+    admin: Адміністрація
+    profile: Профіль
+    logout: Вийти
+  auth:
+    login:
+      title: Увійдіть
+      email: Електронна пошта
+      password: Пароль
+      submit: Увійдіть
+      forgot_label: забули пароль
+      forgot_placeholder: адреса@компанія.com
+      forgot_submit: Надіслати посилання для зміни пароля
+      forgot_back: Назад до входу
+      forgot_sent: Якщо обліковий запис існує і не заблокований, ми надіслали посилання електронною поштою.
+      mfa_title: Код електронної пошти
+      mfa_hint: Введіть 6-значний код, який ми надіслали на вашу електронну пошту.
+      mfa_submit: Підтвердьте код
+      mfa_trust: Не запитуйте код на цьому пристрої протягом {days} днів
+      mfa_resend: Повторно надіслати код
+    activate:
+      title_pending: Активація облікового запису
+      title_reset: Встановити пароль
+      subtitle_pending: Встановіть пароль для активації облікового запису
+      subtitle_reset: Встановіть новий пароль
+      password: Пароль
+      password_confirm: Повторіть пароль
+      phone: Телефон (необов'язково)
+      phone_placeholder: +48 123 456 789
+      submit_pending: Активувати акаунт
+      submit_reset: Зберегти пароль
+    confirm_email:
+      title: Підтвердити електронну адресу
+      subtitle: Підтвердьте зміну електронної адреси
+      submit: Підтвердити електронну адресу
+    unsubscribe:
+      title: Відписатися
+      heading: Скасував підписку
+      heading_invalid: Недійсне посилання
+      heading_confirm: Підтвердьте вимикання сповіщень
+      confirm_body:
+        notify_reply: Сповіщення про відповіді буде вимкнено. Ви більше не отримуватимете ці повідомлення для жодного квитка. Ви можете змінити це в налаштуваннях свого профілю.
+        notify_new_ticket: Сповіщення про нові квитки буде вимкнено. Ви більше не отримуватимете ці повідомлення для жодного квитка. Ви можете змінити це в налаштуваннях свого профілю.
+        notify_ticket_update: Сповіщення про зміни статусу, типу та пріоритету буде вимкнено. Ви більше не отримуватимете ці повідомлення для жодного квитка. Ви можете змінити це в налаштуваннях свого профілю.
+      confirm: Підтвердити
+      done: Сповіщення «{type}» вимкнено в налаштуваннях вашого профілю.
+      invalid: Це посилання для скасування підписки недійсне або термін його дії минув.
+      manage: Параметри сповіщень
+    unwatch:
+      title: Вимкніть перегляд
+      heading: Ви більше не дивитеся цей квиток
+      heading_invalid: Недійсне посилання
+      heading_confirm: Підтвердьте вимкнення перегляду цього квитка
+      confirm_body: Вас буде видалено зі списку учасників квитка {label}. Ви більше не отримуватимете оновлення про нові повідомлення.
+      confirm: Підтвердити
+      done: Вас вилучено з учасників квитка {label}.
+      invalid: Це посилання недійсне або термін його дії минув.
+  profile:
+    aside_label: Обліковий запис
+    nav_aria: Профіль
+    nav:
+      profile: Профіль
+      password: Змінити пароль
+      notifications: Сповіщення
+      appearance: Зовнішній вигляд
+    title:
+      profile: Профіль
+      data: Дані облікового запису
+      password: Змінити пароль
+      notifications: Сповіщення
+      appearance: Зовнішній вигляд
+    field:
+      first_name: ім'я
+      last_name: Прізвище
+      email: Електронна пошта
+      phone: Телефон
+    email_change_hint: Зміна вашої електронної пошти потребує підтвердження на новій адресі. Ви продовжуєте входити за допомогою поточної адреси, доки не підтвердите.
+    email_pending: 'Очікує підтвердження: {email}'
+    save: зберегти
+    password:
+      section: Пароль
+      current: Поточний пароль
+      new: Новий пароль
+      confirm: Повторіть новий пароль
+      hint: Принаймні {min} символів, включаючи малу літеру, велику літеру, цифру та спеціальний символ.
+      save: Зберегти пароль
+      set: Встановити пароль
+      send_activation: Надіслати посилання для активації
+      send_reset: Надіслати посилання для скидання пароля
+    settings:
+      language: Мова
+      datetime_title: Дата і час
+      datetime_format: Формат дати й часу
+      timezone: Часовий пояс
+      theme_title: Кольорова тема
+      gradient_toggle: Фоновий градієнт
+      gradient_on: Глибина
+      gradient_off: Плоский
+      density_title: Інтервал
+      font_title: Розмір шрифту
+      notify_intro: Налаштування сповіщень електронною поштою про зміни в квитках.
+      notify_new_ticket: Нові квитки
+      notify_new_ticket_hint: Надішліть електронний лист, коли хтось створить новий квиток у проекті, де ви є співробітником.
+      notify_new_ticket_hint_client: Надішліть електронний лист, коли команда створить заявку у вашому проекті.
+      notify_reply: Відповіді
+      notify_reply_hint: Надсилайте електронні листи про нові коментарі до квитків, у яких ви берете участь.
+      notify_ticket_update: Статус, тип і пріоритет
+      notify_ticket_update_hint: Надсилати електронний лист, коли змінюється статус, тип або пріоритет квитків, у яких ви берете участь.
+    admin_all_projects_hint: Адміністратори можуть переглядати всі проекти. Щоб обробляти квитки та отримувати електронні листи про квитки, додайте їх до проекту як співробітників.
+  portal:
+    empty:
+      title: Жодних проектів
+      heading: У вас ще немає проектів
+      body: Попросіть адміністратора запросити вас або додати до проекту.
+    feed:
+      tickets: Квитки
+      create: Створити квиток
+      empty: У цьому перегляді немає квитків.
+      deleted_badge: Видалено
+      view: Переглянути
+      filters: Фільтри
+      search: Пошук
+      search_placeholder: Назва, номер чи репортер…
+      search_submit: знайти
+      search_clear: Очистити пошук
+      type: Тип
+      status: Статус
+      priority: Пріоритет
+      tag: Тег
+      mine_only: Тільки моя
+      sort: Сортування
+      filter_any: Будь-який
+      sort_options:
+        updated: Остання діяльність
+        created: Дата створення
+        priority: Пріоритет
+      updated: Оновлено
+      filter_submit: фільтр
+      filter_clear: ясно
+      pagination:
+        label: Пагінація списку квитків
+      modal_title: Створити квиток
+      field:
+        title: Назва
+        type: Тип
+        priority: Пріоритет
+        description: опис
+    view:
+      all: все
+      open: відкритий
+      done: Закрито
+      staff:
+        needs_us: Обробляти
+        unassigned: Непризначений
+      client:
+        waiting_on_me: Очікування відповіді
+  ticket:
+    doc_title: Квиток {label}
+    description: опис
+    edit: Редагувати
+    deleted_banner: Цей квиток приховано. Його можуть бачити лише адміністратори.
+    attachments: Додатки
+    edit_modal: Редагувати квиток
+    lightbox_aria: Попередній перегляд вкладення
+    self_assign: Призначте мене
+    back_to_list: Повернутися до списку
+    details: Подробиці
+    created: Створено
+    closed: Закрито
+    type: Тип
+    status: Статус
+    priority: Пріоритет
+    change_type: Змінити тип
+    change_status: Змінити статус
+    change_priority: Змінити пріоритет
+    reopen: Знову відкрити
+    people: Люди
+    reporter: Репортер
+    change_reporter: Змінити репортера
+    assignee: Цесіонарій
+    change_assignee: Змінити правонаступника
+    assignee_none: — немає —
+    participants: Учасники
+    add_participant: Додати учасника
+    no_participants_to_add: Немає людей для додавання
+    stop_watching: Припиніть дивитися
+    remove_participant: Зняти з перегляду
+    remove_participant_aria: Вилучити {name} з перегляду
+    tags: Теги
+    add_tag_placeholder: Додати тег…
+    activity: діяльність
+    history: історія
+    history_aria: Історія квитків
+    history_empty: Подій ще немає.
+    history_loading: Завантаження…
+    history_unknown_user: Невідомий користувач
+    event:
+      CREATED: Квиток створено ({type}, {priority})
+      COMMENT_ADDED: Коментар додано
+      COMMENT_ADDED_INTERNAL: Внутрішня примітка додана
+      COMMENT_EDITED: Коментар відредаговано
+      COMMENT_EDITED_INTERNAL: Внутрішня примітка відредагована
+      COMMENT_DELETED: Коментар видалено
+      COMMENT_DELETED_INTERNAL: Внутрішня примітка видалена
+      TITLE_CHANGED: Назва змінена
+      DESCRIPTION_CHANGED: Опис змінено
+      STATUS_CHANGED: 'Статус змінено: {from} → {to}'
+      PRIORITY_CHANGED: 'Пріоритет змінено: {from} → {to}'
+      TYPE_CHANGED: 'Тип змінено: {from} → {to}'
+      ASSIGNEE_CHANGED: 'Правоодержувача змінено: {from} → {to}'
+      REPORTER_CHANGED: 'Репортера змінено: {from} → {to}'
+      PARTICIPANT_ADDED: 'Учасника додано: {name}'
+      PARTICIPANT_REMOVED: 'Вилучений учасник: {name}'
+      TAG_ADDED: 'Тег додано: {name}'
+      TAG_REMOVED: 'Видалено тег: {name}'
+      ATTACHMENT_ADDED: 'Доданий вкладений файл: {name}'
+      ATTACHMENT_REMOVED: 'Вкладення видалено: {name}'
+      DELETED: Квиток видалено
+    reply: Відповісти
+    thread_order_aria: Порядок повідомлень
+    thread_oldest: Спочатку найстаріші
+    thread_newest: Спочатку найновіші
+    internal: внутрішній
+    edited_by: 'відредаговано: {name}'
+    edit_comment: Редагувати коментар
+    save_comment: Зберегти коментар
+    cancel_edit: Скасувати редагування
+    delete_comment: Видалити коментар
+    delete: Видалити квиток
+    reply_placeholder: Напишіть відповідь…
+    internal_note: Внутрішня примітка
+    closed_notice: Квиток закрито.
+    reopen_hint_staff: Ви можете знову відкрити його, натиснувши статус.
+    reopen_hint_client: Повторне відкриття можливе протягом {days} днів після закриття.
+    no_comment_permission: Ви не маєте дозволу коментувати.
+    attach:
+      add_files: Додайте, вставте або скиньте файли
+      file_one: файл
+      file_many: файли
+      hint_icon: До {count} {file_word} · максимум 5 Мб
+      button: Прикріпити файл
+      remove: Видалити {name}
+  editor:
+    toolbar: Форматування
+    bold: жирний
+    italic: Курсив
+    heading_1: Заголовок 1
+    heading_2: Заголовок 2
+    heading_3: Заголовок 3
+    link: Посилання
+    link_apply: Додайте посилання
+    bullet_list: Маркований список
+    ordered_list: Нумерований список
+    code_block: Кодовий блок
+    blockquote: Цитата
+    horizontal_rule: Роздільник
+    dictate: Диктуйте
+    dictate_stop: Припинити диктування
+    paste_markdown: Вставте Markdown
+  admin:
+    aside_label: Адміністрація
+    nav_aria: адмін
+    nav:
+      overview: Статистика
+      projects: Проекти
+      users: Користувачі
+      settings: Налаштування
+    settings:
+      title: Налаштування порталу
+      nav_aria: Розділи налаштувань порталу
+      save: зберегти
+      nav:
+        tickets: Квитки
+        uploads: Додатки
+        mail: Пошта
+      tickets:
+        heading: Політика щодо квитків і посилань
+        hint: Обмеження для клієнтів і те, як довго залишаються дійсними посилання електронної пошти.
+        reopen_days: Знову відкрити вікно (днів)
+        reopen_days_hint: Через скільки днів після закриття клієнт може повторно відкрити квиток. Персонал завжди може знову відкритися. 0 = лише персонал.
+        description_max_len: Опис квитка (символи)
+        description_max_len_hint: Максимальна довжина опису квитка, включаючи уцінку.
+        reply_max_len: Відповідь (символи)
+        reply_max_len_hint: Максимальна довжина коментаря або відповіді, включаючи розмітку.
+        auth_link_ttl_days: Активація/скидання пароля (днів)
+        auth_link_ttl_days_hint: Як довго посилання електронної пошти залишається дійсним для активації облікового запису або скидання пароля.
+        email_confirm_ttl_minutes: Підтвердження електронною поштою (хвилин)
+        email_confirm_ttl_minutes_hint: Як довго посилання залишається дійсним при зміні електронної пошти в профілі.
+      uploads:
+        heading: Обмеження вкладень
+        hint: Кожне обмеження стосується окремого квитка або коментаря.
+        max_files: Кількість файлів
+        max_files_hint: Максимум додатків на один квиток або коментар.
+        max_image_mb: Розмір зображення (Мб)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: Розмір файлу (МБ)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTP сервер
+        smtp_port: Порт
+        smtp_security: Безпека підключення
+        smtp_security_none: Жодного
+        smtp_security_starttls: STARTTLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: Ім'я користувача
+        smtp_pass: Пароль
+        smtp_pass_hint: Залиште поле порожнім, щоб зберегти поточний пароль.
+        email_from: З адреси
+        test_heading: Надіслати тестовий електронний лист
+        test_hint: Використовує збережені налаштування SMTP. Збережіть зміни перед тестуванням.
+        test_email: одержувач
+        test_send: Надіслати тест
+    dashboard:
+      title: Статистика
+      stat_projects: Проекти
+      stat_users: Користувачі
+      stat_open_tickets: Відкрити квитки
+      stat_messages: Повідомлення
+      stat_pending_users: Облікові записи очікують на активацію
+      stat_emails_sent: Листи надіслано
+      stat_members: Члени
+      stat_tickets: Квитки
+      per_project: Статистика проекту
+      select_project: Проект
+      user_activity: Активність користувача
+      col_tickets_created: Створено квитки
+      sort_name_asc: Сортувати за назвою за зростанням
+      sort_name_desc: Сортувати за назвою за спаданням
+      sort_role_asc: Сортувати за зростанням ролі
+      sort_role_desc: Сортувати за ролями за спаданням
+      sort_tickets_asc: Сортувати за білетами, створеними за зростанням
+      sort_tickets_desc: Сортувати за квитками, створеними за спаданням
+      sort_last_login_asc: Сортувати за останнім входом за зростанням
+      sort_last_login_desc: Сортувати за останнім входом у спадання
+      by_status: За статусом
+      by_type: За типом
+      empty_projects: Жодних проектів.
+      pagination:
+        label: Пагінація активності користувача
+    projects:
+      title: Проекти
+      new: Новий проект
+      name: Ім'я
+      key: ключ
+      key_title: 1–5 символів A–Z / 0–9
+      description: опис
+      initial_staff: Персонал проекту
+      initial_staff_placeholder: Виберіть користувача…
+      no_staff_candidates: Спочатку створіть активного користувача.
+      list: Список проектів
+      filter_active: Активний
+      filter_disabled: Вимкнено
+      meta: '{members} учасників · {tickets} квитків'
+      empty: Жодних проектів. Створіть перший вище.
+      empty_disabled: Немає відключених проектів.
+      disabled: Вимкнено
+      disable: Вимкнути
+      enable: Увімкнути
+    project:
+      open_portal: Відкрити на порталі
+      settings: Налаштування
+      notifications: Сповіщення
+      notify_clients_on_staff_ticket: Повідомляйте клієнтів про тікети, створені командою
+      notify_clients_on_staff_ticket_note: За замовчуванням клієнти не отримують сповіщень про нові квитки, створені командою. Увімкніть цю опцію, щоб дозволити двосторонній зв’язок.
+      tags: Теги
+      tags_empty: У проекті немає тегів.
+      delete_tag_aria: Видалити тег {name}
+      members: Члени
+      members_empty: У проекті немає учасників.
+      add_user: Додати користувача
+      member_role: Роль проекту
+      col_action: Дія
+    users:
+      title: Користувачі
+      new: Новий користувач
+      list: Список користувачів
+      empty: Немає користувачів.
+      pagination:
+        label: Пагінація списку користувачів
+      blocked: заблоковано
+      pending: В очікуванні
+      resend: Надіслати посилання для активації
+      block: Блокувати
+      unblock: Розблокувати
+      edit_aria: Редагувати {name}
+      filter_role: Роль
+      filter_project: Проект
+      filter_status: Статус
+      filter_status_active: Розблоковано
+      filter_status_blocked: заблоковано
+      filter_status_pending: В очікуванні
+      filter_status_all: все
+      filter_search: Пошук
+      filter_search_placeholder: Ім'я, електронна пошта або телефон…
+      filter_all: все
+      filter_clear: ясно
+      col_name: Ім'я
+      col_status: Статус
+      sort_name_asc: Сортувати за зростанням імені
+      sort_name_desc: Сортувати за ім'ям за спаданням
+      sort_email_asc: Сортувати за зростанням електронної пошти
+      sort_email_desc: Сортувати за електронною адресою за спаданням
+      sort_phone_asc: Сортувати за номером телефону за зростанням
+      sort_phone_desc: Сортувати за телефоном у порядку спадання
+      sort_role_asc: Сортувати за зростанням ролі
+      sort_role_desc: Сортувати за ролями за спаданням
+      sort_status_asc: Сортувати за зростанням статусу
+      sort_status_desc: Сортувати за статусом за спаданням
+      col_last_login: Останній вхід
+    user_new:
+      title: Новий користувач
+      role: Роль
+      submit: Створіть і надішліть посилання для активації
+      submit_active: Створити без активації
+    user_edit:
+      title: Редагувати користувача
+      heading: Редагувати обліковий запис
+    projects_fieldset: Проекти
+    projects_empty: Жодних проектів.
+    projects_required: Потрібен хоча б один проект
+  dev:
+    aria: Режим розробника
+    label: Dev
+    copy: Копія
+    copied: Скопійовано
+    expand: Розгорнути
+    collapse: Згорнути
+    url: URL
+    template: Шаблон
+    partials: Часткові
+    api: API
+    js: JS
+    route: Шаблон маршруту
+    file: обробник
+  time:
+    today_at: Сьогодні о {time}
+    yesterday_at: Учора о {time}
+    am: AM
+    pm: PM
+    month_abbr:
+      1: січня
+      2: лютий
+      3: березень
+      4: квіт
+      5: травня
+      6: черв
+      7: лип
+      8: серп
+      9: вер
+      10: жовт
+      11: Листопад
+      12: груд
+enums:
+  ticket_type:
+    BUG: помилка
+    QUESTION: Питання
+    CHANGE: Зміна
+    TASK: Нова функція
+  ticket_status:
+    NEW: новий
+    IN_PROGRESS: В роботі
+    WAITING_ON_CLIENT: З репортером
+    DONE: Готово
+  ticket_priority:
+    LOW: Низький
+    NORMAL: нормальний
+    HIGH: Високий
+  user_role:
+    USER: Користувач
+    ADMIN: Адміністратор
+  member_role:
+    CLIENT: Клієнт
+    STAFF: Персонал
+themes:
+  morning-mist:
+    label: Ранковий туман
+    description: Перлинно-блакитний з м'яким відблиском.
+  sandy-dawn:
+    label: Піщаний берег
+    description: Теплий пісок і медова амбра в ніжному відтінку.
+  green-meadow:
+    label: Зелений Луг
+    description: Шавлія та мох у тихому, інтимному світінні.
+  graphite-day:
+    label: День графіту
+    description: Охолоджуйте графіт у тихій сталі.
+  berry-dawn:
+    label: Хізер Блум
+    description: М'який верес і ягоди в яскравому, ніжному відтінку.
+  rose-dawn:
+    label: Blush Glow
+    description: Тепла троянда та пудрові рум’яна в яскравому, ніжному відтінку.
+  deep-ocean:
+    label: Глибокий океан
+    description: Сапфірова глибина з м'яким безоднім сяйвом.
+  amber-night:
+    label: Бурштин Ембер
+    description: Еспресо з теплим вуглинком шампанського.
+  northern-spruce:
+    label: Ялина північна
+    description: Темний ліс із кристалічним м'ятним відблиском.
+  charcoal-dusk:
+    label: Вугільні сутінки
+    description: Вугілля з холодним сталевим сріблом у тихих сутінках.
+  midnight-berry:
+    label: Оксамитова ягода
+    description: Стигла ягода в теплому фіолетовому півсвітлі.
+  rose-night:
+    label: Багряна вуаль
+    description: Глибока троянда в теплому, оксамитовому півсвітлі.
+  density:
+    tight:
+      label: щільно
+      description: Менший інтервал, більше вмісту на екрані.
+    balanced:
+      label: Збалансований
+      description: Стандартний інтервал PulseDeck.
+    airy:
+      label: Повітряний
+      description: Більше простору для дихання між елементами.
+  font_size:
+    compact:
+      label: Компактний
+      description: Більше тексту на екрані.
+    natural:
+      label: Природні
+      description: Розмір PulseDeck за умовчанням.
+    large:
+      label: Великий
+      description: Більш комфортне читання.
+flash:
+  auth:
+    invalid_credentials: Ця адреса електронної пошти чи пароль виглядає неправильно.
+    account_blocked: Цей обліковий запис заблоковано.
+    account_not_activated: Цей обліковий запис ще не активний — перевірте свою електронну пошту або скористайтеся «Забули пароль».
+    profile_updated: Профіль збережено.
+    email_confirm_sent: Ми надіслали посилання на вашу нову електронну адресу. Продовжуйте входити за допомогою поточної адреси, доки не підтвердите.
+    password_changed: Новий пароль збережено.
+    notifications_updated: Параметри сповіщень збережено.
+    current_password_invalid: Ваш поточний пароль не збігається.
+    confirm_link_invalid: Це посилання для підтвердження застаріло або недійсне.
+    email_confirmed: Електронну адресу підтверджено — увійдіть із новою адресою.
+    activation_link_invalid: Термін дії цього посилання для активації закінчився або недійсне.
+    mfa_invalid: Недійсний або прострочений код.
+    mfa_expired: Сеанс перевірки закінчився. Увійдіть знову.
+    mfa_delivery: Не вдалося надіслати код. Спробуйте пізніше.
+  admin:
+    user_created: Обліковий запис створено — ми надіслали посилання для активації.
+    user_created_active: Обліковий запис створено та активний — встановіть пароль нижче.
+    user_updated: Інформація про користувача збережена.
+    password_link_sent: Ми надіслали електронний лист із посиланням на пароль.
+    password_set: Встановлено пароль.
+    activation_resent: Посилання для активації надіслано повторно.
+    user_blocked: Обліковий запис заблоковано — користувач не має доступу до порталу.
+    user_unblocked: Обліковий запис розблоковано.
+    notifications_updated: Параметри сповіщень збережено.
+    settings_saved: Налаштування порталу збережено.
+    settings_test_sent: Тестовий електронний лист надіслано.
+    settings_test_failed: Не вдалося надіслати тестовий електронний лист — перевірте SMTP і журнали.
+    settings_smtp_missing: SMTP не налаштовано — спочатку встановіть і збережіть сервер.
+messages:
+  auth:
+    passwords_mismatch: Паролі мають збігатися.
+    cannot_demote_last_admin: Це останній адміністратор — цю роль не можна видалити.
+    cannot_block_self: Ви не можете заблокувати свій обліковий запис.
+    email_unchanged: Нова електронна адреса така ж, як і поточна.
+    email_taken: Цей електронний лист уже зайнятий
+    user_exists_resend: Обліковий запис із цією електронною поштою вже існує — відкрийте сторінку користувача та повторно надішліть посилання для активації
+  admin:
+    invalid_role: Виберіть відповідну роль.
+    unknown_action: Цю дію неможливо виконати.
+    already_activated: Цей обліковий запис уже активний.
+    settings_invalid_int: Введіть дійсний номер.
+    settings_out_of_range: Це значення виходить за межі допустимого діапазону.
+    settings_invalid_choice: Виберіть правильний варіант.
+  projects:
+    name_exists: Проект із такою назвою вже існує.
+    key_exists: Цей ключ проекту вже зайнятий.
+    staff_required: Виберіть принаймні одного користувача для керування проектом.
+    staff_invalid: Вибраний користувач відсутній або неактивний.
+    last_staff: У проекті має бути принаймні один активний співробітник.
+    at_least_one: Виберіть хоча б один проект.
+    invalid: Цей проект недійсний.
+  tickets:
+    no_project_access: Ви не маєте доступу до цього проекту.
+    no_comment: Ви не можете додати коментар тут.
+    no_edit_comment: Ви не можете редагувати коментарі.
+    no_delete_comment: Ви не можете видалити коментарі.
+    comment_not_found: Цього коментаря тут більше немає.
+    internal_staff_only: Внутрішні примітки лише для персоналу.
+    no_assign: Ви не можете призначити цей квиток.
+    assignee_must_be_staff: Ви можете призначити лише персонал або адміністратора.
+    no_change_reporter: Репортера не зміниш.
+    reporter_must_be_member: Репортеру потрібен доступ до проекту.
+    no_status: Ви не можете змінити статус.
+    cannot_reopen: Цей квиток не можна повторно відкрити.
+    no_edit: Ви не можете редагувати це.
+    no_delete: Ви не можете видалити цей квиток.
+    no_priority: Ви не можете змінити пріоритет.
+    no_type: Ви не можете змінити тип.
+    tags_staff_only: Тільки персонал може керувати тегами.
+    no_add_participant: Ви не можете додавати учасників.
+    no_stop_watching: Ви не можете перестати дивитися цей квиток.
+    not_participant: Ви не дивитеся цей квиток.
+    user_must_be_member: Ця людина має бути в проекті.
+    participant_not_allowed: Ви не можете додати цю особу як учасника.
+    invalid_status: Виберіть дійсний статус.
+    invalid_type: Виберіть дійсний тип.
+    invalid_priority: Виберіть правильний пріоритет.
+    select_user: Виберіть користувача.
+  uploads:
+    empty: Цей файл порожній.
+    too_large_image: Це зображення завелике (макс. {mb} МБ).
+    too_large_file: Цей файл завеликий (макс. {mb} МБ).
+    invalid_image: Недійсний файл зображення.
+    image_too_large: Це зображення завелике.
+    invalid_file: Непідтримуваний формат файлу.
+    formats: Використовуйте JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR або 7Z.
+  validation:
+    missing_user: Виберіть користувача
+    missing_field: Заповніть {label}
+    invalid_int: Введіть дійсний номер.
+    invalid_form: Перевірте форму — вона містить помилки.
+    field:
+      user_id: користувач
+      content: повідомлення
+      title: назва
+      name: ім'я
+      key: ключ
+      description: опис
+      email: адресу електронної пошти
+      password: пароль
+      tag: тег
+      required: обов’язкове поле
+  fields:
+    required: '{field} потрібен.'
+    invalid: '{field} недійсний.'
+    too_short: '{field} занадто короткий (мін. {min}).'
+    too_long: '{field} задовгий (макс. {max}).'
+    pattern: '{field} має недійсний формат.'
+    labels:
+      user:
+        email: Електронна пошта
+        password: Пароль
+        first_name: ім'я
+        last_name: Прізвище
+        phone: Телефон
+        role: Роль
+        ui_lang: Мова
+        datetime_format: Формат дати й часу
+        timezone: Часовий пояс
+      project:
+        name: Назва проекту
+        key: Ключ проекту
+        description: Опис проекту
+      ticket:
+        title: Назва
+        description: опис
+        type: Тип
+        status: Статус
+        priority: Пріоритет
+      comment:
+        content: коментар
+      tag:
+        name: Тег
+      search:
+        q: Пошук
+      filter:
+        tag: Фільтр тегів
+  http:
+    not_found: Ми не змогли знайти те, що ви шукаєте.
+    server_error: Щось пішло не так — спробуйте ще раз за мить.
+    login_required: Увійдіть, щоб продовжити.
+    admin_required: Вам потрібен доступ адміністратора.
+  csrf:
+    missing: Ваш сеанс закінчився.
+    invalid: Ваш сеанс закінчився.
+    refresh_hint: Оновіть сторінку та повторіть спробу.
+  password:
+    min_length: Використовуйте принаймні {min} символів.
+    too_long: Цей пароль задовгий.
+    need_lower: Додайте малу літеру.
+    need_upper: Додайте велику літеру.
+    need_digit: Додайте цифру.
+    need_special: Додайте спеціальний символ.
+  phone:
+    e164: Введіть номер, наприклад +48 123 456 789.
+  project_key:
+    invalid: 'Ключ: {min}–{max} символів A–Z / 0–9 (без дефісів)'
+js:
+  errors:
+    forbidden: Ви не маєте до цього доступу.
+    not_found: Ми не змогли знайти те, що ви шукаєте.
+    validation: Перевірте форму — вона містить помилки
+    rate_limit: Забагато спроб — зачекайте.
+    server: Щось пішло не так — повторіть спробу.
+    generic: Щось пішло не так — повторіть спробу.
+    submit_failed: Не вдалося надіслати форму.
+    network: Не вдалося підключитися до сервера.
+    comment_empty: Напишіть щось у коментарі
+    content_too_long: Текст задовгий (макс. {max} символів)
+    paste_markdown: Не вдалося вставити Markdown.
+  ticket:
+    stale_reply: З'явилося нове повідомлення — перевірте тему перед відправкою.
+  editor:
+    char_count: '{used} з {max} символів'
+    dictate_denied: Доступ до мікрофона заборонено
+    dictate_no_mic: Мікрофон не знайдено
+    dictate_network: Диктування недоступне. Перевірте підключення.
+    paste_markdown_hint: Вставте за допомогою Ctrl+V — Markdown буде відформатовано.
+  validation:
+    missing_user: Виберіть користувача
+    missing_field: Заповніть {label}
+    field:
+      user_id: користувач
+      content: повідомлення
+      title: назва
+      name: ім'я
+      key: ключ
+      first_name: ім'я
+      last_name: прізвище
+      description: опис
+      email: адресу електронної пошти
+      password: пароль
+      tag: тег
+      project_ids: проект
+      required: обов’язкове поле
+  confirm:
+    title: Підтвердження
+    message_default: Ви впевнені, що бажаєте продовжити?
+    continue: Продовжити?
+    confirm_label: Підтвердити
+    discard_ticket:
+      title: Скасувати квиток?
+      message: У формі є заповнені дані. Скасувати та відхилити зміни?
+      action: Скасувати створення
+      cancel: Назад до редагування
+  attach:
+    remove: Видалити {name}
+    too_many: Ви можете вкласти до {count} файлів.
+  coachmarks:
+    next: Далі
+    back: Назад
+    done: Готово
+    skip: Пропустити
+    replay: Поради для цієї сторінки
+    step: '{current}/{total}'
+    tour_label: Поради
+    nav-project:
+      body: Швидко перемикайтеся між своїми проектами.
+    nav-appearance:
+      body: Налаштуйте тему та кольори відповідно до своїх уподобань.
+      cta: Змінити зовнішність
+    feed-create:
+      body: Є проблема? Створіть новий квиток тут.
+    feed-needs-us:
+      body: Квитки чекають на відповідь вашої команди.
+    feed-mine:
+      body: Покажіть квитки, де ви є репортером, дорученим або спостерігачем.
+    feed-filters:
+      body: Звужте список за типом, статусом, пріоритетом або тегом.
+    feed-filter-clear:
+      body: Скиньте фільтри та очистіть вибрані критерії.
+    ticket-status:
+      body: Натисніть, щоб змінити статус квитка.
+    ticket-done:
+      body: Позначте заявку як виконану, коли проблему буде вирішено — за потреби ви зможете відкрити її пізніше.
+    ticket-assignee:
+      body: Призначте члена команди для обробки цього квитка.
+    ticket-thread-order:
+      body: 'Порядок повідомлень: спочатку найстаріші або спочатку найновіші.'
+    ticket-history:
+      body: Відкрийте часову шкалу квитка — статус, призначення та інші зміни.
+    admin-projects-name:
+      body: Відображувана назва проекту.
+    admin-projects-key:
+      body: Унікальний ключ, який є частиною номера квитка.
+    admin-projects-description:
+      body: Необов’язковий короткий опис, показаний у списку проектів.
+    admin-project-members:
+      body: Додайте людей до проекту, щоб вони могли бачити та працювати над його заявками.
+    compose-attach:
+      body: Додайте файли, вибравши їх із диска, перетягнувши сюди або вставивши з буфера обміну (Ctrl+V).
+    compose-quote:
+      body: Виділіть текст у повідомленні та натисніть «Цитувати».
+    compose-dictate:
+      body: Натисніть мікрофон, щоб продиктувати свою відповідь. Деякі браузери або пристрої можуть блокувати доступ до мікрофона.
+    compose-internal:
+      body: Внутрішні нотатки бачать лише співробітники — клієнти їх не побачать.
+email:
+  mfa:
+    subject: Код входу
+    body: 'Ваш код підтвердження входу:'
+    ttl: Код дійсний {minutes} хв.
+  confirm:
+    subject: Підтвердьте свою нову електронну адресу
+    body: Ми отримали запит на зміну вашої електронної адреси в {app}. Підтвердьте нову адресу за допомогою кнопки нижче. Посилання дійсне {minutes} хв. Якщо це були не ви, ви можете проігнорувати це повідомлення.
+    cta: Підтвердити електронну адресу
+  activate:
+    subject: Активуйте свій акаунт
+    body: Для вас створено обліковий запис у {app}. Встановіть пароль, щоб активувати його та увійти. Посилання дійсне протягом {days} днів.
+    cta: Встановити пароль
+  reset:
+    subject: Скидання пароля
+    body: Ми отримали запит на скидання вашого пароля для {app}. Встановіть новий пароль за допомогою кнопки нижче. Посилання дійсне {days} днів. Якщо це були не ви, ви можете проігнорувати це повідомлення.
+    cta: Встановити новий пароль
+  smtp_test:
+    subject: Тестовий електронний лист
+    body: Це тестове повідомлення від {app}. Якщо ви можете прочитати це на фірмовому макеті, SMTP працює.
+  new_ticket:
+    subject: Новий квиток
+    body: 'Було створено новий квиток: {ticket}. Відкрийте його в {app}, щоб переглянути деталі та вжити заходів.'
+    cta: Відкрити в {app}
+  new_comment:
+    subject: Нове повідомлення на квитку
+    body: У білеті {ticket} з’явилося нове повідомлення. Перейдіть до квитка, щоб переглянути вміст і відповісти.
+    cta: Відкрити в {app}
+  ticket_update:
+    subject: Оновлення квитка
+    body: Статус, тип або пріоритет квитка {ticket} змінено.
+    new_value: 'Нове значення: {value}'
+    cta: Відкрити в {app}
+  assignment:
+    subject: Призначення квитка
+    body: Вам призначено квиток {ticket}. Відкрийте його в {app}, щоб переглянути деталі.
+    cta: Відкрити в {app}
+  common:
+    greeting: Привіт {name},
+    link_hint: 'Якщо кнопка не працює, скопіюйте та вставте це посилання у свій браузер:'
+    unsubscribe: Натисніть тут, якщо ви більше не хочете отримувати ці сповіщення
+    unwatch: Натисніть тут, якщо ви більше не хочете дивитися цей квиток

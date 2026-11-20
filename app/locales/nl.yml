@@ -1,0 +1,909 @@
+meta:
+  name: Nederlands
+ui:
+  common:
+    close: Sluiten
+    cancel: Annuleer
+    confirm: Bevestig
+    save: Opslaan
+    create: Creëer
+    edit: Bewerken
+    delete: Verwijderen
+    add: Toevoegen
+    send: Verzenden
+    empty_dash: —
+    none: Geen
+    back_to_portal: Terug naar portaal
+    back_home: Thuis
+    active: Actief
+    sidebar_show: Paneel tonen
+    sidebar_hide: Paneel verbergen
+    pagination:
+      first: Eerste pagina
+      prev: Vorige
+      next: Volgende
+      last: Laatste pagina
+      range: '{start}–{end} van {total}'
+      per_page_label: Per pagina
+  errors:
+    not_found:
+      title: Niet gevonden
+      heading: Pagina niet gevonden
+      body: Dit adres bestaat niet of is verwijderd.
+  settings:
+    language: Taal
+  confirm:
+    title: Bevestiging
+    disable_project:
+      title: Project uitschakelen?
+      message: Project “{name}” ({key}) wordt uitgeschakeld en verborgen voor de portal.
+      action: Uitschakelen
+    delete_tag:
+      title: Label verwijderen?
+      message: Weet u zeker dat u de tag “{name}” wilt verwijderen? Het wordt van alle tickets verwijderd.
+      action: Verwijderen
+    change_key:
+      title: Projectsleutel wijzigen
+      message: Als u de sleutel wijzigt, worden de oude /p/… en /t/… koppelingen verbroken. Doorgaan?
+      action: Sleutel wijzigen
+    remove_member:
+      title: Lid verwijderen?
+      message: '{name} verwijderen uit project “{project}”?'
+      action: Verwijderen
+    block_user:
+      title: Account blokkeren?
+      message: Account “{name}” verliest toegang tot de portal. Berichten en tickets blijven.
+      action: Blok
+    delete_comment:
+      title: Reactie verwijderen?
+      message: De reactie wordt samen met de bijlagen definitief verwijderd.
+      action: Verwijderen
+    delete_ticket:
+      title: Ticket verwijderen?
+      message: Het ticket wordt verborgen. De geschiedenis blijft beschikbaar voor beheerders.
+      action: Verwijderen
+    stop_watching:
+      title: Stoppen met kijken?
+      message: Je wordt verwijderd uit de deelnemers aan dit ticket en ontvangt geen e-mailmeldingen meer hierover.
+      action: Stop met kijken
+    remove_participant:
+      title: Deelnemer verwijderen?
+      message: '{name} verwijderen van de deelnemers aan dit ticket? Zij ontvangen hierover geen e-mailmeldingen meer.'
+      action: Verwijderen
+  nav:
+    aria: Navigatie
+    project: Project
+    select_project: Selecteer project
+    user_menu: Gebruikersmenu
+    menu: Menukaart
+    admin: Administratie
+    profile: Profiel
+    logout: Uitloggen
+  auth:
+    login:
+      title: Log in
+      email: E-mail
+      password: Wachtwoord
+      submit: Log in
+      forgot_label: Wachtwoord vergeten
+      forgot_placeholder: adres@bedrijf.com
+      forgot_submit: Wachtwoordwijzigingslink verzenden
+      forgot_back: Terug naar inloggen
+      forgot_sent: Als het account bestaat en niet is geblokkeerd, hebben we een link per e-mail verzonden.
+      mfa_title: E-mailcode
+      mfa_hint: Voer de 6-cijferige code in die we naar uw e-mail hebben gestuurd.
+      mfa_submit: Bevestig code
+      mfa_trust: Vraag gedurende {days} dagen geen code op dit apparaat
+      mfa_resend: Code opnieuw verzenden
+    activate:
+      title_pending: Accountactivering
+      title_reset: Wachtwoord instellen
+      subtitle_pending: Stel een wachtwoord in om uw account te activeren
+      subtitle_reset: Stel een nieuw wachtwoord in
+      password: Wachtwoord
+      password_confirm: Herhaal wachtwoord
+      phone: Telefoon (optioneel)
+      phone_placeholder: +48 123 456 789
+      submit_pending: Activeer account
+      submit_reset: Wachtwoord opslaan
+    confirm_email:
+      title: Bevestig e-mail
+      subtitle: Bevestig uw e-mailadreswijziging
+      submit: Bevestig e-mail
+    unsubscribe:
+      title: Afmelden
+      heading: Uitgeschreven
+      heading_invalid: Ongeldige link
+      heading_confirm: Bevestig het uitschakelen van meldingen
+      confirm_body:
+        notify_reply: Antwoordmeldingen worden uitgeschakeld. Voor geen enkel ticket ontvang je deze berichten meer. Je kunt dit wijzigen in je profielinstellingen.
+        notify_new_ticket: Nieuwe ticketmeldingen worden uitgeschakeld. Voor geen enkel ticket ontvang je deze berichten meer. Je kunt dit wijzigen in je profielinstellingen.
+        notify_ticket_update: Meldingen over status-, type- en prioriteitswijzigingen worden uitgeschakeld. Voor geen enkel ticket ontvang je deze berichten meer. Je kunt dit wijzigen in je profielinstellingen.
+      confirm: Bevestig
+      done: “{type}”-meldingen zijn uitgeschakeld in je profielinstellingen.
+      invalid: Deze afmeldlink is ongeldig of verlopen.
+      manage: Meldingsvoorkeuren
+    unwatch:
+      title: Schakel het kijken uit
+      heading: Je kijkt niet langer naar dit ticket
+      heading_invalid: Ongeldige link
+      heading_confirm: Bevestig dat u het kijken naar dit ticket wilt uitschakelen
+      confirm_body: Je wordt verwijderd van de deelnemerslijst van ticket {label}. Je ontvangt geen updates meer over nieuwe berichten.
+      confirm: Bevestig
+      done: U bent verwijderd uit de deelnemers van ticket {label}.
+      invalid: Deze link is ongeldig of verlopen.
+  profile:
+    aside_label: Rekening
+    nav_aria: Profiel
+    nav:
+      profile: Profiel
+      password: Wachtwoord wijzigen
+      notifications: Meldingen
+      appearance: Uiterlijk
+    title:
+      profile: Profiel
+      data: Accountgegevens
+      password: Wachtwoord wijzigen
+      notifications: Meldingen
+      appearance: Uiterlijk
+    field:
+      first_name: Voornaam
+      last_name: Achternaam
+      email: E-mail
+      phone: Telefoon
+    email_change_hint: Voor het wijzigen van uw e-mailadres is bevestiging op het nieuwe adres vereist. U blijft inloggen met uw huidige adres totdat u bevestigt.
+    email_pending: 'In afwachting van bevestiging: {email}'
+    save: Opslaan
+    password:
+      section: Wachtwoord
+      current: Huidig wachtwoord
+      new: Nieuw wachtwoord
+      confirm: Herhaal nieuw wachtwoord
+      hint: Minimaal {min} tekens, met een kleine letter, een hoofdletter, een cijfer en een speciaal teken.
+      save: Wachtwoord opslaan
+      set: Wachtwoord instellen
+      send_activation: Activeringslink versturen
+      send_reset: Stuur een link voor het opnieuw instellen van het wachtwoord
+    settings:
+      language: Taal
+      datetime_title: Datum en tijd
+      datetime_format: Datum- en tijdformaat
+      timezone: Tijdzone
+      theme_title: Kleur thema
+      gradient_toggle: Achtergrondverloop
+      gradient_on: Diepte
+      gradient_off: Plat
+      density_title: Afstand
+      font_title: Lettergrootte
+      notify_intro: Instellingen voor e-mailmeldingen voor ticketwijzigingen.
+      notify_new_ticket: Nieuwe kaartjes
+      notify_new_ticket_hint: E-mail wanneer iemand een nieuw ticket aanmaakt in een project waar u personeel bent.
+      notify_new_ticket_hint_client: E-mail wanneer het team een ticket in uw project aanmaakt.
+      notify_reply: Antwoorden
+      notify_reply_hint: E-mail over nieuwe reacties op tickets waaraan u deelneemt.
+      notify_ticket_update: Status, type en prioriteit
+      notify_ticket_update_hint: E-mail wanneer status, type of prioriteit verandert van tickets waaraan u deelneemt.
+    admin_all_projects_hint: Beheerders kunnen alle projecten bekijken. Om tickets af te handelen en ticket-e-mails te ontvangen, voegt u ze als personeel toe aan het project.
+  portal:
+    empty:
+      title: Geen projecten
+      heading: U heeft nog geen projecten
+      body: Vraag een beheerder om u uit te nodigen of toe te voegen aan een project.
+    feed:
+      tickets: Kaartjes
+      create: Ticket aanmaken
+      empty: Geen tickets in deze weergave.
+      deleted_badge: Verwijderd
+      view: Bekijk
+      filters: Filters
+      search: Zoeken
+      search_placeholder: Titel, nummer of verslaggever…
+      search_submit: Vind
+      search_clear: Duidelijke zoekopdracht
+      type: Typ
+      status: Status
+      priority: Prioriteit
+      tag: Label
+      mine_only: Alleen de mijne
+      sort: Sorteren
+      filter_any: Elke
+      sort_options:
+        updated: Laatste activiteit
+        created: Aanmaakdatum
+        priority: Prioriteit
+      updated: Bijgewerkt
+      filter_submit: Filteren
+      filter_clear: Duidelijk
+      pagination:
+        label: Paginering van de ticketlijst
+      modal_title: Ticket aanmaken
+      field:
+        title: Titel
+        type: Typ
+        priority: Prioriteit
+        description: Beschrijving
+    view:
+      all: Allemaal
+      open: Openen
+      done: Gesloten
+      staff:
+        needs_us: Om te hanteren
+        unassigned: Niet toegewezen
+      client:
+        waiting_on_me: In afwachting van antwoord
+  ticket:
+    doc_title: Ticket {label}
+    description: Beschrijving
+    edit: Bewerken
+    deleted_banner: Dit ticket is verborgen. Alleen beheerders kunnen het zien.
+    attachments: Bijlagen
+    edit_modal: Ticket bewerken
+    lightbox_aria: Voorbeeld van bijlage
+    self_assign: Geef mij de opdracht
+    back_to_list: Terug naar lijst
+    details: Details
+    created: Gemaakt
+    closed: Gesloten
+    type: Typ
+    status: Status
+    priority: Prioriteit
+    change_type: Type wijzigen
+    change_status: Wijzig status
+    change_priority: Prioriteit wijzigen
+    reopen: Heropenen
+    people: Mensen
+    reporter: Verslaggever
+    change_reporter: Verander verslaggever
+    assignee: Ontvanger
+    change_assignee: Wijzig de verantwoordelijke
+    assignee_none: — geen —
+    participants: Deelnemers
+    add_participant: Deelnemer toevoegen
+    no_participants_to_add: Er zijn geen mensen om toe te voegen
+    stop_watching: Stop met kijken
+    remove_participant: Verwijderen van kijken
+    remove_participant_aria: Verwijder {name} van kijken
+    tags: Labels
+    add_tag_placeholder: Label toevoegen…
+    activity: Activiteit
+    history: Geschiedenis
+    history_aria: Ticketgeschiedenis
+    history_empty: Nog geen evenementen.
+    history_loading: Laden…
+    history_unknown_user: Onbekende gebruiker
+    event:
+      CREATED: Ticket aangemaakt ({type}, {priority})
+      COMMENT_ADDED: Commentaar toegevoegd
+      COMMENT_ADDED_INTERNAL: Interne opmerking toegevoegd
+      COMMENT_EDITED: Reactie bewerkt
+      COMMENT_EDITED_INTERNAL: Interne opmerking aangepast
+      COMMENT_DELETED: Reactie verwijderd
+      COMMENT_DELETED_INTERNAL: Interne opmerking verwijderd
+      TITLE_CHANGED: Titel gewijzigd
+      DESCRIPTION_CHANGED: Beschrijving gewijzigd
+      STATUS_CHANGED: 'Status gewijzigd: {from} → {to}'
+      PRIORITY_CHANGED: 'Prioriteit gewijzigd: {from} → {to}'
+      TYPE_CHANGED: 'Type gewijzigd: {from} → {to}'
+      ASSIGNEE_CHANGED: 'Toegewezene gewijzigd: {from} → {to}'
+      REPORTER_CHANGED: 'Verslaggever gewijzigd: {from} → {to}'
+      PARTICIPANT_ADDED: 'Deelnemer toegevoegd: {name}'
+      PARTICIPANT_REMOVED: 'Deelnemer verwijderd: {name}'
+      TAG_ADDED: 'Tag toegevoegd: {name}'
+      TAG_REMOVED: 'Tag verwijderd: {name}'
+      ATTACHMENT_ADDED: 'Bijlage toegevoegd: {name}'
+      ATTACHMENT_REMOVED: 'Bijlage verwijderd: {name}'
+      DELETED: Ticket verwijderd
+    reply: Antwoord
+    thread_order_aria: Berichtvolgorde
+    thread_oldest: Oudste eerst
+    thread_newest: Nieuwste eerst
+    internal: Intern
+    edited_by: 'bewerkt door: {name}'
+    edit_comment: Opmerking bewerken
+    save_comment: Opmerking opslaan
+    cancel_edit: Bewerking annuleren
+    delete_comment: Reactie verwijderen
+    delete: Kaartje verwijderen
+    reply_placeholder: Schrijf een antwoord…
+    internal_note: Interne opmerking
+    closed_notice: Kaartje gesloten.
+    reopen_hint_staff: U kunt het opnieuw openen door op de status te klikken.
+    reopen_hint_client: Heropening is mogelijk binnen {days} dagen na sluiting.
+    no_comment_permission: U heeft geen toestemming om commentaar te geven.
+    attach:
+      add_files: Bestanden toevoegen, plakken of neerzetten
+      file_one: bestand
+      file_many: bestanden
+      hint_icon: Tot {count} {file_word} · maximaal 5 MB
+      button: Bestand bijvoegen
+      remove: Verwijder {name}
+  editor:
+    toolbar: Opmaak
+    bold: Vet
+    italic: Cursief
+    heading_1: Kop 1
+    heading_2: Rubriek 2
+    heading_3: Rubriek 3
+    link: Koppeling
+    link_apply: Koppeling toevoegen
+    bullet_list: Lijst met opsommingstekens
+    ordered_list: Genummerde lijst
+    code_block: Codeblok
+    blockquote: Citaat
+    horizontal_rule: Verdeler
+    dictate: Dicteer
+    dictate_stop: Stop met dicteren
+    paste_markdown: Plak de afwaardering
+  admin:
+    aside_label: Administratie
+    nav_aria: Beheerder
+    nav:
+      overview: Statistieken
+      projects: Projecten
+      users: Gebruikers
+      settings: Instellingen
+    settings:
+      title: Portaalinstellingen
+      nav_aria: Portaalinstellingen secties
+      save: Opslaan
+      nav:
+        tickets: Kaartjes
+        uploads: Bijlagen
+        mail: Post
+      tickets:
+        heading: Ticket- en linkbeleid
+        hint: Klantlimieten en hoe lang e-maillinks geldig blijven.
+        reopen_days: Venster opnieuw openen (dagen)
+        reopen_days_hint: Hoeveel dagen na het sluiten kan een klant het ticket opnieuw openen. Het personeel kan altijd weer open. 0 = alleen personeel.
+        description_max_len: Ticketbeschrijving (tekens)
+        description_max_len_hint: Maximale lengte van de ticketbeschrijving, inclusief korting.
+        reply_max_len: Antwoord (tekens)
+        reply_max_len_hint: Maximale lengte van een opmerking of antwoord, inclusief prijsverlaging.
+        auth_link_ttl_days: Activering / wachtwoord opnieuw instellen (dagen)
+        auth_link_ttl_days_hint: Hoe lang de e-maillink geldig blijft voor accountactivering of wachtwoordreset.
+        email_confirm_ttl_minutes: E-mailbevestiging (minuten)
+        email_confirm_ttl_minutes_hint: Hoe lang de link geldig blijft bij het wijzigen van e-mailadres in het profiel.
+      uploads:
+        heading: Limieten voor bijlagen
+        hint: Elke limiet geldt voor één ticket of opmerking.
+        max_files: Aantal bestanden
+        max_files_hint: Maximaal aantal bijlagen op één ticket of opmerking.
+        max_image_mb: Afbeeldingsgrootte (MB)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: Bestandsgrootte (MB)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTP-server
+        smtp_port: Haven
+        smtp_security: Verbindingsbeveiliging
+        smtp_security_none: Geen
+        smtp_security_starttls: STARTTLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: Gebruikersnaam
+        smtp_pass: Wachtwoord
+        smtp_pass_hint: Laat dit leeg om het huidige wachtwoord te behouden.
+        email_from: Van adres
+        test_heading: Test-e-mail verzenden
+        test_hint: Gebruikt de opgeslagen SMTP-instellingen. Sla wijzigingen op voordat u gaat testen.
+        test_email: Ontvanger
+        test_send: Test verzenden
+    dashboard:
+      title: Statistieken
+      stat_projects: Projecten
+      stat_users: Gebruikers
+      stat_open_tickets: Kaartjes openen
+      stat_messages: Berichten
+      stat_pending_users: Accounts in afwachting van activering
+      stat_emails_sent: E-mails verzonden
+      stat_members: Leden
+      stat_tickets: Kaartjes
+      per_project: Projectstatistieken
+      select_project: Project
+      user_activity: Gebruikersactiviteit
+      col_tickets_created: Kaartjes gemaakt
+      sort_name_asc: Sorteer op naam oplopend
+      sort_name_desc: Sorteer aflopend op naam
+      sort_role_asc: Sorteer op rol oplopend
+      sort_role_desc: Sorteer aflopend op rol
+      sort_tickets_asc: Sorteer op oplopend aangemaakte tickets
+      sort_tickets_desc: Sorteer op aangemaakte tickets aflopend
+      sort_last_login_asc: Sorteer oplopend op laatste login
+      sort_last_login_desc: Sorteer aflopend op laatste login
+      by_status: Op status
+      by_type: Op type
+      empty_projects: Geen projecten.
+      pagination:
+        label: Paginering van gebruikersactiviteiten
+    projects:
+      title: Projecten
+      new: Nieuw project
+      name: Naam
+      key: Sleutel
+      key_title: 1–5 tekens A–Z / 0–9
+      description: Beschrijving
+      initial_staff: Projectmedewerkers
+      initial_staff_placeholder: Selecteer een gebruiker…
+      no_staff_candidates: Maak eerst een actieve gebruiker aan.
+      list: Lijst met projecten
+      filter_active: Actief
+      filter_disabled: Uitgeschakeld
+      meta: '{members} leden · {tickets} kaartjes'
+      empty: Geen projecten. Maak de eerste hierboven.
+      empty_disabled: Geen uitgeschakelde projecten.
+      disabled: Uitgeschakeld
+      disable: Uitschakelen
+      enable: Inschakelen
+    project:
+      open_portal: Openen in portaal
+      settings: Instellingen
+      notifications: Meldingen
+      notify_clients_on_staff_ticket: Breng klanten op de hoogte van door het team gemaakte tickets
+      notify_clients_on_staff_ticket_note: Standaard ontvangen klanten geen meldingen over nieuwe tickets die door het team zijn gemaakt. Schakel deze optie in om tweerichtingscommunicatie mogelijk te maken.
+      tags: Labels
+      tags_empty: Geen tags in het project.
+      delete_tag_aria: Tag verwijderen {name}
+      members: Leden
+      members_empty: Geen leden in het project.
+      add_user: Gebruiker toevoegen
+      member_role: Projectrol
+      col_action: Actie
+    users:
+      title: Gebruikers
+      new: Nieuwe gebruiker
+      list: Lijst met gebruikers
+      empty: Geen gebruikers.
+      pagination:
+        label: Paginering van gebruikerslijsten
+      blocked: Geblokkeerd
+      pending: In behandeling
+      resend: Activeringslink versturen
+      block: Blok
+      unblock: Deblokkeren
+      edit_aria: Bewerk {name}
+      filter_role: Rol
+      filter_project: Project
+      filter_status: Status
+      filter_status_active: Gedeblokkeerd
+      filter_status_blocked: Geblokkeerd
+      filter_status_pending: In behandeling
+      filter_status_all: Allemaal
+      filter_search: Zoeken
+      filter_search_placeholder: Naam, e-mailadres of telefoon…
+      filter_all: Allemaal
+      filter_clear: Duidelijk
+      col_name: Naam
+      col_status: Status
+      sort_name_asc: Sorteer op voornaam oplopend
+      sort_name_desc: Sorteer aflopend op voornaam
+      sort_email_asc: Sorteer op e-mailadres oplopend
+      sort_email_desc: Sorteer op e-mailadres aflopend
+      sort_phone_asc: Sorteer op telefoon oplopend
+      sort_phone_desc: Sorteer op telefoon aflopend
+      sort_role_asc: Sorteer op rol oplopend
+      sort_role_desc: Sorteer aflopend op rol
+      sort_status_asc: Sorteer op status oplopend
+      sort_status_desc: Sorteer op status aflopend
+      col_last_login: Laatste aanmelding
+    user_new:
+      title: Nieuwe gebruiker
+      role: Rol
+      submit: Activeringslink maken en verzenden
+      submit_active: Creëer zonder activering
+    user_edit:
+      title: Gebruiker bewerken
+      heading: Account bewerken
+    projects_fieldset: Projecten
+    projects_empty: Geen projecten.
+    projects_required: Er is minimaal één project vereist
+  dev:
+    aria: Ontwikkelaarsmodus
+    label: Ontwikkelaar
+    copy: Kopieer
+    copied: Gekopieerd
+    expand: Uitbreiden
+    collapse: Samenvouwen
+    url: URL
+    template: Sjabloon
+    partials: Gedeeltelijke delen
+    api: API
+    js: JS
+    route: Routepatroon
+    file: Behandelaar
+  time:
+    today_at: Vandaag om {time}
+    yesterday_at: Gisteren om {time}
+    am: BEN
+    pm: PM
+    month_abbr:
+      1: jan
+      2: februari
+      3: Maart
+      4: april
+      5: Mei
+      6: jun
+      7: juli
+      8: augustus
+      9: september
+      10: okt
+      11: nov
+      12: dec
+enums:
+  ticket_type:
+    BUG: Fout
+    QUESTION: Vraag
+    CHANGE: Verandering
+    TASK: Nieuwe functie
+  ticket_status:
+    NEW: Nieuw
+    IN_PROGRESS: In uitvoering
+    WAITING_ON_CLIENT: Met verslaggever
+    DONE: Klaar
+  ticket_priority:
+    LOW: Laag
+    NORMAL: Normaal
+    HIGH: Hoog
+  user_role:
+    USER: Gebruiker
+    ADMIN: Beheerder
+  member_role:
+    CLIENT: Klant
+    STAFF: Personeel
+themes:
+  morning-mist:
+    label: Ochtendmist
+    description: Parelachtig blauw met een zachte glans.
+  sandy-dawn:
+    label: Zandige kust
+    description: Warm zand en honingzoete amber in een zachte wassing.
+  green-meadow:
+    label: Groene Weide
+    description: Salie en mos in een rustige, intieme gloed.
+  graphite-day:
+    label: Grafiet dag
+    description: Koel grafiet in een stille staalwassing.
+  berry-dawn:
+    label: Heide Bloom
+    description: Zachte heide en bessen in een heldere, zachte wassing.
+  rose-dawn:
+    label: Blozende gloed
+    description: Warme roze en poederblush in een heldere, zachte wassing.
+  deep-ocean:
+    label: Diepe Oceaan
+    description: Saffierdiepte met een zachte afgrondgloed.
+  amber-night:
+    label: Amber Ember
+    description: Espresso met een warme champagne-ember.
+  northern-spruce:
+    label: Noordelijke sparren
+    description: Donker bos met een kristallijne mintgloed.
+  charcoal-dusk:
+    label: Houtskool Schemering
+    description: Houtskool met koel staalzilver in een stille schemering.
+  midnight-berry:
+    label: Fluwelen bes
+    description: Rijpe bes in een warmpaars halflicht.
+  rose-night:
+    label: Karmozijnrode sluier
+    description: Diep rose in een warm, fluwelen schemerlicht.
+  density:
+    tight:
+      label: Strak
+      description: Kleinere afstand, meer inhoud op het scherm.
+    balanced:
+      label: Evenwichtig
+      description: De standaard PulseDeck-afstand.
+    airy:
+      label: Luchtig
+      description: Meer ademruimte tussen de elementen.
+  font_size:
+    compact:
+      label: Compact
+      description: Meer tekst op het scherm.
+    natural:
+      label: Natuurlijk
+      description: Het standaard PulseDeck-formaat.
+    large:
+      label: Groot
+      description: Comfortabeler lezen.
+flash:
+  auth:
+    invalid_credentials: Dat e-mailadres of wachtwoord ziet er niet goed uit.
+    account_blocked: Dit account is geblokkeerd.
+    account_not_activated: Dit account is nog niet actief. Controleer uw e-mail of gebruik 'Wachtwoord vergeten'.
+    profile_updated: Profiel opgeslagen.
+    email_confirm_sent: We hebben een link naar uw nieuwe e-mailadres gestuurd. Blijf inloggen met uw huidige adres totdat u bevestigt.
+    password_changed: Nieuw wachtwoord opgeslagen.
+    notifications_updated: Meldingsvoorkeuren opgeslagen.
+    current_password_invalid: Uw huidige wachtwoord komt niet overeen.
+    confirm_link_invalid: Die bevestigingslink is verlopen of niet geldig.
+    email_confirmed: 'E-mail bevestigd: meld u aan met het nieuwe adres.'
+    activation_link_invalid: Die activatielink is verlopen of niet geldig.
+    mfa_invalid: Ongeldige of verlopen code.
+    mfa_expired: Verificatiesessie verlopen. Meld u opnieuw aan.
+    mfa_delivery: Kan de code niet verzenden. Probeer het later opnieuw.
+  admin:
+    user_created: Account aangemaakt - we hebben een activatielink gestuurd.
+    user_created_active: Account aangemaakt en actief. Stel hieronder een wachtwoord in.
+    user_updated: Gebruikersgegevens opgeslagen.
+    password_link_sent: We hebben een e-mail verzonden met een wachtwoordlink.
+    password_set: Wachtwoord ingesteld.
+    activation_resent: Activeringslink opnieuw verzonden.
+    user_blocked: 'Account geblokkeerd: de gebruiker heeft geen portaltoegang.'
+    user_unblocked: Account gedeblokkeerd.
+    notifications_updated: Meldingsvoorkeuren opgeslagen.
+    settings_saved: Portaalinstellingen opgeslagen.
+    settings_test_sent: Test-e-mail verzonden.
+    settings_test_failed: Kan de test-e-mail niet verzenden. Controleer SMTP en logboeken.
+    settings_smtp_missing: SMTP is niet geconfigureerd. Stel eerst een server in en sla deze op.
+messages:
+  auth:
+    passwords_mismatch: De wachtwoorden moeten overeenkomen.
+    cannot_demote_last_admin: Dat is de laatste beheerder. Deze rol kan niet worden verwijderd.
+    cannot_block_self: Je kunt je eigen account niet blokkeren.
+    email_unchanged: Het nieuwe e-mailadres is hetzelfde als het huidige.
+    email_taken: Deze e-mail is al in gebruik
+    user_exists_resend: Er bestaat al een account met dit e-mailadres. Open de gebruikerspagina en verzend de activeringslink opnieuw
+  admin:
+    invalid_role: Kies een geldige rol.
+    unknown_action: Die actie kan niet worden uitgevoerd.
+    already_activated: Dit account is al actief.
+    settings_invalid_int: Voer een geldig nummer in.
+    settings_out_of_range: Deze waarde valt buiten het toegestane bereik.
+    settings_invalid_choice: Kies een geldige optie.
+  projects:
+    name_exists: Er bestaat al een project met deze naam.
+    key_exists: Deze projectsleutel is al in gebruik.
+    staff_required: Kies ten minste één gebruiker om het project af te handelen.
+    staff_invalid: De geselecteerde gebruiker ontbreekt of is inactief.
+    last_staff: Een project moet minimaal één actieve medewerker behouden.
+    at_least_one: Kies minstens één project.
+    invalid: Dat project is niet geldig.
+  tickets:
+    no_project_access: U heeft geen toegang tot dit project.
+    no_comment: Je kunt hier geen reactie toevoegen.
+    no_edit_comment: Je kunt reacties niet bewerken.
+    no_delete_comment: Je kunt reacties niet verwijderen.
+    comment_not_found: Die opmerking is er niet meer.
+    internal_staff_only: Interne opmerkingen zijn alleen voor het personeel.
+    no_assign: U kunt dit ticket niet toewijzen.
+    assignee_must_be_staff: U kunt alleen medewerkers of een beheerder toewijzen.
+    no_change_reporter: Je kunt de verslaggever niet veranderen.
+    reporter_must_be_member: De verslaggever heeft toegang tot het project nodig.
+    no_status: U kunt de status niet wijzigen.
+    cannot_reopen: Dit ticket kan niet worden heropend.
+    no_edit: Je kunt dit niet bewerken.
+    no_delete: U kunt dit ticket niet verwijderen.
+    no_priority: U kunt de prioriteit niet wijzigen.
+    no_type: U kunt het type niet wijzigen.
+    tags_staff_only: Alleen medewerkers kunnen tags beheren.
+    no_add_participant: Je kunt geen deelnemers toevoegen.
+    no_stop_watching: Je kunt niet stoppen met kijken naar dit kaartje.
+    not_participant: Je kijkt niet naar dit ticket.
+    user_must_be_member: Die persoon moet bij het project zijn.
+    participant_not_allowed: Je kunt deze persoon niet toevoegen als deelnemer.
+    invalid_status: Kies een geldige status.
+    invalid_type: Kies een geldig type.
+    invalid_priority: Kies een geldige prioriteit.
+    select_user: Selecteer een gebruiker.
+  uploads:
+    empty: Dat bestand is leeg.
+    too_large_image: Die afbeelding is te groot (max. {mb} MB).
+    too_large_file: Dat bestand is te groot (max. {mb} MB).
+    invalid_image: Ongeldig afbeeldingsbestand.
+    image_too_large: Dat beeld is te groot.
+    invalid_file: Niet-ondersteunde bestandsindeling.
+    formats: Gebruik JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR of 7Z.
+  validation:
+    missing_user: Selecteer een gebruiker
+    missing_field: Vul {label} in
+    invalid_int: Voer een geldig nummer in.
+    invalid_form: Controleer het formulier; het bevat fouten.
+    field:
+      user_id: een gebruiker
+      content: de boodschap
+      title: de titel
+      name: de naam
+      key: de sleutel
+      description: de beschrijving
+      email: een e-mailadres
+      password: een wachtwoord
+      tag: een label
+      required: een verplicht veld
+  fields:
+    required: '{field} is vereist.'
+    invalid: '{field} is niet geldig.'
+    too_short: '{field} is te kort (min {min}).'
+    too_long: '{field} is te lang (max. {max}).'
+    pattern: '{field} heeft een ongeldig formaat.'
+    labels:
+      user:
+        email: E-mail
+        password: Wachtwoord
+        first_name: Voornaam
+        last_name: Achternaam
+        phone: Telefoon
+        role: Rol
+        ui_lang: Taal
+        datetime_format: Datum- en tijdformaat
+        timezone: Tijdzone
+      project:
+        name: Projectnaam
+        key: Projectsleutel
+        description: Projectbeschrijving
+      ticket:
+        title: Titel
+        description: Beschrijving
+        type: Typ
+        status: Status
+        priority: Prioriteit
+      comment:
+        content: Commentaar
+      tag:
+        name: Label
+      search:
+        q: Zoeken
+      filter:
+        tag: Tagfilter
+  http:
+    not_found: We konden niet vinden wat je zocht.
+    server_error: Er is iets misgegaan. Probeer het over enkele ogenblikken opnieuw.
+    login_required: Meld u aan om door te gaan.
+    admin_required: U heeft beheerderstoegang nodig.
+  csrf:
+    missing: Uw sessie is verlopen.
+    invalid: Uw sessie is verlopen.
+    refresh_hint: Vernieuw de pagina en probeer het opnieuw.
+  password:
+    min_length: Gebruik minimaal {min} tekens.
+    too_long: Dat wachtwoord is te lang.
+    need_lower: Voeg een kleine letter toe.
+    need_upper: Voeg een hoofdletter toe.
+    need_digit: Voeg een cijfer toe.
+    need_special: Voeg een speciaal teken toe.
+  phone:
+    e164: Voer het nummer in, bijvoorbeeld +48 123 456 789.
+  project_key:
+    invalid: 'Legenda: {min}–{max} tekens A–Z / 0–9 (geen koppeltekens)'
+js:
+  errors:
+    forbidden: Je hebt hier geen toegang toe.
+    not_found: We konden niet vinden wat je zocht.
+    validation: Controleer het formulier; het bevat fouten
+    rate_limit: Te veel pogingen – wacht even.
+    server: Er is iets misgegaan. Probeer het opnieuw.
+    generic: Er is iets misgegaan. Probeer het opnieuw.
+    submit_failed: Kan het formulier niet verzenden.
+    network: Kan de server niet bereiken.
+    comment_empty: Schrijf iets in de reactie
+    content_too_long: Tekst is te lang (max. {max} tekens)
+    paste_markdown: Kan Markdown niet plakken.
+  ticket:
+    stale_reply: 'Er is een nieuw bericht verschenen: controleer de thread voordat u deze verzendt.'
+  editor:
+    char_count: '{used} van {max} tekens'
+    dictate_denied: Microfoontoegang geweigerd
+    dictate_no_mic: Geen microfoon gevonden
+    dictate_network: Dicteren is niet beschikbaar. Controleer uw verbinding.
+    paste_markdown_hint: Plakken met Ctrl+V — Markdown wordt opgemaakt.
+  validation:
+    missing_user: Selecteer een gebruiker
+    missing_field: Vul {label} in
+    field:
+      user_id: een gebruiker
+      content: de boodschap
+      title: de titel
+      name: de naam
+      key: de sleutel
+      first_name: een voornaam
+      last_name: een achternaam
+      description: de beschrijving
+      email: een e-mailadres
+      password: een wachtwoord
+      tag: een label
+      project_ids: een project
+      required: een verplicht veld
+  confirm:
+    title: Bevestiging
+    message_default: Weet u zeker dat u wilt doorgaan?
+    continue: Doorgaan?
+    confirm_label: Bevestig
+    discard_ticket:
+      title: Kaartje weggooien?
+      message: Het formulier bevat ingevulde gegevens. Wijzigingen annuleren en negeren?
+      action: Annuleer het maken
+      cancel: Terug naar bewerken
+  attach:
+    remove: Verwijder {name}
+    too_many: U kunt maximaal {count} bestanden bijvoegen.
+  coachmarks:
+    next: Volgende
+    back: Terug
+    done: Klaar
+    skip: Overslaan
+    replay: Tips voor deze pagina
+    step: '{current}/{total}'
+    tour_label: Tips
+    nav-project:
+      body: Schakel snel tussen uw projecten.
+    nav-appearance:
+      body: Pas het thema en de kleuren aan naar jouw voorkeuren.
+      cta: Verander het uiterlijk
+    feed-create:
+      body: Heeft u een probleem? Maak hier een nieuw ticket aan.
+    feed-needs-us:
+      body: Tickets wachten op het antwoord van uw team.
+    feed-mine:
+      body: Toon tickets waarbij u de verslaggever, rechthebbende of toeschouwer bent.
+    feed-filters:
+      body: Verfijn de lijst op type, status, prioriteit of tag.
+    feed-filter-clear:
+      body: Reset filters en wis de geselecteerde criteria.
+    ticket-status:
+      body: Klik om de ticketstatus te wijzigen.
+    ticket-done:
+      body: Markeer het ticket als voltooid wanneer het probleem is opgelost. U kunt het indien nodig later opnieuw openen.
+    ticket-assignee:
+      body: Wijs een teamlid aan om dit ticket af te handelen.
+    ticket-thread-order:
+      body: 'Berichtvolgorde: oudste eerst of nieuwste eerst.'
+    ticket-history:
+      body: Open de tickettijdlijn – status, toewijzing en andere wijzigingen.
+    admin-projects-name:
+      body: Weergavenaam van het project.
+    admin-projects-key:
+      body: Unieke sleutel die deel uitmaakt van het ticketnummer.
+    admin-projects-description:
+      body: Optionele korte samenvatting weergegeven in de projectlijst.
+    admin-project-members:
+      body: Voeg mensen toe aan het project zodat ze de tickets kunnen zien en eraan kunnen werken.
+    compose-attach:
+      body: Voeg bestanden toe door ze vanaf de schijf te kiezen, ze hierheen te slepen of vanaf het klembord te plakken (Ctrl+V).
+    compose-quote:
+      body: Selecteer tekst in een bericht en klik vervolgens op Citaat.
+    compose-dictate:
+      body: Klik op de microfoon om uw antwoord te dicteren. Sommige browsers of apparaten kunnen de toegang tot de microfoon blokkeren.
+    compose-internal:
+      body: Interne notities zijn alleen zichtbaar voor het personeel; klanten zien ze niet.
+email:
+  mfa:
+    subject: Inlogcode
+    body: 'Uw inlogverificatiecode:'
+    ttl: De code is {minutes} min geldig.
+  confirm:
+    subject: Bevestig uw nieuwe e-mailadres
+    body: We hebben een verzoek ontvangen om uw e-mailadres in {app} te wijzigen. Bevestig het nieuwe adres via onderstaande knop. De link is geldig voor {minutes} min. Als u dit niet was, kunt u dit bericht negeren.
+    cta: Bevestig e-mail
+  activate:
+    subject: Activeer uw account
+    body: Er is een account voor u aangemaakt in {app}. Stel een wachtwoord in om het te activeren en log in. De link is {days} dagen geldig.
+    cta: Wachtwoord instellen
+  reset:
+    subject: Wachtwoord opnieuw instellen
+    body: We hebben een verzoek ontvangen om uw wachtwoord voor {app} opnieuw in te stellen. Stel een nieuw wachtwoord in via onderstaande knop. De link is {days} dagen geldig. Als u dit niet was, kunt u dit bericht negeren.
+    cta: Nieuw wachtwoord instellen
+  smtp_test:
+    subject: Test-e-mail
+    body: Dit is een testbericht van {app}. Als je dit in de merklay-out kunt lezen, werkt SMTP.
+  new_ticket:
+    subject: Nieuw kaartje
+    body: 'Er is een nieuw ticket aangemaakt: {ticket}. Open het in {app} om de details te bekijken en actie te ondernemen.'
+    cta: Open over {app}
+  new_comment:
+    subject: Nieuw bericht op een ticket
+    body: Er verscheen een nieuw bericht in ticket {ticket}. Ga naar het ticket om de inhoud te zien en te reageren.
+    cta: Open over {app}
+  ticket_update:
+    subject: Ticket-update
+    body: De status, het type of de prioriteit van ticket {ticket} is gewijzigd.
+    new_value: 'Nieuwe waarde: {value}'
+    cta: Open over {app}
+  assignment:
+    subject: Tickettoewijzing
+    body: Er is ticket {ticket} aan u toegewezen. Open het in {app} om de details te bekijken.
+    cta: Open over {app}
+  common:
+    greeting: Hallo {name},
+    link_hint: 'Als de knop niet werkt, kopieer en plak dan deze link in uw browser:'
+    unsubscribe: Klik hier als u deze meldingen niet langer wilt ontvangen
+    unwatch: Klik hier als je dit ticket niet meer wilt bekijken

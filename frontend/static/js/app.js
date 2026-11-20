@@ -723,6 +723,13 @@
         if (submitter && submitter.name && (submitter.type === "submit" || submitter.type === "image")) {
           body.append(submitter.name, submitter.value);
         }
+        var langField = form.querySelector("#ui-lang");
+        var nextLang = langField
+          ? String(langField.value || "")
+              .trim()
+              .toLowerCase()
+          : "";
+        var langChanged = !!nextLang && nextLang !== (document.documentElement.lang || "").trim().toLowerCase();
         return fetch(action, {
           method: "POST",
           body: body,
@@ -731,6 +738,10 @@
           redirect: "follow",
         }).then(function (r) {
           if (r.redirected) {
+            if (langChanged) {
+              window.location.href = r.url;
+              return;
+            }
             return r.text().then(function (body) {
               var next;
               try {

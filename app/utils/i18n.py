@@ -15,6 +15,7 @@ logger = logging.getLogger("pulsedeck.app.i18n")
 LANG_STORAGE_KEY = "pulsedeck_lang"
 DEFAULT_LANG = "en"
 LOCALES_DIR = project_root() / "app" / "locales"
+_LOCALE_SUFFIXES = {".yml", ".yaml"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,9 +55,19 @@ def _load_locale_file(path: Path) -> tuple[str, str, dict[str, str]]:
     return code, name, flat
 
 
+def _locale_paths() -> list[Path]:
+    if not LOCALES_DIR.is_dir():
+        return []
+    return sorted(
+        path
+        for path in LOCALES_DIR.iterdir()
+        if path.is_file() and path.suffix.lower() in _LOCALE_SUFFIXES
+    )
+
+
 def _catalog() -> tuple[dict[str, dict[str, str]], tuple[LangChoice, ...]]:
     global _cache
-    paths = sorted(LOCALES_DIR.glob("*.yml")) if LOCALES_DIR.is_dir() else []
+    paths = _locale_paths()
     stamp = max((p.stat().st_mtime for p in paths), default=0.0)
     if _cache is not None and _cache[0] == stamp:
         return _cache[1], _cache[2]

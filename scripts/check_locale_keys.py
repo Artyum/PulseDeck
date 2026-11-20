@@ -101,7 +101,11 @@ def load_locales(
         raise RuntimeError(f"Missing locales directory: {locales_dir}")
     catalogs: dict[str, dict[str, str]] = {}
     paths: dict[str, Path] = {}
-    for path in sorted(locales_dir.glob("*.yml")):
+    for path in sorted(
+        path
+        for path in locales_dir.iterdir()
+        if path.is_file() and path.suffix.lower() in {".yml", ".yaml"}
+    ):
         try:
             raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         except (OSError, yaml.YAMLError) as error:
@@ -467,6 +471,36 @@ def run_unused(
     return 0
 
 
+def run_blank_separators(paths: dict[str, Path], write: bool, check: bool) -> int:
+    dirty: list[tuple[str, int]] = []
+    for lang, path in sorted(paths.items()):
+        text = path.read_text(encoding="utf-8")
+        lines = text.splitlines(keepends=True)
+        kept = [line for line in lines if line.strip()]
+        removed = len(lines) - len(kept)
+        if removed == 0:
+            continue
+        dirty.append((lang, removed))
+        if not write:
+            continue
+        body = "".join(kept)
+        if not body.endswith("\n"):
+            body += "\n"
+        path.write_text(body, encoding="utf-8")
+    if not dirty:
+        print("No blank locale separators.")
+        return 0
+    for lang, removed in dirty:
+        print(f"{lang}: {removed} blank separator(s)")
+    if not write:
+        if check:
+            return 1
+        print("Dry run — rerun with --write to remove them.")
+        return 0
+    print(f"Removed blank separators from {len(dirty)} locale files.")
+    return 0
+
+
 def run_missing(catalogs: dict[str, dict[str, str]], found: Scan) -> int:
     catalog = set(catalogs[SOURCE_LOCALE])
     missing = sorted(key for key in found.requested if key not in catalog)
@@ -505,7 +539,9 @@ def main() -> int:
         help="Project root.",
     )
     parser.add_argument(
-        "--write", action="store_true", help="Remove unused keys from locale files."
+        "--write",
+        action="store_true",
+        help="Remove unused keys and blank separators from locale files.",
     )
     parser.add_argument(
         "--check",
@@ -537,6 +573,7 @@ def main() -> int:
     status = run_missing(catalogs, found) if wants_requests else 0
     if wants_references:
         status = max(status, run_unused(paths, catalogs, found, args.write, args.check))
+        status = max(status, run_blank_separators(paths, args.write, args.check))
     return status
 
 

@@ -1,0 +1,909 @@
+meta:
+  name: العربية
+ui:
+  common:
+    close: إغلاق
+    cancel: إلغاء
+    confirm: تأكيد
+    save: حفظ
+    create: إنشاء
+    edit: تحرير
+    delete: حذف
+    add: أضف
+    send: أرسل
+    empty_dash: —
+    none: لا شيء
+    back_to_portal: العودة إلى البوابة
+    back_home: الصفحة الرئيسية
+    active: نشط
+    sidebar_show: إظهار اللوحة
+    sidebar_hide: إخفاء اللوحة
+    pagination:
+      first: الصفحة الأولى
+      prev: السابق
+      next: التالي
+      last: الصفحة الأخيرة
+      range: '{start}–{end} من {total}'
+      per_page_label: لكل صفحة
+  errors:
+    not_found:
+      title: لم يتم العثور عليه
+      heading: لم يتم العثور على الصفحة
+      body: هذا العنوان غير موجود أو تمت إزالته.
+  settings:
+    language: اللغة
+  confirm:
+    title: تأكيد
+    disable_project:
+      title: هل تريد تعطيل المشروع؟
+      message: سيتم تعطيل المشروع "{name}" ({key}) وإخفائه من البوابة.
+      action: تعطيل
+    delete_tag:
+      title: هل تريد حذف العلامة؟
+      message: هل أنت متأكد من أنك تريد حذف العلامة "{name}"؟ سيتم إزالته من جميع التذاكر.
+      action: حذف
+    change_key:
+      title: تغيير مفتاح المشروع
+      message: سيؤدي تغيير المفتاح إلى كسر الروابط القديمة /p/… و/t/…. يكمل؟
+      action: تغيير المفتاح
+    remove_member:
+      title: إزالة العضو؟
+      message: هل تريد إزالة {name} من المشروع "{project}"؟
+      action: إزالة
+    block_user:
+      title: هل تريد حظر الحساب؟
+      message: سيفقد الحساب "{name}" الوصول إلى البوابة الإلكترونية. تبقى الرسائل والتذاكر.
+      action: كتلة
+    delete_comment:
+      title: هل تريد حذف التعليق؟
+      message: سيتم حذف التعليق نهائيًا مع مرفقاته.
+      action: حذف
+    delete_ticket:
+      title: هل تريد حذف التذكرة؟
+      message: سيتم إخفاء التذكرة. يظل التاريخ متاحًا للمسؤولين.
+      action: حذف
+    stop_watching:
+      title: التوقف عن المشاهدة؟
+      message: ستتم إزالتك من قائمة المشاركين في هذه التذكرة والتوقف عن تلقي إشعارات البريد الإلكتروني المتعلقة بها.
+      action: توقف عن المشاهدة
+    remove_participant:
+      title: هل تريد إزالة المشارك؟
+      message: هل تريد إزالة {name} من المشاركين في هذه التذكرة؟ لن يتلقوا بعد الآن إشعارات عبر البريد الإلكتروني حول هذا الموضوع.
+      action: إزالة
+  nav:
+    aria: الملاحة
+    project: مشروع
+    select_project: حدد المشروع
+    user_menu: قائمة المستخدم
+    menu: القائمة
+    admin: الإدارة
+    profile: الملف الشخصي
+    logout: تسجيل الخروج
+  auth:
+    login:
+      title: تسجيل الدخول
+      email: البريد الإلكتروني
+      password: كلمة المرور
+      submit: تسجيل الدخول
+      forgot_label: نسيت كلمة المرور الخاصة بك
+      forgot_placeholder: عنوان@company.com
+      forgot_submit: إرسال رابط تغيير كلمة المرور
+      forgot_back: العودة لتسجيل الدخول
+      forgot_sent: إذا كان الحساب موجودًا ولم يتم حظره، فقد أرسلنا رابطًا عبر البريد الإلكتروني.
+      mfa_title: رمز البريد الإلكتروني
+      mfa_hint: أدخل الرمز المكون من 6 أرقام الذي أرسلناه إلى بريدك الإلكتروني.
+      mfa_submit: تأكيد الرمز
+      mfa_trust: لا تطلب رمزًا على هذا الجهاز لمدة {days} من الأيام
+      mfa_resend: إعادة إرسال الرمز
+    activate:
+      title_pending: تفعيل الحساب
+      title_reset: تعيين كلمة المرور
+      subtitle_pending: قم بتعيين كلمة مرور لتفعيل حسابك
+      subtitle_reset: قم بتعيين كلمة مرور جديدة
+      password: كلمة المرور
+      password_confirm: كرر كلمة المرور
+      phone: الهاتف (اختياري)
+      phone_placeholder: +48 123 456 789
+      submit_pending: تفعيل الحساب
+      submit_reset: حفظ كلمة المرور
+    confirm_email:
+      title: تأكيد البريد الإلكتروني
+      subtitle: قم بتأكيد تغيير عنوان بريدك الإلكتروني
+      submit: تأكيد البريد الإلكتروني
+    unsubscribe:
+      title: إلغاء الاشتراك
+      heading: غير مشترك
+      heading_invalid: رابط غير صالح
+      heading_confirm: تأكيد إيقاف تشغيل الإشعارات
+      confirm_body:
+        notify_reply: سيتم إيقاف تشغيل إشعارات الرد. لن تتلقى بعد الآن هذه الرسائل لأي تذكرة. يمكنك تغيير هذا في إعدادات ملفك الشخصي.
+        notify_new_ticket: سيتم إيقاف إشعارات التذاكر الجديدة. لن تتلقى بعد الآن هذه الرسائل لأي تذكرة. يمكنك تغيير هذا في إعدادات ملفك الشخصي.
+        notify_ticket_update: سيتم إيقاف تشغيل الإشعارات المتعلقة بالحالة والنوع وتغييرات الأولوية. لن تتلقى بعد الآن هذه الرسائل لأي تذكرة. يمكنك تغيير هذا في إعدادات ملفك الشخصي.
+      confirm: تأكيد
+      done: تم إيقاف تشغيل إشعارات "{type}" في إعدادات ملفك الشخصي.
+      invalid: رابط إلغاء الاشتراك هذا غير صالح أو انتهت صلاحيته.
+      manage: تفضيلات الإخطار
+    unwatch:
+      title: إيقاف المشاهدة
+      heading: لم تعد تشاهد هذه التذكرة
+      heading_invalid: رابط غير صالح
+      heading_confirm: قم بتأكيد إيقاف المشاهدة لهذه التذكرة
+      confirm_body: ستتم إزالتك من قائمة المشاركين بالتذكرة {label}. لن تتلقى بعد الآن تحديثات حول الرسائل الجديدة.
+      confirm: تأكيد
+      done: لقد تمت إزالتك من المشاركين بالتذكرة {label}.
+      invalid: هذا الرابط غير صالح أو انتهت صلاحيته.
+  profile:
+    aside_label: الحساب
+    nav_aria: الملف الشخصي
+    nav:
+      profile: الملف الشخصي
+      password: تغيير كلمة المرور
+      notifications: الإخطارات
+      appearance: المظهر
+    title:
+      profile: الملف الشخصي
+      data: بيانات الحساب
+      password: تغيير كلمة المرور
+      notifications: الإخطارات
+      appearance: المظهر
+    field:
+      first_name: الاسم الأول
+      last_name: الاسم الأخير
+      email: البريد الإلكتروني
+      phone: الهاتف
+    email_change_hint: يتطلب تغيير بريدك الإلكتروني التأكيد على العنوان الجديد. ستستمر في تسجيل الدخول باستخدام عنوانك الحالي حتى يتم التأكيد.
+    email_pending: 'في انتظار التأكيد: {email}'
+    save: حفظ
+    password:
+      section: كلمة المرور
+      current: كلمة المرور الحالية
+      new: كلمة المرور الجديدة
+      confirm: كرر كلمة المرور الجديدة
+      hint: ما لا يقل عن {min} أحرف، مع حرف صغير وحرف كبير ورقم وحرف خاص.
+      save: حفظ كلمة المرور
+      set: تعيين كلمة المرور
+      send_activation: أرسل رابط التفعيل
+      send_reset: إرسال رابط إعادة تعيين كلمة المرور
+    settings:
+      language: اللغة
+      datetime_title: التاريخ والوقت
+      datetime_format: تنسيق التاريخ والوقت
+      timezone: المنطقة الزمنية
+      theme_title: موضوع اللون
+      gradient_toggle: التدرج الخلفية
+      gradient_on: العمق
+      gradient_off: شقة
+      density_title: تباعد
+      font_title: حجم الخط
+      notify_intro: إعدادات إشعارات البريد الإلكتروني لتغييرات التذاكر.
+      notify_new_ticket: تذاكر جديدة
+      notify_new_ticket_hint: إرسال بريد إلكتروني عندما يقوم شخص ما بإنشاء تذكرة جديدة في مشروع تعمل فيه.
+      notify_new_ticket_hint_client: أرسل بريدًا إلكترونيًا عندما يقوم الفريق بإنشاء تذكرة في مشروعك.
+      notify_reply: الردود
+      notify_reply_hint: أرسل بريدًا إلكترونيًا حول التعليقات الجديدة على التذاكر التي تشارك فيها.
+      notify_ticket_update: الحالة والنوع والأولوية
+      notify_ticket_update_hint: أرسل بريدًا إلكترونيًا عندما تتغير الحالة أو النوع أو الأولوية على التذاكر التي تشارك فيها.
+    admin_all_projects_hint: يمكن للمسؤولين عرض كافة المشاريع. للتعامل مع التذاكر وتلقي رسائل البريد الإلكتروني الخاصة بالتذاكر، قم بإضافتهم إلى المشروع كموظفين.
+  portal:
+    empty:
+      title: لا مشاريع
+      heading: ليس لديك أي مشاريع حتى الآن
+      body: اطلب من أحد المسؤولين دعوتك أو إضافتك إلى مشروع.
+    feed:
+      tickets: التذاكر
+      create: إنشاء تذكرة
+      empty: لا توجد تذاكر في هذا الرأي.
+      deleted_badge: تم الحذف
+      view: عرض
+      filters: المرشحات
+      search: بحث
+      search_placeholder: العنوان أو الرقم أو المراسل...
+      search_submit: البحث عن
+      search_clear: مسح البحث
+      type: اكتب
+      status: الحالة
+      priority: الأولوية
+      tag: علامة
+      mine_only: فقط لي
+      sort: الفرز
+      filter_any: أي
+      sort_options:
+        updated: النشاط الأخير
+        created: تاريخ الإنشاء
+        priority: الأولوية
+      updated: تم التحديث
+      filter_submit: تصفية
+      filter_clear: واضح
+      pagination:
+        label: صفحة قائمة التذاكر
+      modal_title: إنشاء تذكرة
+      field:
+        title: العنوان
+        type: اكتب
+        priority: الأولوية
+        description: الوصف
+    view:
+      all: الكل
+      open: مفتوح
+      done: مغلق
+      staff:
+        needs_us: للتعامل
+        unassigned: غير معين
+      client:
+        waiting_on_me: في انتظار الرد
+  ticket:
+    doc_title: تذكرة {label}
+    description: الوصف
+    edit: تحرير
+    deleted_banner: لقد تم إخفاء هذه التذكرة. يمكن للمسؤولين فقط رؤيته.
+    attachments: المرفقات
+    edit_modal: تحرير التذكرة
+    lightbox_aria: معاينة المرفقات
+    self_assign: تعيين لي
+    back_to_list: العودة إلى القائمة
+    details: التفاصيل
+    created: تم إنشاؤها
+    closed: مغلق
+    type: اكتب
+    status: الحالة
+    priority: الأولوية
+    change_type: تغيير النوع
+    change_status: تغيير الحالة
+    change_priority: تغيير الأولوية
+    reopen: إعادة فتح
+    people: الناس
+    reporter: مراسل
+    change_reporter: تغيير المراسل
+    assignee: المكلف
+    change_assignee: تغيير المكلف
+    assignee_none: — لا شيء —
+    participants: المشاركون
+    add_participant: إضافة مشارك
+    no_participants_to_add: لا يوجد أشخاص لإضافتهم
+    stop_watching: توقف عن المشاهدة
+    remove_participant: إزالة من المشاهدة
+    remove_participant_aria: قم بإزالة {name} من المشاهدة
+    tags: العلامات
+    add_tag_placeholder: إضافة علامة...
+    activity: النشاط
+    history: التاريخ
+    history_aria: تاريخ التذاكر
+    history_empty: لا توجد أحداث حتى الآن.
+    history_loading: جارٍ التحميل…
+    history_unknown_user: مستخدم غير معروف
+    event:
+      CREATED: تم إنشاء التذكرة ({type}، {priority})
+      COMMENT_ADDED: تمت إضافة التعليق
+      COMMENT_ADDED_INTERNAL: تمت إضافة ملاحظة داخلية
+      COMMENT_EDITED: تم تعديل التعليق
+      COMMENT_EDITED_INTERNAL: تم تعديل الملاحظة الداخلية
+      COMMENT_DELETED: تم حذف التعليق
+      COMMENT_DELETED_INTERNAL: تم حذف الملاحظة الداخلية
+      TITLE_CHANGED: تم تغيير العنوان
+      DESCRIPTION_CHANGED: تم تغيير الوصف
+      STATUS_CHANGED: 'تم تغيير الحالة: {from} → {to}'
+      PRIORITY_CHANGED: 'تم تغيير الأولوية: {from} → {to}'
+      TYPE_CHANGED: 'تم تغيير النوع: {from} → {to}'
+      ASSIGNEE_CHANGED: 'تم تغيير المكلف: {from} → {to}'
+      REPORTER_CHANGED: 'تم تغيير المراسل: {from} → {to}'
+      PARTICIPANT_ADDED: 'تمت إضافة المشارك: {name}'
+      PARTICIPANT_REMOVED: 'تمت إزالة المشارك: {name}'
+      TAG_ADDED: 'تمت إضافة العلامة: {name}'
+      TAG_REMOVED: 'تمت إزالة العلامة: {name}'
+      ATTACHMENT_ADDED: 'تمت إضافة المرفق: {name}'
+      ATTACHMENT_REMOVED: 'تمت إزالة المرفق: {name}'
+      DELETED: تم حذف التذكرة
+    reply: رد
+    thread_order_aria: ترتيب الرسالة
+    thread_oldest: الأقدم أولاً
+    thread_newest: الأحدث أولاً
+    internal: داخلي
+    edited_by: 'تم التعديل بواسطة: {name}'
+    edit_comment: تحرير التعليق
+    save_comment: حفظ التعليق
+    cancel_edit: إلغاء التعديل
+    delete_comment: حذف التعليق
+    delete: حذف التذكرة
+    reply_placeholder: أكتب الرد...
+    internal_note: ملاحظة داخلية
+    closed_notice: التذكرة مغلقة.
+    reopen_hint_staff: يمكنك إعادة فتحه عن طريق النقر على الحالة.
+    reopen_hint_client: من الممكن إعادة الفتح خلال {days} يومًا من الإغلاق.
+    no_comment_permission: ليس لديك الإذن بالتعليق.
+    attach:
+      add_files: إضافة أو لصق أو إسقاط الملفات
+      file_one: file
+      file_many: ملفات
+      hint_icon: ما يصل إلى {count} {file_word} · بحد أقصى 5 ميجابايت
+      button: إرفاق الملف
+      remove: إزالة {name}
+  editor:
+    toolbar: التنسيق
+    bold: جريئة
+    italic: مائل
+    heading_1: العنوان 1
+    heading_2: العنوان 2
+    heading_3: العنوان 3
+    link: رابط
+    link_apply: إضافة رابط
+    bullet_list: قائمة نقطية
+    ordered_list: قائمة مرقمة
+    code_block: كتلة التعليمات البرمجية
+    blockquote: اقتباس
+    horizontal_rule: مقسم
+    dictate: إملاء
+    dictate_stop: توقف عن الإملاء
+    paste_markdown: لصق تخفيض السعر
+  admin:
+    aside_label: الإدارة
+    nav_aria: المشرف
+    nav:
+      overview: الإحصائيات
+      projects: المشاريع
+      users: المستخدمين
+      settings: الإعدادات
+    settings:
+      title: إعدادات البوابة
+      nav_aria: أقسام إعدادات البوابة
+      save: حفظ
+      nav:
+        tickets: التذاكر
+        uploads: المرفقات
+        mail: البريد
+      tickets:
+        heading: سياسة التذاكر والارتباط
+        hint: حدود العميل ومدة بقاء روابط البريد الإلكتروني صالحة.
+        reopen_days: إعادة فتح النافذة (أيام)
+        reopen_days_hint: كم يوما بعد إغلاق العميل يمكن إعادة فتح التذكرة. يمكن دائمًا إعادة فتح الموظفين. 0 = الموظفين فقط.
+        description_max_len: وصف التذكرة (الشخصيات)
+        description_max_len_hint: الحد الأقصى لطول وصف التذكرة، بما في ذلك تخفيض السعر.
+        reply_max_len: الرد (الشخصيات)
+        reply_max_len_hint: الحد الأقصى لطول التعليق أو الرد، بما في ذلك تخفيض السعر.
+        auth_link_ttl_days: التنشيط / إعادة تعيين كلمة المرور (أيام)
+        auth_link_ttl_days_hint: المدة التي يظل فيها رابط البريد الإلكتروني صالحًا لتنشيط الحساب أو إعادة تعيين كلمة المرور.
+        email_confirm_ttl_minutes: تأكيد البريد الإلكتروني (بالدقائق)
+        email_confirm_ttl_minutes_hint: المدة التي يظل فيها الرابط صالحًا عند تغيير البريد الإلكتروني في الملف الشخصي.
+      uploads:
+        heading: حدود المرفقات
+        hint: ينطبق كل حد على تذكرة واحدة أو تعليق واحد.
+        max_files: عدد الملفات
+        max_files_hint: الحد الأقصى للمرفقات على تذكرة واحدة أو تعليق.
+        max_image_mb: حجم الصورة (ميجابايت)
+        max_image_formats: جبغ، PNG، ويب بي، جيف
+        max_file_mb: حجم الملف (ميجابايت)
+        max_file_formats: PDF، DOCX، XLSX، PPTX، TXT، CSV، LOG، JSON، XML، ZIP، RAR، 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: خادم SMTP
+        smtp_port: ميناء
+        smtp_security: أمان الاتصال
+        smtp_security_none: لا شيء
+        smtp_security_starttls: ستارتلس
+        smtp_security_ssl: طبقة المقابس الآمنة/طبقة النقل الآمنة
+        smtp_user: اسم المستخدم
+        smtp_pass: كلمة المرور
+        smtp_pass_hint: اتركه فارغًا للاحتفاظ بكلمة المرور الحالية.
+        email_from: من العنوان
+        test_heading: أرسل بريدًا إلكترونيًا للاختبار
+        test_hint: يستخدم إعدادات SMTP المحفوظة. احفظ التغييرات قبل الاختبار.
+        test_email: المستلم
+        test_send: إرسال الاختبار
+    dashboard:
+      title: الإحصائيات
+      stat_projects: المشاريع
+      stat_users: المستخدمين
+      stat_open_tickets: تذاكر مفتوحة
+      stat_messages: الرسائل
+      stat_pending_users: حسابات في انتظار التنشيط
+      stat_emails_sent: تم إرسال رسائل البريد الإلكتروني
+      stat_members: الأعضاء
+      stat_tickets: التذاكر
+      per_project: إحصائيات المشروع
+      select_project: مشروع
+      user_activity: نشاط المستخدم
+      col_tickets_created: تم إنشاء التذاكر
+      sort_name_asc: الترتيب حسب الاسم تصاعديا
+      sort_name_desc: الترتيب حسب الاسم تنازليا
+      sort_role_asc: فرز حسب الدور التصاعدي
+      sort_role_desc: الترتيب حسب الدور التنازلي
+      sort_tickets_asc: فرز حسب التذاكر التي تم إنشاؤها تصاعديا
+      sort_tickets_desc: فرز حسب التذاكر التي تم إنشاؤها تنازليا
+      sort_last_login_asc: الترتيب حسب آخر تسجيل دخول تصاعدي
+      sort_last_login_desc: الترتيب حسب آخر تسجيل دخول تنازلي
+      by_status: حسب الحالة
+      by_type: حسب النوع
+      empty_projects: لا مشاريع.
+      pagination:
+        label: ترقيم صفحات نشاط المستخدم
+    projects:
+      title: المشاريع
+      new: مشروع جديد
+      name: الاسم
+      key: مفتاح
+      key_title: 1–5 أحرف A–Z / 0–9
+      description: الوصف
+      initial_staff: طاقم المشروع
+      initial_staff_placeholder: تحديد مستخدم…
+      no_staff_candidates: قم بإنشاء مستخدم نشط أولاً.
+      list: قائمة المشاريع
+      filter_active: نشط
+      filter_disabled: معطل
+      meta: '{members} أعضاء · {tickets} التذاكر'
+      empty: لا مشاريع. قم بإنشاء الأول أعلاه.
+      empty_disabled: لا توجد مشاريع معطلة.
+      disabled: معطل
+      disable: تعطيل
+      enable: تمكين
+    project:
+      open_portal: فتح في البوابة
+      settings: الإعدادات
+      notifications: الإخطارات
+      notify_clients_on_staff_ticket: قم بإخطار العملاء بالتذاكر التي أنشأها الفريق
+      notify_clients_on_staff_ticket_note: بشكل افتراضي، لا يتلقى العملاء إشعارات حول التذاكر الجديدة التي أنشأها الفريق. قم بتمكين هذا الخيار للسماح بالاتصال ثنائي الاتجاه.
+      tags: العلامات
+      tags_empty: لا توجد علامات في المشروع.
+      delete_tag_aria: حذف العلامة {name}
+      members: الأعضاء
+      members_empty: لا يوجد أعضاء في المشروع.
+      add_user: إضافة مستخدم
+      member_role: دور المشروع
+      col_action: العمل
+    users:
+      title: المستخدمين
+      new: مستخدم جديد
+      list: قائمة المستخدمين
+      empty: لا يوجد مستخدمين.
+      pagination:
+        label: ترقيم الصفحات لقائمة المستخدمين
+      blocked: محظور
+      pending: في انتظار
+      resend: أرسل رابط التفعيل
+      block: كتلة
+      unblock: إلغاء الحظر
+      edit_aria: تحرير {name}
+      filter_role: الدور
+      filter_project: مشروع
+      filter_status: الحالة
+      filter_status_active: غير محظور
+      filter_status_blocked: محظور
+      filter_status_pending: في انتظار
+      filter_status_all: الكل
+      filter_search: بحث
+      filter_search_placeholder: الاسم أو البريد الإلكتروني أو الهاتف…
+      filter_all: الكل
+      filter_clear: واضح
+      col_name: الاسم
+      col_status: الحالة
+      sort_name_asc: فرز حسب الاسم الأول تصاعديا
+      sort_name_desc: الترتيب حسب الاسم الأول تنازليا
+      sort_email_asc: فرز حسب البريد الإلكتروني تصاعديا
+      sort_email_desc: فرز حسب البريد الإلكتروني تنازليا
+      sort_phone_asc: الترتيب حسب الهاتف تصاعديا
+      sort_phone_desc: الترتيب حسب الهاتف تنازلي
+      sort_role_asc: فرز حسب الدور التصاعدي
+      sort_role_desc: الترتيب حسب الدور التنازلي
+      sort_status_asc: فرز حسب الحالة تصاعديا
+      sort_status_desc: فرز حسب الحالة تنازليا
+      col_last_login: آخر تسجيل دخول
+    user_new:
+      title: مستخدم جديد
+      role: الدور
+      submit: إنشاء وإرسال رابط التنشيط
+      submit_active: إنشاء بدون تفعيل
+    user_edit:
+      title: تحرير المستخدم
+      heading: تحرير الحساب
+    projects_fieldset: المشاريع
+    projects_empty: لا مشاريع.
+    projects_required: مطلوب مشروع واحد على الأقل
+  dev:
+    aria: وضع المطور
+    label: ديف
+    copy: نسخ
+    copied: منقول
+    expand: توسيع
+    collapse: طي
+    url: عنوان URL
+    template: القالب
+    partials: جزئيات
+    api: واجهة برمجة التطبيقات
+    js: شبيبة
+    route: نمط الطريق
+    file: معالج
+  time:
+    today_at: اليوم في {time}
+    yesterday_at: أمس في {time}
+    am: صباحا
+    pm: مساء
+    month_abbr:
+      1: يناير
+      2: فبراير
+      3: مارس
+      4: أبريل
+      5: مايو
+      6: يونيو
+      7: يوليو
+      8: أغسطس
+      9: سبتمبر
+      10: أكتوبر
+      11: نوفمبر
+      12: ديسمبر
+enums:
+  ticket_type:
+    BUG: علة
+    QUESTION: سؤال
+    CHANGE: التغيير
+    TASK: ميزة جديدة
+  ticket_status:
+    NEW: جديد
+    IN_PROGRESS: قيد التقدم
+    WAITING_ON_CLIENT: مع المراسل
+    DONE: تم
+  ticket_priority:
+    LOW: منخفض
+    NORMAL: عادي
+    HIGH: عالية
+  user_role:
+    USER: المستخدم
+    ADMIN: المسؤول
+  member_role:
+    CLIENT: العميل
+    STAFF: الموظفين
+themes:
+  morning-mist:
+    label: ضباب الصباح
+    description: أزرق لؤلؤي مع توهج ناعم.
+  sandy-dawn:
+    label: ساندي شور
+    description: رمل دافئ وعنبر معسل في غسل لطيف.
+  green-meadow:
+    label: المرج الأخضر
+    description: المريمية والطحلب في توهج هادئ وحميم.
+  graphite-day:
+    label: يوم الجرافيت
+    description: جرافيت بارد في غسيل فولاذي هادئ.
+  berry-dawn:
+    label: هيذر بلوم
+    description: هيذر وتوت ناعم في غسول مشرق ولطيف.
+  rose-dawn:
+    label: توهج أحمر الخدود
+    description: أحمر خدود وردي دافئ وبودرة في غسول مشرق ولطيف.
+  deep-ocean:
+    label: المحيط العميق
+    description: عمق الياقوت مع توهج سحيق ناعم.
+  amber-night:
+    label: امبر امبر
+    description: إسبريسو مع جمرة شمبانيا دافئة.
+  northern-spruce:
+    label: شجرة التنوب الشمالية
+    description: غابة داكنة مع توهج نعناع بلوري.
+  charcoal-dusk:
+    label: غسق الفحم
+    description: الفحم مع الفضة الفولاذية الباردة في غسق هادئ.
+  midnight-berry:
+    label: فيلفيت بيري
+    description: التوت الناضج في نصف الضوء الأرجواني الدافئ.
+  rose-night:
+    label: الحجاب القرمزي
+    description: وردة عميقة في نصف ضوء مخملي دافئ.
+  density:
+    tight:
+      label: ضيق
+      description: مسافة أصغر، ومحتوى أكبر على الشاشة.
+    balanced:
+      label: متوازن
+      description: تباعد PulseDeck الافتراضي.
+    airy:
+      label: متجدد الهواء
+      description: مساحة أكبر للتنفس بين العناصر.
+  font_size:
+    compact:
+      label: مدمج
+      description: مزيد من النص على الشاشة.
+    natural:
+      label: طبيعي
+      description: حجم PulseDeck الافتراضي.
+    large:
+      label: كبير
+      description: قراءة أكثر راحة.
+flash:
+  auth:
+    invalid_credentials: لا يبدو هذا البريد الإلكتروني أو كلمة المرور صحيحين.
+    account_blocked: تم حظر هذا الحساب.
+    account_not_activated: هذا الحساب ليس نشطًا بعد — تحقق من بريدك الإلكتروني أو استخدم "نسيت كلمة المرور".
+    profile_updated: تم حفظ الملف الشخصي.
+    email_confirm_sent: لقد أرسلنا رابطًا إلى بريدك الإلكتروني الجديد. استمر في تسجيل الدخول باستخدام عنوانك الحالي حتى يتم التأكيد.
+    password_changed: تم حفظ كلمة المرور الجديدة.
+    notifications_updated: تم حفظ تفضيلات الإشعارات.
+    current_password_invalid: كلمة المرور الحالية غير متطابقة.
+    confirm_link_invalid: انتهت صلاحية رابط التأكيد هذا أو أنه غير صالح.
+    email_confirmed: تم تأكيد البريد الإلكتروني - قم بتسجيل الدخول باستخدام العنوان الجديد.
+    activation_link_invalid: انتهت صلاحية رابط التنشيط هذا أو أنه غير صالح.
+    mfa_invalid: رمز غير صالح أو منتهي الصلاحية.
+    mfa_expired: انتهت صلاحية جلسة التحقق. قم بتسجيل الدخول مرة أخرى.
+    mfa_delivery: لا يمكن إرسال الرمز. يرجى المحاولة مرة أخرى لاحقا.
+  admin:
+    user_created: تم إنشاء الحساب — لقد أرسلنا رابط التنشيط.
+    user_created_active: تم إنشاء الحساب وتنشيطه - قم بتعيين كلمة مرور أدناه.
+    user_updated: تم حفظ تفاصيل المستخدم.
+    password_link_sent: لقد أرسلنا بريدًا إلكترونيًا يحتوي على رابط كلمة المرور.
+    password_set: تم تعيين كلمة المرور.
+    activation_resent: تم إرسال رابط التفعيل مرة أخرى.
+    user_blocked: تم حظر الحساب - ليس لدى المستخدم إمكانية الوصول إلى البوابة الإلكترونية.
+    user_unblocked: تم إلغاء حظر الحساب.
+    notifications_updated: تم حفظ تفضيلات الإشعارات.
+    settings_saved: تم حفظ إعدادات البوابة.
+    settings_test_sent: تم إرسال البريد الإلكتروني التجريبي.
+    settings_test_failed: تعذر إرسال البريد الإلكتروني التجريبي — تحقق من SMTP والسجلات.
+    settings_smtp_missing: لم يتم تكوين SMTP — قم بتعيين الخادم وحفظه أولاً.
+messages:
+  auth:
+    passwords_mismatch: يجب أن تتطابق كلمات المرور.
+    cannot_demote_last_admin: هذا هو المسؤول الأخير — لا يمكن إزالة هذا الدور.
+    cannot_block_self: لا يمكنك حظر حسابك الخاص.
+    email_unchanged: البريد الإلكتروني الجديد هو نفس البريد الإلكتروني الحالي.
+    email_taken: هذا البريد الإلكتروني مأخوذ بالفعل
+    user_exists_resend: يوجد حساب بهذا البريد الإلكتروني بالفعل - افتح صفحة المستخدم وأعد إرسال رابط التنشيط
+  admin:
+    invalid_role: اختر دورًا صالحًا.
+    unknown_action: لا يمكن القيام بهذا الإجراء.
+    already_activated: هذا الحساب نشط بالفعل.
+    settings_invalid_int: أدخل رقمًا صالحًا.
+    settings_out_of_range: هذه القيمة خارج النطاق المسموح به.
+    settings_invalid_choice: اختر خيارًا صالحًا.
+  projects:
+    name_exists: يوجد بالفعل مشروع بهذا الاسم.
+    key_exists: مفتاح المشروع هذا مأخوذ بالفعل.
+    staff_required: اختر مستخدمًا واحدًا على الأقل للتعامل مع المشروع.
+    staff_invalid: المستخدم المحدد مفقود أو غير نشط.
+    last_staff: يجب أن يحتفظ المشروع بموظف واحد نشط على الأقل.
+    at_least_one: اختر مشروعًا واحدًا على الأقل.
+    invalid: هذا المشروع غير صالح.
+  tickets:
+    no_project_access: ليس لديك حق الوصول إلى هذا المشروع.
+    no_comment: لا يمكنك إضافة تعليق هنا.
+    no_edit_comment: لا يمكنك تحرير التعليقات.
+    no_delete_comment: لا يمكنك حذف التعليقات.
+    comment_not_found: هذا التعليق لم يعد هنا.
+    internal_staff_only: الملاحظات الداخلية للموظفين فقط.
+    no_assign: لا يمكنك تعيين هذه التذكرة.
+    assignee_must_be_staff: يمكنك فقط تعيين موظفين أو مسؤول.
+    no_change_reporter: لا يمكنك تغيير المراسل.
+    reporter_must_be_member: يحتاج المراسل إلى الوصول إلى المشروع.
+    no_status: لا يمكنك تغيير الحالة.
+    cannot_reopen: لا يمكن إعادة فتح هذه التذكرة.
+    no_edit: لا يمكنك تعديل هذا.
+    no_delete: لا يمكنك حذف هذه التذكرة.
+    no_priority: لا يمكنك تغيير الأولوية.
+    no_type: لا يمكنك تغيير النوع.
+    tags_staff_only: يمكن للموظفين فقط إدارة العلامات.
+    no_add_participant: لا يمكنك إضافة مشاركين.
+    no_stop_watching: لا يمكنك التوقف عن مشاهدة هذه التذكرة.
+    not_participant: أنت لا تشاهد هذه التذكرة.
+    user_must_be_member: يجب أن يكون هذا الشخص في المشروع.
+    participant_not_allowed: لا يمكنك إضافة هذا الشخص كمشارك.
+    invalid_status: اختر حالة صالحة.
+    invalid_type: اختر نوع صالح.
+    invalid_priority: اختر أولوية صالحة.
+    select_user: حدد مستخدمًا.
+  uploads:
+    empty: هذا الملف فارغ.
+    too_large_image: هذه الصورة كبيرة جدًا (الحد الأقصى {mb} ميغابايت).
+    too_large_file: هذا الملف كبير جدًا (الحد الأقصى {mb} ميغابايت).
+    invalid_image: ملف الصورة غير صالح.
+    image_too_large: هذه الصورة كبيرة جدًا.
+    invalid_file: تنسيق الملف غير معتمد.
+    formats: استخدم JPG أو PNG أو WEBP أو GIF أو PDF أو DOCX أو XLSX أو PPTX أو TXT أو CSV أو LOG أو JSON أو XML أو ZIP أو RAR أو 7Z.
+  validation:
+    missing_user: حدد مستخدمًا
+    missing_field: املأ {label}
+    invalid_int: أدخل رقمًا صالحًا.
+    invalid_form: التحقق من النموذج — أنه يحتوي على أخطاء.
+    field:
+      user_id: مستخدم
+      content: الرسالة
+      title: العنوان
+      name: الاسم
+      key: المفتاح
+      description: الوصف
+      email: عنوان بريد إلكتروني
+      password: كلمة مرور
+      tag: علامة
+      required: حقل مطلوب
+  fields:
+    required: '{field} مطلوب.'
+    invalid: '{field} غير صالح.'
+    too_short: '{field} قصير جدًا (الحد الأدنى {min}).'
+    too_long: '{field} طويل جدًا (الحد الأقصى {max}).'
+    pattern: '{field} له تنسيق غير صالح.'
+    labels:
+      user:
+        email: البريد الإلكتروني
+        password: كلمة المرور
+        first_name: الاسم الأول
+        last_name: الاسم الأخير
+        phone: الهاتف
+        role: الدور
+        ui_lang: اللغة
+        datetime_format: تنسيق التاريخ والوقت
+        timezone: المنطقة الزمنية
+      project:
+        name: اسم المشروع
+        key: مفتاح المشروع
+        description: وصف المشروع
+      ticket:
+        title: العنوان
+        description: الوصف
+        type: اكتب
+        status: الحالة
+        priority: الأولوية
+      comment:
+        content: التعليق
+      tag:
+        name: علامة
+      search:
+        q: بحث
+      filter:
+        tag: مرشح العلامة
+  http:
+    not_found: لم نتمكن من العثور على ما تبحث عنه.
+    server_error: حدث خطأ ما - حاول مرة أخرى بعد قليل.
+    login_required: تسجيل الدخول للمتابعة.
+    admin_required: أنت بحاجة إلى وصول المسؤول.
+  csrf:
+    missing: لقد انتهت صلاحية جلستك.
+    invalid: لقد انتهت صلاحية جلستك.
+    refresh_hint: قم بتحديث الصفحة وحاول مرة أخرى.
+  password:
+    min_length: استخدم {min} حرفًا على الأقل.
+    too_long: كلمة المرور هذه طويلة جدًا.
+    need_lower: أضف حرفًا صغيرًا.
+    need_upper: أضف حرفًا كبيرًا.
+    need_digit: أضف رقما.
+    need_special: إضافة حرف خاص.
+  phone:
+    e164: أدخل الرقم مثل +48 123 456 789.
+  project_key:
+    invalid: 'المفتاح: {min}–{max} الأحرف A–Z / 0–9 (بدون واصلات)'
+js:
+  errors:
+    forbidden: ليس لديك حق الوصول إلى هذا.
+    not_found: لم نتمكن من العثور على ما تبحث عنه.
+    validation: التحقق من النموذج — أنه يحتوي على أخطاء
+    rate_limit: هناك عدد كبير جدًا من المحاولات - انتظر لحظة.
+    server: حدث خطأ ما - حاول مرة أخرى.
+    generic: حدث خطأ ما - حاول مرة أخرى.
+    submit_failed: تعذر إرسال النموذج.
+    network: تعذر الوصول إلى الخادم.
+    comment_empty: اكتب شيئا في التعليق
+    content_too_long: النص طويل جدًا (الحد الأقصى {max} حرف)
+    paste_markdown: لا يمكن لصق تخفيض السعر.
+  ticket:
+    stale_reply: ظهرت رسالة جديدة — تحقق من الموضوع قبل إرساله.
+  editor:
+    char_count: '{used} من {max} حرفًا'
+    dictate_denied: تم رفض الوصول إلى الميكروفون
+    dictate_no_mic: لم يتم العثور على ميكروفون
+    dictate_network: الإملاء غير متوفر. تحقق من اتصالك.
+    paste_markdown_hint: الصق باستخدام Ctrl+V - سيتم تنسيق Markdown.
+  validation:
+    missing_user: حدد مستخدمًا
+    missing_field: املأ {label}
+    field:
+      user_id: مستخدم
+      content: الرسالة
+      title: العنوان
+      name: الاسم
+      key: المفتاح
+      first_name: الاسم الأول
+      last_name: اسم العائلة
+      description: الوصف
+      email: عنوان بريد إلكتروني
+      password: كلمة مرور
+      tag: علامة
+      project_ids: مشروع
+      required: حقل مطلوب
+  confirm:
+    title: تأكيد
+    message_default: هل أنت متأكد أنك تريد الاستمرار؟
+    continue: يكمل؟
+    confirm_label: تأكيد
+    discard_ticket:
+      title: هل تريد تجاهل التذكرة؟
+      message: يحتوي النموذج على بيانات مملوءة. هل تريد إلغاء التغييرات وتجاهلها؟
+      action: إلغاء الإنشاء
+      cancel: العودة إلى التحرير
+  attach:
+    remove: إزالة {name}
+    too_many: يمكنك إرفاق ما يصل إلى {count} من الملفات.
+  coachmarks:
+    next: التالي
+    back: العودة
+    done: تم
+    skip: تخطي
+    replay: نصائح لهذه الصفحة
+    step: '{current}/{total}'
+    tour_label: نصائح
+    nav-project:
+      body: التبديل بسرعة بين المشاريع الخاصة بك.
+    nav-appearance:
+      body: اضبط السمة والألوان حسب تفضيلاتك.
+      cta: تغيير المظهر
+    feed-create:
+      body: حصلت على مشكلة؟ قم بإنشاء تذكرة جديدة هنا.
+    feed-needs-us:
+      body: التذاكر في انتظار رد فريقك.
+    feed-mine:
+      body: أظهر التذاكر حيث تكون أنت المراسل أو المكلف أو المراقب.
+    feed-filters:
+      body: قم بتضييق القائمة حسب النوع أو الحالة أو الأولوية أو العلامة.
+    feed-filter-clear:
+      body: قم بإعادة تعيين عوامل التصفية ومسح المعايير التي حددتها.
+    ticket-status:
+      body: انقر لتغيير حالة التذكرة.
+    ticket-done:
+      body: قم بوضع علامة "تم" على التذكرة عندما يتم حل المشكلة - ويمكنك إعادة فتحها لاحقًا إذا لزم الأمر.
+    ticket-assignee:
+      body: قم بتعيين أحد أعضاء الفريق للتعامل مع هذه التذكرة.
+    ticket-thread-order:
+      body: 'ترتيب الرسائل: الأقدم أولاً أو الأحدث أولاً.'
+    ticket-history:
+      body: افتح الجدول الزمني للتذكرة — الحالة والمهمة والتغييرات الأخرى.
+    admin-projects-name:
+      body: اسم العرض للمشروع.
+    admin-projects-key:
+      body: المفتاح الفريد الذي يشكل جزءًا من رقم التذكرة.
+    admin-projects-description:
+      body: ملخص قصير اختياري يظهر في قائمة المشروع.
+    admin-project-members:
+      body: أضف أشخاصًا إلى المشروع حتى يتمكنوا من رؤية تذاكره والعمل عليها.
+    compose-attach:
+      body: أضف الملفات عن طريق اختيارها من القرص، أو سحبها هنا، أو لصقها من الحافظة (Ctrl+V).
+    compose-quote:
+      body: حدد النص في الرسالة، ثم انقر فوق "اقتباس".
+    compose-dictate:
+      body: انقر على الميكروفون لإملاء ردك. قد تمنع بعض المتصفحات أو الأجهزة الوصول إلى الميكروفون.
+    compose-internal:
+      body: تكون الملاحظات الداخلية مرئية للموظفين فقط، ولن يراها العملاء.
+email:
+  mfa:
+    subject: رمز تسجيل الدخول
+    body: 'رمز التحقق لتسجيل الدخول الخاص بك:'
+    ttl: الكود صالح لمدة {minutes} دقيقة.
+  confirm:
+    subject: قم بتأكيد بريدك الإلكتروني الجديد
+    body: لقد تلقينا طلبًا لتغيير عنوان بريدك الإلكتروني في {app}. قم بتأكيد العنوان الجديد باستخدام الزر أدناه. الرابط صالح لمدة {minutes} دقيقة. إذا لم تكن أنت، فيمكنك تجاهل هذه الرسالة.
+    cta: تأكيد البريد الإلكتروني
+  activate:
+    subject: تفعيل حسابك
+    body: تم إنشاء حساب لك في {app}. قم بتعيين كلمة مرور لتفعيلها وتسجيل الدخول. الرابط صالح لمدة {days} أيام.
+    cta: تعيين كلمة المرور
+  reset:
+    subject: إعادة تعيين كلمة المرور
+    body: لقد تلقينا طلبًا لإعادة تعيين كلمة المرور الخاصة بك لـ {app}. قم بتعيين كلمة مرور جديدة باستخدام الزر أدناه. الرابط صالح لمدة {days} أيام. إذا لم تكن أنت، فيمكنك تجاهل هذه الرسالة.
+    cta: تعيين كلمة مرور جديدة
+  smtp_test:
+    subject: اختبار البريد الإلكتروني
+    body: هذه رسالة اختبارية من {app}. إذا كان بإمكانك قراءة هذا في التخطيط ذي العلامة التجارية، فهذا يعني أن SMTP يعمل.
+  new_ticket:
+    subject: تذكرة جديدة
+    body: 'تم إنشاء تذكرة جديدة: {ticket}. افتحه في {app} لمراجعة التفاصيل واتخاذ الإجراء.'
+    cta: مفتوح في {app}
+  new_comment:
+    subject: رسالة جديدة على التذكرة
+    body: ظهرت رسالة جديدة في التذكرة {ticket}. انتقل إلى التذكرة لرؤية المحتوى والرد.
+    cta: مفتوح في {app}
+  ticket_update:
+    subject: تحديث التذكرة
+    body: تم تغيير حالة أو نوع أو أولوية التذكرة {ticket}.
+    new_value: 'القيمة الجديدة: {value}'
+    cta: مفتوح في {app}
+  assignment:
+    subject: مهمة التذاكر
+    body: لقد تم تخصيص تذكرة لك {ticket}. افتحه في {app} لمراجعة التفاصيل.
+    cta: مفتوح في {app}
+  common:
+    greeting: مرحبًا {name}،
+    link_hint: 'إذا لم يعمل الزر، انسخ هذا الرابط والصقه في متصفحك:'
+    unsubscribe: انقر هنا إذا لم تعد ترغب في تلقي هذه الإشعارات
+    unwatch: انقر هنا إذا كنت لم تعد ترغب في مشاهدة هذه التذكرة

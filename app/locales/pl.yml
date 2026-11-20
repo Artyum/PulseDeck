@@ -1,6 +1,5 @@
 meta:
   name: "Polski"
-
 ui:
   common:
     close: "Zamknij"
@@ -529,7 +528,6 @@ ui:
       10: "paź"
       11: "lis"
       12: "gru"
-
 enums:
   ticket_type:
     BUG: "Błąd"
@@ -551,7 +549,6 @@ enums:
   member_role:
     CLIENT: "Klient"
     STAFF: "Obsługa"
-
 themes:
   morning-mist:
     label: "Poranna mgła"
@@ -609,7 +606,6 @@ themes:
     large:
       label: "Powiększona"
       description: "Wygodniejsze czytanie."
-
 flash:
   auth:
     invalid_credentials: "E-mail lub hasło się nie zgadzają."
@@ -640,7 +636,6 @@ flash:
     settings_test_sent: "Mail testowy wysłany."
     settings_test_failed: "Nie udało się wysłać maila testowego — sprawdź SMTP i logi."
     settings_smtp_missing: "SMTP nie jest skonfigurowane — najpierw ustaw i zapisz serwer."
-
 messages:
   auth:
     passwords_mismatch: "Hasła muszą być takie same."
@@ -770,7 +765,6 @@ messages:
     e164: "Podaj numer w formacie +48 123 456 789."
   project_key:
     invalid: "Klucz: {min}–{max} znaków A–Z / 0–9 (bez myślników)"
-
 js:
   errors:
     forbidden: "Nie masz do tego dostępu."
@@ -871,7 +865,6 @@ js:
       body: "Kliknij mikrofon, aby dyktować odpowiedź. Na niektórych urządzeniach lub w niektórych przeglądarkach dostęp do mikrofonu może być zablokowany."
     compose-internal:
       body: "Notatki wewnętrzne widzi tylko obsługa — klienci ich nie zobaczą."
-
 email:
   mfa:
     subject: "Kod logowania"

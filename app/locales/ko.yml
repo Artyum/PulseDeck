@@ -1,0 +1,909 @@
+meta:
+  name: 한국어
+ui:
+  common:
+    close: 닫기
+    cancel: 취소
+    confirm: 확인
+    save: 저장
+    create: 만들기
+    edit: 편집
+    delete: 삭제
+    add: 추가
+    send: 보내기
+    empty_dash: —
+    none: 없음
+    back_to_portal: 포털로 돌아가기
+    back_home: 홈
+    active: 활성
+    sidebar_show: 패널 표시
+    sidebar_hide: 패널 숨기기
+    pagination:
+      first: 첫 페이지
+      prev: 이전
+      next: 다음
+      last: 마지막 페이지
+      range: '{total} 중 {start}~{end}'
+      per_page_label: 페이지당
+  errors:
+    not_found:
+      title: 찾을 수 없음
+      heading: 페이지를 찾을 수 없습니다
+      body: 이 주소는 존재하지 않거나 삭제되었습니다.
+  settings:
+    language: 언어
+  confirm:
+    title: 확인
+    disable_project:
+      title: 프로젝트를 비활성화하시겠습니까?
+      message: 프로젝트 “{name}”({key})이 비활성화되고 포털에서 숨겨집니다.
+      action: 비활성화
+    delete_tag:
+      title: 태그를 삭제하시겠습니까?
+      message: '"{name}" 태그를 삭제하시겠습니까? 모든 티켓에서 삭제됩니다.'
+      action: 삭제
+    change_key:
+      title: 프로젝트 키 변경
+      message: 키를 변경하면 기존 /p/… 및 /t/… 링크가 끊어집니다. 계속하다?
+      action: 키 변경
+    remove_member:
+      title: 구성원을 삭제하시겠습니까?
+      message: '''{project}'' 프로젝트에서 {name}을(를) 삭제하시겠습니까?'
+      action: 제거
+    block_user:
+      title: 계정을 차단하시겠습니까?
+      message: '''{name}'' 계정이 포털에 액세스할 수 없게 됩니다. 메시지와 티켓은 그대로 유지됩니다.'
+      action: 블록
+    delete_comment:
+      title: 댓글을 삭제하시겠습니까?
+      message: 댓글은 첨부파일과 함께 영구적으로 삭제됩니다.
+      action: 삭제
+    delete_ticket:
+      title: 티켓을 삭제하시겠습니까?
+      message: 티켓이 숨겨집니다. 기록은 관리자가 계속 사용할 수 있습니다.
+      action: 삭제
+    stop_watching:
+      title: 시청을 중단하시겠습니까?
+      message: 귀하는 이 티켓의 참가자에서 제외되며 이에 대한 이메일 알림 수신이 중단됩니다.
+      action: 시청 중지
+    remove_participant:
+      title: 참가자를 삭제하시겠습니까?
+      message: 이 티켓의 참가자에서 {name}을(를) 제거하시겠습니까? 더 이상 이에 대한 이메일 알림을 받지 않습니다.
+      action: 제거
+  nav:
+    aria: 네비게이션
+    project: 프로젝트
+    select_project: 프로젝트 선택
+    user_menu: 사용자 메뉴
+    menu: 메뉴
+    admin: 행정
+    profile: 프로필
+    logout: 로그아웃
+  auth:
+    login:
+      title: 로그인
+      email: 이메일
+      password: 비밀번호
+      submit: 로그인
+      forgot_label: 비밀번호를 잊으셨나요?
+      forgot_placeholder: 주소@회사.com
+      forgot_submit: 비밀번호 변경 링크 보내기
+      forgot_back: 로그인으로 돌아가기
+      forgot_sent: 계정이 존재하고 차단되지 않은 경우 이메일로 링크를 보내드립니다.
+      mfa_title: 이메일 코드
+      mfa_hint: 이메일로 전송된 6자리 코드를 입력하세요.
+      mfa_submit: 코드 확인
+      mfa_trust: '{days}일 동안 이 기기에서 코드를 요청하지 마세요.'
+      mfa_resend: 코드 재전송
+    activate:
+      title_pending: 계정 활성화
+      title_reset: 비밀번호 설정
+      subtitle_pending: 계정을 활성화하려면 비밀번호를 설정하세요
+      subtitle_reset: 새 비밀번호를 설정하세요
+      password: 비밀번호
+      password_confirm: 비밀번호를 반복하세요
+      phone: 전화(선택사항)
+      phone_placeholder: +48 123 456 789
+      submit_pending: 계정 활성화
+      submit_reset: 비밀번호 저장
+    confirm_email:
+      title: 이메일 확인
+      subtitle: 이메일 주소 변경 확인
+      submit: 이메일 확인
+    unsubscribe:
+      title: 구독 취소
+      heading: 구독 취소됨
+      heading_invalid: 잘못된 링크
+      heading_confirm: 알림 끄기 확인
+      confirm_body:
+        notify_reply: 답장 알림이 꺼집니다. 더 이상 어떤 티켓에 대해서도 이러한 메시지를 받지 않게 됩니다. 프로필 설정에서 이를 변경할 수 있습니다.
+        notify_new_ticket: 신규 티켓 알림이 꺼집니다. 더 이상 어떤 티켓에 대해서도 이러한 메시지를 받지 않게 됩니다. 프로필 설정에서 이를 변경할 수 있습니다.
+        notify_ticket_update: 상태, 유형, 우선순위 변경에 대한 알림이 꺼집니다. 더 이상 어떤 티켓에 대해서도 이러한 메시지를 받지 않게 됩니다. 프로필 설정에서 이를 변경할 수 있습니다.
+      confirm: 확인
+      done: 프로필 설정에서 '{type}' 알림이 꺼졌습니다.
+      invalid: 이 구독 취소 링크가 유효하지 않거나 만료되었습니다.
+      manage: 알림 환경설정
+    unwatch:
+      title: 시청 끄기
+      heading: 더 이상 이 티켓을 보고 있지 않습니다.
+      heading_invalid: 잘못된 링크
+      heading_confirm: 이 티켓 시청 끄기를 확인하세요
+      confirm_body: 귀하는 티켓 {label}의 참가자 목록에서 제거됩니다. 더 이상 새 메시지에 대한 업데이트를 받지 않습니다.
+      confirm: 확인
+      done: 귀하는 {label} 티켓 참가자에서 제외되었습니다.
+      invalid: 이 링크는 유효하지 않거나 만료되었습니다.
+  profile:
+    aside_label: 계정
+    nav_aria: 프로필
+    nav:
+      profile: 프로필
+      password: 비밀번호 변경
+      notifications: 알림
+      appearance: 외관
+    title:
+      profile: 프로필
+      data: 계정 데이터
+      password: 비밀번호 변경
+      notifications: 알림
+      appearance: 외관
+    field:
+      first_name: 이름
+      last_name: 성
+      email: 이메일
+      phone: 전화
+    email_change_hint: 이메일을 변경하려면 새 주소에서 확인이 필요합니다. 확인할 때까지 현재 주소로 계속 로그인합니다.
+    email_pending: '확인 대기 중: {email}'
+    save: 저장
+    password:
+      section: 비밀번호
+      current: 현재 비밀번호
+      new: 새 비밀번호
+      confirm: 새 비밀번호를 반복하세요
+      hint: 소문자, 대문자, 숫자, 특수문자를 포함하여 최소 {min}자 이상이어야 합니다.
+      save: 비밀번호 저장
+      set: 비밀번호 설정
+      send_activation: 활성화 링크 보내기
+      send_reset: 비밀번호 재설정 링크 보내기
+    settings:
+      language: 언어
+      datetime_title: 날짜 및 시간
+      datetime_format: 날짜 및 시간 형식
+      timezone: 시간대
+      theme_title: 색상 테마
+      gradient_toggle: 배경 그라데이션
+      gradient_on: 깊이
+      gradient_off: 플랫
+      density_title: 간격
+      font_title: 글꼴 크기
+      notify_intro: 티켓 변경에 대한 이메일 알림 설정입니다.
+      notify_new_ticket: 신규 티켓
+      notify_new_ticket_hint: 귀하가 직원으로 있는 프로젝트에서 누군가가 새 티켓을 생성하면 이메일을 보내세요.
+      notify_new_ticket_hint_client: 팀이 프로젝트에서 티켓을 생성하면 이메일을 보내세요.
+      notify_reply: 답글
+      notify_reply_hint: 귀하가 참여하는 티켓에 대한 새로운 댓글에 대해 이메일을 보내세요.
+      notify_ticket_update: 상태, 유형 및 우선순위
+      notify_ticket_update_hint: 귀하가 참여하는 티켓의 상태, 유형 또는 우선순위가 변경되면 이메일을 보내주세요.
+    admin_all_projects_hint: 관리자는 모든 프로젝트를 볼 수 있습니다. 티켓을 처리하고 티켓 이메일을 받으려면 프로젝트에 직원으로 추가하세요.
+  portal:
+    empty:
+      title: 프로젝트 없음
+      heading: 아직 프로젝트가 없습니다.
+      body: 관리자에게 초대하거나 프로젝트에 추가해 달라고 요청하세요.
+    feed:
+      tickets: 티켓
+      create: 티켓 만들기
+      empty: 이 보기에는 티켓이 없습니다.
+      deleted_badge: 삭제됨
+      view: 보기
+      filters: 필터
+      search: 검색
+      search_placeholder: 제목, 번호 또는 기자…
+      search_submit: 찾기
+      search_clear: 검색 지우기
+      type: 유형
+      status: 상태
+      priority: 우선순위
+      tag: 태그
+      mine_only: 나만
+      sort: 정렬
+      filter_any: 모두
+      sort_options:
+        updated: 마지막 활동
+        created: 생성일
+        priority: 우선순위
+      updated: 업데이트됨
+      filter_submit: 필터
+      filter_clear: 지우기
+      pagination:
+        label: 티켓 목록 페이지 매기기
+      modal_title: 티켓 만들기
+      field:
+        title: 제목
+        type: 유형
+        priority: 우선순위
+        description: 설명
+    view:
+      all: 모두
+      open: 열기
+      done: 휴무
+      staff:
+        needs_us: 처리하다
+        unassigned: 할당되지 않음
+      client:
+        waiting_on_me: 답장을 기다리는 중
+  ticket:
+    doc_title: 티켓 {label}
+    description: 설명
+    edit: 편집
+    deleted_banner: 이 티켓은 숨겨졌습니다. 관리자만 볼 수 있습니다.
+    attachments: 첨부파일
+    edit_modal: 티켓 수정
+    lightbox_aria: 첨부파일 미리보기
+    self_assign: 나에게 할당
+    back_to_list: 목록으로 돌아가기
+    details: 세부정보
+    created: 생성됨
+    closed: 휴무
+    type: 유형
+    status: 상태
+    priority: 우선순위
+    change_type: 유형 변경
+    change_status: 상태 변경
+    change_priority: 우선순위 변경
+    reopen: 재개설
+    people: 사람들
+    reporter: 기자
+    change_reporter: 기자 변경
+    assignee: 양수인
+    change_assignee: 담당자 변경
+    assignee_none: — 없음 —
+    participants: 참가자
+    add_participant: 참가자 추가
+    no_participants_to_add: 추가할 사용자 없음
+    stop_watching: 시청 중지
+    remove_participant: 시청에서 삭제
+    remove_participant_aria: 시청에서 {name} 삭제
+    tags: 태그
+    add_tag_placeholder: 태그 추가…
+    activity: 활동
+    history: 역사
+    history_aria: 티켓 내역
+    history_empty: 아직 이벤트가 없습니다.
+    history_loading: 로드 중…
+    history_unknown_user: 알 수 없는 사용자
+    event:
+      CREATED: 티켓 생성됨({type}, {priority})
+      COMMENT_ADDED: 댓글이 추가되었습니다.
+      COMMENT_ADDED_INTERNAL: 내부 메모가 추가됨
+      COMMENT_EDITED: 댓글이 수정되었습니다.
+      COMMENT_EDITED_INTERNAL: 내부 메모가 수정됨
+      COMMENT_DELETED: 댓글이 삭제되었습니다.
+      COMMENT_DELETED_INTERNAL: 내부 메모가 삭제되었습니다.
+      TITLE_CHANGED: 제목이 변경됨
+      DESCRIPTION_CHANGED: 설명이 변경됨
+      STATUS_CHANGED: '상태 변경됨: {from} → {to}'
+      PRIORITY_CHANGED: '우선순위 변경됨: {from} → {to}'
+      TYPE_CHANGED: '변경된 유형: {from} → {to}'
+      ASSIGNEE_CHANGED: '담당자가 변경됨: {from} → {to}'
+      REPORTER_CHANGED: '기자 변경됨: {from} → {to}'
+      PARTICIPANT_ADDED: '추가된 참가자: {name}'
+      PARTICIPANT_REMOVED: '삭제된 참가자: {name}'
+      TAG_ADDED: '태그 추가됨: {name}'
+      TAG_REMOVED: '제거된 태그: {name}'
+      ATTACHMENT_ADDED: '첨부파일이 추가되었습니다: {name}'
+      ATTACHMENT_REMOVED: '첨부파일이 삭제되었습니다: {name}'
+      DELETED: 티켓이 삭제되었습니다.
+    reply: 답장하다
+    thread_order_aria: 메시지 순서
+    thread_oldest: 오래된 것부터
+    thread_newest: 최신순
+    internal: 내부
+    edited_by: '편집자: {name}'
+    edit_comment: 댓글 수정
+    save_comment: 댓글 저장
+    cancel_edit: 편집 취소
+    delete_comment: 댓글 삭제
+    delete: 티켓 삭제
+    reply_placeholder: 답장을 쓰세요…
+    internal_note: 내부 메모
+    closed_notice: 티켓이 마감되었습니다.
+    reopen_hint_staff: 상태를 클릭하면 다시 열 수 있습니다.
+    reopen_hint_client: 폐쇄 후 {days}일 이내에 재개설이 가능합니다.
+    no_comment_permission: 댓글을 달 수 있는 권한이 없습니다.
+    attach:
+      add_files: 파일 추가, 붙여넣기 또는 삭제
+      file_one: 파일
+      file_many: 파일
+      hint_icon: 최대 {count} {file_word} · 최대 5MB
+      button: 파일첨부
+      remove: '{name} 제거'
+  editor:
+    toolbar: 서식 지정
+    bold: 굵게
+    italic: 이탤릭체
+    heading_1: 제목 1
+    heading_2: 제목 2
+    heading_3: 제목 3
+    link: 링크
+    link_apply: 링크 추가
+    bullet_list: 글머리 기호 목록
+    ordered_list: 번호가 매겨진 목록
+    code_block: 코드 블록
+    blockquote: 견적
+    horizontal_rule: 분배기
+    dictate: 받아쓰기
+    dictate_stop: 받아쓰기 중지
+    paste_markdown: 마크다운 붙여넣기
+  admin:
+    aside_label: 행정
+    nav_aria: 관리자
+    nav:
+      overview: 통계
+      projects: 프로젝트
+      users: 사용자
+      settings: 설정
+    settings:
+      title: 포털 설정
+      nav_aria: 포털 설정 섹션
+      save: 저장
+      nav:
+        tickets: 티켓
+        uploads: 첨부파일
+        mail: 메일
+      tickets:
+        heading: 티켓 및 링크 정책
+        hint: 클라이언트 제한 및 이메일 링크가 유효한 기간.
+        reopen_days: 재개방 기간(일)
+        reopen_days_hint: 클라이언트를 닫은 후 티켓을 다시 열 수 있는 기간(일)입니다. 직원은 언제든지 다시 열 수 있습니다. 0 = 직원만.
+        description_max_len: 티켓 설명(문자)
+        description_max_len_hint: 인하를 포함한 티켓 설명의 최대 길이입니다.
+        reply_max_len: 답장(문자)
+        reply_max_len_hint: 마크다운을 포함한 댓글 또는 답글의 최대 길이입니다.
+        auth_link_ttl_days: 활성화/비밀번호 재설정(일)
+        auth_link_ttl_days_hint: 계정 활성화 또는 비밀번호 재설정을 위해 이메일 링크가 유효한 기간입니다.
+        email_confirm_ttl_minutes: 이메일 확인(분)
+        email_confirm_ttl_minutes_hint: 프로필에서 이메일을 변경할 때 링크가 유효한 기간입니다.
+      uploads:
+        heading: 첨부파일 한도
+        hint: 각 제한은 단일 티켓이나 댓글에 적용됩니다.
+        max_files: 파일 수
+        max_files_hint: 하나의 티켓 또는 댓글에 대한 최대 첨부 파일 수입니다.
+        max_image_mb: 이미지 크기(MB)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: 파일 크기(MB)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, 로그, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTP 서버
+        smtp_port: 항구
+        smtp_security: 연결 보안
+        smtp_security_none: 없음
+        smtp_security_starttls: 시작하다
+        smtp_security_ssl: SSL/TLS
+        smtp_user: 사용자 이름
+        smtp_pass: 비밀번호
+        smtp_pass_hint: 현재 비밀번호를 유지하려면 공백으로 남겨두세요.
+        email_from: 발신지 주소
+        test_heading: 테스트 이메일 보내기
+        test_hint: 저장된 SMTP 설정을 사용합니다. 테스트하기 전에 변경 사항을 저장하십시오.
+        test_email: 수신자
+        test_send: 테스트 보내기
+    dashboard:
+      title: 통계
+      stat_projects: 프로젝트
+      stat_users: 사용자
+      stat_open_tickets: 오픈 티켓
+      stat_messages: 메시지
+      stat_pending_users: 활성화 보류 중인 계정
+      stat_emails_sent: 이메일이 전송되었습니다
+      stat_members: 회원
+      stat_tickets: 티켓
+      per_project: 프로젝트 통계
+      select_project: 프로젝트
+      user_activity: 사용자 활동
+      col_tickets_created: 생성된 티켓
+      sort_name_asc: 이름 오름차순 정렬
+      sort_name_desc: 이름 내림차순으로 정렬
+      sort_role_asc: 역할별 오름차순 정렬
+      sort_role_desc: 역할 내림차순 정렬
+      sort_tickets_asc: 생성된 티켓을 기준으로 오름차순 정렬
+      sort_tickets_desc: 생성된 티켓을 기준으로 내림차순으로 정렬
+      sort_last_login_asc: 마지막 로그인 기준 오름차순 정렬
+      sort_last_login_desc: 마지막 로그인 기준으로 내림차순으로 정렬
+      by_status: 상태별
+      by_type: 유형별
+      empty_projects: 프로젝트가 없습니다.
+      pagination:
+        label: 사용자 활동 페이지 매김
+    projects:
+      title: 프로젝트
+      new: 새 프로젝트
+      name: 이름
+      key: 열쇠
+      key_title: 1~5자 A~Z / 0~9
+      description: 설명
+      initial_staff: 프로젝트 직원
+      initial_staff_placeholder: 사용자 선택…
+      no_staff_candidates: 먼저 활성 사용자를 만듭니다.
+      list: 프로젝트 목록
+      filter_active: 활성
+      filter_disabled: 장애인
+      meta: '{members} 회원 · {tickets} 티켓'
+      empty: 프로젝트가 없습니다. 위에서 첫 번째 항목을 만듭니다.
+      empty_disabled: 비활성화된 프로젝트가 없습니다.
+      disabled: 장애인
+      disable: 비활성화
+      enable: 활성화
+    project:
+      open_portal: 포털에서 열기
+      settings: 설정
+      notifications: 알림
+      notify_clients_on_staff_ticket: 팀이 만든 티켓에 대해 고객에게 알리기
+      notify_clients_on_staff_ticket_note: 기본적으로 클라이언트는 팀이 만든 새 티켓에 대한 알림을 받지 않습니다. 양방향 통신을 허용하려면 이 옵션을 활성화합니다.
+      tags: 태그
+      tags_empty: 프로젝트에 태그가 없습니다.
+      delete_tag_aria: 태그 삭제 {name}
+      members: 회원
+      members_empty: 프로젝트에 멤버가 없습니다.
+      add_user: 사용자 추가
+      member_role: 프로젝트 역할
+      col_action: 액션
+    users:
+      title: 사용자
+      new: 신규 사용자
+      list: 사용자 목록
+      empty: 사용자가 없습니다.
+      pagination:
+        label: 사용자 목록 페이지 매기기
+      blocked: 차단됨
+      pending: 보류 중
+      resend: 활성화 링크 보내기
+      block: 블록
+      unblock: 차단 해제
+      edit_aria: '{name} 편집'
+      filter_role: 역할
+      filter_project: 프로젝트
+      filter_status: 상태
+      filter_status_active: 차단 해제됨
+      filter_status_blocked: 차단됨
+      filter_status_pending: 보류 중
+      filter_status_all: 모두
+      filter_search: 검색
+      filter_search_placeholder: 이름, 이메일, 전화번호…
+      filter_all: 모두
+      filter_clear: 지우기
+      col_name: 이름
+      col_status: 상태
+      sort_name_asc: 이름 오름차순 정렬
+      sort_name_desc: 이름 내림차순으로 정렬
+      sort_email_asc: 이메일 오름차순 정렬
+      sort_email_desc: 이메일 내림차순으로 정렬
+      sort_phone_asc: 전화번호 오름차순 정렬
+      sort_phone_desc: 전화번호 내림차순으로 정렬
+      sort_role_asc: 역할별 오름차순 정렬
+      sort_role_desc: 역할 내림차순 정렬
+      sort_status_asc: 상태 오름차순 정렬
+      sort_status_desc: 상태 내림차순으로 정렬
+      col_last_login: 마지막 로그인
+    user_new:
+      title: 신규 사용자
+      role: 역할
+      submit: 활성화 링크 생성 및 보내기
+      submit_active: 활성화 없이 생성
+    user_edit:
+      title: 사용자 편집
+      heading: 계정 수정
+    projects_fieldset: 프로젝트
+    projects_empty: 프로젝트가 없습니다.
+    projects_required: 프로젝트가 하나 이상 필요합니다.
+  dev:
+    aria: 개발자 모드
+    label: 데브
+    copy: 복사
+    copied: 복사됨
+    expand: 펼치기
+    collapse: 접기
+    url: URL
+    template: 템플릿
+    partials: 부분
+    api: API
+    js: JS
+    route: 경로 패턴
+    file: 핸들러
+  time:
+    today_at: 오늘 {time}에
+    yesterday_at: 어제 {time}
+    am: 오전
+    pm: 오후
+    month_abbr:
+      1: 1월
+      2: 2월
+      3: 3월
+      4: 4월
+      5: 5월
+      6: 준
+      7: 7월
+      8: 8월
+      9: 9월
+      10: 10월
+      11: 11월
+      12: 12월
+enums:
+  ticket_type:
+    BUG: 버그
+    QUESTION: 질문
+    CHANGE: 변경
+    TASK: 새로운 기능
+  ticket_status:
+    NEW: 새로운
+    IN_PROGRESS: 진행 중
+    WAITING_ON_CLIENT: 기자와 함께
+    DONE: 완료
+  ticket_priority:
+    LOW: 낮음
+    NORMAL: 보통
+    HIGH: 높음
+  user_role:
+    USER: 사용자
+    ADMIN: 관리자
+  member_role:
+    CLIENT: 클라이언트
+    STAFF: 직원
+themes:
+  morning-mist:
+    label: 아침 안개
+    description: 은은한 빛이 감도는 펄리 블루.
+  sandy-dawn:
+    label: 샌디 쇼어
+    description: 따뜻한 모래와 꿀이 함유된 앰버를 부드럽게 씻어냅니다.
+  green-meadow:
+    label: 그린 메도우
+    description: 조용하고 친밀한 빛을 발하는 세이지와 이끼.
+  graphite-day:
+    label: 흑연의 날
+    description: 조용한 스틸 워시로 흑연을 냉각시킵니다.
+  berry-dawn:
+    label: 헤더 블룸
+    description: 밝고 부드러운 워싱의 부드러운 헤더와 베리.
+  rose-dawn:
+    label: 블러시 글로우
+    description: 따뜻한 장미와 파우더 블러셔가 밝고 부드러운 워시를 선사합니다.
+  deep-ocean:
+    label: 심해
+    description: 은은한 심연의 빛을 지닌 사파이어의 깊이.
+  amber-night:
+    label: 앰버 엠버
+    description: 따뜻한 샴페인을 곁들인 에스프레소.
+  northern-spruce:
+    label: 북부 가문비나무
+    description: 투명한 민트 빛이 나는 어두운 숲.
+  charcoal-dusk:
+    label: 숯 황혼
+    description: 조용한 황혼 속에 시원한 스틸 실버가 가미된 숯.
+  midnight-berry:
+    label: 벨벳베리
+    description: 따뜻한 보라색 반광에 잘 익은 베리.
+  rose-night:
+    label: 진홍색 베일
+    description: 따뜻하고 벨벳 반광의 깊은 장미.
+  density:
+    tight:
+      label: 꽉
+      description: 간격이 작아지고 화면에 더 많은 콘텐츠가 표시됩니다.
+    balanced:
+      label: 균형 잡힌
+      description: 기본 PulseDeck 간격입니다.
+    airy:
+      label: 에어리
+      description: 요소 사이에 더 많은 호흡 공간이 있습니다.
+  font_size:
+    compact:
+      label: 콤팩트
+      description: 화면에 더 많은 텍스트가 표시됩니다.
+    natural:
+      label: 자연적인
+      description: 기본 PulseDeck 크기입니다.
+    large:
+      label: 대형
+      description: 더 편안하게 읽을 수 있습니다.
+flash:
+  auth:
+    invalid_credentials: 이메일이나 비밀번호가 잘못된 것 같습니다.
+    account_blocked: 이 계정은 차단되었습니다.
+    account_not_activated: 이 계정은 아직 활성화되지 않았습니다. 이메일을 확인하거나 '비밀번호 찾기'를 사용하세요.
+    profile_updated: 프로필이 저장되었습니다.
+    email_confirm_sent: 새 이메일에 대한 링크를 보내드렸습니다. 확인할 때까지 현재 주소로 계속 로그인하세요.
+    password_changed: 새 비밀번호가 저장되었습니다.
+    notifications_updated: 알림 환경설정이 저장되었습니다.
+    current_password_invalid: 현재 비밀번호가 일치하지 않습니다.
+    confirm_link_invalid: 해당 확인 링크는 만료되었거나 유효하지 않습니다.
+    email_confirmed: 이메일이 확인되었습니다. 새 주소로 로그인하세요.
+    activation_link_invalid: 해당 활성화 링크는 만료되었거나 유효하지 않습니다.
+    mfa_invalid: 코드가 잘못되었거나 만료되었습니다.
+    mfa_expired: 확인 세션이 만료되었습니다. 다시 로그인하세요.
+    mfa_delivery: 코드를 보낼 수 없습니다. 나중에 다시 시도해 주세요.
+  admin:
+    user_created: 계정이 생성되었습니다. 활성화 링크를 보냈습니다.
+    user_created_active: 계정이 생성되어 활성화되었습니다. 아래에서 비밀번호를 설정하세요.
+    user_updated: 사용자 세부정보가 저장되었습니다.
+    password_link_sent: 비밀번호 링크가 포함된 이메일을 보냈습니다.
+    password_set: 비밀번호가 설정되었습니다.
+    activation_resent: 활성화 링크가 다시 전송되었습니다.
+    user_blocked: 계정이 차단됨 - 사용자에게 포털 액세스 권한이 없습니다.
+    user_unblocked: 계정이 차단 해제되었습니다.
+    notifications_updated: 알림 환경설정이 저장되었습니다.
+    settings_saved: 포털 설정이 저장되었습니다.
+    settings_test_sent: 테스트 이메일을 보냈습니다.
+    settings_test_failed: 테스트 이메일을 보낼 수 없습니다. SMTP와 로그를 확인하세요.
+    settings_smtp_missing: SMTP가 구성되지 않았습니다. 먼저 서버를 설정하고 저장하세요.
+messages:
+  auth:
+    passwords_mismatch: 비밀번호가 일치해야 합니다.
+    cannot_demote_last_admin: 마지막 관리자입니다. 이 역할은 제거할 수 없습니다.
+    cannot_block_self: 자신의 계정을 차단할 수 없습니다.
+    email_unchanged: 새 이메일은 현재 이메일과 동일합니다.
+    email_taken: 이미 사용 중인 이메일입니다.
+    user_exists_resend: 이 이메일을 사용하는 계정이 이미 존재합니다. 사용자 페이지를 열고 활성화 링크를 다시 보내세요.
+  admin:
+    invalid_role: 유효한 역할을 선택하세요.
+    unknown_action: 해당 작업을 수행할 수 없습니다.
+    already_activated: 이 계정은 이미 활성화되어 있습니다.
+    settings_invalid_int: 유효한 숫자를 입력하세요.
+    settings_out_of_range: 해당 값이 허용 범위를 벗어났습니다.
+    settings_invalid_choice: 유효한 옵션을 선택하세요.
+  projects:
+    name_exists: 같은 이름의 프로젝트가 이미 존재합니다.
+    key_exists: 이 프로젝트 키는 이미 사용 중입니다.
+    staff_required: 프로젝트를 처리할 사용자를 한 명 이상 선택하세요.
+    staff_invalid: 선택한 사용자가 없거나 비활성 상태입니다.
+    last_staff: 프로젝트에는 최소한 한 명의 활동적인 직원이 있어야 합니다.
+    at_least_one: 프로젝트를 하나 이상 선택하세요.
+    invalid: 해당 프로젝트는 유효하지 않습니다.
+  tickets:
+    no_project_access: 이 프로젝트에 액세스할 수 없습니다.
+    no_comment: 여기에 댓글을 추가할 수 없습니다.
+    no_edit_comment: 댓글은 편집할 수 없습니다.
+    no_delete_comment: 댓글은 삭제할 수 없습니다.
+    comment_not_found: 해당 댓글은 더 이상 여기에 없습니다.
+    internal_staff_only: 내부 메모는 직원 전용입니다.
+    no_assign: 이 티켓은 배정할 수 없습니다.
+    assignee_must_be_staff: 직원이나 관리자만 지정할 수 있습니다.
+    no_change_reporter: 기자를 바꿀 수는 없습니다.
+    reporter_must_be_member: 기자는 프로젝트에 액세스해야 합니다.
+    no_status: 상태를 변경할 수 없습니다.
+    cannot_reopen: 이 티켓은 다시 열 수 없습니다.
+    no_edit: 이 내용은 편집할 수 없습니다.
+    no_delete: 이 티켓은 삭제할 수 없습니다.
+    no_priority: 우선순위는 변경할 수 없습니다.
+    no_type: 유형을 변경할 수 없습니다.
+    tags_staff_only: 직원만이 태그를 관리할 수 있습니다.
+    no_add_participant: 참가자를 추가할 수 없습니다.
+    no_stop_watching: 이 티켓을 보는 것을 멈출 수 없습니다.
+    not_participant: 당신은 이 티켓을 보고 있지 않습니다.
+    user_must_be_member: 그 사람이 프로젝트에 참여해야 합니다.
+    participant_not_allowed: 이 사람을 참가자로 추가할 수 없습니다.
+    invalid_status: 유효한 상태를 선택하세요.
+    invalid_type: 유효한 유형을 선택하세요.
+    invalid_priority: 유효한 우선순위를 선택하세요.
+    select_user: 사용자를 선택하세요.
+  uploads:
+    empty: 해당 파일은 비어 있습니다.
+    too_large_image: 이미지가 너무 큽니다(최대 {mb}MB).
+    too_large_file: 파일이 너무 큽니다(최대 {mb}MB).
+    invalid_image: 잘못된 이미지 파일입니다.
+    image_too_large: 이미지가 너무 큽니다.
+    invalid_file: 지원되지 않는 파일 형식입니다.
+    formats: JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR 또는 7Z를 사용하세요.
+  validation:
+    missing_user: 사용자 선택
+    missing_field: '{label}을(를) 입력하세요.'
+    invalid_int: 유효한 숫자를 입력하세요.
+    invalid_form: 양식을 확인하세요. 오류가 있습니다.
+    field:
+      user_id: 사용자
+      content: 메시지
+      title: 제목
+      name: 이름
+      key: 열쇠
+      description: 설명
+      email: 이메일 주소
+      password: 비밀번호
+      tag: 태그
+      required: 필수 필드
+  fields:
+    required: '{field}이(가) 필요합니다.'
+    invalid: '{field}은(는) 유효하지 않습니다.'
+    too_short: '{field}이(가) 너무 짧습니다(최소 {min}).'
+    too_long: '{field}이(가) 너무 깁니다(최대 {max}).'
+    pattern: '{field}의 형식이 잘못되었습니다.'
+    labels:
+      user:
+        email: 이메일
+        password: 비밀번호
+        first_name: 이름
+        last_name: 성
+        phone: 전화
+        role: 역할
+        ui_lang: 언어
+        datetime_format: 날짜 및 시간 형식
+        timezone: 시간대
+      project:
+        name: 프로젝트 이름
+        key: 프로젝트 키
+        description: 프로젝트 설명
+      ticket:
+        title: 제목
+        description: 설명
+        type: 유형
+        status: 상태
+        priority: 우선순위
+      comment:
+        content: 댓글
+      tag:
+        name: 태그
+      search:
+        q: 검색
+      filter:
+        tag: 태그 필터
+  http:
+    not_found: 당신이 찾고 있는 것을 찾을 수 없습니다.
+    server_error: 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.
+    login_required: 계속하려면 로그인하세요.
+    admin_required: 관리자 액세스 권한이 필요합니다.
+  csrf:
+    missing: 세션이 만료되었습니다.
+    invalid: 세션이 만료되었습니다.
+    refresh_hint: 페이지를 새로 고치고 다시 시도하세요.
+  password:
+    min_length: 최소 {min}자를 사용하세요.
+    too_long: 비밀번호가 너무 깁니다.
+    need_lower: 소문자를 추가하세요.
+    need_upper: 대문자를 추가하세요.
+    need_digit: 숫자를 추가하세요.
+    need_special: 특수 문자를 추가하세요.
+  phone:
+    e164: +48 123 456 789와 같은 숫자를 입력하세요.
+  project_key:
+    invalid: '키: {min}–{max} 문자 A–Z / 0–9(하이픈 없음)'
+js:
+  errors:
+    forbidden: 귀하는 이에 대한 액세스 권한이 없습니다.
+    not_found: 당신이 찾고 있는 것을 찾을 수 없습니다.
+    validation: 양식을 확인하세요. 오류가 있습니다.
+    rate_limit: 시도 횟수가 너무 많습니다. 잠시만 기다려 주세요.
+    server: 문제가 발생했습니다. 다시 시도해 보세요.
+    generic: 문제가 발생했습니다. 다시 시도해 보세요.
+    submit_failed: 양식을 제출할 수 없습니다.
+    network: 서버에 연결할 수 없습니다.
+    comment_empty: 댓글에 아무거나 적어주세요
+    content_too_long: 텍스트가 너무 깁니다(최대 {max}자).
+    paste_markdown: 마크다운을 붙여넣을 수 없습니다.
+  ticket:
+    stale_reply: 새 메시지가 나타났습니다. 보내기 전에 스레드를 확인하세요.
+  editor:
+    char_count: '{used}/{max}자'
+    dictate_denied: 마이크 액세스가 거부되었습니다.
+    dictate_no_mic: 마이크를 찾을 수 없습니다.
+    dictate_network: 받아쓰기를 사용할 수 없습니다. 연결을 확인하세요.
+    paste_markdown_hint: Ctrl+V로 붙여넣기 — 마크다운이 포맷됩니다.
+  validation:
+    missing_user: 사용자 선택
+    missing_field: '{label}을(를) 입력하세요.'
+    field:
+      user_id: 사용자
+      content: 메시지
+      title: 제목
+      name: 이름
+      key: 열쇠
+      first_name: 이름
+      last_name: 성
+      description: 설명
+      email: 이메일 주소
+      password: 비밀번호
+      tag: 태그
+      project_ids: 프로젝트
+      required: 필수 필드
+  confirm:
+    title: 확인
+    message_default: 계속하시겠습니까?
+    continue: 계속하다?
+    confirm_label: 확인
+    discard_ticket:
+      title: 티켓을 삭제하시겠습니까?
+      message: 양식에 데이터가 채워져 있습니다. 변경사항을 취소하고 삭제하시겠습니까?
+      action: 생성 취소
+      cancel: 편집으로 돌아가기
+  attach:
+    remove: '{name} 제거'
+    too_many: 최대 {count}개의 파일을 첨부할 수 있습니다.
+  coachmarks:
+    next: 다음
+    back: 뒤로
+    done: 완료
+    skip: 건너뛰기
+    replay: 이 페이지에 대한 팁
+    step: '{current}/{total}'
+    tour_label: 팁
+    nav-project:
+      body: 프로젝트 간을 빠르게 전환하세요.
+    nav-appearance:
+      body: 테마와 색상을 원하는 대로 조정하세요.
+      cta: 외모 변경
+    feed-create:
+      body: 문제가 있나요? 여기에서 새 티켓을 만드세요.
+    feed-needs-us:
+      body: 팀의 답변을 기다리는 티켓입니다.
+    feed-mine:
+      body: 귀하가 보고자, 담당자 또는 관찰자 역할을 하는 곳에 티켓을 보여주세요.
+    feed-filters:
+      body: 유형, 상태, 우선순위 또는 태그별로 목록 범위를 좁힙니다.
+    feed-filter-clear:
+      body: 필터를 재설정하고 선택한 기준을 지웁니다.
+    ticket-status:
+      body: 티켓 상태를 변경하려면 클릭하세요.
+    ticket-done:
+      body: 문제가 해결되면 티켓을 완료로 표시합니다. 필요한 경우 나중에 다시 열 수 있습니다.
+    ticket-assignee:
+      body: 이 티켓을 처리할 팀원을 배정하세요.
+    ticket-thread-order:
+      body: '메시지 순서: 오래된 것부터 또는 최신 것부터.'
+    ticket-history:
+      body: 상태, 배정, 기타 변경 사항 등 티켓 타임라인을 엽니다.
+    admin-projects-name:
+      body: 프로젝트의 표시 이름입니다.
+    admin-projects-key:
+      body: 티켓 번호의 일부를 구성하는 고유 키입니다.
+    admin-projects-description:
+      body: 프로젝트 목록에 표시되는 선택적 간략한 요약입니다.
+    admin-project-members:
+      body: 티켓을 보고 작업할 수 있도록 프로젝트에 사람들을 추가하세요.
+    compose-attach:
+      body: 디스크에서 파일을 선택하거나, 여기로 드래그하거나, 클립보드에서 붙여넣어(Ctrl+V) 파일을 추가하세요.
+    compose-quote:
+      body: 메시지에서 텍스트를 선택한 다음 인용을 클릭합니다.
+    compose-dictate:
+      body: 답장을 받아쓰려면 마이크를 클릭하세요. 일부 브라우저나 장치에서는 마이크 액세스를 차단할 수 있습니다.
+    compose-internal:
+      body: 내부 메모는 직원에게만 표시되며 고객에게는 표시되지 않습니다.
+email:
+  mfa:
+    subject: 로그인 코드
+    body: '로그인 확인 코드:'
+    ttl: 코드는 {minutes}분 동안 유효합니다.
+  confirm:
+    subject: 새 이메일을 확인하세요
+    body: '{app}에 귀하의 이메일 주소를 변경해 달라는 요청이 접수되었습니다. 아래 버튼을 사용하여 새 주소를 확인하세요. 링크는 {minutes}분 동안 유효합니다. 본인이 아닌 경우 이 메시지를 무시해도 됩니다.'
+    cta: 이메일 확인
+  activate:
+    subject: 계정을 활성화하세요
+    body: '{app}에 귀하의 계정이 생성되었습니다. 활성화하려면 비밀번호를 설정하고 로그인하세요. 링크는 {days}일 동안 유효합니다.'
+    cta: 비밀번호 설정
+  reset:
+    subject: 비밀번호 재설정
+    body: '{app}에 대한 비밀번호 재설정 요청을 받았습니다. 아래 버튼을 사용하여 새 비밀번호를 설정하세요. 링크는 {days}일 동안 유효합니다. 본인이 아닌 경우 이 메시지를 무시해도 됩니다.'
+    cta: 새 비밀번호 설정
+  smtp_test:
+    subject: 테스트 이메일
+    body: '{app}에서 보낸 테스트 메시지입니다. 브랜드 레이아웃에서 이것을 읽을 수 있다면 SMTP가 작동하고 있는 것입니다.'
+  new_ticket:
+    subject: 새로운 티켓
+    body: '새 티켓이 생성되었습니다: {ticket}. {app}에서 열어 세부정보를 검토하고 조치를 취하세요.'
+    cta: '{app}에 열기'
+  new_comment:
+    subject: 티켓의 새 메시지
+    body: 티켓 {ticket}에 새 메시지가 나타났습니다. 티켓으로 이동하여 내용을 확인하고 답장을 보내주세요.
+    cta: '{app}에 열기'
+  ticket_update:
+    subject: 티켓 업데이트
+    body: '{ticket} 티켓의 상태, 유형 또는 우선순위가 변경되었습니다.'
+    new_value: '새 값: {value}'
+    cta: '{app}에 열기'
+  assignment:
+    subject: 티켓 할당
+    body: 귀하에게 {ticket} 티켓이 할당되었습니다. 세부정보를 검토하려면 {app}에서 열어보세요.
+    cta: '{app}에 열기'
+  common:
+    greeting: 안녕하세요 {name}님,
+    link_hint: 버튼이 작동하지 않으면 다음 링크를 복사하여 브라우저에 붙여넣으세요.
+    unsubscribe: 더 이상 이러한 알림을 받지 않으려면 여기를 클릭하세요.
+    unwatch: 이 티켓을 더 이상 시청하지 않으려면 여기를 클릭하세요.

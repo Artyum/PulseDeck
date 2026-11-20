@@ -1,0 +1,909 @@
+meta:
+  name: Русский
+ui:
+  common:
+    close: Закрыть
+    cancel: Отмена
+    confirm: Подтвердить
+    save: Сохранить
+    create: Создать
+    edit: Редактировать
+    delete: Удалить
+    add: Добавить
+    send: Отправить
+    empty_dash: —
+    none: Нет
+    back_to_portal: Вернуться на портал
+    back_home: Главная
+    active: Активный
+    sidebar_show: Показать панель
+    sidebar_hide: Скрыть панель
+    pagination:
+      first: Первая страница
+      prev: Предыдущий
+      next: Далее
+      last: Последняя страница
+      range: '{start}–{end} из {total}'
+      per_page_label: За страницу
+  errors:
+    not_found:
+      title: Не найден
+      heading: Страница не найдена
+      body: Этот адрес не существует или был удален.
+  settings:
+    language: Язык
+  confirm:
+    title: Подтверждение
+    disable_project:
+      title: Отключить проект?
+      message: Проект «{name}» ({key}) будет отключен и скрыт с портала.
+      action: Отключить
+    delete_tag:
+      title: Удалить тег?
+      message: Вы уверены, что хотите удалить тег «{name}»? Оно будет удалено из всех билетов.
+      action: Удалить
+    change_key:
+      title: Изменить ключ проекта
+      message: Изменение ключа приведет к поломке старых ссылок /p/… и /t/…. Продолжать?
+      action: Изменить ключ
+    remove_member:
+      title: Удалить участника?
+      message: Удалить {name} из проекта «{project}»?
+      action: Удалить
+    block_user:
+      title: Заблокировать аккаунт?
+      message: Учетная запись «{name}» потеряет доступ к порталу. Сообщения и билеты остаются.
+      action: Блокировать
+    delete_comment:
+      title: Удалить комментарий?
+      message: Комментарий будет удален без возможности восстановления вместе с прикрепленными к нему файлами.
+      action: Удалить
+    delete_ticket:
+      title: Удалить билет?
+      message: Билет будет скрыт. История остается доступной администраторам.
+      action: Удалить
+    stop_watching:
+      title: Перестать смотреть?
+      message: Вы будете исключены из числа участников этой заявки и перестанете получать уведомления об этом по электронной почте.
+      action: Хватит смотреть
+    remove_participant:
+      title: Удалить участника?
+      message: Удалить {name} из участников этой заявки? Они больше не будут получать уведомления об этом по электронной почте.
+      action: Удалить
+  nav:
+    aria: Навигация
+    project: Проект
+    select_project: Выберите проект
+    user_menu: Меню пользователя
+    menu: Меню
+    admin: Администрация
+    profile: Профиль
+    logout: Выйти
+  auth:
+    login:
+      title: Войти
+      email: Электронная почта
+      password: Пароль
+      submit: Войти
+      forgot_label: Забыли пароль
+      forgot_placeholder: адрес@company.com
+      forgot_submit: Отправить ссылку на смену пароля
+      forgot_back: Вернуться для входа в систему
+      forgot_sent: Если учетная запись существует и не заблокирована, мы отправили ссылку по электронной почте.
+      mfa_title: Код электронной почты
+      mfa_hint: Введите 6-значный код, который мы отправили на вашу электронную почту.
+      mfa_submit: Подтвердить код
+      mfa_trust: Не запрашивать код на этом устройстве в течение {days} дней.
+      mfa_resend: Отправить код повторно
+    activate:
+      title_pending: Активация аккаунта
+      title_reset: Установить пароль
+      subtitle_pending: Установите пароль для активации вашей учетной записи
+      subtitle_reset: Установить новый пароль
+      password: Пароль
+      password_confirm: Повторите пароль
+      phone: Телефон (необязательно)
+      phone_placeholder: +48 123 456 789
+      submit_pending: Активировать учетную запись
+      submit_reset: Сохранить пароль
+    confirm_email:
+      title: Подтвердите адрес электронной почты
+      subtitle: Подтвердите изменение адреса электронной почты
+      submit: Подтвердите адрес электронной почты
+    unsubscribe:
+      title: Отписаться
+      heading: Отменил подписку
+      heading_invalid: Неверная ссылка
+      heading_confirm: Подтвердите отключение уведомлений
+      confirm_body:
+        notify_reply: Уведомления об ответах будут отключены. Вы больше не будете получать эти сообщения ни для одного билета. Вы можете изменить это в настройках вашего профиля.
+        notify_new_ticket: Уведомления о новых билетах будут отключены. Вы больше не будете получать эти сообщения ни для одного билета. Вы можете изменить это в настройках вашего профиля.
+        notify_ticket_update: Уведомления об изменении статуса, типа и приоритета будут отключены. Вы больше не будете получать эти сообщения ни для одного билета. Вы можете изменить это в настройках вашего профиля.
+      confirm: Подтвердить
+      done: Уведомления «{type}» отключены в настройках вашего профиля.
+      invalid: Эта ссылка для отказа от подписки недействительна или срок ее действия истек.
+      manage: Настройки уведомлений
+    unwatch:
+      title: Выключить просмотр
+      heading: Вы больше не смотрите этот билет
+      heading_invalid: Неверная ссылка
+      heading_confirm: Подтвердите отключение просмотра этого билета.
+      confirm_body: Вы будете удалены из списка участников заявки {label}. Вы больше не будете получать уведомления о новых сообщениях.
+      confirm: Подтвердить
+      done: Вы исключены из числа участников заявки {label}.
+      invalid: Эта ссылка недействительна или срок ее действия истек.
+  profile:
+    aside_label: Аккаунт
+    nav_aria: Профиль
+    nav:
+      profile: Профиль
+      password: Изменить пароль
+      notifications: Уведомления
+      appearance: Внешний вид
+    title:
+      profile: Профиль
+      data: Данные аккаунта
+      password: Изменить пароль
+      notifications: Уведомления
+      appearance: Внешний вид
+    field:
+      first_name: Имя
+      last_name: Фамилия
+      email: Электронная почта
+      phone: Телефон
+    email_change_hint: Для изменения адреса электронной почты требуется подтверждение на новом адресе. Вы продолжаете входить в систему, используя свой текущий адрес, пока не подтвердите.
+    email_pending: 'Ожидает подтверждения: {email}'
+    save: Сохранить
+    password:
+      section: Пароль
+      current: Текущий пароль
+      new: Новый пароль
+      confirm: Повторите новый пароль
+      hint: Не менее {min} символов, включая строчную букву, прописную букву, цифру и специальный символ.
+      save: Сохранить пароль
+      set: Установить пароль
+      send_activation: Отправить ссылку активации
+      send_reset: Отправить ссылку для сброса пароля
+    settings:
+      language: Язык
+      datetime_title: Дата и время
+      datetime_format: Формат даты и времени
+      timezone: Часовой пояс
+      theme_title: Цветовая тема
+      gradient_toggle: Фоновый градиент
+      gradient_on: Глубина
+      gradient_off: Квартира
+      density_title: Расстояние
+      font_title: Размер шрифта
+      notify_intro: Настройки уведомлений по электронной почте об изменениях билетов.
+      notify_new_ticket: Новые билеты
+      notify_new_ticket_hint: Отправьте электронное письмо, когда кто-то создает новую заявку в проекте, в котором вы работаете.
+      notify_new_ticket_hint_client: Отправьте электронное письмо, когда команда создаст заявку в вашем проекте.
+      notify_reply: Ответы
+      notify_reply_hint: Пишите по электронной почте о новых комментариях к заявкам, в которых вы участвуете.
+      notify_ticket_update: Статус, тип и приоритет
+      notify_ticket_update_hint: Отправляйте электронное письмо при изменении статуса, типа или приоритета заявок, в которых вы участвуете.
+    admin_all_projects_hint: Администраторы могут просматривать все проекты. Чтобы обрабатывать заявки и получать электронные письма с заявками, добавьте их в проект в качестве сотрудников.
+  portal:
+    empty:
+      title: Нет проектов
+      heading: У вас пока нет проектов
+      body: Попросите администратора пригласить вас или добавить в проект.
+    feed:
+      tickets: Билеты
+      create: Создать билет
+      empty: В этом представлении нет билетов.
+      deleted_badge: Удалено
+      view: Посмотреть
+      filters: Фильтры
+      search: Поиск
+      search_placeholder: Должность, номер или репортер…
+      search_submit: Найти
+      search_clear: Очистить поиск
+      type: Тип
+      status: Статус
+      priority: Приоритет
+      tag: Тег
+      mine_only: Только мой
+      sort: Сортировка
+      filter_any: Любой
+      sort_options:
+        updated: Последняя активность
+        created: Дата создания
+        priority: Приоритет
+      updated: Обновлено
+      filter_submit: Фильтр
+      filter_clear: Очистить
+      pagination:
+        label: Нумерация страниц списка билетов
+      modal_title: Создать билет
+      field:
+        title: Название
+        type: Тип
+        priority: Приоритет
+        description: Описание
+    view:
+      all: Все
+      open: Открыть
+      done: Закрыто
+      staff:
+        needs_us: Чтобы справиться
+        unassigned: Неназначенный
+      client:
+        waiting_on_me: Ожидание ответа
+  ticket:
+    doc_title: Билет {label}
+    description: Описание
+    edit: Редактировать
+    deleted_banner: Этот билет был скрыт. Это могут видеть только администраторы.
+    attachments: Вложения
+    edit_modal: Редактировать билет
+    lightbox_aria: Предварительный просмотр вложения
+    self_assign: Назначьте меня
+    back_to_list: Вернуться к списку
+    details: Подробности
+    created: Создано
+    closed: Закрыто
+    type: Тип
+    status: Статус
+    priority: Приоритет
+    change_type: Тип изменения
+    change_status: Изменить статус
+    change_priority: Изменить приоритет
+    reopen: Открыть заново
+    people: Люди
+    reporter: Репортер
+    change_reporter: Сменить репортера
+    assignee: Правопреемник
+    change_assignee: Изменить правопреемника
+    assignee_none: — нет —
+    participants: Участники
+    add_participant: Добавить участника
+    no_participants_to_add: Нет людей для добавления
+    stop_watching: Хватит смотреть
+    remove_participant: Удалить из просмотра
+    remove_participant_aria: Удалить {name} из просмотра
+    tags: Теги
+    add_tag_placeholder: Добавить тег…
+    activity: Деятельность
+    history: История
+    history_aria: История билетов
+    history_empty: Пока нет событий.
+    history_loading: Загрузка…
+    history_unknown_user: Неизвестный пользователь
+    event:
+      CREATED: Заявка создана ({type}, {priority})
+      COMMENT_ADDED: Комментарий добавлен
+      COMMENT_ADDED_INTERNAL: Добавлено внутреннее примечание
+      COMMENT_EDITED: Комментарий отредактирован
+      COMMENT_EDITED_INTERNAL: Внутренняя заметка изменена.
+      COMMENT_DELETED: Комментарий удален
+      COMMENT_DELETED_INTERNAL: Внутренняя заметка удалена.
+      TITLE_CHANGED: Название изменено
+      DESCRIPTION_CHANGED: Описание изменено
+      STATUS_CHANGED: 'Статус изменен: {from} → {to}'
+      PRIORITY_CHANGED: 'Приоритет изменен: {from} → {to}.'
+      TYPE_CHANGED: 'Тип изменен: {from} → {to}.'
+      ASSIGNEE_CHANGED: 'Правопреемник изменен: {from} → {to}.'
+      REPORTER_CHANGED: 'Репортер изменен: {from} → {to}.'
+      PARTICIPANT_ADDED: 'Участник добавил: {name}'
+      PARTICIPANT_REMOVED: 'Участник удален: {name}'
+      TAG_ADDED: 'Добавлен тег: {name}'
+      TAG_REMOVED: 'Тег удален: {name}'
+      ATTACHMENT_ADDED: 'Добавлен прикрепленный файл: {name}.'
+      ATTACHMENT_REMOVED: 'Вложение удалено: {name}.'
+      DELETED: Заявка удалена
+    reply: Ответить
+    thread_order_aria: Порядок сообщений
+    thread_oldest: Сначала самый старый
+    thread_newest: Сначала самые новые
+    internal: Внутренний
+    edited_by: 'отредактировал: {name}'
+    edit_comment: Редактировать комментарий
+    save_comment: Сохранить комментарий
+    cancel_edit: Отменить редактирование
+    delete_comment: Удалить комментарий
+    delete: Удалить билет
+    reply_placeholder: Написать ответ…
+    internal_note: Внутреннее примечание
+    closed_notice: Билет закрыт.
+    reopen_hint_staff: Вы можете открыть его снова, нажав на статус.
+    reopen_hint_client: Повторное открытие возможно в течение {days} дней после закрытия.
+    no_comment_permission: У вас нет разрешения на комментирование.
+    attach:
+      add_files: Добавить, вставить или переместить файлы
+      file_one: файл
+      file_many: файлы
+      hint_icon: До {count} {file_word} · максимум 5 МБ
+      button: Прикрепить файл
+      remove: Удалить {name}
+  editor:
+    toolbar: Форматирование
+    bold: Жирный
+    italic: Курсив
+    heading_1: Заголовок 1
+    heading_2: Заголовок 2
+    heading_3: Заголовок 3
+    link: Ссылка
+    link_apply: Добавить ссылку
+    bullet_list: Маркированный список
+    ordered_list: Нумерованный список
+    code_block: Кодовый блок
+    blockquote: Цитата
+    horizontal_rule: Разделитель
+    dictate: Диктовать
+    dictate_stop: Остановить диктовку
+    paste_markdown: Вставить уценку
+  admin:
+    aside_label: Администрация
+    nav_aria: Админ
+    nav:
+      overview: Статистика
+      projects: Проекты
+      users: Пользователи
+      settings: Настройки
+    settings:
+      title: Настройки портала
+      nav_aria: Разделы настроек портала
+      save: Сохранить
+      nav:
+        tickets: Билеты
+        uploads: Вложения
+        mail: Почта
+      tickets:
+        heading: Политика в отношении билетов и ссылок
+        hint: Ограничения клиентов и срок действия ссылок по электронной почте.
+        reopen_days: Открыть окно повторного открытия (дни)
+        reopen_days_hint: Через сколько дней после закрытия клиент может повторно открыть тикет. Персонал всегда может открыться снова. 0 = только персонал.
+        description_max_len: Описание билета (персонажи)
+        description_max_len_hint: Максимальная длина описания билета, включая уценку.
+        reply_max_len: Ответ (символы)
+        reply_max_len_hint: Максимальная длина комментария или ответа, включая уценку.
+        auth_link_ttl_days: Активация/сброс пароля (дни)
+        auth_link_ttl_days_hint: Как долго ссылка по электронной почте будет действительна для активации учетной записи или сброса пароля.
+        email_confirm_ttl_minutes: Подтверждение по электронной почте (минуты)
+        email_confirm_ttl_minutes_hint: Как долго ссылка будет действовать при смене почты в профиле.
+      uploads:
+        heading: Ограничения на вложения
+        hint: Каждый лимит применяется к одному билету или комментарию.
+        max_files: Количество файлов
+        max_files_hint: Максимальное количество вложений в одном билете или комментарии.
+        max_image_mb: Размер изображения (МБ)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: Размер файла (МБ)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTP-сервер
+        smtp_port: Порт
+        smtp_security: Безопасность соединения
+        smtp_security_none: Нет
+        smtp_security_starttls: СТАРТЛС
+        smtp_security_ssl: SSL/TLS
+        smtp_user: Имя пользователя
+        smtp_pass: Пароль
+        smtp_pass_hint: Оставьте пустым, чтобы сохранить текущий пароль.
+        email_from: С адреса
+        test_heading: Отправить тестовое письмо
+        test_hint: Использует сохраненные настройки SMTP. Сохраните изменения перед тестированием.
+        test_email: Получатель
+        test_send: Отправить тест
+    dashboard:
+      title: Статистика
+      stat_projects: Проекты
+      stat_users: Пользователи
+      stat_open_tickets: Открытые билеты
+      stat_messages: Сообщения
+      stat_pending_users: Аккаунты, ожидающие активации
+      stat_emails_sent: Письма отправлены
+      stat_members: Члены
+      stat_tickets: Билеты
+      per_project: Статистика проекта
+      select_project: Проект
+      user_activity: Активность пользователя
+      col_tickets_created: Заявки созданы
+      sort_name_asc: Сортировать по имени по возрастанию
+      sort_name_desc: Сортировать по названию по убыванию
+      sort_role_asc: Сортировать по роли по возрастанию
+      sort_role_desc: Сортировать по роли по убыванию
+      sort_tickets_asc: Сортировать по созданным заявкам по возрастанию
+      sort_tickets_desc: Сортировать по созданным билетам по убыванию
+      sort_last_login_asc: Сортировать по возрастанию последнего входа в систему
+      sort_last_login_desc: Сортировать по последнему входу в систему по убыванию
+      by_status: По статусу
+      by_type: По типу
+      empty_projects: Никаких проектов.
+      pagination:
+        label: Пагинация активности пользователя
+    projects:
+      title: Проекты
+      new: Новый проект
+      name: Имя
+      key: Ключ
+      key_title: 1–5 символов A–Z / 0–9
+      description: Описание
+      initial_staff: Персонал проекта
+      initial_staff_placeholder: Выберите пользователя…
+      no_staff_candidates: Сначала создайте активного пользователя.
+      list: Список проектов
+      filter_active: Активный
+      filter_disabled: Отключено
+      meta: '{members} участников · {tickets} билетов'
+      empty: Никаких проектов. Создайте первый файл выше.
+      empty_disabled: Нет отключенных проектов.
+      disabled: Отключено
+      disable: Отключить
+      enable: Включить
+    project:
+      open_portal: Открыть на портале
+      settings: Настройки
+      notifications: Уведомления
+      notify_clients_on_staff_ticket: Уведомляйте клиентов о заявках, созданных командой
+      notify_clients_on_staff_ticket_note: По умолчанию клиенты не получают уведомления о новых заявках, созданных командой. Включите эту опцию, чтобы разрешить двустороннюю связь.
+      tags: Теги
+      tags_empty: В проекте нет тегов.
+      delete_tag_aria: Удалить тег {name}
+      members: Члены
+      members_empty: В проекте нет участников.
+      add_user: Добавить пользователя
+      member_role: Роль проекта
+      col_action: Действие
+    users:
+      title: Пользователи
+      new: Новый пользователь
+      list: Список пользователей
+      empty: Нет пользователей.
+      pagination:
+        label: Пагинация списка пользователей
+      blocked: Заблокировано
+      pending: Ожидается
+      resend: Отправить ссылку активации
+      block: Блокировать
+      unblock: Разблокировать
+      edit_aria: Изменить {name}
+      filter_role: Роль
+      filter_project: Проект
+      filter_status: Статус
+      filter_status_active: Разблокировано
+      filter_status_blocked: Заблокировано
+      filter_status_pending: Ожидается
+      filter_status_all: Все
+      filter_search: Поиск
+      filter_search_placeholder: Имя, адрес электронной почты или телефон…
+      filter_all: Все
+      filter_clear: Очистить
+      col_name: Имя
+      col_status: Статус
+      sort_name_asc: Сортировать по имени по возрастанию
+      sort_name_desc: Сортировать по имени по убыванию
+      sort_email_asc: Сортировать по электронной почте по возрастанию
+      sort_email_desc: Сортировать по адресу электронной почты по убыванию
+      sort_phone_asc: Сортировать по телефону по возрастанию
+      sort_phone_desc: Сортировать по телефону по убыванию
+      sort_role_asc: Сортировать по роли по возрастанию
+      sort_role_desc: Сортировать по роли по убыванию
+      sort_status_asc: Сортировать по статусу по возрастанию
+      sort_status_desc: Сортировать по статусу по убыванию
+      col_last_login: Последний вход
+    user_new:
+      title: Новый пользователь
+      role: Роль
+      submit: Создать и отправить ссылку активации
+      submit_active: Создать без активации
+    user_edit:
+      title: Изменить пользователя
+      heading: Редактировать аккаунт
+    projects_fieldset: Проекты
+    projects_empty: Никаких проектов.
+    projects_required: Требуется хотя бы один проект
+  dev:
+    aria: Режим разработчика
+    label: Дев
+    copy: Копировать
+    copied: Скопировано
+    expand: Развернуть
+    collapse: Свернуть
+    url: URL-адрес
+    template: Шаблон
+    partials: Частичные
+    api: API
+    js: JS
+    route: Схема маршрута
+    file: Обработчик
+  time:
+    today_at: Сегодня в {time}
+    yesterday_at: Вчера в {time}
+    am: AM
+    pm: ПМ
+    month_abbr:
+      1: Ян
+      2: февраль
+      3: Мар
+      4: апрель
+      5: май
+      6: июнь
+      7: июль
+      8: август
+      9: Сентябрь
+      10: октябрь
+      11: ноябрь
+      12: декабрь
+enums:
+  ticket_type:
+    BUG: Ошибка
+    QUESTION: Вопрос
+    CHANGE: Изменить
+    TASK: Новая функция
+  ticket_status:
+    NEW: Новый
+    IN_PROGRESS: В процессе
+    WAITING_ON_CLIENT: С репортером
+    DONE: Готово
+  ticket_priority:
+    LOW: Низкий
+    NORMAL: Нормальный
+    HIGH: Высокий
+  user_role:
+    USER: Пользователь
+    ADMIN: Администратор
+  member_role:
+    CLIENT: Клиент
+    STAFF: Персонал
+themes:
+  morning-mist:
+    label: Утренний туман
+    description: Жемчужно-синий с мягким сиянием.
+  sandy-dawn:
+    label: Сэнди Шор
+    description: Теплый песок и медовая амбра в нежном прикосновении.
+  green-meadow:
+    label: Зеленый луг
+    description: Шалфей и мох в тихом, интимном сиянии.
+  graphite-day:
+    label: Графитовый день
+    description: Холодный графит в тихой стальной стирке.
+  berry-dawn:
+    label: Хизер Блум
+    description: Мягкий вереск и ягоды в ярком, нежном оттенке.
+  rose-dawn:
+    label: Румяна Сияние
+    description: Теплые розовые и пудровые румяна в яркой, нежной расцветке.
+  deep-ocean:
+    label: Глубокий океан
+    description: Сапфировая глубина с мягким бездонным сиянием.
+  amber-night:
+    label: Эмбер Эмбер
+    description: Эспрессо с теплыми угольками шампанского.
+  northern-spruce:
+    label: Северная ель
+    description: Темный лес с кристально-мятным сиянием.
+  charcoal-dusk:
+    label: Угольные сумерки
+    description: Уголь с прохладным стальным серебром в тихих сумерках.
+  midnight-berry:
+    label: Бархатная ягода
+    description: Спелая ягода в теплом фиолетовом полусвете.
+  rose-night:
+    label: Багровая вуаль
+    description: Глубокая роза в теплом, бархатном полумраке.
+  density:
+    tight:
+      label: Плотный
+      description: Меньше интервал, больше контента на экране.
+    balanced:
+      label: Сбалансированный
+      description: Интервал PulseDeck по умолчанию.
+    airy:
+      label: Эйри
+      description: Больше пространства между элементами.
+  font_size:
+    compact:
+      label: Компактный
+      description: Больше текста на экране.
+    natural:
+      label: Натуральный
+      description: Размер PulseDeck по умолчанию.
+    large:
+      label: Большой
+      description: Более комфортное чтение.
+flash:
+  auth:
+    invalid_credentials: Этот адрес электронной почты или пароль выглядят неправильно.
+    account_blocked: Этот аккаунт заблокирован.
+    account_not_activated: Эта учетная запись еще не активна — проверьте свою электронную почту или воспользуйтесь «Забыли пароль».
+    profile_updated: Профиль сохранен.
+    email_confirm_sent: Мы отправили ссылку на ваше новое письмо. Продолжайте входить в систему, используя свой текущий адрес, пока не подтвердите.
+    password_changed: Новый пароль сохранен.
+    notifications_updated: Настройки уведомлений сохранены.
+    current_password_invalid: Ваш текущий пароль не соответствует.
+    confirm_link_invalid: Срок действия ссылки для подтверждения истек или она недействительна.
+    email_confirmed: Адрес электронной почты подтвержден — войдите с новым адресом.
+    activation_link_invalid: Срок действия этой ссылки активации истек или она недействительна.
+    mfa_invalid: Неверный или просроченный код.
+    mfa_expired: Срок сеанса проверки истек. Войдите снова.
+    mfa_delivery: Не удалось отправить код. Пожалуйста, повторите попытку позже.
+  admin:
+    user_created: Аккаунт создан — мы отправили ссылку для активации.
+    user_created_active: Аккаунт создан и активен — установите пароль ниже.
+    user_updated: Данные пользователя сохранены.
+    password_link_sent: Мы отправили электронное письмо со ссылкой для пароля.
+    password_set: Пароль установлен.
+    activation_resent: Ссылка для активации отправлена еще раз.
+    user_blocked: Аккаунт заблокирован — у пользователя нет доступа к порталу.
+    user_unblocked: Аккаунт разблокирован.
+    notifications_updated: Настройки уведомлений сохранены.
+    settings_saved: Настройки портала сохранены.
+    settings_test_sent: Тестовое письмо отправлено.
+    settings_test_failed: Не удалось отправить тестовое письмо — проверьте SMTP и журналы.
+    settings_smtp_missing: SMTP не настроен — сначала установите и сохраните сервер.
+messages:
+  auth:
+    passwords_mismatch: Пароли должны совпадать.
+    cannot_demote_last_admin: Это последний администратор — эту роль невозможно удалить.
+    cannot_block_self: Вы не можете заблокировать свой собственный аккаунт.
+    email_unchanged: Новый адрес электронной почты такой же, как текущий.
+    email_taken: Это письмо уже занято
+    user_exists_resend: Аккаунт с таким адресом электронной почты уже существует — откройте страницу пользователя и повторно отправьте ссылку активации.
+  admin:
+    invalid_role: Выберите допустимую роль.
+    unknown_action: Это действие невозможно выполнить.
+    already_activated: Этот аккаунт уже активен.
+    settings_invalid_int: Введите действительный номер.
+    settings_out_of_range: Это значение выходит за пределы допустимого диапазона.
+    settings_invalid_choice: Выберите правильный вариант.
+  projects:
+    name_exists: Проект с таким названием уже существует.
+    key_exists: Этот ключ проекта уже занят.
+    staff_required: Выберите хотя бы одного пользователя для управления проектом.
+    staff_invalid: Выбранный пользователь отсутствует или неактивен.
+    last_staff: Проект должен иметь хотя бы одного активного сотрудника.
+    at_least_one: Выберите хотя бы один проект.
+    invalid: Этот проект недействителен.
+  tickets:
+    no_project_access: У вас нет доступа к этому проекту.
+    no_comment: Здесь нельзя добавить комментарий.
+    no_edit_comment: Вы не можете редактировать комментарии.
+    no_delete_comment: Вы не можете удалять комментарии.
+    comment_not_found: Этого комментария здесь больше нет.
+    internal_staff_only: Внутренние примечания предназначены только для сотрудников.
+    no_assign: Вы не можете назначить этот билет.
+    assignee_must_be_staff: Вы можете назначить только сотрудников или администратора.
+    no_change_reporter: Вы не можете сменить репортера.
+    reporter_must_be_member: Репортеру нужен доступ к проекту.
+    no_status: Вы не можете изменить статус.
+    cannot_reopen: Этот билет нельзя открыть повторно.
+    no_edit: Вы не можете это редактировать.
+    no_delete: Вы не можете удалить этот билет.
+    no_priority: Вы не можете изменить приоритет.
+    no_type: Вы не можете изменить тип.
+    tags_staff_only: Только сотрудники могут управлять тегами.
+    no_add_participant: Вы не можете добавлять участников.
+    no_stop_watching: Вы не можете перестать смотреть этот билет.
+    not_participant: Вы не смотрите этот билет.
+    user_must_be_member: Этот человек должен быть в проекте.
+    participant_not_allowed: Вы не можете добавить этого человека в качестве участника.
+    invalid_status: Выберите действительный статус.
+    invalid_type: Выберите допустимый тип.
+    invalid_priority: Выберите действительный приоритет.
+    select_user: Выберите пользователя.
+  uploads:
+    empty: Этот файл пуст.
+    too_large_image: Это изображение слишком велико (максимум {mb} МБ).
+    too_large_file: Этот файл слишком велик (максимум {mb} МБ).
+    invalid_image: Неверный файл изображения.
+    image_too_large: Это изображение слишком велико.
+    invalid_file: Неподдерживаемый формат файла.
+    formats: Используйте JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR или 7Z.
+  validation:
+    missing_user: Выберите пользователя
+    missing_field: Введите {label}
+    invalid_int: Введите действительный номер.
+    invalid_form: Проверьте форму — в ней есть ошибки.
+    field:
+      user_id: пользователь
+      content: сообщение
+      title: название
+      name: имя
+      key: ключ
+      description: описание
+      email: адрес электронной почты
+      password: пароль
+      tag: тег
+      required: обязательное поле
+  fields:
+    required: '{field} является обязательным.'
+    invalid: '{field} недействителен.'
+    too_short: '{field} слишком короткий (минимум {min}).'
+    too_long: '{field} слишком длинный (максимум {max}).'
+    pattern: '{field} имеет неверный формат.'
+    labels:
+      user:
+        email: электронная почта
+        password: Пароль
+        first_name: Имя
+        last_name: Фамилия
+        phone: Телефон
+        role: Роль
+        ui_lang: Язык
+        datetime_format: Формат даты и времени
+        timezone: Часовой пояс
+      project:
+        name: Название проекта
+        key: Ключ проекта
+        description: Описание проекта
+      ticket:
+        title: Название
+        description: Описание
+        type: Тип
+        status: Статус
+        priority: Приоритет
+      comment:
+        content: Комментарий
+      tag:
+        name: Тег
+      search:
+        q: Поиск
+      filter:
+        tag: Фильтр тегов
+  http:
+    not_found: Мы не смогли найти то, что вы ищете.
+    server_error: Что-то пошло не так. Повторите попытку через минуту.
+    login_required: Войдите, чтобы продолжить.
+    admin_required: Вам нужен доступ администратора.
+  csrf:
+    missing: Срок вашей сессии истек.
+    invalid: Срок вашей сессии истек.
+    refresh_hint: Обновите страницу и повторите попытку.
+  password:
+    min_length: Используйте не менее {min} символов.
+    too_long: Этот пароль слишком длинный.
+    need_lower: Добавьте строчную букву.
+    need_upper: Добавьте заглавную букву.
+    need_digit: Добавьте цифру.
+    need_special: Добавьте специальный символ.
+  phone:
+    e164: Введите номер, например +48 123 456 789.
+  project_key:
+    invalid: 'Ключ: {min}–{max} символы A–Z / 0–9 (без дефисов).'
+js:
+  errors:
+    forbidden: У вас нет доступа к этому.
+    not_found: Мы не смогли найти то, что вы ищете.
+    validation: Проверьте форму — она содержит ошибки
+    rate_limit: Слишком много попыток — подождите.
+    server: Что-то пошло не так — попробуйте еще раз.
+    generic: Что-то пошло не так — попробуйте еще раз.
+    submit_failed: Не удалось отправить форму.
+    network: Не удалось связаться с сервером.
+    comment_empty: Напишите что-нибудь в комментарии
+    content_too_long: Текст слишком длинный (максимум {max} символов).
+    paste_markdown: Не удалось вставить Markdown.
+  ticket:
+    stale_reply: Появилось новое сообщение — проверьте ветку перед отправкой.
+  editor:
+    char_count: '{used} из {max} символов'
+    dictate_denied: Доступ к микрофону запрещен
+    dictate_no_mic: Микрофон не найден
+    dictate_network: Диктовка недоступна. Проверьте свое соединение.
+    paste_markdown_hint: Вставить с помощью Ctrl+V — Markdown будет отформатирован.
+  validation:
+    missing_user: Выберите пользователя
+    missing_field: Введите {label}
+    field:
+      user_id: пользователь
+      content: сообщение
+      title: название
+      name: имя
+      key: ключ
+      first_name: имя
+      last_name: фамилия
+      description: описание
+      email: адрес электронной почты
+      password: пароль
+      tag: тег
+      project_ids: проект
+      required: обязательное поле
+  confirm:
+    title: Подтверждение
+    message_default: Вы уверены, что хотите продолжить?
+    continue: Продолжать?
+    confirm_label: Подтвердить
+    discard_ticket:
+      title: Выбросить билет?
+      message: В форме есть заполненные данные. Отменить и отменить изменения?
+      action: Отменить создание
+      cancel: Вернуться к редактированию
+  attach:
+    remove: Удалить {name}
+    too_many: Вы можете прикрепить до {count} файлов.
+  coachmarks:
+    next: Далее
+    back: Назад
+    done: Готово
+    skip: Пропустить
+    replay: Советы для этой страницы
+    step: '{current}/{total}'
+    tour_label: Советы
+    nav-project:
+      body: Быстро переключайтесь между проектами.
+    nav-appearance:
+      body: Настройте тему и цвета по своему вкусу.
+      cta: Изменить внешний вид
+    feed-create:
+      body: Есть проблема? Создайте новый билет здесь.
+    feed-needs-us:
+      body: Билеты ждут ответа вашей команды.
+    feed-mine:
+      body: Покажите заявки, в которых вы являетесь репортером, уполномоченным или наблюдателем.
+    feed-filters:
+      body: Ограничьте список по типу, статусу, приоритету или тегу.
+    feed-filter-clear:
+      body: Сбросьте фильтры и очистите выбранные критерии.
+    ticket-status:
+      body: Нажмите, чтобы изменить статус заявки.
+    ticket-done:
+      body: Отметьте заявку как выполненную, когда проблема будет решена — при необходимости вы сможете открыть ее позже.
+    ticket-assignee:
+      body: Назначьте члена команды для обработки этого запроса.
+    ticket-thread-order:
+      body: 'Порядок сообщений: сначала самые старые или сначала самые новые.'
+    ticket-history:
+      body: Откройте шкалу заявок — статус, назначение и другие изменения.
+    admin-projects-name:
+      body: Отображаемое имя проекта.
+    admin-projects-key:
+      body: Уникальный ключ, который является частью номера билета.
+    admin-projects-description:
+      body: Дополнительное краткое описание отображается в списке проектов.
+    admin-project-members:
+      body: Добавляйте людей в проект, чтобы они могли просматривать заявки и работать над ними.
+    compose-attach:
+      body: Добавьте файлы, выбрав их на диске, перетащив сюда или вставив из буфера обмена (Ctrl+V).
+    compose-quote:
+      body: Выделите текст в сообщении, затем нажмите «Цитировать».
+    compose-dictate:
+      body: Нажмите на микрофон, чтобы продиктовать свой ответ. Некоторые браузеры или устройства могут блокировать доступ к микрофону.
+    compose-internal:
+      body: Внутренние заметки видны только сотрудникам — клиенты их не увидят.
+email:
+  mfa:
+    subject: Код входа
+    body: 'Ваш код подтверждения входа:'
+    ttl: Код действителен в течение {minutes} мин.
+  confirm:
+    subject: Подтвердите свой новый адрес электронной почты
+    body: Мы получили запрос на изменение вашего адреса электронной почты в {app}. Подтвердите новый адрес с помощью кнопки ниже. Ссылка действительна в течение {minutes} мин. Если это были не вы, вы можете игнорировать это сообщение.
+    cta: Подтвердите адрес электронной почты
+  activate:
+    subject: Активируйте свою учетную запись
+    body: Для вас создана учетная запись в {app}. Установите пароль, чтобы активировать его и войти в систему. Ссылка действительна в течение {days} дней.
+    cta: Установить пароль
+  reset:
+    subject: Сброс пароля
+    body: Мы получили запрос на сброс пароля для {app}. Установите новый пароль, используя кнопку ниже. Ссылка действительна в течение {days} дней. Если это были не вы, вы можете игнорировать это сообщение.
+    cta: Установить новый пароль
+  smtp_test:
+    subject: Тестовое письмо
+    body: Это тестовое сообщение от {app}. Если это можно прочитать в фирменной раскладке, то SMTP работает.
+  new_ticket:
+    subject: Новый билет
+    body: 'Был создан новый билет: {ticket}. Откройте его в {app}, чтобы просмотреть детали и принять меры.'
+    cta: Открыто в {app}
+  new_comment:
+    subject: Новое сообщение в билете
+    body: В заявке {ticket} появилось новое сообщение. Перейдите к билету, чтобы просмотреть его содержание и ответить.
+    cta: Открыто в {app}
+  ticket_update:
+    subject: Обновление билетов
+    body: Статус, тип или приоритет заявки {ticket} были изменены.
+    new_value: 'Новое значение: {value}.'
+    cta: Открыто в {app}
+  assignment:
+    subject: Назначение билетов
+    body: Вам назначен билет {ticket}. Откройте его в {app}, чтобы просмотреть детали.
+    cta: Открыто в {app}
+  common:
+    greeting: Привет {name}!
+    link_hint: 'Если кнопка не работает, скопируйте и вставьте эту ссылку в браузер:'
+    unsubscribe: Нажмите здесь, если вы больше не хотите получать эти уведомления
+    unwatch: Нажмите здесь, если вы больше не хотите смотреть этот билет

@@ -1,0 +1,909 @@
+meta:
+  name: Italiano
+ui:
+  common:
+    close: Chiudi
+    cancel: Annulla
+    confirm: Conferma
+    save: Salva
+    create: Crea
+    edit: Modifica
+    delete: Elimina
+    add: Aggiungi
+    send: Invia
+    empty_dash: —
+    none: Nessuno
+    back_to_portal: Ritorno al portale
+    back_home: Casa
+    active: Attivo
+    sidebar_show: Mostra pannello
+    sidebar_hide: Nascondi pannello
+    pagination:
+      first: Prima pagina
+      prev: Precedente
+      next: Avanti
+      last: Ultima pagina
+      range: '{start}–{end} di {total}'
+      per_page_label: Per pagina
+  errors:
+    not_found:
+      title: Non trovato
+      heading: Pagina non trovata
+      body: Questo indirizzo non esiste o è stato rimosso.
+  settings:
+    language: Lingua
+  confirm:
+    title: Conferma
+    disable_project:
+      title: Disabilitare il progetto?
+      message: Il progetto “{name}” ({key}) verrà disabilitato e nascosto dal portale.
+      action: Disabilita
+    delete_tag:
+      title: Eliminare l'etichetta?
+      message: Sei sicuro di voler eliminare il tag "{name}"? Verrà rimosso da tutti i biglietti.
+      action: Elimina
+    change_key:
+      title: Cambia chiave del progetto
+      message: La modifica della chiave interromperà i vecchi collegamenti /p/… e /t/…. Continuare?
+      action: Cambia chiave
+    remove_member:
+      title: Rimuovere il membro?
+      message: Rimuovere {name} dal progetto “{project}”?
+      action: Rimuovi
+    block_user:
+      title: Bloccare l'account?
+      message: L'account "{name}" perderà l'accesso al portale. I messaggi e i biglietti restano.
+      action: Blocca
+    delete_comment:
+      title: Eliminare il commento?
+      message: Il commento verrà eliminato definitivamente insieme ai suoi allegati.
+      action: Elimina
+    delete_ticket:
+      title: Eliminare il biglietto?
+      message: Il biglietto verrà nascosto. La cronologia rimane disponibile per gli amministratori.
+      action: Elimina
+    stop_watching:
+      title: Smettere di guardare?
+      message: Verrai rimosso dai partecipanti a questo ticket e non riceverai più notifiche via email a riguardo.
+      action: Smetti di guardare
+    remove_participant:
+      title: Rimuovere il partecipante?
+      message: Rimuovere {name} dai partecipanti a questo ticket? Non riceveranno più notifiche via email a riguardo.
+      action: Rimuovi
+  nav:
+    aria: Navigazione
+    project: Progetto
+    select_project: Seleziona progetto
+    user_menu: Menù utente
+    menu: Menù
+    admin: Amministrazione
+    profile: Profilo
+    logout: Esci
+  auth:
+    login:
+      title: Accedi
+      email: E-mail
+      password: Parola d'ordine
+      submit: Accedi
+      forgot_label: Hai dimenticato la password
+      forgot_placeholder: indirizzo@azienda.com
+      forgot_submit: Invia il collegamento per la modifica della password
+      forgot_back: Torna per accedere
+      forgot_sent: Se l'account esiste e non è bloccato, abbiamo inviato un collegamento via email.
+      mfa_title: Codice e-mail
+      mfa_hint: Inserisci il codice di 6 cifre che abbiamo inviato alla tua email.
+      mfa_submit: Conferma il codice
+      mfa_trust: Non chiedere un codice su questo dispositivo per {days} giorni
+      mfa_resend: Invia nuovamente il codice
+    activate:
+      title_pending: Attivazione dell'account
+      title_reset: Imposta la password
+      subtitle_pending: Imposta una password per attivare il tuo account
+      subtitle_reset: Imposta una nuova password
+      password: Parola d'ordine
+      password_confirm: Ripeti la password
+      phone: Telefono (facoltativo)
+      phone_placeholder: +48 123 456 789
+      submit_pending: Attiva conto
+      submit_reset: Salva password
+    confirm_email:
+      title: Conferma e-mail
+      subtitle: Conferma la modifica del tuo indirizzo email
+      submit: Conferma e-mail
+    unsubscribe:
+      title: Annulla l'iscrizione
+      heading: Iscrizione annullata
+      heading_invalid: Collegamento non valido
+      heading_confirm: Conferma la disattivazione delle notifiche
+      confirm_body:
+        notify_reply: Le notifiche di risposta verranno disattivate. Non riceverai più questi messaggi per nessun ticket. Puoi modificarlo nelle impostazioni del tuo profilo.
+        notify_new_ticket: Le notifiche di nuovi biglietti verranno disattivate. Non riceverai più questi messaggi per nessun ticket. Puoi modificarlo nelle impostazioni del tuo profilo.
+        notify_ticket_update: Le notifiche relative alle modifiche di stato, tipo e priorità verranno disattivate. Non riceverai più questi messaggi per nessun ticket. Puoi modificarlo nelle impostazioni del tuo profilo.
+      confirm: Conferma
+      done: Le notifiche "{type}" sono state disattivate nelle impostazioni del tuo profilo.
+      invalid: Questo collegamento per annullare l'iscrizione non è valido o è scaduto.
+      manage: Preferenze di notifica
+    unwatch:
+      title: Disattiva la visione
+      heading: Non stai più guardando questo biglietto
+      heading_invalid: Collegamento non valido
+      heading_confirm: Conferma la disattivazione della visione per questo biglietto
+      confirm_body: Verrai rimosso dall'elenco dei partecipanti del biglietto {label}. Non riceverai più aggiornamenti sui nuovi messaggi.
+      confirm: Conferma
+      done: Sei stato rimosso dai partecipanti al ticket {label}.
+      invalid: Questo collegamento non è valido o è scaduto.
+  profile:
+    aside_label: Conto
+    nav_aria: Profilo
+    nav:
+      profile: Profilo
+      password: Cambia password
+      notifications: Notifiche
+      appearance: Aspetto
+    title:
+      profile: Profilo
+      data: Dati del conto
+      password: Cambia password
+      notifications: Notifiche
+      appearance: Aspetto
+    field:
+      first_name: Nome
+      last_name: Cognome
+      email: E-mail
+      phone: Telefono
+    email_change_hint: La modifica della tua email richiede la conferma al nuovo indirizzo. Continui ad accedere con il tuo indirizzo attuale finché non confermi.
+    email_pending: 'Conferma in attesa: {email}'
+    save: Salva
+    password:
+      section: Parola d'ordine
+      current: Password attuale
+      new: Nuova password
+      confirm: Ripeti la nuova password
+      hint: Almeno {min} caratteri, con una lettera minuscola, una lettera maiuscola, una cifra e un carattere speciale.
+      save: Salva password
+      set: Imposta la password
+      send_activation: Invia collegamento di attivazione
+      send_reset: Invia il collegamento per la reimpostazione della password
+    settings:
+      language: Lingua
+      datetime_title: Data e ora
+      datetime_format: Formato data e ora
+      timezone: Fuso orario
+      theme_title: Tema del colore
+      gradient_toggle: Gradiente di sfondo
+      gradient_on: Profondità
+      gradient_off: Piatto
+      density_title: Distanziamento
+      font_title: Dimensione del carattere
+      notify_intro: Impostazioni di notifica e-mail per le modifiche ai biglietti.
+      notify_new_ticket: Nuovi biglietti
+      notify_new_ticket_hint: Invia un'e-mail quando qualcuno crea un nuovo ticket in un progetto in cui fai parte dello staff.
+      notify_new_ticket_hint_client: Invia un'e-mail quando il team crea un ticket nel tuo progetto.
+      notify_reply: Risposte
+      notify_reply_hint: E-mail sui nuovi commenti sui biglietti a cui partecipi.
+      notify_ticket_update: Stato, tipologia e priorità
+      notify_ticket_update_hint: Invia un'e-mail quando lo stato, il tipo o la priorità dei biglietti a cui partecipi cambiano.
+    admin_all_projects_hint: Gli amministratori possono visualizzare tutti i progetti. Per gestire i ticket e ricevere e-mail di ticket, aggiungili al progetto come staff.
+  portal:
+    empty:
+      title: Nessun progetto
+      heading: Non hai ancora alcun progetto
+      body: Chiedi a un amministratore di invitarti o di aggiungerti a un progetto.
+    feed:
+      tickets: Biglietti
+      create: Crea biglietto
+      empty: Nessun biglietto in questa visualizzazione.
+      deleted_badge: Eliminato
+      view: Visualizza
+      filters: Filtri
+      search: Cerca
+      search_placeholder: Titolo, numero o giornalista…
+      search_submit: Trova
+      search_clear: Cancella ricerca
+      type: Digitare
+      status: Stato
+      priority: Priorità
+      tag: Etichetta
+      mine_only: Solo mio
+      sort: Ordinamento
+      filter_any: Qualsiasi
+      sort_options:
+        updated: Ultima attività
+        created: Data di creazione
+        priority: Priorità
+      updated: Aggiornato
+      filter_submit: Filtra
+      filter_clear: Chiaro
+      pagination:
+        label: Impaginazione lista ticket
+      modal_title: Crea biglietto
+      field:
+        title: Titolo
+        type: Digitare
+        priority: Priorità
+        description: Descrizione
+    view:
+      all: Tutto
+      open: Aperto
+      done: Chiuso
+      staff:
+        needs_us: Gestire
+        unassigned: Non assegnato
+      client:
+        waiting_on_me: In attesa di risposta
+  ticket:
+    doc_title: Biglietto {label}
+    description: Descrizione
+    edit: Modifica
+    deleted_banner: Questo biglietto è stato nascosto. Solo gli amministratori possono vederlo.
+    attachments: Allegati
+    edit_modal: Modifica biglietto
+    lightbox_aria: Anteprima dell'allegato
+    self_assign: Assegnami
+    back_to_list: Torna all'elenco
+    details: Dettagli
+    created: Creato
+    closed: Chiuso
+    type: Digitare
+    status: Stato
+    priority: Priorità
+    change_type: Cambia tipo
+    change_status: Cambia stato
+    change_priority: Cambia priorità
+    reopen: Riaprire
+    people: Persone
+    reporter: Reporter
+    change_reporter: Cambia giornalista
+    assignee: Assegnatario
+    change_assignee: Cambia assegnatario
+    assignee_none: — nessuno —
+    participants: Partecipanti
+    add_participant: Aggiungi partecipante
+    no_participants_to_add: Nessuna persona da aggiungere
+    stop_watching: Smetti di guardare
+    remove_participant: Rimuovi dalla visione
+    remove_participant_aria: Rimuovi {name} dalla visione
+    tags: Tag
+    add_tag_placeholder: Aggiungi tag…
+    activity: Attività
+    history: Storia
+    history_aria: Cronologia dei biglietti
+    history_empty: Nessun evento ancora
+    history_loading: Caricamento…
+    history_unknown_user: Utente sconosciuto
+    event:
+      CREATED: Biglietto creato ({type}, {priority})
+      COMMENT_ADDED: Commento aggiunto
+      COMMENT_ADDED_INTERNAL: Nota interna aggiunta
+      COMMENT_EDITED: Commento modificato
+      COMMENT_EDITED_INTERNAL: Nota interna modificata
+      COMMENT_DELETED: Commento eliminato
+      COMMENT_DELETED_INTERNAL: Nota interna eliminata
+      TITLE_CHANGED: Titolo cambiato
+      DESCRIPTION_CHANGED: Descrizione cambiata
+      STATUS_CHANGED: 'Stato modificato: {from} → {to}'
+      PRIORITY_CHANGED: 'Priorità modificata: {from} → {to}'
+      TYPE_CHANGED: 'Tipo cambiato: {from} → {to}'
+      ASSIGNEE_CHANGED: 'L''assegnatario è cambiato: {from} → {to}'
+      REPORTER_CHANGED: 'Reporter cambiato: {from} → {to}'
+      PARTICIPANT_ADDED: 'Partecipante aggiunto: {name}'
+      PARTICIPANT_REMOVED: 'Partecipante rimosso: {name}'
+      TAG_ADDED: 'Tag aggiunto: {name}'
+      TAG_REMOVED: 'Tag rimosso: {name}'
+      ATTACHMENT_ADDED: 'Allegato aggiunto: {name}'
+      ATTACHMENT_REMOVED: 'Allegato rimosso: {name}'
+      DELETED: Biglietto eliminato
+    reply: Rispondi
+    thread_order_aria: Ordine dei messaggi
+    thread_oldest: Prima il più vecchio
+    thread_newest: Prima il più recente
+    internal: Interno
+    edited_by: 'modificato da: {name}'
+    edit_comment: Modifica commento
+    save_comment: Salva commento
+    cancel_edit: Annulla modifica
+    delete_comment: Elimina commento
+    delete: Elimina biglietto
+    reply_placeholder: Scrivi una risposta...
+    internal_note: Nota interna
+    closed_notice: Biglietto chiuso.
+    reopen_hint_staff: Puoi riaprirlo facendo clic sullo stato.
+    reopen_hint_client: La riapertura è possibile entro {days} giorni dalla chiusura.
+    no_comment_permission: Non hai il permesso per commentare.
+    attach:
+      add_files: Aggiungi, incolla o rilascia file
+      file_one: file
+      file_many: file
+      hint_icon: Fino a {count} {file_word} · massimo 5 MB
+      button: Allega file
+      remove: Rimuovi {name}
+  editor:
+    toolbar: Formattazione
+    bold: Grassetto
+    italic: Corsivo
+    heading_1: Rubrica 1
+    heading_2: Rubrica 2
+    heading_3: Rubrica 3
+    link: Collegamento
+    link_apply: Aggiungi collegamento
+    bullet_list: Elenco puntato
+    ordered_list: Elenco numerato
+    code_block: Blocco di codice
+    blockquote: Citazione
+    horizontal_rule: Divisore
+    dictate: Dettare
+    dictate_stop: Interrompi la dettatura
+    paste_markdown: Incolla Markdown
+  admin:
+    aside_label: Amministrazione
+    nav_aria: Ammin
+    nav:
+      overview: Statistiche
+      projects: Progetti
+      users: Utenti
+      settings: Impostazioni
+    settings:
+      title: Impostazioni del portale
+      nav_aria: Sezioni delle impostazioni del portale
+      save: Salva
+      nav:
+        tickets: Biglietti
+        uploads: Allegati
+        mail: Posta
+      tickets:
+        heading: Politica sui biglietti e sui collegamenti
+        hint: Limiti del cliente e periodo di validità dei collegamenti e-mail.
+        reopen_days: Finestra di riapertura (giorni)
+        reopen_days_hint: Quanti giorni dopo la chiusura un cliente può riaprire il ticket. Il personale può sempre riaprire. 0 = solo personale.
+        description_max_len: Descrizione del biglietto (caratteri)
+        description_max_len_hint: Lunghezza massima della descrizione del biglietto, incluso il ribasso.
+        reply_max_len: Risposta (caratteri)
+        reply_max_len_hint: Lunghezza massima di un commento o risposta, incluso il markdown.
+        auth_link_ttl_days: Attivazione/reimpostazione password (giorni)
+        auth_link_ttl_days_hint: Per quanto tempo il collegamento e-mail rimane valido per l'attivazione dell'account o la reimpostazione della password.
+        email_confirm_ttl_minutes: Conferma e-mail (minuti)
+        email_confirm_ttl_minutes_hint: Per quanto tempo il collegamento rimane valido quando si modifica l'e-mail nel profilo.
+      uploads:
+        heading: Limiti degli allegati
+        hint: Ogni limite si applica a un singolo ticket o commento.
+        max_files: Numero di file
+        max_files_hint: Numero massimo di allegati su un ticket o commento.
+        max_image_mb: Dimensione immagine (MB)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: Dimensioni del file (MB)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: server SMTP
+        smtp_port: Porto
+        smtp_security: Sicurezza della connessione
+        smtp_security_none: Nessuno
+        smtp_security_starttls: STARTTLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: Nome utente
+        smtp_pass: Parola d'ordine
+        smtp_pass_hint: Lascia vuoto per mantenere la password corrente.
+        email_from: Dall'indirizzo
+        test_heading: Invia e-mail di prova
+        test_hint: Utilizza le impostazioni SMTP salvate. Salva le modifiche prima del test.
+        test_email: Destinatario
+        test_send: Invia prova
+    dashboard:
+      title: Statistiche
+      stat_projects: Progetti
+      stat_users: Utenti
+      stat_open_tickets: Biglietti aperti
+      stat_messages: Messaggi
+      stat_pending_users: Account in attesa di attivazione
+      stat_emails_sent: E-mail inviate
+      stat_members: Membri
+      stat_tickets: Biglietti
+      per_project: Statistiche del progetto
+      select_project: Progetto
+      user_activity: Attività dell'utente
+      col_tickets_created: Biglietti creati
+      sort_name_asc: Ordina per nome in ordine crescente
+      sort_name_desc: Ordina per nome discendente
+      sort_role_asc: Ordina per ruolo crescente
+      sort_role_desc: Ordina per ruolo decrescente
+      sort_tickets_asc: Ordina per biglietti creati in ordine crescente
+      sort_tickets_desc: Ordina per biglietti creati in ordine decrescente
+      sort_last_login_asc: Ordina in ordine crescente per ultimo accesso
+      sort_last_login_desc: Ordina in ordine discendente per ultimo accesso
+      by_status: Per stato
+      by_type: Per tipo
+      empty_projects: Nessun progetto.
+      pagination:
+        label: Impaginazione delle attività dell'utente
+    projects:
+      title: Progetti
+      new: Nuovo progetto
+      name: Nome
+      key: Chiave
+      key_title: 1–5 caratteri A–Z / 0–9
+      description: Descrizione
+      initial_staff: Personale del progetto
+      initial_staff_placeholder: Seleziona un utente...
+      no_staff_candidates: Crea prima un utente attivo.
+      list: Elenco dei progetti
+      filter_active: Attivo
+      filter_disabled: Disabilitato
+      meta: '{members} membri · {tickets} biglietti'
+      empty: Nessun progetto. Crea il primo sopra.
+      empty_disabled: Nessun progetto disabilitato.
+      disabled: Disabilitato
+      disable: Disabilita
+      enable: Abilita
+    project:
+      open_portal: Apri nel portale
+      settings: Impostazioni
+      notifications: Notifiche
+      notify_clients_on_staff_ticket: Informa i clienti sui ticket creati dal team
+      notify_clients_on_staff_ticket_note: Per impostazione predefinita, i client non ricevono notifiche sui nuovi ticket creati dal team. Abilita questa opzione per consentire la comunicazione bidirezionale.
+      tags: Tag
+      tags_empty: Nessun tag nel progetto.
+      delete_tag_aria: Elimina tag {name}
+      members: Membri
+      members_empty: Nessun membro nel progetto.
+      add_user: Aggiungi utente
+      member_role: Ruolo del progetto
+      col_action: Azione
+    users:
+      title: Utenti
+      new: Nuovo utente
+      list: Elenco degli utenti
+      empty: Nessun utente.
+      pagination:
+        label: Impaginazione elenco utenti
+      blocked: Bloccato
+      pending: In sospeso
+      resend: Invia collegamento di attivazione
+      block: Blocca
+      unblock: Sblocca
+      edit_aria: Modifica {name}
+      filter_role: Ruolo
+      filter_project: Progetto
+      filter_status: Stato
+      filter_status_active: Sbloccato
+      filter_status_blocked: Bloccato
+      filter_status_pending: In sospeso
+      filter_status_all: Tutto
+      filter_search: Cerca
+      filter_search_placeholder: Nome, email o telefono...
+      filter_all: Tutto
+      filter_clear: Chiaro
+      col_name: Nome
+      col_status: Stato
+      sort_name_asc: Ordina per nome in ordine crescente
+      sort_name_desc: Ordina per nome discendente
+      sort_email_asc: Ordina per e-mail in ordine crescente
+      sort_email_desc: Ordina per email discendente
+      sort_phone_asc: Ordina per telefono in ordine crescente
+      sort_phone_desc: Ordina per telefono discendente
+      sort_role_asc: Ordina per ruolo crescente
+      sort_role_desc: Ordina per ruolo decrescente
+      sort_status_asc: Ordina per stato crescente
+      sort_status_desc: Ordina per stato discendente
+      col_last_login: Ultimo accesso
+    user_new:
+      title: Nuovo utente
+      role: Ruolo
+      submit: Crea e invia il collegamento di attivazione
+      submit_active: Crea senza attivazione
+    user_edit:
+      title: Modifica utente
+      heading: Modifica account
+    projects_fieldset: Progetti
+    projects_empty: Nessun progetto.
+    projects_required: È richiesto almeno un progetto
+  dev:
+    aria: Modalità sviluppatore
+    label: Dev
+    copy: Copia
+    copied: Copiato
+    expand: Espandi
+    collapse: Crollo
+    url: URL
+    template: Modello
+    partials: Parziali
+    api: API
+    js: JS
+    route: Schema del percorso
+    file: Gestore
+  time:
+    today_at: Oggi alle {time}
+    yesterday_at: Ieri alle {time}
+    am: AM
+    pm: PM
+    month_abbr:
+      1: Gen
+      2: Febbraio
+      3: Mar
+      4: aprile
+      5: Maggio
+      6: giugno
+      7: Lug
+      8: Agosto
+      9: Settembre
+      10: ottobre
+      11: novembre
+      12: dicembre
+enums:
+  ticket_type:
+    BUG: Insetto
+    QUESTION: Domanda
+    CHANGE: Cambiare
+    TASK: Nuova funzionalità
+  ticket_status:
+    NEW: Nuovo
+    IN_PROGRESS: In corso
+    WAITING_ON_CLIENT: Con giornalista
+    DONE: Fatto
+  ticket_priority:
+    LOW: Basso
+    NORMAL: Normale
+    HIGH: Alto
+  user_role:
+    USER: Utente
+    ADMIN: Amministratore
+  member_role:
+    CLIENT: Cliente
+    STAFF: Personale
+themes:
+  morning-mist:
+    label: Nebbia mattutina
+    description: Blu perlato dalla luce soffusa.
+  sandy-dawn:
+    label: Costa Sabbiosa
+    description: Sabbia calda e ambra mielata in un lavaggio delicato.
+  green-meadow:
+    label: Prato Verde
+    description: Salvia e muschio in un bagliore tranquillo e intimo.
+  graphite-day:
+    label: Giornata della grafite
+    description: Raffinata grafite in un lavaggio silenzioso dell'acciaio.
+  berry-dawn:
+    label: Heather Bloom
+    description: Morbida erica e frutti di bosco in un lavaggio luminoso e delicato.
+  rose-dawn:
+    label: Blush Bagliore
+    description: Rosa calda e fard in polvere in un lavaggio luminoso e delicato.
+  deep-ocean:
+    label: Oceano profondo
+    description: Profondità di zaffiro con un morbido bagliore abissale.
+  amber-night:
+    label: Ambra Ambra
+    description: Espresso con una calda brace di champagne.
+  northern-spruce:
+    label: Abete rosso settentrionale
+    description: Foresta oscura con un bagliore cristallino di menta.
+  charcoal-dusk:
+    label: Crepuscolo di carbone
+    description: Carbone con freddo acciaio argento in un crepuscolo tranquillo.
+  midnight-berry:
+    label: Bacca di velluto
+    description: Bacca matura in una calda penombra violacea.
+  rose-night:
+    label: Velo Cremisi
+    description: Rosa intenso in una penombra calda e vellutata.
+  density:
+    tight:
+      label: Stretto
+      description: Spaziatura minore, più contenuti sullo schermo.
+    balanced:
+      label: Equilibrato
+      description: La spaziatura predefinita di PulseDeck.
+    airy:
+      label: Arioso
+      description: Più respiro tra gli elementi.
+  font_size:
+    compact:
+      label: Compatto
+      description: Più testo sullo schermo.
+    natural:
+      label: Naturale
+      description: La dimensione predefinita di PulseDeck.
+    large:
+      label: Grande
+      description: Lettura più confortevole.
+flash:
+  auth:
+    invalid_credentials: L'e-mail o la password non sembrano corrette.
+    account_blocked: Questo account è bloccato.
+    account_not_activated: 'Questo account non è ancora attivo: controlla la tua email o utilizza "Password dimenticata".'
+    profile_updated: Profilo salvato.
+    email_confirm_sent: Abbiamo inviato un collegamento alla tua nuova email. Continua ad accedere con il tuo indirizzo attuale finché non confermi.
+    password_changed: Nuova password salvata.
+    notifications_updated: Preferenze di notifica salvate.
+    current_password_invalid: La tua password attuale non corrisponde.
+    confirm_link_invalid: Il link di conferma è scaduto o non è valido.
+    email_confirmed: 'Email confermata: accedi con il nuovo indirizzo.'
+    activation_link_invalid: Il collegamento di attivazione è scaduto o non è valido.
+    mfa_invalid: Codice non valido o scaduto.
+    mfa_expired: Sessione di verifica scaduta. Accedi di nuovo.
+    mfa_delivery: Impossibile inviare il codice. Per favore riprova più tardi.
+  admin:
+    user_created: 'Account creato: abbiamo inviato un collegamento di attivazione.'
+    user_created_active: 'Account creato e attivo: imposta una password di seguito.'
+    user_updated: Dettagli utente salvati.
+    password_link_sent: Abbiamo inviato un'e-mail con un collegamento per la password.
+    password_set: Password impostata.
+    activation_resent: Link di attivazione inviato nuovamente.
+    user_blocked: 'Account bloccato: l''utente non ha accesso al portale.'
+    user_unblocked: Conto sbloccato.
+    notifications_updated: Preferenze di notifica salvate.
+    settings_saved: Impostazioni del portale salvate.
+    settings_test_sent: E-mail di prova inviata.
+    settings_test_failed: 'Impossibile inviare l''e-mail di prova: controlla SMTP e registri.'
+    settings_smtp_missing: 'SMTP non configurato: imposta e salva prima un server.'
+messages:
+  auth:
+    passwords_mismatch: Le password devono corrispondere.
+    cannot_demote_last_admin: 'Questo è l''ultimo amministratore: questo ruolo non può essere rimosso.'
+    cannot_block_self: Non puoi bloccare il tuo account.
+    email_unchanged: La nuova email è uguale a quella attuale.
+    email_taken: Questa email è già occupata
+    user_exists_resend: 'Esiste già un account con questa email: apri la pagina utente e invia nuovamente il collegamento di attivazione'
+  admin:
+    invalid_role: Scegli un ruolo valido.
+    unknown_action: Questa azione non può essere eseguita.
+    already_activated: Questo account è già attivo.
+    settings_invalid_int: Inserisci un numero valido.
+    settings_out_of_range: Tale valore non è compreso nell'intervallo consentito.
+    settings_invalid_choice: Scegli un'opzione valida.
+  projects:
+    name_exists: Esiste già un progetto con questo nome.
+    key_exists: Questa chiave di progetto è già utilizzata.
+    staff_required: Scegli almeno un utente per gestire il progetto.
+    staff_invalid: L'utente selezionato è mancante o inattivo.
+    last_staff: Un progetto deve mantenere almeno un membro dello staff attivo.
+    at_least_one: Scegli almeno un progetto.
+    invalid: Quel progetto non è valido.
+  tickets:
+    no_project_access: Non hai accesso a questo progetto.
+    no_comment: Non puoi aggiungere un commento qui.
+    no_edit_comment: Non puoi modificare i commenti.
+    no_delete_comment: Non puoi eliminare i commenti.
+    comment_not_found: Quel commento non c'è più.
+    internal_staff_only: Le note interne sono riservate al personale.
+    no_assign: Non puoi assegnare questo ticket.
+    assignee_must_be_staff: Puoi assegnare solo personale o un amministratore.
+    no_change_reporter: Non puoi cambiare il giornalista.
+    reporter_must_be_member: Il giornalista deve accedere al progetto.
+    no_status: Non puoi modificare lo stato.
+    cannot_reopen: Questo ticket non può essere riaperto.
+    no_edit: Non puoi modificarlo.
+    no_delete: Non puoi eliminare questo ticket.
+    no_priority: Non puoi modificare la priorità.
+    no_type: Non puoi cambiare il tipo.
+    tags_staff_only: Solo il personale può gestire i tag.
+    no_add_participant: Non puoi aggiungere partecipanti.
+    no_stop_watching: Non puoi smettere di guardare questo biglietto.
+    not_participant: Non stai guardando questo biglietto.
+    user_must_be_member: Quella persona deve far parte del progetto.
+    participant_not_allowed: Non puoi aggiungere questa persona come partecipante.
+    invalid_status: Scegli uno stato valido.
+    invalid_type: Scegli un tipo valido.
+    invalid_priority: Scegli una priorità valida.
+    select_user: Seleziona un utente.
+  uploads:
+    empty: Quel file è vuoto.
+    too_large_image: L'immagine è troppo grande (massimo {mb} MB).
+    too_large_file: Il file è troppo grande (massimo {mb} MB).
+    invalid_image: File immagine non valido.
+    image_too_large: Quell'immagine è troppo grande.
+    invalid_file: Formato file non supportato.
+    formats: Utilizza JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR o 7Z.
+  validation:
+    missing_user: Seleziona un utente
+    missing_field: Compila {label}
+    invalid_int: Inserisci un numero valido.
+    invalid_form: 'Controlla il modulo: contiene errori.'
+    field:
+      user_id: un utente
+      content: il messaggio
+      title: il titolo
+      name: il nome
+      key: la chiave
+      description: la descrizione
+      email: un indirizzo email
+      password: una parola d'ordine
+      tag: un'etichetta
+      required: un campo obbligatorio
+  fields:
+    required: '{field} è obbligatorio.'
+    invalid: '{field} non è valido.'
+    too_short: '{field} è troppo corto (min {min}).'
+    too_long: '{field} è troppo lungo (max {max}).'
+    pattern: '{field} ha un formato non valido.'
+    labels:
+      user:
+        email: E-mail
+        password: Parola d'ordine
+        first_name: Nome
+        last_name: Cognome
+        phone: Telefono
+        role: Ruolo
+        ui_lang: Lingua
+        datetime_format: Formato data e ora
+        timezone: Fuso orario
+      project:
+        name: Nome del progetto
+        key: Chiave del progetto
+        description: Descrizione del progetto
+      ticket:
+        title: Titolo
+        description: Descrizione
+        type: Digitare
+        status: Stato
+        priority: Priorità
+      comment:
+        content: Commento
+      tag:
+        name: Etichetta
+      search:
+        q: Cerca
+      filter:
+        tag: Filtro tag
+  http:
+    not_found: Non siamo riusciti a trovare quello che stai cercando.
+    server_error: 'Qualcosa è andato storto: riprova tra un attimo.'
+    login_required: Accedi per continuare.
+    admin_required: È necessario l'accesso come amministratore.
+  csrf:
+    missing: La tua sessione è scaduta.
+    invalid: La tua sessione è scaduta.
+    refresh_hint: Aggiorna la pagina e riprova.
+  password:
+    min_length: Utilizza almeno {min} caratteri.
+    too_long: Quella password è troppo lunga.
+    need_lower: Aggiungi una lettera minuscola.
+    need_upper: Aggiungi una lettera maiuscola.
+    need_digit: Aggiungi una cifra.
+    need_special: Aggiungi un carattere speciale.
+  phone:
+    e164: Inserisci il numero come +48 123 456 789.
+  project_key:
+    invalid: 'Chiave: {min}–{max} caratteri A–Z / 0–9 (senza trattini)'
+js:
+  errors:
+    forbidden: Non hai accesso a questo.
+    not_found: Non siamo riusciti a trovare quello che stai cercando.
+    validation: 'Controlla il modulo: contiene errori'
+    rate_limit: 'Troppi tentativi: aspetta un momento.'
+    server: 'Qualcosa è andato storto: riprova.'
+    generic: 'Qualcosa è andato storto: riprova.'
+    submit_failed: Impossibile inviare il modulo.
+    network: Impossibile raggiungere il server.
+    comment_empty: Scrivi qualcosa nel commento
+    content_too_long: Il testo è troppo lungo (max {max} caratteri)
+    paste_markdown: Impossibile incollare Markdown.
+  ticket:
+    stale_reply: 'È apparso un nuovo messaggio: controlla il thread prima di inviarlo.'
+  editor:
+    char_count: '{used} di {max} caratteri'
+    dictate_denied: Accesso al microfono negato
+    dictate_no_mic: Nessun microfono trovato
+    dictate_network: La dettatura non è disponibile. Controlla la tua connessione.
+    paste_markdown_hint: 'Incolla con Ctrl+V: Markdown verrà formattato.'
+  validation:
+    missing_user: Seleziona un utente
+    missing_field: Compila {label}
+    field:
+      user_id: un utente
+      content: il messaggio
+      title: il titolo
+      name: il nome
+      key: la chiave
+      first_name: un nome
+      last_name: un cognome
+      description: la descrizione
+      email: un indirizzo email
+      password: una parola d'ordine
+      tag: un'etichetta
+      project_ids: un progetto
+      required: un campo obbligatorio
+  confirm:
+    title: Conferma
+    message_default: Sei sicuro di voler continuare?
+    continue: Continuare?
+    confirm_label: Conferma
+    discard_ticket:
+      title: Scartare il biglietto?
+      message: Il modulo contiene dati compilati. Annullare e ignorare le modifiche?
+      action: Annulla la creazione
+      cancel: Torniamo alla modifica
+  attach:
+    remove: Rimuovi {name}
+    too_many: Puoi allegare fino a {count} file.
+  coachmarks:
+    next: Avanti
+    back: Indietro
+    done: Fatto
+    skip: Salta
+    replay: Suggerimenti per questa pagina
+    step: '{current}/{total}'
+    tour_label: Suggerimenti
+    nav-project:
+      body: Passa rapidamente da un progetto all'altro.
+    nav-appearance:
+      body: Adatta il tema e i colori alle tue preferenze.
+      cta: Cambia aspetto
+    feed-create:
+      body: Hai un problema? Crea un nuovo ticket qui.
+    feed-needs-us:
+      body: Ticket in attesa della risposta del tuo team.
+    feed-mine:
+      body: Mostra i ticket in cui sei il reporter, l'assegnatario o l'osservatore.
+    feed-filters:
+      body: Restringi l'elenco per tipo, stato, priorità o tag.
+    feed-filter-clear:
+      body: Reimposta i filtri e cancella i criteri selezionati.
+    ticket-status:
+      body: Fare clic per modificare lo stato del biglietto.
+    ticket-done:
+      body: 'Contrassegna il ticket come completato una volta risolto il problema: puoi riaprirlo in seguito, se necessario.'
+    ticket-assignee:
+      body: Assegna un membro del team a gestire questo ticket.
+    ticket-thread-order:
+      body: 'Ordine dei messaggi: prima il più vecchio o prima il più recente.'
+    ticket-history:
+      body: 'Apri la cronologia del ticket: stato, assegnazione e altre modifiche.'
+    admin-projects-name:
+      body: Visualizza il nome del progetto.
+    admin-projects-key:
+      body: Chiave univoca che fa parte del numero del biglietto.
+    admin-projects-description:
+      body: Breve riepilogo opzionale mostrato nell'elenco dei progetti.
+    admin-project-members:
+      body: Aggiungi persone al progetto in modo che possano vedere e lavorare sui suoi ticket.
+    compose-attach:
+      body: Aggiungi file scegliendoli dal disco, trascinandoli qui o incollandoli dagli appunti (Ctrl+V).
+    compose-quote:
+      body: Seleziona il testo in un messaggio, quindi fai clic su Cita.
+    compose-dictate:
+      body: Fai clic sul microfono per dettare la tua risposta. Alcuni browser o dispositivi potrebbero bloccare l'accesso al microfono.
+    compose-internal:
+      body: 'Le note interne sono visibili solo al personale: i clienti non le vedranno.'
+email:
+  mfa:
+    subject: Codice di accesso
+    body: 'Il tuo codice di verifica dell''accesso:'
+    ttl: Il codice è valido per {minutes} min.
+  confirm:
+    subject: Conferma la tua nuova email
+    body: Abbiamo ricevuto una richiesta di modifica del tuo indirizzo email in {app}. Conferma il nuovo indirizzo utilizzando il pulsante qui sotto. Il collegamento è valido per {minutes} min. Se non eri tu, puoi ignorare questo messaggio.
+    cta: Conferma e-mail
+  activate:
+    subject: Attiva il tuo account
+    body: È stato creato un account per te in {app}. Imposta una password per attivarlo e accedi. Il collegamento è valido per {days} giorni.
+    cta: Imposta la password
+  reset:
+    subject: Reimpostazione della password
+    body: Abbiamo ricevuto una richiesta di reimpostazione della password per {app}. Imposta una nuova password utilizzando il pulsante qui sotto. Il collegamento è valido per {days} giorni. Se non eri tu, puoi ignorare questo messaggio.
+    cta: Imposta una nuova password
+  smtp_test:
+    subject: Prova l'e-mail
+    body: Questo è un messaggio di prova da {app}. Se riesci a leggerlo nel layout con marchio, SMTP funziona.
+  new_ticket:
+    subject: Nuovo biglietto
+    body: 'È stato creato un nuovo ticket: {ticket}. Aprilo in {app} per rivedere i dettagli e agire.'
+    cta: Apri tra {app}
+  new_comment:
+    subject: Nuovo messaggio su un ticket
+    body: È apparso un nuovo messaggio nel ticket {ticket}. Vai al ticket per vedere il contenuto e rispondere.
+    cta: Apri tra {app}
+  ticket_update:
+    subject: Aggiornamento biglietti
+    body: Lo stato, il tipo o la priorità del ticket {ticket} è stato modificato.
+    new_value: 'Nuovo valore: {value}'
+    cta: Apri tra {app}
+  assignment:
+    subject: Assegnazione dei biglietti
+    body: Ti è stato assegnato il biglietto {ticket}. Aprilo in {app} per rivedere i dettagli.
+    cta: Apri tra {app}
+  common:
+    greeting: Ciao {name},
+    link_hint: 'Se il pulsante non funziona, copia e incolla questo collegamento nel tuo browser:'
+    unsubscribe: Clicca qui se non desideri più ricevere queste notifiche
+    unwatch: Clicca qui se non vuoi più guardare questo biglietto

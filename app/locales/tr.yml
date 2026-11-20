@@ -1,0 +1,909 @@
+meta:
+  name: Türkçe
+ui:
+  common:
+    close: Kapat
+    cancel: İptal
+    confirm: Onayla
+    save: Kaydet
+    create: Oluştur
+    edit: Düzenle
+    delete: Sil
+    add: Ekle
+    send: Gönder
+    empty_dash: —
+    none: Yok
+    back_to_portal: Portala geri dön
+    back_home: Ana sayfa
+    active: Aktif
+    sidebar_show: Paneli göster
+    sidebar_hide: Paneli gizle
+    pagination:
+      first: İlk sayfa
+      prev: Önceki
+      next: Sonraki
+      last: Son sayfa
+      range: '{start}–{end} / {total}'
+      per_page_label: Sayfa başına
+  errors:
+    not_found:
+      title: Bulunamadı
+      heading: Sayfa bulunamadı
+      body: Bu adres mevcut değil veya kaldırılmış.
+  settings:
+    language: Dil
+  confirm:
+    title: Onay
+    disable_project:
+      title: Proje devre dışı bırakılsın mı?
+      message: “{name}” ({key}) projesi devre dışı bırakılacak ve portalda gizlenecek.
+      action: Devre dışı bırak
+    delete_tag:
+      title: Etiket silinsin mi?
+      message: “{name}” etiketini silmek istediğinizden emin misiniz? Tüm biletlerden kaldırılacaktır.
+      action: Sil
+    change_key:
+      title: Proje anahtarını değiştir
+      message: Anahtarın değiştirilmesi eski /p/… ve /t/… bağlantılarını bozacaktır. Devam etmek?
+      action: Anahtarı değiştir
+    remove_member:
+      title: Üye kaldırılsın mı?
+      message: '{name} “{project}” projesinden kaldırılsın mı?'
+      action: Kaldır
+    block_user:
+      title: Hesap engellensin mi?
+      message: “{name}” hesabı portal erişimini kaybedecek. Mesajlar ve biletler kalır.
+      action: Blok
+    delete_comment:
+      title: Yorum silinsin mi?
+      message: Yorum, ekleriyle birlikte kalıcı olarak silinecek.
+      action: Sil
+    delete_ticket:
+      title: Bilet silinsin mi?
+      message: Bilet gizlenecek. Geçmiş, yöneticilerin kullanımına açık kalır.
+      action: Sil
+    stop_watching:
+      title: İzlemeyi bırakmak mı istiyorsunuz?
+      message: Bu biletin katılımcılarından çıkarılacaksınız ve bununla ilgili e-posta bildirimlerini artık almayacaksınız.
+      action: İzlemeyi bırak
+    remove_participant:
+      title: Katılımcı kaldırılsın mı?
+      message: '{name} bu biletin katılımcılarından kaldırılsın mı? Artık bu konuyla ilgili e-posta bildirimleri almayacaklar.'
+      action: Kaldır
+  nav:
+    aria: Navigasyon
+    project: Proje
+    select_project: Proje seçin
+    user_menu: Kullanıcı menüsü
+    menu: Menü
+    admin: Yönetim
+    profile: Profil
+    logout: Oturumu kapat
+  auth:
+    login:
+      title: Oturum aç
+      email: E-posta
+      password: Şifre
+      submit: Oturum aç
+      forgot_label: Şifrenizi unuttum
+      forgot_placeholder: adres@şirket.com
+      forgot_submit: Şifre değiştirme bağlantısını gönder
+      forgot_back: Oturum açmak için geri dön
+      forgot_sent: Hesap mevcutsa ve engellenmemişse e-postayla bir bağlantı gönderdik.
+      mfa_title: E-posta kodu
+      mfa_hint: E-postanıza gönderdiğimiz 6 haneli kodu girin.
+      mfa_submit: Kodu onayla
+      mfa_trust: '{days} gün boyunca bu cihazda kod isteme'
+      mfa_resend: Kodu yeniden gönder
+    activate:
+      title_pending: Hesap aktivasyonu
+      title_reset: Şifreyi ayarla
+      subtitle_pending: Hesabınızı etkinleştirmek için bir şifre belirleyin
+      subtitle_reset: Yeni bir şifre belirleyin
+      password: Şifre
+      password_confirm: Şifreyi tekrarla
+      phone: Telefon (isteğe bağlı)
+      phone_placeholder: +48 123 456 789
+      submit_pending: Hesabı etkinleştir
+      submit_reset: Şifreyi kaydet
+    confirm_email:
+      title: E-postayı onayla
+      subtitle: E-posta adresi değişikliğinizi onaylayın
+      submit: E-postayı onayla
+    unsubscribe:
+      title: Abonelikten çık
+      heading: Abonelikten çıkıldı
+      heading_invalid: Geçersiz bağlantı
+      heading_confirm: Bildirimleri kapatmayı onaylayın
+      confirm_body:
+        notify_reply: Yanıt bildirimleri kapatılacak. Artık hiçbir bilet için bu mesajları almayacaksınız. Bunu profil ayarlarınızdan değiştirebilirsiniz.
+        notify_new_ticket: Yeni bilet bildirimleri kapatılacaktır. Artık hiçbir bilet için bu mesajları almayacaksınız. Bunu profil ayarlarınızdan değiştirebilirsiniz.
+        notify_ticket_update: Durum, tür ve öncelik değişiklikleriyle ilgili bildirimler kapatılacak. Artık hiçbir bilet için bu mesajları almayacaksınız. Bunu profil ayarlarınızdan değiştirebilirsiniz.
+      confirm: Onayla
+      done: Profil ayarlarınızda “{type}” bildirimleri kapatıldı.
+      invalid: Bu abonelikten çıkma bağlantısı geçersiz veya süresi dolmuş.
+      manage: Bildirim tercihleri
+    unwatch:
+      title: İzlemeyi kapat
+      heading: Artık bu bileti izlemiyorsunuz
+      heading_invalid: Geçersiz bağlantı
+      heading_confirm: Bu bilet için izlemeyi kapatmayı onaylayın
+      confirm_body: '{label} numaralı biletin katılımcı listesinden çıkarılacaksınız. Artık yeni mesajlarla ilgili güncelleme almayacaksınız.'
+      confirm: Onayla
+      done: '{label} biletinin katılımcılarından çıkarıldınız.'
+      invalid: Bu bağlantı geçersiz veya süresi dolmuş.
+  profile:
+    aside_label: Hesap
+    nav_aria: Profil
+    nav:
+      profile: Profil
+      password: Şifreyi değiştir
+      notifications: Bildirimler
+      appearance: Görünüm
+    title:
+      profile: Profil
+      data: Hesap verileri
+      password: Şifreyi değiştir
+      notifications: Bildirimler
+      appearance: Görünüm
+    field:
+      first_name: Ad
+      last_name: Soyadı
+      email: E-posta
+      phone: Telefon
+    email_change_hint: E-postanızı değiştirmek için yeni adresin onaylanması gerekir. Onaylayana kadar mevcut adresinizle oturum açmaya devam edersiniz.
+    email_pending: 'Onay bekleniyor: {email}'
+    save: Kaydet
+    password:
+      section: Şifre
+      current: Mevcut şifre
+      new: Yeni şifre
+      confirm: Yeni şifreyi tekrarla
+      hint: Küçük harf, büyük harf, rakam ve özel karakterden oluşan en az {min} karakter.
+      save: Şifreyi kaydet
+      set: Şifreyi ayarla
+      send_activation: Aktivasyon bağlantısını gönder
+      send_reset: Şifre sıfırlama bağlantısını gönder
+    settings:
+      language: Dil
+      datetime_title: Tarih ve saat
+      datetime_format: Tarih ve saat biçimi
+      timezone: Saat dilimi
+      theme_title: Renk teması
+      gradient_toggle: Arka plan gradyanı
+      gradient_on: Derinlik
+      gradient_off: Düz
+      density_title: Aralık
+      font_title: Yazı tipi boyutu
+      notify_intro: Bilet değişiklikleri için e-posta bildirim ayarları.
+      notify_new_ticket: Yeni biletler
+      notify_new_ticket_hint: Personel olduğunuz bir projede birisi yeni bir destek bildirimi oluşturduğunda e-posta gönderin.
+      notify_new_ticket_hint_client: Ekip projenizde bir destek bildirimi oluşturduğunda e-posta gönderin.
+      notify_reply: Yanıtlar
+      notify_reply_hint: Katıldığınız biletlerle ilgili yeni yorumlar hakkında e-posta gönderin.
+      notify_ticket_update: Durum, tür ve öncelik
+      notify_ticket_update_hint: Katıldığınız biletlerde durum, tür veya öncelik değiştiğinde e-posta gönderin.
+    admin_all_projects_hint: Yöneticiler tüm projeleri görüntüleyebilir. Biletleri yönetmek ve bilet e-postalarını almak için onları projeye personel olarak ekleyin.
+  portal:
+    empty:
+      title: Proje yok
+      heading: Henüz herhangi bir projeniz yok
+      body: Bir yöneticiden sizi davet etmesini veya bir projeye eklemesini isteyin.
+    feed:
+      tickets: Biletler
+      create: Bilet oluştur
+      empty: Bu görünümde bilet yok.
+      deleted_badge: Silindi
+      view: Görüntüle
+      filters: Filtreler
+      search: Ara
+      search_placeholder: Unvan, numara veya muhabir…
+      search_submit: Bul
+      search_clear: Aramayı temizle
+      type: Tür
+      status: Durum
+      priority: Öncelik
+      tag: Etiket
+      mine_only: Sadece benim
+      sort: Sıralama
+      filter_any: Herhangi biri
+      sort_options:
+        updated: Son etkinlik
+        created: Oluşturulma tarihi
+        priority: Öncelik
+      updated: Güncellendi
+      filter_submit: Filtre
+      filter_clear: Temizle
+      pagination:
+        label: Bilet listesi sayfalandırması
+      modal_title: Bilet oluştur
+      field:
+        title: Başlık
+        type: Tür
+        priority: Öncelik
+        description: Açıklama
+    view:
+      all: Hepsi
+      open: Açık
+      done: Kapalı
+      staff:
+        needs_us: Başa çıkmak
+        unassigned: Atanmamış
+      client:
+        waiting_on_me: Cevap bekleniyor
+  ticket:
+    doc_title: Bilet {label}
+    description: Açıklama
+    edit: Düzenle
+    deleted_banner: Bu bilet gizlendi. Bunu yalnızca yöneticiler görebilir.
+    attachments: Ekler
+    edit_modal: Bileti düzenle
+    lightbox_aria: Ek önizlemesi
+    self_assign: Beni görevlendir
+    back_to_list: Listeye geri dön
+    details: Ayrıntılar
+    created: Oluşturuldu
+    closed: Kapalı
+    type: Tür
+    status: Durum
+    priority: Öncelik
+    change_type: Türü değiştir
+    change_status: Durumu değiştir
+    change_priority: Önceliği değiştir
+    reopen: Yeniden aç
+    people: İnsanlar
+    reporter: Muhabir
+    change_reporter: Muhabir değiştir
+    assignee: Vekil
+    change_assignee: Atanan kişiyi değiştir
+    assignee_none: '- hiçbiri -'
+    participants: Katılımcılar
+    add_participant: Katılımcı ekle
+    no_participants_to_add: Eklenecek kişi yok
+    stop_watching: İzlemeyi bırak
+    remove_participant: İzlemeden kaldır
+    remove_participant_aria: '{name} adlı kişiyi izlemeden kaldır'
+    tags: Etiketler
+    add_tag_placeholder: Etiket ekle…
+    activity: Etkinlik
+    history: Tarih
+    history_aria: Bilet geçmişi
+    history_empty: Henüz etkinlik yok.
+    history_loading: Yükleniyor…
+    history_unknown_user: Bilinmeyen kullanıcı
+    event:
+      CREATED: Bilet oluşturuldu ({type}, {priority})
+      COMMENT_ADDED: Yorum eklendi
+      COMMENT_ADDED_INTERNAL: Dahili not eklendi
+      COMMENT_EDITED: Yorum düzenlendi
+      COMMENT_EDITED_INTERNAL: Dahili not düzenlendi
+      COMMENT_DELETED: Yorum silindi
+      COMMENT_DELETED_INTERNAL: Dahili not silindi
+      TITLE_CHANGED: Başlık değiştirildi
+      DESCRIPTION_CHANGED: Açıklama değiştirildi
+      STATUS_CHANGED: 'Durum değişti: {from} → {to}'
+      PRIORITY_CHANGED: 'Öncelik değişti: {from} → {to}'
+      TYPE_CHANGED: 'Tür değiştirildi: {from} → {to}'
+      ASSIGNEE_CHANGED: 'Vekil değişti: {from} → {to}'
+      REPORTER_CHANGED: 'Muhabir değişti: {from} → {to}'
+      PARTICIPANT_ADDED: 'Katılımcı şunu ekledi: {name}'
+      PARTICIPANT_REMOVED: 'Katılımcı kaldırıldı: {name}'
+      TAG_ADDED: 'Etiket eklendi: {name}'
+      TAG_REMOVED: 'Etiket kaldırıldı: {name}'
+      ATTACHMENT_ADDED: 'Ek eklendi: {name}'
+      ATTACHMENT_REMOVED: 'Ek kaldırıldı: {name}'
+      DELETED: Bilet silindi
+    reply: Yanıtla
+    thread_order_aria: Mesaj sırası
+    thread_oldest: Önce en eski
+    thread_newest: Önce en yeni
+    internal: Dahili
+    edited_by: 'Düzenleyen: {name}'
+    edit_comment: Yorumu düzenle
+    save_comment: Yorumu kaydet
+    cancel_edit: Düzenlemeyi iptal et
+    delete_comment: Yorumu sil
+    delete: Bileti sil
+    reply_placeholder: Bir cevap yazın…
+    internal_note: Dahili not
+    closed_notice: Bilet kapatıldı.
+    reopen_hint_staff: Duruma tıklayarak tekrar açabilirsiniz.
+    reopen_hint_client: Kapanıştan sonraki {days} gün içinde yeniden açmak mümkündür.
+    no_comment_permission: Yorum yapma izniniz yok.
+    attach:
+      add_files: Dosya ekleme, yapıştırma veya bırakma
+      file_one: dosya
+      file_many: dosyalar
+      hint_icon: En fazla {count} {file_word} · maksimum 5 MB
+      button: Dosya ekle
+      remove: '{name} öğesini kaldır'
+  editor:
+    toolbar: Biçimlendirme
+    bold: Kalın
+    italic: italik
+    heading_1: Başlık 1
+    heading_2: Başlık 2
+    heading_3: Başlık 3
+    link: Bağlantı
+    link_apply: Bağlantı ekle
+    bullet_list: Madde işareti listesi
+    ordered_list: Numaralı liste
+    code_block: Kod bloğu
+    blockquote: Alıntı
+    horizontal_rule: Bölücü
+    dictate: Dikte et
+    dictate_stop: Dikteyi durdur
+    paste_markdown: İşaretlemeyi Yapıştır
+  admin:
+    aside_label: Yönetim
+    nav_aria: Yönetici
+    nav:
+      overview: İstatistikler
+      projects: Projeler
+      users: Kullanıcılar
+      settings: Ayarlar
+    settings:
+      title: Portal ayarları
+      nav_aria: Portal ayarları bölümleri
+      save: Kaydet
+      nav:
+        tickets: Biletler
+        uploads: Ekler
+        mail: Posta
+      tickets:
+        heading: Bilet ve bağlantı politikası
+        hint: Müşteri sınırları ve e-posta bağlantılarının ne kadar süreyle geçerli kalacağı.
+        reopen_days: Pencereyi yeniden aç (gün)
+        reopen_days_hint: Müşteri kapatıldıktan kaç gün sonra bileti yeniden açabilir? Personel her zaman yeniden açılabilir. 0 = yalnızca personel.
+        description_max_len: Bilet açıklaması (karakterler)
+        description_max_len_hint: İndirim dahil bilet açıklamasının maksimum uzunluğu.
+        reply_max_len: Yanıt (karakterler)
+        reply_max_len_hint: İşaretleme de dahil olmak üzere bir yorumun veya yanıtın maksimum uzunluğu.
+        auth_link_ttl_days: Aktivasyon / şifre sıfırlama (gün)
+        auth_link_ttl_days_hint: Hesap aktivasyonu veya şifre sıfırlama için e-posta bağlantısının ne kadar süreyle geçerli kalacağı.
+        email_confirm_ttl_minutes: E-posta onayı (dakika)
+        email_confirm_ttl_minutes_hint: Profildeki e-postayı değiştirirken bağlantının ne kadar süreyle geçerli kalacağı.
+      uploads:
+        heading: Ek sınırları
+        hint: Her limit tek bir bilet veya yorum için geçerlidir.
+        max_files: Dosya sayısı
+        max_files_hint: Bir bilet veya yorumda maksimum ek sayısı.
+        max_image_mb: Resim boyutu (MB)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: Dosya boyutu (MB)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTP sunucusu
+        smtp_port: Liman
+        smtp_security: Bağlantı güvenliği
+        smtp_security_none: Yok
+        smtp_security_starttls: BAŞLANGIÇ TLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: Kullanıcı adı
+        smtp_pass: Şifre
+        smtp_pass_hint: Mevcut şifreyi korumak için boş bırakın.
+        email_from: Adresten
+        test_heading: Test e-postası gönder
+        test_hint: Kaydedilen SMTP ayarlarını kullanır. Test etmeden önce değişiklikleri kaydedin.
+        test_email: Alıcı
+        test_send: Testi gönder
+    dashboard:
+      title: İstatistikler
+      stat_projects: Projeler
+      stat_users: Kullanıcılar
+      stat_open_tickets: Açık biletler
+      stat_messages: Mesajlar
+      stat_pending_users: Etkinleştirilmeyi bekleyen hesaplar
+      stat_emails_sent: Gönderilen e-postalar
+      stat_members: Üyeler
+      stat_tickets: Biletler
+      per_project: Proje istatistikleri
+      select_project: Proje
+      user_activity: Kullanıcı etkinliği
+      col_tickets_created: Biletler oluşturuldu
+      sort_name_asc: Ada göre artan şekilde sırala
+      sort_name_desc: Ada göre azalan şekilde sırala
+      sort_role_asc: Role göre artan şekilde sırala
+      sort_role_desc: Role göre azalan şekilde sırala
+      sort_tickets_asc: Artan şekilde oluşturulan biletlere göre sıralayın
+      sort_tickets_desc: Oluşturulan biletlere göre azalan şekilde sırala
+      sort_last_login_asc: Son girişe göre artan şekilde sırala
+      sort_last_login_desc: Son girişe göre azalan şekilde sırala
+      by_status: Duruma göre
+      by_type: Türe göre
+      empty_projects: Proje yok.
+      pagination:
+        label: Kullanıcı etkinliği sayfalandırması
+    projects:
+      title: Projeler
+      new: Yeni proje
+      name: İsim
+      key: Anahtar
+      key_title: 1–5 karakter A–Z / 0–9
+      description: Açıklama
+      initial_staff: Proje personeli
+      initial_staff_placeholder: Bir kullanıcı seçin…
+      no_staff_candidates: Öncelikle aktif bir kullanıcı oluşturun.
+      list: Proje listesi
+      filter_active: Aktif
+      filter_disabled: Devre dışı
+      meta: '{members} üye · {tickets} bilet'
+      empty: Proje yok. Yukarıdaki ilkini oluşturun.
+      empty_disabled: Engelli projesi yok.
+      disabled: Devre dışı
+      disable: Devre dışı bırak
+      enable: Etkinleştir
+    project:
+      open_portal: Portalda aç
+      settings: Ayarlar
+      notifications: Bildirimler
+      notify_clients_on_staff_ticket: Müşterileri ekip tarafından oluşturulan biletler hakkında bilgilendirin
+      notify_clients_on_staff_ticket_note: Varsayılan olarak müşteriler, ekip tarafından oluşturulan yeni destek bildirimleri hakkında bildirim almazlar. İki yönlü iletişime izin vermek için bu seçeneği etkinleştirin.
+      tags: Etiketler
+      tags_empty: Projede etiket yok.
+      delete_tag_aria: '{name} etiketini sil'
+      members: Üyeler
+      members_empty: Projede üye yok.
+      add_user: Kullanıcı ekle
+      member_role: Proje rolü
+      col_action: Eylem
+    users:
+      title: Kullanıcılar
+      new: Yeni kullanıcı
+      list: Kullanıcıların listesi
+      empty: Kullanıcı yok.
+      pagination:
+        label: Kullanıcı listesi sayfalandırması
+      blocked: Engellendi
+      pending: Beklemede
+      resend: Aktivasyon bağlantısını gönder
+      block: Blok
+      unblock: Engellemeyi kaldır
+      edit_aria: '{name}''ı düzenle'
+      filter_role: Rol
+      filter_project: Proje
+      filter_status: Durum
+      filter_status_active: Engelleme kaldırıldı
+      filter_status_blocked: Engellendi
+      filter_status_pending: Beklemede
+      filter_status_all: Hepsi
+      filter_search: Ara
+      filter_search_placeholder: İsim, e-posta veya telefon…
+      filter_all: Hepsi
+      filter_clear: Temizle
+      col_name: İsim
+      col_status: Durum
+      sort_name_asc: Ada göre artan şekilde sırala
+      sort_name_desc: Ada göre azalan şekilde sırala
+      sort_email_asc: E-postaya göre artan şekilde sırala
+      sort_email_desc: E-postaya göre azalan şekilde sırala
+      sort_phone_asc: Telefona göre artan şekilde sırala
+      sort_phone_desc: Telefona göre azalan şekilde sırala
+      sort_role_asc: Role göre artan şekilde sırala
+      sort_role_desc: Role göre azalan şekilde sırala
+      sort_status_asc: Duruma göre artan şekilde sırala
+      sort_status_desc: Duruma göre azalan şekilde sırala
+      col_last_login: Son giriş
+    user_new:
+      title: Yeni kullanıcı
+      role: Rol
+      submit: Etkinleştirme bağlantısı oluştur ve gönder
+      submit_active: Etkinleştirmeden oluştur
+    user_edit:
+      title: Kullanıcıyı düzenle
+      heading: Hesabı düzenle
+    projects_fieldset: Projeler
+    projects_empty: Proje yok.
+    projects_required: En az bir proje gerekli
+  dev:
+    aria: Geliştirici modu
+    label: Geliştirici
+    copy: Kopyala
+    copied: Kopyalandı
+    expand: Genişlet
+    collapse: Daralt
+    url: URL'si
+    template: Şablon
+    partials: Kısmi parçalar
+    api: API'si
+    js: JS
+    route: Rota düzeni
+    file: İşleyici
+  time:
+    today_at: Bugün {time}'da
+    yesterday_at: Dün saat {time}'da
+    am: sabah
+    pm: PM
+    month_abbr:
+      1: Ocak
+      2: Şubat
+      3: Mart
+      4: Nisan
+      5: Mayıs
+      6: Haziran
+      7: Temmuz
+      8: Ağustos
+      9: Eylül
+      10: Ekim
+      11: Kasım
+      12: Aralık
+enums:
+  ticket_type:
+    BUG: Hata
+    QUESTION: Soru
+    CHANGE: Değiştir
+    TASK: Yeni özellik
+  ticket_status:
+    NEW: Yeni
+    IN_PROGRESS: Devam ediyor
+    WAITING_ON_CLIENT: Muhabir ile
+    DONE: Bitti
+  ticket_priority:
+    LOW: Düşük
+    NORMAL: normal
+    HIGH: Yüksek
+  user_role:
+    USER: Kullanıcı
+    ADMIN: Yönetici
+  member_role:
+    CLIENT: Müşteri
+    STAFF: Personel
+themes:
+  morning-mist:
+    label: Sabah Sisi
+    description: Yumuşak bir ışıltıya sahip inci mavisi.
+  sandy-dawn:
+    label: Kumlu Sahil
+    description: Nazik bir yıkamayla ılık kum ve ballı amber.
+  green-meadow:
+    label: Yeşil Çayır
+    description: Adaçayı ve yosun sessiz, samimi bir ışıltıyla.
+  graphite-day:
+    label: Grafit Günü
+    description: Grafiti sessiz çelik yıkamada soğutun.
+  berry-dawn:
+    label: Heather Bloom
+    description: Parlak, nazik bir yıkamada yumuşak funda ve meyveler.
+  rose-dawn:
+    label: Allık Parıltısı
+    description: Parlak, yumuşak bir yıkamada sıcak gül ve pudra allık.
+  deep-ocean:
+    label: Derin Okyanus
+    description: Yumuşak abisal ışıltıya sahip safir derinliği.
+  amber-night:
+    label: kehribar kor
+    description: Sıcak şampanya közlü espresso.
+  northern-spruce:
+    label: Kuzey Ladin
+    description: Kristal nane ışıltılı karanlık orman.
+  charcoal-dusk:
+    label: Kömür Alacakaranlık
+    description: Sessiz bir alacakaranlıkta serin çelik gümüşlü kömür.
+  midnight-berry:
+    label: Kadife Meyve
+    description: Sıcak mor yarı ışıkta olgunlaşmış meyve.
+  rose-night:
+    label: Kızıl Peçe
+    description: Sıcak, kadifemsi bir yarı ışıkta derin bir gül.
+  density:
+    tight:
+      label: sıkı
+      description: Daha küçük aralık, ekranda daha fazla içerik.
+    balanced:
+      label: Dengeli
+      description: Varsayılan PulseDeck aralığı.
+    airy:
+      label: havadar
+      description: Öğeler arasında daha fazla nefes alma alanı.
+  font_size:
+    compact:
+      label: Kompakt
+      description: Ekranda daha fazla metin.
+    natural:
+      label: Doğal
+      description: Varsayılan PulseDeck boyutu.
+    large:
+      label: Büyük
+      description: Daha rahat okuma.
+flash:
+  auth:
+    invalid_credentials: Bu e-posta veya şifre doğru görünmüyor.
+    account_blocked: Bu hesap engellendi.
+    account_not_activated: Bu hesap henüz aktif değil; e-postanızı kontrol edin veya “Şifremi unuttum” seçeneğini kullanın.
+    profile_updated: Profil kaydedildi.
+    email_confirm_sent: Yeni e-postanıza bir bağlantı gönderdik. Onaylayana kadar mevcut adresinizle oturum açmaya devam edin.
+    password_changed: Yeni şifre kaydedildi.
+    notifications_updated: Bildirim tercihleri kaydedildi.
+    current_password_invalid: Mevcut şifreniz eşleşmiyor.
+    confirm_link_invalid: Bu onay bağlantısının süresi dolmuş veya geçerli değil.
+    email_confirmed: E-posta onaylandı — yeni adresle oturum açın.
+    activation_link_invalid: Bu aktivasyon bağlantısının süresi dolmuş veya geçerli değil.
+    mfa_invalid: Geçersiz veya süresi dolmuş kod.
+    mfa_expired: Doğrulama oturumunun süresi doldu. Tekrar oturum açın.
+    mfa_delivery: Kod gönderilemedi. Lütfen daha sonra tekrar deneyin.
+  admin:
+    user_created: Hesap oluşturuldu — bir etkinleştirme bağlantısı gönderdik.
+    user_created_active: Hesap oluşturuldu ve aktif — aşağıda bir şifre belirleyin.
+    user_updated: Kullanıcı ayrıntıları kaydedildi.
+    password_link_sent: Şifre bağlantısını içeren bir e-posta gönderdik.
+    password_set: Şifre ayarlandı.
+    activation_resent: Aktivasyon linki tekrar gönderildi.
+    user_blocked: Hesap engellendi — kullanıcının portal erişimi yok.
+    user_unblocked: Hesabın blokesi kaldırıldı.
+    notifications_updated: Bildirim tercihleri kaydedildi.
+    settings_saved: Portal ayarları kaydedildi.
+    settings_test_sent: Test e-postası gönderildi.
+    settings_test_failed: Test e-postası gönderilemedi; SMTP'yi ve günlükleri kontrol edin.
+    settings_smtp_missing: SMTP yapılandırılmamış; önce bir sunucuyu ayarlayın ve kaydedin.
+messages:
+  auth:
+    passwords_mismatch: Şifrelerin eşleşmesi gerekiyor.
+    cannot_demote_last_admin: Bu son yöneticidir; bu rol kaldırılamaz.
+    cannot_block_self: Kendi hesabınızı engelleyemezsiniz.
+    email_unchanged: Yeni e-posta mevcut olanla aynı.
+    email_taken: Bu e-posta zaten alınmış
+    user_exists_resend: Bu e-postaya sahip bir hesap zaten mevcut; kullanıcı sayfasını açın ve aktivasyon bağlantısını tekrar gönderin
+  admin:
+    invalid_role: Geçerli bir rol seçin.
+    unknown_action: Bu eylem yapılamaz.
+    already_activated: Bu hesap zaten aktif.
+    settings_invalid_int: Geçerli bir numara girin.
+    settings_out_of_range: Bu değer izin verilen aralığın dışında.
+    settings_invalid_choice: Geçerli bir seçenek seçin.
+  projects:
+    name_exists: Bu isimde bir proje zaten mevcut.
+    key_exists: Bu proje anahtarı zaten alınmış.
+    staff_required: Projeyi yönetecek en az bir kullanıcı seçin.
+    staff_invalid: Seçilen kullanıcı eksik veya etkin değil.
+    last_staff: Bir projede en az bir aktif personel bulunmalıdır.
+    at_least_one: En az bir proje seçin.
+    invalid: Bu proje geçerli değil.
+  tickets:
+    no_project_access: Bu projeye erişiminiz yok.
+    no_comment: Buraya yorum ekleyemezsiniz.
+    no_edit_comment: Yorumları düzenleyemezsiniz.
+    no_delete_comment: Yorumları silemezsiniz.
+    comment_not_found: O yorum artık burada değil.
+    internal_staff_only: Dahili notlar yalnızca personel içindir.
+    no_assign: Bu bileti atayamazsınız.
+    assignee_must_be_staff: Yalnızca personel veya yönetici atayabilirsiniz.
+    no_change_reporter: Muhabirinizi değiştiremezsiniz.
+    reporter_must_be_member: Muhabirin projeye erişmesi gerekiyor.
+    no_status: Durumu değiştiremezsiniz.
+    cannot_reopen: Bu bilet yeniden açılamaz.
+    no_edit: Bunu düzenleyemezsiniz.
+    no_delete: Bu bileti silemezsiniz.
+    no_priority: Önceliği değiştiremezsiniz.
+    no_type: Türü değiştiremezsiniz.
+    tags_staff_only: Etiketleri yalnızca personel yönetebilir.
+    no_add_participant: Katılımcı ekleyemezsiniz.
+    no_stop_watching: Bu bileti izlemeyi bırakamazsınız.
+    not_participant: Bu bileti izlemiyorsunuz.
+    user_must_be_member: Bu kişinin projede olması gerekiyor.
+    participant_not_allowed: Bu kişiyi katılımcı olarak ekleyemezsiniz.
+    invalid_status: Geçerli bir durum seçin.
+    invalid_type: Geçerli bir tür seçin.
+    invalid_priority: Geçerli bir öncelik seçin.
+    select_user: Bir kullanıcı seçin.
+  uploads:
+    empty: O dosya boş.
+    too_large_image: Bu resim çok büyük (maks. {mb} MB).
+    too_large_file: Bu dosya çok büyük (en fazla {mb} MB).
+    invalid_image: Geçersiz resim dosyası.
+    image_too_large: Bu resim çok büyük.
+    invalid_file: Desteklenmeyen dosya biçimi.
+    formats: JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR veya 7Z kullanın.
+  validation:
+    missing_user: Bir kullanıcı seçin
+    missing_field: '{label} yazın'
+    invalid_int: Geçerli bir numara girin.
+    invalid_form: Formu kontrol edin; hatalar içeriyor.
+    field:
+      user_id: bir kullanıcı
+      content: mesaj
+      title: başlık
+      name: isim
+      key: anahtar
+      description: açıklama
+      email: bir e-posta adresi
+      password: bir şifre
+      tag: bir etiket
+      required: gerekli bir alan
+  fields:
+    required: '{field} gerekli.'
+    invalid: '{field} geçerli değil.'
+    too_short: '{field} çok kısa (en az {min}).'
+    too_long: '{field} çok uzun (maks. {max}).'
+    pattern: '{field} geçersiz bir biçime sahip.'
+    labels:
+      user:
+        email: E-posta
+        password: Şifre
+        first_name: Ad
+        last_name: Soyadı
+        phone: Telefon
+        role: Rol
+        ui_lang: Dil
+        datetime_format: Tarih ve saat biçimi
+        timezone: Saat dilimi
+      project:
+        name: Proje adı
+        key: Proje anahtarı
+        description: Proje açıklaması
+      ticket:
+        title: Başlık
+        description: Açıklama
+        type: Tür
+        status: Durum
+        priority: Öncelik
+      comment:
+        content: Yorum
+      tag:
+        name: Etiket
+      search:
+        q: Ara
+      filter:
+        tag: Etiket filtresi
+  http:
+    not_found: Aradığınızı bulamadık.
+    server_error: Bir şeyler ters gitti; birazdan tekrar deneyin.
+    login_required: Devam etmek için oturum açın.
+    admin_required: Yönetici erişimine ihtiyacınız var.
+  csrf:
+    missing: Oturumunuzun süresi doldu.
+    invalid: Oturumunuzun süresi doldu.
+    refresh_hint: Sayfayı yenileyip tekrar deneyin.
+  password:
+    min_length: En az {min} karakter kullanın.
+    too_long: Bu şifre çok uzun.
+    need_lower: Küçük harf ekleyin.
+    need_upper: Büyük harf ekleyin.
+    need_digit: Bir rakam ekleyin.
+    need_special: Özel bir karakter ekleyin.
+  phone:
+    e164: +48 123 456 789 gibi numarayı girin.
+  project_key:
+    invalid: 'Anahtar: {min}–{max} karakterler A–Z / 0–9 (tire yok)'
+js:
+  errors:
+    forbidden: Buna erişiminiz yok.
+    not_found: Aradığınızı bulamadık.
+    validation: Formu kontrol edin; hatalar içeriyor
+    rate_limit: Çok fazla deneme; bir dakika bekleyin.
+    server: Bir şeyler ters gitti; tekrar deneyin.
+    generic: Bir şeyler ters gitti; tekrar deneyin.
+    submit_failed: Form gönderilemedi.
+    network: Sunucuya ulaşılamadı.
+    comment_empty: Yoruma bir şeyler yaz
+    content_too_long: Metin çok uzun (en fazla {max} karakter)
+    paste_markdown: Markdown yapıştırılamadı.
+  ticket:
+    stale_reply: Yeni bir mesaj belirdi; göndermeden önce konuyu kontrol edin.
+  editor:
+    char_count: '{used} / {max} karakter'
+    dictate_denied: Mikrofon erişimi reddedildi
+    dictate_no_mic: Mikrofon bulunamadı
+    dictate_network: Dikte kullanılamıyor. Bağlantınızı kontrol edin.
+    paste_markdown_hint: Ctrl+V ile yapıştırın — Markdown biçimlendirilecektir.
+  validation:
+    missing_user: Bir kullanıcı seçin
+    missing_field: '{label} yazın'
+    field:
+      user_id: bir kullanıcı
+      content: mesaj
+      title: başlık
+      name: isim
+      key: anahtar
+      first_name: bir ad
+      last_name: bir soyadı
+      description: açıklama
+      email: bir e-posta adresi
+      password: bir şifre
+      tag: bir etiket
+      project_ids: bir proje
+      required: gerekli bir alan
+  confirm:
+    title: Onay
+    message_default: Devam etmek istediğinizden emin misiniz?
+    continue: Devam etmek?
+    confirm_label: Onayla
+    discard_ticket:
+      title: Bilet iptal edilsin mi?
+      message: Formda doldurulmuş veriler var. Değişiklikler iptal edilip silinsin mi?
+      action: Oluşturmayı iptal et
+      cancel: Düzenlemeye geri dön
+  attach:
+    remove: '{name} öğesini kaldır'
+    too_many: En fazla {count} dosya ekleyebilirsiniz.
+  coachmarks:
+    next: Sonraki
+    back: Geri
+    done: Bitti
+    skip: Atla
+    replay: Bu sayfaya ilişkin ipuçları
+    step: '{current}/{total}'
+    tour_label: İpuçları
+    nav-project:
+      body: Projeleriniz arasında hızlıca geçiş yapın.
+    nav-appearance:
+      body: Temayı ve renkleri tercihlerinize göre ayarlayın.
+      cta: Görünümü değiştir
+    feed-create:
+      body: Bir sorun mu var? Burada yeni bir bilet oluşturun.
+    feed-needs-us:
+      body: Takımınızın cevabını bekleyen biletler.
+    feed-mine:
+      body: Muhabir, atanan veya izleyici olduğunuz biletleri gösterin.
+    feed-filters:
+      body: Listeyi türe, duruma, önceliğe veya etikete göre daraltın.
+    feed-filter-clear:
+      body: Filtreleri sıfırlayın ve seçtiğiniz kriterleri temizleyin.
+    ticket-status:
+      body: Bilet durumunu değiştirmek için tıklayın.
+    ticket-done:
+      body: Sorun çözüldüğünde bildirimi tamamlandı olarak işaretleyin; gerekirse daha sonra yeniden açabilirsiniz.
+    ticket-assignee:
+      body: Bu bildirimle ilgilenmesi için bir ekip üyesini atayın.
+    ticket-thread-order:
+      body: 'Mesaj sırası: en eskisi önce veya en yenisi önce.'
+    ticket-history:
+      body: Bilet zaman çizelgesini açın - durum, atama ve diğer değişiklikler.
+    admin-projects-name:
+      body: Projenin görünen adı.
+    admin-projects-key:
+      body: Bilet numarasının bir parçasını oluşturan benzersiz anahtar.
+    admin-projects-description:
+      body: Proje listesinde gösterilen isteğe bağlı kısa özet.
+    admin-project-members:
+      body: Biletleri görebilmeleri ve üzerinde çalışabilmeleri için insanları projeye ekleyin.
+    compose-attach:
+      body: Dosyaları diskten seçerek, buraya sürükleyerek veya panodan yapıştırarak (Ctrl+V) ekleyin.
+    compose-quote:
+      body: Mesajdaki metni seçin ve ardından Alıntı'yı tıklayın.
+    compose-dictate:
+      body: Cevabınızı dikte etmek için mikrofona tıklayın. Bazı tarayıcılar veya cihazlar mikrofon erişimini engelleyebilir.
+    compose-internal:
+      body: Dahili notlar yalnızca personel tarafından görülebilir; müşteriler bunları görmez.
+email:
+  mfa:
+    subject: Oturum açma kodu
+    body: 'Oturum açma doğrulama kodunuz:'
+    ttl: Kod {minutes} dk. için geçerlidir.
+  confirm:
+    subject: Yeni e-postanızı onaylayın
+    body: '{app} adresindeki e-posta adresinizi değiştirmemiz yönünde bir talep aldık. Aşağıdaki düğmeyi kullanarak yeni adresi onaylayın. Bağlantı {minutes} dakika süreyle geçerlidir. Bu siz değilseniz bu mesajı görmezden gelebilirsiniz.'
+    cta: E-postayı onayla
+  activate:
+    subject: Hesabınızı etkinleştirin
+    body: '{app}''da sizin için bir hesap oluşturuldu. Etkinleştirmek ve oturum açmak için bir şifre belirleyin. Bağlantı {days} gün boyunca geçerlidir.'
+    cta: Şifreyi ayarla
+  reset:
+    subject: Şifre sıfırlama
+    body: '{app} şifrenizin sıfırlanması yönünde bir talep aldık. Aşağıdaki düğmeyi kullanarak yeni bir şifre belirleyin. Bağlantı {days} gün boyunca geçerlidir. Bu siz değilseniz bu mesajı görmezden gelebilirsiniz.'
+    cta: Yeni şifre belirle
+  smtp_test:
+    subject: E-postayı test edin
+    body: Bu {app} adlı kişiden gelen bir test mesajıdır. Bunu markalı düzende okuyabiliyorsanız SMTP çalışıyor demektir.
+  new_ticket:
+    subject: Yeni bilet
+    body: 'Yeni bir bilet oluşturuldu: {ticket}. Ayrıntıları incelemek ve işlem yapmak için {app}''de açın.'
+    cta: '{app}''da aç'
+  new_comment:
+    subject: Bilette yeni mesaj
+    body: '{ticket} numaralı bilette yeni bir mesaj belirdi. İçeriği görmek ve yanıt vermek için bilete gidin.'
+    cta: '{app}''da aç'
+  ticket_update:
+    subject: Bilet güncellemesi
+    body: '{ticket} biletinin durumu, türü veya önceliği değiştirildi.'
+    new_value: 'Yeni değer: {value}'
+    cta: '{app}''da aç'
+  assignment:
+    subject: Bilet ataması
+    body: Size {ticket} numaralı bilet atandı. Ayrıntıları incelemek için {app}'de açın.
+    cta: '{app}''da aç'
+  common:
+    greeting: Merhaba {name},
+    link_hint: 'Düğme çalışmıyorsa bu bağlantıyı kopyalayıp tarayıcınıza yapıştırın:'
+    unsubscribe: Artık bu bildirimleri almak istemiyorsanız burayı tıklayın
+    unwatch: Bu bileti artık izlemek istemiyorsanız burayı tıklayın

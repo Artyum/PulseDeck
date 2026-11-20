@@ -1,0 +1,909 @@
+meta:
+  name: 日本語
+ui:
+  common:
+    close: 閉じる
+    cancel: キャンセル
+    confirm: 確認する
+    save: 保存
+    create: 作成
+    edit: 編集
+    delete: 削除
+    add: 追加
+    send: 送信
+    empty_dash: —
+    none: なし
+    back_to_portal: ポータルに戻る
+    back_home: ホーム
+    active: アクティブ
+    sidebar_show: パネルを表示
+    sidebar_hide: パネルを非表示にする
+    pagination:
+      first: 最初のページ
+      prev: 前へ
+      next: 次へ
+      last: 最後のページ
+      range: '{start}–{end}/{total}'
+      per_page_label: ページごと
+  errors:
+    not_found:
+      title: 見つかりません
+      heading: ページが見つかりません
+      body: このアドレスは存在しないか、削除されています。
+  settings:
+    language: 言語
+  confirm:
+    title: 確認
+    disable_project:
+      title: プロジェクトを無効にしますか?
+      message: プロジェクト「{name}」({key}) は無効になり、ポータルから非表示になります。
+      action: 無効にする
+    delete_tag:
+      title: タグを削除しますか?
+      message: タグ「{name}」を削除してもよろしいですか?すべてのチケットから削除されます。
+      action: 削除
+    change_key:
+      title: プロジェクトキーを変更する
+      message: キーを変更すると、古い /p/… リンクと /t/… リンクが壊れます。続く？
+      action: キーを変更する
+    remove_member:
+      title: メンバーを削除しますか?
+      message: '{name} をプロジェクト「{project}」から削除しますか?'
+      action: 削除
+    block_user:
+      title: アカウントをブロックしますか?
+      message: アカウント「{name}」はポータルにアクセスできなくなります。メッセージとチケットは残ります。
+      action: ブロック
+    delete_comment:
+      title: コメントを削除しますか?
+      message: コメントは添付ファイルとともに完全に削除されます。
+      action: 削除
+    delete_ticket:
+      title: チケットを削除しますか?
+      message: チケットは非表示になります。管理者は履歴を引き続き利用できます。
+      action: 削除
+    stop_watching:
+      title: 見るのをやめますか？
+      message: あなたはこのチケットの参加者から削除され、チケットに関する電子メール通知の受信が停止されます。
+      action: 見るのをやめる
+    remove_participant:
+      title: 参加者を削除しますか?
+      message: このチケットの参加者から {name} を削除しますか?今後、それに関する電子メール通知は受信されなくなります。
+      action: 削除
+  nav:
+    aria: ナビゲーション
+    project: プロジェクト
+    select_project: プロジェクトの選択
+    user_menu: ユーザーメニュー
+    menu: メニュー
+    admin: 管理
+    profile: プロフィール
+    logout: ログアウト
+  auth:
+    login:
+      title: サインイン
+      email: 電子メール
+      password: パスワード
+      submit: サインイン
+      forgot_label: パスワードを忘れた場合
+      forgot_placeholder: アドレス@company.com
+      forgot_submit: パスワード変更リンクを送信する
+      forgot_back: サインインに戻る
+      forgot_sent: アカウントが存在し、ブロックされていない場合は、電子メールでリンクを送信しました。
+      mfa_title: メールコード
+      mfa_hint: メールに送信された 6 桁のコードを入力してください。
+      mfa_submit: コードを確認してください
+      mfa_trust: '{days} 日間、このデバイスでコードを要求しないでください'
+      mfa_resend: コードを再送信する
+    activate:
+      title_pending: アカウントのアクティベーション
+      title_reset: パスワードを設定する
+      subtitle_pending: アカウントをアクティブ化するためのパスワードを設定します
+      subtitle_reset: 新しいパスワードを設定する
+      password: パスワード
+      password_confirm: パスワードを繰り返す
+      phone: 電話（オプション）
+      phone_placeholder: +48 123 456 789
+      submit_pending: アカウントをアクティブ化する
+      submit_reset: パスワードを保存する
+    confirm_email:
+      title: メールの確認
+      subtitle: メールアドレス変更の確認
+      submit: メールの確認
+    unsubscribe:
+      title: 購読を解除する
+      heading: 購読解除済み
+      heading_invalid: 無効なリンク
+      heading_confirm: 通知をオフにすることを確認する
+      confirm_body:
+        notify_reply: 返信通知はオフになります。どのチケットについても、これらのメッセージは受信されなくなります。これはプロフィール設定で変更できます。
+        notify_new_ticket: 新しいチケットの通知はオフになります。どのチケットについても、これらのメッセージは受信されなくなります。これはプロフィール設定で変更できます。
+        notify_ticket_update: ステータス、タイプ、優先度の変更に関する通知はオフになります。どのチケットについても、これらのメッセージは受信されなくなります。これはプロフィール設定で変更できます。
+      confirm: 確認する
+      done: 「{type}」通知はプロフィール設定でオフになっています。
+      invalid: この購読解除リンクは無効であるか、有効期限が切れています。
+      manage: 通知設定
+    unwatch:
+      title: 視聴をオフにする
+      heading: このチケットはもう見られていません
+      heading_invalid: 無効なリンク
+      heading_confirm: このチケットの視聴をオフにすることを確認します
+      confirm_body: あなたはチケット {label} の参加者リストから削除されます。新しいメッセージに関する更新情報は受信されなくなります。
+      confirm: 確認する
+      done: あなたはチケット {label} の参加者から削除されました。
+      invalid: このリンクは無効であるか、有効期限が切れています。
+  profile:
+    aside_label: アカウント
+    nav_aria: プロフィール
+    nav:
+      profile: プロフィール
+      password: パスワードを変更する
+      notifications: 通知
+      appearance: 外観
+    title:
+      profile: プロフィール
+      data: アカウントデータ
+      password: パスワードを変更する
+      notifications: 通知
+      appearance: 外観
+    field:
+      first_name: 名
+      last_name: 姓
+      email: 電子メール
+      phone: 電話
+    email_change_hint: メールアドレスを変更するには、新しいアドレスでの確認が必要です。確認するまで、現在のアドレスでサインインし続けます。
+    email_pending: '確認待ち: {email}'
+    save: 保存
+    password:
+      section: パスワード
+      current: 現在のパスワード
+      new: 新しいパスワード
+      confirm: 新しいパスワードを繰り返します
+      hint: 少なくとも {min} 文字 (小文字、大文字、数字、特殊文字を含む)。
+      save: パスワードを保存する
+      set: パスワードを設定する
+      send_activation: アクティベーションリンクを送信する
+      send_reset: パスワードリセットリンクを送信する
+    settings:
+      language: 言語
+      datetime_title: 日付と時刻
+      datetime_format: 日付と時刻の形式
+      timezone: タイムゾーン
+      theme_title: カラーテーマ
+      gradient_toggle: 背景のグラデーション
+      gradient_on: 奥行き
+      gradient_off: フラット
+      density_title: 間隔
+      font_title: フォントサイズ
+      notify_intro: チケット変更の電子メール通知設定。
+      notify_new_ticket: 新しいチケット
+      notify_new_ticket_hint: あなたがスタッフであるプロジェクトで誰かが新しいチケットを作成したときにメールを送信します。
+      notify_new_ticket_hint_client: チームがプロジェクトでチケットを作成したときに電子メールを送信します。
+      notify_reply: 返信
+      notify_reply_hint: 参加しているチケットに関する新しいコメントを電子メールで送信します。
+      notify_ticket_update: ステータス、タイプ、優先度
+      notify_ticket_update_hint: 参加しているチケットのステータス、タイプ、または優先度が変更されたときにメールを送信します。
+    admin_all_projects_hint: 管理者はすべてのプロジェクトを表示できます。チケットを処理し、チケット電子メールを受信するには、チケットをスタッフとしてプロジェクトに追加します。
+  portal:
+    empty:
+      title: プロジェクトがありません
+      heading: まだプロジェクトがありません
+      body: 管理者に招待するかプロジェクトに追加するよう依頼してください。
+    feed:
+      tickets: チケット
+      create: チケットの作成
+      empty: このビューにはチケットがありません。
+      deleted_badge: 削除されました
+      view: 見る
+      filters: フィルター
+      search: 検索
+      search_placeholder: タイトル、番号、記者…
+      search_submit: 探す
+      search_clear: 検索をクリア
+      type: 種類
+      status: ステータス
+      priority: 優先順位
+      tag: タグ
+      mine_only: 私だけ
+      sort: 仕分け
+      filter_any: どれでも
+      sort_options:
+        updated: 最後のアクティビティ
+        created: 作成日
+        priority: 優先順位
+      updated: 更新されました
+      filter_submit: フィルター
+      filter_clear: クリア
+      pagination:
+        label: チケットリストのページネーション
+      modal_title: チケットの作成
+      field:
+        title: タイトル
+        type: 種類
+        priority: 優先順位
+        description: 説明
+    view:
+      all: すべて
+      open: 開く
+      done: 閉店
+      staff:
+        needs_us: 扱うには
+        unassigned: 未割り当て
+      client:
+        waiting_on_me: 返信待ち
+  ticket:
+    doc_title: チケット {label}
+    description: 説明
+    edit: 編集
+    deleted_banner: このチケットは非表示になっています。管理者のみが閲覧できます。
+    attachments: 添付ファイル
+    edit_modal: チケットを編集する
+    lightbox_aria: 添付ファイルのプレビュー
+    self_assign: 私を割り当ててください
+    back_to_list: リストに戻る
+    details: 詳細
+    created: 作成されました
+    closed: 閉店
+    type: 種類
+    status: ステータス
+    priority: 優先順位
+    change_type: 種類の変更
+    change_status: ステータス変更
+    change_priority: 優先度の変更
+    reopen: 再開
+    people: 人々
+    reporter: 記者
+    change_reporter: レポーターを変更する
+    assignee: 譲受人
+    change_assignee: 担当者の変更
+    assignee_none: — なし —
+    participants: 参加者
+    add_participant: 参加者を追加
+    no_participants_to_add: 追加する人がいません
+    stop_watching: 見るのをやめる
+    remove_participant: 視聴から削除する
+    remove_participant_aria: '{name} を視聴から削除する'
+    tags: タグ
+    add_tag_placeholder: タグを追加…
+    activity: アクティビティ
+    history: 歴史
+    history_aria: チケット履歴
+    history_empty: まだイベントはありません。
+    history_loading: 読み込み中…
+    history_unknown_user: 不明なユーザー
+    event:
+      CREATED: チケットが作成されました ({type}、{priority})
+      COMMENT_ADDED: コメント追加
+      COMMENT_ADDED_INTERNAL: 内部メモを追加しました
+      COMMENT_EDITED: コメントを編集しました
+      COMMENT_EDITED_INTERNAL: 内部メモを編集しました
+      COMMENT_DELETED: コメントが削除されました
+      COMMENT_DELETED_INTERNAL: 内部メモが削除されました
+      TITLE_CHANGED: タイトル変更
+      DESCRIPTION_CHANGED: 説明が変更されました
+      STATUS_CHANGED: '変更されたステータス: {from} → {to}'
+      PRIORITY_CHANGED: '変更された優先順位: {from} → {to}'
+      TYPE_CHANGED: 'タイプが変更されました: {from} → {to}'
+      ASSIGNEE_CHANGED: '担当者が変更されました: {from} → {to}'
+      REPORTER_CHANGED: '報告者が変更されました: {from} → {to}'
+      PARTICIPANT_ADDED: '参加者が追加されました: {name}'
+      PARTICIPANT_REMOVED: '参加者が削除されました: {name}'
+      TAG_ADDED: '追加されたタグ: {name}'
+      TAG_REMOVED: 'タグが削除されました: {name}'
+      ATTACHMENT_ADDED: '添付ファイルが追加されました: {name}'
+      ATTACHMENT_REMOVED: '添付ファイルが削除されました: {name}'
+      DELETED: チケットが削除されました
+    reply: 返信
+    thread_order_aria: メッセージの順序
+    thread_oldest: 古い順
+    thread_newest: 新しい順
+    internal: 内部
+    edited_by: '編集者: {name}'
+    edit_comment: コメントの編集
+    save_comment: コメントを保存
+    cancel_edit: 編集をキャンセルする
+    delete_comment: コメントの削除
+    delete: チケットを削除する
+    reply_placeholder: 返信を書いてください…
+    internal_note: 内部メモ
+    closed_notice: チケットはクローズされました。
+    reopen_hint_staff: ステータスをクリックすると再度開くことができます。
+    reopen_hint_client: 閉鎖後{days}日以内であれば再開可能です。
+    no_comment_permission: コメントする権限がありません。
+    attach:
+      add_files: ファイルを追加、貼り付け、またはドロップする
+      file_one: ファイル
+      file_many: ファイル
+      hint_icon: 最大 {count} {file_word} · 最大 5 MB
+      button: ファイルを添付する
+      remove: '{name} を削除'
+  editor:
+    toolbar: 書式設定
+    bold: 太字
+    italic: イタリック体
+    heading_1: 見出し1
+    heading_2: 見出し2
+    heading_3: 見出し 3
+    link: リンク
+    link_apply: リンクを追加
+    bullet_list: 箇条書きリスト
+    ordered_list: 番号付きリスト
+    code_block: コードブロック
+    blockquote: 引用
+    horizontal_rule: ディバイダー
+    dictate: 口述する
+    dictate_stop: ディクテーションを停止する
+    paste_markdown: マークダウンを貼り付け
+  admin:
+    aside_label: 管理
+    nav_aria: 管理者
+    nav:
+      overview: 統計
+      projects: プロジェクト
+      users: ユーザー
+      settings: 設定
+    settings:
+      title: ポータル設定
+      nav_aria: ポータル設定セクション
+      save: 保存
+      nav:
+        tickets: チケット
+        uploads: 添付ファイル
+        mail: メール
+      tickets:
+        heading: チケットとリンクのポリシー
+        hint: クライアントの制限と電子メールのリンクが有効な期間。
+        reopen_days: ウィンドウを再度開く (日数)
+        reopen_days_hint: クライアントがチケットを閉じてから何日後に再度チケットを開くことができるか。スタッフはいつでも再開できます。 0 = スタッフのみ。
+        description_max_len: チケット説明（文字）
+        description_max_len_hint: マークダウンを含むチケット説明の最大長。
+        reply_max_len: 返信（文字数）
+        reply_max_len_hint: コメントまたは返信の最大長 (マークダウンを含む)。
+        auth_link_ttl_days: アクティベーション/パスワードのリセット (日)
+        auth_link_ttl_days_hint: アカウントのアクティブ化またはパスワードのリセットのために電子メール リンクが有効な期間。
+        email_confirm_ttl_minutes: メール確認 (分)
+        email_confirm_ttl_minutes_hint: プロフィール内の電子メールを変更するときにリンクが有効な期間。
+      uploads:
+        heading: 添付ファイルの制限
+        hint: 各制限は 1 つのチケットまたはコメントに適用されます。
+        max_files: ファイル数
+        max_files_hint: 1 つのチケットまたはコメントに添付できる最大数。
+        max_image_mb: 画像サイズ(MB)
+        max_image_formats: JPG、PNG、WebP、GIF
+        max_file_mb: ファイルサイズ(MB)
+        max_file_formats: PDF、DOCX、XLSX、PPTX、TXT、CSV、LOG、JSON、XML、ZIP、RAR、7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTPサーバー
+        smtp_port: 港
+        smtp_security: 接続のセキュリティ
+        smtp_security_none: なし
+        smtp_security_starttls: STARTTLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: ユーザー名
+        smtp_pass: パスワード
+        smtp_pass_hint: 現在のパスワードを保持するには、空白のままにします。
+        email_from: 送信元アドレス
+        test_heading: テストメールを送信する
+        test_hint: 保存された SMTP 設定を使用します。テストする前に変更を保存します。
+        test_email: 受信者
+        test_send: 送信テスト
+    dashboard:
+      title: 統計
+      stat_projects: プロジェクト
+      stat_users: ユーザー
+      stat_open_tickets: オープンチケット
+      stat_messages: メッセージ
+      stat_pending_users: アクティブ化が保留中のアカウント
+      stat_emails_sent: 送信されたメール
+      stat_members: メンバー
+      stat_tickets: チケット
+      per_project: プロジェクト統計
+      select_project: プロジェクト
+      user_activity: ユーザーアクティビティ
+      col_tickets_created: チケットが作成されました
+      sort_name_asc: 名前の昇順に並べ替えます
+      sort_name_desc: 名前の降順で並べ替えます
+      sort_role_asc: 役割の昇順で並べ替えます
+      sort_role_desc: 役割の降順で並べ替えます
+      sort_tickets_asc: 作成されたチケットで昇順に並べ替えます
+      sort_tickets_desc: 作成されたチケットで降順に並べ替えます
+      sort_last_login_asc: 最終ログインの昇順で並べ替えます
+      sort_last_login_desc: 最終ログインの降順で並べ替えます
+      by_status: ステータス別
+      by_type: 種類別
+      empty_projects: プロジェクトはありません。
+      pagination:
+        label: ユーザーアクティビティのページネーション
+    projects:
+      title: プロジェクト
+      new: 新しいプロジェクト
+      name: 名前
+      key: キー
+      key_title: 1 ～ 5 文字 A ～ Z / 0 ～ 9
+      description: 説明
+      initial_staff: プロジェクトスタッフ
+      initial_staff_placeholder: ユーザーを選択してください…
+      no_staff_candidates: まずアクティブなユーザーを作成します。
+      list: プロジェクト一覧
+      filter_active: アクティブ
+      filter_disabled: 障害者
+      meta: '{members} メンバー · {tickets} チケット'
+      empty: プロジェクトはありません。上の最初のものを作成します。
+      empty_disabled: 無効化されたプロジェクトはありません。
+      disabled: 障害者
+      disable: 無効にする
+      enable: 有効にする
+    project:
+      open_portal: ポータルで開く
+      settings: 設定
+      notifications: 通知
+      notify_clients_on_staff_ticket: チームが作成したチケットについてクライアントに通知する
+      notify_clients_on_staff_ticket_note: デフォルトでは、クライアントはチームによって作成された新しいチケットに関する通知を受け取りません。双方向通信を許可するには、このオプションを有効にします。
+      tags: タグ
+      tags_empty: プロジェクトにタグがありません。
+      delete_tag_aria: タグ {name} を削除
+      members: メンバー
+      members_empty: プロジェクトにメンバーがいません。
+      add_user: ユーザーの追加
+      member_role: プロジェクトの役割
+      col_action: アクション
+    users:
+      title: ユーザー
+      new: 新規ユーザー
+      list: ユーザー一覧
+      empty: ユーザーがいません。
+      pagination:
+        label: ユーザーリストのページネーション
+      blocked: ブロックされました
+      pending: 保留中
+      resend: アクティベーションリンクを送信する
+      block: ブロック
+      unblock: ブロックを解除する
+      edit_aria: '{name}を編集'
+      filter_role: 役割
+      filter_project: プロジェクト
+      filter_status: ステータス
+      filter_status_active: ブロック解除されました
+      filter_status_blocked: ブロックされました
+      filter_status_pending: 保留中
+      filter_status_all: すべて
+      filter_search: 検索
+      filter_search_placeholder: 名前、メールアドレス、電話番号…
+      filter_all: すべて
+      filter_clear: クリア
+      col_name: 名前
+      col_status: ステータス
+      sort_name_asc: 名前の昇順で並べ替えます
+      sort_name_desc: 名の降順で並べ替えます
+      sort_email_asc: 電子メールの昇順で並べ替えます
+      sort_email_desc: 電子メールの降順で並べ替えます
+      sort_phone_asc: 電話番号の昇順で並べ替えます
+      sort_phone_desc: 電話番号の降順で並べ替えます
+      sort_role_asc: 役割の昇順で並べ替えます
+      sort_role_desc: 役割の降順で並べ替えます
+      sort_status_asc: ステータスの昇順で並べ替えます
+      sort_status_desc: ステータスの降順で並べ替えます
+      col_last_login: 最終ログイン
+    user_new:
+      title: 新規ユーザー
+      role: 役割
+      submit: アクティベーションリンクを作成して送信する
+      submit_active: アクティベーションを行わずに作成する
+    user_edit:
+      title: ユーザーの編集
+      heading: アカウントの編集
+    projects_fieldset: プロジェクト
+    projects_empty: プロジェクトはありません。
+    projects_required: 少なくとも 1 つのプロジェクトが必要です
+  dev:
+    aria: 開発者モード
+    label: 開発者
+    copy: コピー
+    copied: コピーされました
+    expand: 拡大する
+    collapse: 崩壊する
+    url: URL
+    template: テンプレート
+    partials: パーシャル
+    api: API
+    js: JS
+    route: ルートパターン
+    file: ハンドラー
+  time:
+    today_at: 今日の{time}
+    yesterday_at: 昨日の{time}
+    am: 午前
+    pm: 午後
+    month_abbr:
+      1: 1月
+      2: 2月
+      3: 3月
+      4: 4月
+      5: 5月
+      6: ジュン
+      7: 7月
+      8: 8月
+      9: 9月
+      10: 10月
+      11: 11月
+      12: 12月
+enums:
+  ticket_type:
+    BUG: バグ
+    QUESTION: 質問
+    CHANGE: 変更
+    TASK: 新機能
+  ticket_status:
+    NEW: 新しい
+    IN_PROGRESS: 進行中
+    WAITING_ON_CLIENT: レポーターと
+    DONE: 完了
+  ticket_priority:
+    LOW: 低い
+    NORMAL: ノーマル
+    HIGH: 高
+  user_role:
+    USER: ユーザー
+    ADMIN: 管理者
+  member_role:
+    CLIENT: クライアント
+    STAFF: スタッフ
+themes:
+  morning-mist:
+    label: 朝の霧
+    description: 柔らかな輝きを放つパールブルー。
+  sandy-dawn:
+    label: サンディショア
+    description: 温かい砂と蜂蜜入りの琥珀を優しく洗い上げます。
+  green-meadow:
+    label: グリーンメドウ
+    description: 静かで親密な輝きを放つセージとモス。
+  graphite-day:
+    label: グラファイトデー
+    description: 静かなスチールウォッシュでクールなグラファイト。
+  berry-dawn:
+    label: ヘザー・ブルーム
+    description: 明るく優しいウォッシュの中に柔らかなヘザーとベリー。
+  rose-dawn:
+    label: ブラッシュグロウ
+    description: 温かみのあるローズとパウダーのチークが明るく優しい洗い上がり。
+  deep-ocean:
+    label: 深海
+    description: 深みのあるサファイアの柔らかな深淵の輝き。
+  amber-night:
+    label: アンバーエンバー
+    description: エスプレッソに温かいシャンパンの香り。
+  northern-spruce:
+    label: ノーザンスプルース
+    description: クリスタルのミントの輝きを持つ暗い森。
+  charcoal-dusk:
+    label: チャコール・ダスク
+    description: 静かな夕暮れにクールなスチールシルバーを添えた炭。
+  midnight-berry:
+    label: ベルベットベリー
+    description: 暖かい紫色の半光の熟したベリー。
+  rose-night:
+    label: クリムゾンベール
+    description: 温かみのあるベルベットのような半光の深いローズ。
+  density:
+    tight:
+      label: きつい
+      description: 間隔が狭くなり、画面上のコンテンツが増えます。
+    balanced:
+      label: バランスの取れた
+      description: デフォルトの PulseDeck 間隔。
+    airy:
+      label: 風通しの良い
+      description: 要素間の呼吸スペースが広がります。
+  font_size:
+    compact:
+      label: コンパクト
+      description: 画面上のテキストが増えます。
+    natural:
+      label: ナチュラル
+      description: デフォルトの PulseDeck サイズ。
+    large:
+      label: 大
+      description: より快適な読書。
+flash:
+  auth:
+    invalid_credentials: その電子メールまたはパスワードは正しくないようです。
+    account_blocked: このアカウントはブロックされています。
+    account_not_activated: このアカウントはまだアクティブではありません。メールを確認するか、「パスワードを忘れた場合」を使用してください。
+    profile_updated: プロフィールが保存されました。
+    email_confirm_sent: 新しいメールへのリンクを送信しました。確認するまで、現在のアドレスでサインインし続けます。
+    password_changed: 新しいパスワードが保存されました。
+    notifications_updated: 通知設定が保存されました。
+    current_password_invalid: 現在のパスワードが一致しません。
+    confirm_link_invalid: その確認リンクは有効期限が切れているか、無効です。
+    email_confirmed: メールアドレスが確認されました — 新しいアドレスでサインインします。
+    activation_link_invalid: そのアクティベーション リンクは有効期限が切れているか、無効です。
+    mfa_invalid: コードが無効または期限切れです。
+    mfa_expired: 検証セッションの有効期限が切れました。再度サインインします。
+    mfa_delivery: コードを送信できませんでした。後でもう一度試してください。
+  admin:
+    user_created: アカウントが作成されました — アクティベーション リンクを送信しました。
+    user_created_active: アカウントが作成され、アクティブになりました。以下にパスワードを設定してください。
+    user_updated: ユーザーの詳細が保存されました。
+    password_link_sent: パスワードリンクを記載したメールを送信しました。
+    password_set: パスワードが設定されました。
+    activation_resent: アクティベーションリンクが再度送信されました。
+    user_blocked: アカウントがブロックされました - ユーザーはポータルにアクセスできません。
+    user_unblocked: アカウントのブロックが解除されました。
+    notifications_updated: 通知設定が保存されました。
+    settings_saved: ポータル設定が保存されました。
+    settings_test_sent: テストメールが送信されました。
+    settings_test_failed: テスト電子メールを送信できませんでした。SMTP とログを確認してください。
+    settings_smtp_missing: SMTP が構成されていません。最初にサーバーを設定して保存します。
+messages:
+  auth:
+    passwords_mismatch: パスワードは一致する必要があります。
+    cannot_demote_last_admin: これが最後の管理者です。この役割は削除できません。
+    cannot_block_self: 自分のアカウントをブロックすることはできません。
+    email_unchanged: 新しいメールは現在のメールと同じです。
+    email_taken: このメールはすでに受信されています
+    user_exists_resend: このメールアドレスを持つアカウントはすでに存在します - ユーザーページを開いてアクティベーションリンクを再送信してください
+  admin:
+    invalid_role: 有効な役割を選択してください。
+    unknown_action: その行為は出来ません。
+    already_activated: このアカウントはすでにアクティブです。
+    settings_invalid_int: 有効な番号を入力してください。
+    settings_out_of_range: その値は許容範囲外です。
+    settings_invalid_choice: 有効なオプションを選択してください。
+  projects:
+    name_exists: この名前のプロジェクトはすでに存在します。
+    key_exists: このプロジェクト キーはすでに使用されています。
+    staff_required: プロジェクトを処理するユーザーを少なくとも 1 人選択します。
+    staff_invalid: 選択したユーザーが見つからないか、非アクティブです。
+    last_staff: プロジェクトでは、少なくとも 1 人のアクティブなスタッフ メンバーを維持する必要があります。
+    at_least_one: 少なくとも 1 つのプロジェクトを選択してください。
+    invalid: そのプロジェクトは無効です。
+  tickets:
+    no_project_access: このプロジェクトへのアクセス権がありません。
+    no_comment: ここにコメントを追加することはできません。
+    no_edit_comment: コメントは編集できません。
+    no_delete_comment: コメントは削除できません。
+    comment_not_found: そのコメントはもうここにはありません。
+    internal_staff_only: 内部メモはスタッフ専用です。
+    no_assign: このチケットを割り当てることはできません。
+    assignee_must_be_staff: スタッフまたは管理者のみを割り当てることができます。
+    no_change_reporter: 記者を変えることはできません。
+    reporter_must_be_member: 報告者はプロジェクトにアクセスする必要があります。
+    no_status: ステータスを変更することはできません。
+    cannot_reopen: このチケットは再度開くことはできません。
+    no_edit: これは編集できません。
+    no_delete: このチケットは削除できません。
+    no_priority: 優先順位を変更することはできません。
+    no_type: 種類を変更することはできません。
+    tags_staff_only: スタッフのみがタグを管理できます。
+    no_add_participant: 参加者を追加することはできません。
+    no_stop_watching: このチケットを見るのをやめることはできません。
+    not_participant: あなたはこのチケットを見ていません。
+    user_must_be_member: その人はプロジェクトに参加する必要があります。
+    participant_not_allowed: この人を参加者として追加することはできません。
+    invalid_status: 有効なステータスを選択してください。
+    invalid_type: 有効なタイプを選択してください。
+    invalid_priority: 有効な優先順位を選択してください。
+    select_user: ユーザーを選択します。
+  uploads:
+    empty: そのファイルは空です。
+    too_large_image: その画像は大きすぎます (最大 {mb} MB)。
+    too_large_file: そのファイルは大きすぎます (最大 {mb} MB)。
+    invalid_image: 無効な画像ファイルです。
+    image_too_large: その画像は大きすぎます。
+    invalid_file: サポートされていないファイル形式です。
+    formats: JPG、PNG、WEBP、GIF、PDF、DOCX、XLSX、PPTX、TXT、CSV、LOG、JSON、XML、ZIP、RAR、または 7Z を使用します。
+  validation:
+    missing_user: ユーザーを選択してください
+    missing_field: '{label} を入力してください'
+    invalid_int: 有効な番号を入力してください。
+    invalid_form: フォームを確認してください。エラーが含まれています。
+    field:
+      user_id: ユーザー
+      content: メッセージ
+      title: タイトル
+      name: 名前
+      key: 鍵
+      description: 説明
+      email: メールアドレス
+      password: パスワード
+      tag: タグ
+      required: 必須フィールド
+  fields:
+    required: '{field} は必須です。'
+    invalid: '{field} は無効です。'
+    too_short: '{field} は短すぎます (最小 {min})。'
+    too_long: '{field} は長すぎます (最大 {max})。'
+    pattern: '{field} の形式が無効です。'
+    labels:
+      user:
+        email: 電子メール
+        password: パスワード
+        first_name: 名
+        last_name: 姓
+        phone: 電話
+        role: 役割
+        ui_lang: 言語
+        datetime_format: 日付と時刻の形式
+        timezone: タイムゾーン
+      project:
+        name: プロジェクト名
+        key: プロジェクトキー
+        description: プロジェクトの説明
+      ticket:
+        title: タイトル
+        description: 説明
+        type: 種類
+        status: ステータス
+        priority: 優先順位
+      comment:
+        content: コメント
+      tag:
+        name: タグ
+      search:
+        q: 検索
+      filter:
+        tag: タグフィルター
+  http:
+    not_found: あなたが探しているものは見つかりませんでした。
+    server_error: 問題が発生しました。しばらくしてからもう一度お試しください。
+    login_required: 続行するにはサインインしてください。
+    admin_required: 管理者アクセスが必要です。
+  csrf:
+    missing: セッションの有効期限が切れました。
+    invalid: セッションの有効期限が切れました。
+    refresh_hint: ページを更新して、もう一度お試しください。
+  password:
+    min_length: 少なくとも {min} 文字を使用してください。
+    too_long: そのパスワードは長すぎます。
+    need_lower: 小文字を追加します。
+    need_upper: 大文字を追加します。
+    need_digit: 数字を追加します。
+    need_special: 特殊文字を追加します。
+  phone:
+    e164: +48 123 456 789 のような番号を入力します。
+  project_key:
+    invalid: 'キー: {min}–{max} 文字 A ～ Z / 0 ～ 9 (ハイフンなし)'
+js:
+  errors:
+    forbidden: これにはアクセスできません。
+    not_found: あなたが探しているものは見つかりませんでした。
+    validation: フォームを確認してください - エラーが含まれています
+    rate_limit: 試行が多すぎます - ちょっと待ってください。
+    server: 問題が発生しました。もう一度試してください。
+    generic: 問題が発生しました。もう一度試してください。
+    submit_failed: フォームを送信できませんでした。
+    network: サーバーに到達できませんでした。
+    comment_empty: コメントに何か書いてください
+    content_too_long: テキストが長すぎます (最大 {max} 文字)
+    paste_markdown: マークダウンを貼り付けることができませんでした。
+  ticket:
+    stale_reply: 新しいメッセージが表示されました。送信する前にスレッドを確認してください。
+  editor:
+    char_count: '{used}/{max} 文字'
+    dictate_denied: マイクへのアクセスが拒否されました
+    dictate_no_mic: マイクが見つかりません
+    dictate_network: ディクテーションは利用できません。接続を確認してください。
+    paste_markdown_hint: Ctrl+V で貼り付け — マークダウンがフォーマットされます。
+  validation:
+    missing_user: ユーザーを選択してください
+    missing_field: '{label} を入力してください'
+    field:
+      user_id: ユーザー
+      content: メッセージ
+      title: タイトル
+      name: 名前
+      key: 鍵
+      first_name: 名前
+      last_name: 姓
+      description: 説明
+      email: メールアドレス
+      password: パスワード
+      tag: タグ
+      project_ids: プロジェクト
+      required: 必須フィールド
+  confirm:
+    title: 確認
+    message_default: 続行してもよろしいですか?
+    continue: 続く？
+    confirm_label: 確認する
+    discard_ticket:
+      title: チケットを破棄しますか？
+      message: フォームにはデータが入力されています。変更をキャンセルして破棄しますか?
+      action: 作成をキャンセルする
+      cancel: 編集に戻る
+  attach:
+    remove: '{name} を削除'
+    too_many: 最大 {count} ファイルを添付できます。
+  coachmarks:
+    next: 次へ
+    back: 戻る
+    done: 完了
+    skip: スキップ
+    replay: このページのヒント
+    step: '{current}/{total}'
+    tour_label: ヒント
+    nav-project:
+      body: プロジェクト間をすばやく切り替えます。
+    nav-appearance:
+      body: 好みに合わせてテーマと色を調整します。
+      cta: 外観を変更する
+    feed-create:
+      body: 何か問題がありますか?ここで新しいチケットを作成します。
+    feed-needs-us:
+      body: チケットはチームの返答を待っています。
+    feed-mine:
+      body: あなたがレポーター、担当者、またはウォッチャーであるチケットを表示します。
+    feed-filters:
+      body: タイプ、ステータス、優先度、またはタグによってリストを絞り込みます。
+    feed-filter-clear:
+      body: フィルターをリセットし、選択した基準をクリアします。
+    ticket-status:
+      body: クリックしてチケットのステータスを変更します。
+    ticket-done:
+      body: 問題が解決したらチケットを完了としてマークします。必要に応じて後で再度チケットを開くことができます。
+    ticket-assignee:
+      body: このチケットを処理するチームメンバーを割り当てます。
+    ticket-thread-order:
+      body: 'メッセージの順序: 最も古いものが最初、または新しいものが最初。'
+    ticket-history:
+      body: チケットのタイムラインを開きます - ステータス、割り当て、その他の変更。
+    admin-projects-name:
+      body: プロジェクトの表示名。
+    admin-projects-key:
+      body: チケット番号の一部を形成する一意のキー。
+    admin-projects-description:
+      body: プロジェクト リストに表示されるオプションの短い概要。
+    admin-project-members:
+      body: プロジェクトにユーザーを追加すると、チケットを確認して作業できるようになります。
+    compose-attach:
+      body: ファイルを追加するには、ディスクからファイルを選択するか、ここにドラッグするか、クリップボードから貼り付けます (Ctrl+V)。
+    compose-quote:
+      body: メッセージ内のテキストを選択し、「引用」をクリックします。
+    compose-dictate:
+      body: マイクをクリックして返信を口述入力します。一部のブラウザまたはデバイスはマイクへのアクセスをブロックする場合があります。
+    compose-internal:
+      body: 内部メモはスタッフのみに表示され、クライアントには表示されません。
+email:
+  mfa:
+    subject: サインインコード
+    body: 'サインイン確認コード:'
+    ttl: コードは {minutes} 分間有効です。
+  confirm:
+    subject: 新しいメールを確認してください
+    body: '{app} にメール アドレスの変更リクエストを受け取りました。下のボタンから新しいアドレスを確認してください。リンクは {minutes} 分間有効です。これがあなたではない場合は、このメッセージを無視してください。'
+    cta: メールの確認
+  activate:
+    subject: アカウントをアクティブ化する
+    body: '{app} にアカウントが作成されました。パスワードを設定してアクティブ化し、サインインします。リンクは {days} 日間有効です。'
+    cta: パスワードを設定する
+  reset:
+    subject: パスワードのリセット
+    body: '{app} のパスワードをリセットするリクエストを受け取りました。下のボタンを使用して新しいパスワードを設定してください。リンクは{days}日間有効です。これがあなたではない場合は、このメッセージを無視してください。'
+    cta: 新しいパスワードを設定する
+  smtp_test:
+    subject: テストメール
+    body: これは {app} からのテスト メッセージです。ブランドのレイアウトでこれを読み取ることができれば、SMTP は機能しています。
+  new_ticket:
+    subject: 新しいチケット
+    body: '新しいチケットが作成されました: {ticket}。 {app} で開いて詳細を確認し、アクションを実行します。'
+    cta: '{app}にオープン'
+  new_comment:
+    subject: チケットの新しいメッセージ
+    body: 新しいメッセージがチケット {ticket} に表示されました。チケットに移動して内容を確認し、返信します。
+    cta: '{app}にオープン'
+  ticket_update:
+    subject: チケット更新
+    body: チケット {ticket} のステータス、タイプ、または優先度が変更されました。
+    new_value: '新しい値: {value}'
+    cta: '{app}にオープン'
+  assignment:
+    subject: チケットの割り当て
+    body: チケット {ticket} が割り当てられました。 {app} で開いて詳細を確認します。
+    cta: '{app}にオープン'
+  common:
+    greeting: こんにちは、{name} さん
+    link_hint: ボタンが機能しない場合は、このリンクをコピーしてブラウザに貼り付けてください。
+    unsubscribe: これらの通知を受け取りたくない場合は、ここをクリックしてください
+    unwatch: このチケットをもう見たくない場合は、ここをクリックしてください

@@ -1,0 +1,909 @@
+meta:
+  name: Magyar
+ui:
+  common:
+    close: Bezárás
+    cancel: Mégse
+    confirm: Erősítse meg
+    save: Mentés
+    create: Létrehozása
+    edit: Szerkesztés
+    delete: Törölje
+    add: Hozzáadás
+    send: Küldés
+    empty_dash: —
+    none: Egyik sem
+    back_to_portal: Vissza a portálra
+    back_home: Otthon
+    active: Aktív
+    sidebar_show: Panel megjelenítése
+    sidebar_hide: Panel elrejtése
+    pagination:
+      first: Első oldal
+      prev: Előző
+      next: Következő
+      last: Utolsó oldal
+      range: '{start}–{end}/{total}'
+      per_page_label: Oldalanként
+  errors:
+    not_found:
+      title: Nem található
+      heading: Az oldal nem található
+      body: Ez a cím nem létezik, vagy eltávolították.
+  settings:
+    language: Nyelv
+  confirm:
+    title: Megerősítés
+    disable_project:
+      title: Letiltja a projektet?
+      message: A „{name}” projekt ({key}) le lesz tiltva, és el lesz rejtve a portálon.
+      action: Letiltás
+    delete_tag:
+      title: Törli a címkét?
+      message: Biztosan törli a „{name}” címkét? Az összes jegyből eltávolítják.
+      action: Törölje
+    change_key:
+      title: Projektkulcs módosítása
+      message: A kulcs megváltoztatása megszakítja a régi /p/… és /t/… hivatkozásokat. Folytatja?
+      action: Kulcscsere
+    remove_member:
+      title: Eltávolítja a tagot?
+      message: Eltávolítja a {name}-t a „{project}” projektből?
+      action: Távolítsa el
+    block_user:
+      title: Blokkolja a fiókot?
+      message: A „{name}” fiók elveszíti a portálhoz való hozzáférést. Az üzenetek és a jegyek maradnak.
+      action: Blokk
+    delete_comment:
+      title: Törli a megjegyzést?
+      message: A megjegyzés véglegesen törlődik a mellékleteivel együtt.
+      action: Törölje
+    delete_ticket:
+      title: Törli a jegyet?
+      message: A jegy el lesz rejtve. Az előzmények továbbra is elérhetők a rendszergazdák számára.
+      action: Törölje
+    stop_watching:
+      title: Abbahagyja a nézést?
+      message: El lesz távolítva a jegy résztvevői közül, és nem kap e-mailes értesítéseket erről.
+      action: Hagyd abba a nézést
+    remove_participant:
+      title: Eltávolítja a résztvevőt?
+      message: Eltávolítja {name} a jegy résztvevői közül? A továbbiakban nem kapnak erről e-mailes értesítést.
+      action: Távolítsa el
+  nav:
+    aria: Navigáció
+    project: Projekt
+    select_project: Válassza ki a projektet
+    user_menu: Felhasználói menü
+    menu: Menü
+    admin: Adminisztráció
+    profile: Profil
+    logout: Jelentkezzen ki
+  auth:
+    login:
+      title: Jelentkezzen be
+      email: E-mail
+      password: Jelszó
+      submit: Jelentkezzen be
+      forgot_label: Elfelejtette jelszavát
+      forgot_placeholder: cím@cég.com
+      forgot_submit: Jelszómódosítási link küldése
+      forgot_back: Vissza a bejelentkezéshez
+      forgot_sent: Ha a fiók létezik, és nincs letiltva, küldtünk egy linket e-mailben.
+      mfa_title: E-mail kód
+      mfa_hint: Adja meg a 6 számjegyű kódot, amelyet e-mail-címére küldtünk.
+      mfa_submit: Erősítse meg a kódot
+      mfa_trust: Ne kérjen kódot ezen az eszközön {days} napig
+      mfa_resend: Kód újraküldése
+    activate:
+      title_pending: Fiók aktiválása
+      title_reset: Jelszó beállítása
+      subtitle_pending: Állítson be jelszót fiókja aktiválásához
+      subtitle_reset: Állítson be új jelszót
+      password: Jelszó
+      password_confirm: Ismételje meg a jelszót
+      phone: Telefon (opcionális)
+      phone_placeholder: +48 123 456 789
+      submit_pending: Fiók aktiválása
+      submit_reset: Jelszó mentése
+    confirm_email:
+      title: Erősítse meg az e-mailt
+      subtitle: Erősítse meg e-mail címének módosítását
+      submit: Erősítse meg az e-mailt
+    unsubscribe:
+      title: Leiratkozás
+      heading: Leiratkozott
+      heading_invalid: Érvénytelen link
+      heading_confirm: Erősítse meg az értesítések kikapcsolását
+      confirm_body:
+        notify_reply: A válaszértesítések ki lesznek kapcsolva. Ezeket az üzeneteket a továbbiakban egyetlen jegy esetén sem kapja meg. Ezt a profil beállításaiban módosíthatja.
+        notify_new_ticket: Az új jegyértesítések ki lesznek kapcsolva. Ezeket az üzeneteket a továbbiakban egyetlen jegy esetén sem kapja meg. Ezt a profil beállításaiban módosíthatja.
+        notify_ticket_update: Az állapot-, típus- és prioritásváltozásokról szóló értesítések ki lesznek kapcsolva. Ezeket az üzeneteket a továbbiakban egyetlen jegy esetén sem kapja meg. Ezt a profil beállításaiban módosíthatja.
+      confirm: Erősítse meg
+      done: A „{type}” értesítések ki vannak kapcsolva a profilbeállításokban.
+      invalid: Ez a leiratkozási link érvénytelen vagy lejárt.
+      manage: Értesítési beállítások
+    unwatch:
+      title: Kapcsolja ki a nézést
+      heading: Már nem nézi ezt a jegyet
+      heading_invalid: Érvénytelen link
+      heading_confirm: Erősítse meg a figyelés kikapcsolását ennél a jegynél
+      confirm_body: El lesz távolítva a {label} jegy résztvevői listájáról. Többé nem kap frissítéseket az új üzenetekről.
+      confirm: Erősítse meg
+      done: Eltávolítottuk a {label} jegy résztvevői közül.
+      invalid: Ez a link érvénytelen vagy lejárt.
+  profile:
+    aside_label: fiók
+    nav_aria: Profil
+    nav:
+      profile: Profil
+      password: Jelszó módosítása
+      notifications: Értesítések
+      appearance: Megjelenés
+    title:
+      profile: Profil
+      data: Számlaadatok
+      password: Jelszó módosítása
+      notifications: Értesítések
+      appearance: Megjelenés
+    field:
+      first_name: Keresztnév
+      last_name: Vezetéknév
+      email: E-mail
+      phone: Telefon
+    email_change_hint: Az e-mail-cím megváltoztatásához megerősítés szükséges az új címen. Addig jelentkezik be jelenlegi címével, amíg meg nem erősíti.
+    email_pending: 'Megerősítés függőben: {email}'
+    save: Mentés
+    password:
+      section: Jelszó
+      current: Jelenlegi jelszó
+      new: Új jelszó
+      confirm: Ismételje meg az új jelszót
+      hint: Legalább {min} karakter, kisbetűvel, nagybetűvel, számjegygel és speciális karakterrel.
+      save: Jelszó mentése
+      set: Jelszó beállítása
+      send_activation: Aktiváló link küldése
+      send_reset: Jelszó-visszaállítási link küldése
+    settings:
+      language: Nyelv
+      datetime_title: Dátum és idő
+      datetime_format: Dátum és idő formátuma
+      timezone: Időzóna
+      theme_title: Színes téma
+      gradient_toggle: Háttér színátmenet
+      gradient_on: Mélység
+      gradient_off: Lapos
+      density_title: Térköz
+      font_title: Betűméret
+      notify_intro: E-mail értesítési beállítások a jegymódosításokról.
+      notify_new_ticket: Új jegyek
+      notify_new_ticket_hint: E-mail küldése, ha valaki új jegyet hoz létre egy olyan projektben, amelyben Ön alkalmazott.
+      notify_new_ticket_hint_client: E-mail, amikor a csapat jegyet hoz létre a projektben.
+      notify_reply: Válaszok
+      notify_reply_hint: E-mail küldése a jegyekkel kapcsolatos új megjegyzésekről, amelyekben részt vesz.
+      notify_ticket_update: Állapot, típus és prioritás
+      notify_ticket_update_hint: E-mail küldése, ha az Ön által vásárolt jegyek állapota, típusa vagy prioritása megváltozik.
+    admin_all_projects_hint: A rendszergazdák megtekinthetik az összes projektet. A jegyek kezeléséhez és a jegyekkel kapcsolatos e-mailek fogadásához adja hozzá őket a projekthez személyzetként.
+  portal:
+    empty:
+      title: Nincsenek projektek
+      heading: Még nincsenek projektjei
+      body: Kérjen meg egy rendszergazdát, hogy hívja meg, vagy vegye fel egy projektbe.
+    feed:
+      tickets: Jegyek
+      create: Jegy létrehozása
+      empty: Ebben a nézetben nincs jegy.
+      deleted_badge: Törölve
+      view: Megtekintés
+      filters: Szűrők
+      search: Keresés
+      search_placeholder: Cím, szám vagy riporter…
+      search_submit: Keresse meg
+      search_clear: Keresés törlése
+      type: Írja be
+      status: Állapot
+      priority: Prioritás
+      tag: Címke
+      mine_only: Csak az enyém
+      sort: Rendezés
+      filter_any: Bármelyik
+      sort_options:
+        updated: Utolsó tevékenység
+        created: Létrehozás dátuma
+        priority: Prioritás
+      updated: Frissítve
+      filter_submit: Szűrés
+      filter_clear: Világos
+      pagination:
+        label: Jegylista oldalszámozás
+      modal_title: Jegy létrehozása
+      field:
+        title: Cím
+        type: Írja be
+        priority: Prioritás
+        description: Leírás
+    view:
+      all: Mind
+      open: Nyissa meg
+      done: Zárva
+      staff:
+        needs_us: Kezelni
+        unassigned: Nincs hozzárendelve
+      client:
+        waiting_on_me: Válaszra vár
+  ticket:
+    doc_title: Jegy {label}
+    description: Leírás
+    edit: Szerkesztés
+    deleted_banner: Ezt a jegyet elrejtették. Csak a rendszergazdák láthatják.
+    attachments: Mellékletek
+    edit_modal: Jegy szerkesztése
+    lightbox_aria: Melléklet előnézete
+    self_assign: Rendelj hozzám
+    back_to_list: Vissza a listához
+    details: Részletek
+    created: Létrehozva
+    closed: Zárva
+    type: Írja be
+    status: Állapot
+    priority: Prioritás
+    change_type: Típus módosítása
+    change_status: Állapot módosítása
+    change_priority: Változtassa meg a prioritást
+    reopen: Nyissa meg újra
+    people: Emberek
+    reporter: Riporter
+    change_reporter: Válts riportert
+    assignee: Megbízott
+    change_assignee: Megbízott módosítása
+    assignee_none: – egyik sem –
+    participants: Résztvevők
+    add_participant: Résztvevő hozzáadása
+    no_participants_to_add: Nincs hozzáadható személy
+    stop_watching: Hagyd abba a nézést
+    remove_participant: Eltávolítás a megtekintésből
+    remove_participant_aria: '{name} eltávolítása a megtekintésből'
+    tags: Címkék
+    add_tag_placeholder: Címke hozzáadása…
+    activity: Tevékenység
+    history: Történelem
+    history_aria: Jegytörténet
+    history_empty: Még nincsenek események.
+    history_loading: Betöltés…
+    history_unknown_user: Ismeretlen felhasználó
+    event:
+      CREATED: Jegy létrehozva ({type}, {priority})
+      COMMENT_ADDED: Megjegyzés hozzáadva
+      COMMENT_ADDED_INTERNAL: Belső megjegyzés hozzáadva
+      COMMENT_EDITED: A megjegyzés szerkesztve
+      COMMENT_EDITED_INTERNAL: Belső jegyzet szerkesztve
+      COMMENT_DELETED: Megjegyzés törölve
+      COMMENT_DELETED_INTERNAL: Belső megjegyzés törölve
+      TITLE_CHANGED: A cím megváltozott
+      DESCRIPTION_CHANGED: Leírás megváltozott
+      STATUS_CHANGED: 'Az állapot megváltozott: {from} → {to}'
+      PRIORITY_CHANGED: 'A prioritás megváltozott: {from} → {to}'
+      TYPE_CHANGED: 'Típus megváltozott: {from} → {to}'
+      ASSIGNEE_CHANGED: 'Megbízott megváltozott: {from} → {to}'
+      REPORTER_CHANGED: 'Riporter megváltozott: {from} → {to}'
+      PARTICIPANT_ADDED: 'Résztvevő hozzáadva: {name}'
+      PARTICIPANT_REMOVED: 'Résztvevő eltávolítva: {name}'
+      TAG_ADDED: 'Címke hozzáadva: {name}'
+      TAG_REMOVED: 'Címke eltávolítva: {name}'
+      ATTACHMENT_ADDED: 'Melléklet hozzáadva: {name}'
+      ATTACHMENT_REMOVED: 'Melléklet eltávolítva: {name}'
+      DELETED: Jegy törölve
+    reply: Válasz
+    thread_order_aria: Üzenet rendelés
+    thread_oldest: Először a legidősebb
+    thread_newest: Először a legújabb
+    internal: Belső
+    edited_by: 'szerkesztette: {name}'
+    edit_comment: Megjegyzés szerkesztése
+    save_comment: Megjegyzés mentése
+    cancel_edit: Szerkesztés megszakítása
+    delete_comment: Megjegyzés törlése
+    delete: Jegy törlése
+    reply_placeholder: Írj választ…
+    internal_note: Belső megjegyzés
+    closed_notice: Jegy lezárva.
+    reopen_hint_staff: Az állapotra kattintva újra megnyithatja.
+    reopen_hint_client: Az újranyitás a bezárást követő {days} napon belül lehetséges.
+    no_comment_permission: Nincs engedélye hozzászólásra.
+    attach:
+      add_files: Fájlok hozzáadása, beillesztése vagy dobása
+      file_one: fájlt
+      file_many: fájlokat
+      hint_icon: Legfeljebb {count} {file_word} · legfeljebb 5 MB
+      button: Fájl csatolása
+      remove: '{name} eltávolítása'
+  editor:
+    toolbar: Formázás
+    bold: Félkövér
+    italic: Dőlt
+    heading_1: 1. címsor
+    heading_2: 2. címsor
+    heading_3: 3. címsor
+    link: Link
+    link_apply: Link hozzáadása
+    bullet_list: Felsorolásos lista
+    ordered_list: Számozott lista
+    code_block: Kódblokk
+    blockquote: Idézet
+    horizontal_rule: Elválasztó
+    dictate: Diktálj
+    dictate_stop: Hagyd abba a diktálást
+    paste_markdown: Markdown beillesztése
+  admin:
+    aside_label: Adminisztráció
+    nav_aria: Admin
+    nav:
+      overview: Statisztika
+      projects: Projektek
+      users: Felhasználók
+      settings: Beállítások elemre
+    settings:
+      title: Portál beállításai
+      nav_aria: A portálbeállítások szakaszai
+      save: Mentés
+      nav:
+        tickets: Jegyek
+        uploads: Mellékletek
+        mail: Mail
+      tickets:
+        heading: Jegyekre és linkekre vonatkozó szabályzat
+        hint: Ügyfélkorlátok és az e-mail linkek érvényességének időtartama.
+        reopen_days: Ablak újranyitása (nap)
+        reopen_days_hint: A zárás után hány nappal nyithatja újra a jegyet az ügyfél. A személyzet bármikor újra kinyithat. 0 = csak személyzet.
+        description_max_len: Jegy leírása (karakterekben)
+        description_max_len_hint: A jegy leírásának maximális hossza, beleértve a leértékelést is.
+        reply_max_len: Válasz (karakterben)
+        reply_max_len_hint: A megjegyzés vagy válasz maximális hossza, beleértve a leértékelést is.
+        auth_link_ttl_days: Aktiválás / jelszó visszaállítása (nap)
+        auth_link_ttl_days_hint: Mennyi ideig marad érvényes az e-mail link a fiók aktiválásához vagy a jelszó visszaállításához.
+        email_confirm_ttl_minutes: E-mail megerősítés (perc)
+        email_confirm_ttl_minutes_hint: Mennyi ideig marad érvényben a link az e-mail-cím megváltoztatásakor a profilban.
+      uploads:
+        heading: Csatolási korlátok
+        hint: Minden korlát egyetlen jegyre vagy megjegyzésre vonatkozik.
+        max_files: Fájlok száma
+        max_files_hint: Maximum mellékletek egy jegyhez vagy megjegyzéshez.
+        max_image_mb: Képméret (MB)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: Fájlméret (MB)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTP szerver
+        smtp_port: Port
+        smtp_security: Csatlakozás biztonsága
+        smtp_security_none: Egyik sem
+        smtp_security_starttls: STARTTLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: Felhasználónév
+        smtp_pass: Jelszó
+        smtp_pass_hint: Hagyja üresen a jelenlegi jelszó megtartásához.
+        email_from: Címről
+        test_heading: Küldj teszt e-mailt
+        test_hint: A mentett SMTP-beállításokat használja. Mentse el a változtatásokat a tesztelés előtt.
+        test_email: Címzett
+        test_send: Teszt küldése
+    dashboard:
+      title: Statisztika
+      stat_projects: Projektek
+      stat_users: Felhasználók
+      stat_open_tickets: Nyitott jegyek
+      stat_messages: Üzenetek
+      stat_pending_users: Aktiválásra váró fiókok
+      stat_emails_sent: E-mailek elküldve
+      stat_members: tagok
+      stat_tickets: Jegyek
+      per_project: Projektstatisztika
+      select_project: Projekt
+      user_activity: Felhasználói tevékenység
+      col_tickets_created: Jegyek létrehozva
+      sort_name_asc: Rendezés név szerint növekvő sorrendben
+      sort_name_desc: Rendezés név szerint csökkenő sorrendben
+      sort_role_asc: Rendezés szerep szerint növekvő sorrendben
+      sort_role_desc: Rendezés szerep szerint csökkenő sorrendben
+      sort_tickets_asc: Rendezés a létrehozott jegyek szerint növekvő sorrendben
+      sort_tickets_desc: Rendezés a létrehozott jegyek szerint csökkenő sorrendben
+      sort_last_login_asc: Rendezés az utolsó bejelentkezés szerint növekvő sorrendben
+      sort_last_login_desc: Rendezés utolsó bejelentkezés szerint csökkenő sorrendben
+      by_status: Állapot szerint
+      by_type: Típus szerint
+      empty_projects: Nincsenek projektek.
+      pagination:
+        label: Felhasználói tevékenység oldalszámozása
+    projects:
+      title: Projektek
+      new: Új projekt
+      name: Név
+      key: Kulcs
+      key_title: 1–5 karakter A–Z / 0–9
+      description: Leírás
+      initial_staff: Projekt munkatársai
+      initial_staff_placeholder: Válasszon felhasználót…
+      no_staff_candidates: Először hozzon létre egy aktív felhasználót.
+      list: Projektek listája
+      filter_active: Aktív
+      filter_disabled: Letiltva
+      meta: '{members} tag · {tickets} jegy'
+      empty: Nincsenek projektek. Hozd létre az elsőt fent.
+      empty_disabled: Nincs letiltott projekt.
+      disabled: Letiltva
+      disable: Letiltás
+      enable: Engedélyezés
+    project:
+      open_portal: Megnyitás a portálon
+      settings: Beállítások elemre
+      notifications: Értesítések
+      notify_clients_on_staff_ticket: Értesítse az ügyfeleket a csapat által készített jegyekről
+      notify_clients_on_staff_ticket_note: Alapértelmezés szerint az ügyfelek nem kapnak értesítést a csapat által létrehozott új jegyekről. Engedélyezze ezt a lehetőséget a kétirányú kommunikáció engedélyezéséhez.
+      tags: Címkék
+      tags_empty: Nincsenek címkék a projektben.
+      delete_tag_aria: Címke törlése {name}
+      members: tagok
+      members_empty: Nincsenek tagok a projektben.
+      add_user: Felhasználó hozzáadása
+      member_role: Projekt szerepkör
+      col_action: Akció
+    users:
+      title: Felhasználók
+      new: Új felhasználó
+      list: Felhasználók listája
+      empty: Nincsenek felhasználók.
+      pagination:
+        label: Felhasználói lista lapozása
+      blocked: Blokkolt
+      pending: Függőben
+      resend: Aktiváló link küldése
+      block: Blokk
+      unblock: Blokkolás feloldása
+      edit_aria: Szerkesztés {name}
+      filter_role: Szerep
+      filter_project: Projekt
+      filter_status: Állapot
+      filter_status_active: Feloldva
+      filter_status_blocked: Blokkolt
+      filter_status_pending: Függőben
+      filter_status_all: Mind
+      filter_search: Keresés
+      filter_search_placeholder: Név, email vagy telefonszám…
+      filter_all: Mind
+      filter_clear: Világos
+      col_name: Név
+      col_status: Állapot
+      sort_name_asc: Rendezés utónév szerint növekvő sorrendben
+      sort_name_desc: Rendezés utónév szerint csökkenő sorrendben
+      sort_email_asc: Rendezés e-mail szerint növekvő sorrendben
+      sort_email_desc: Rendezés e-mail szerint csökkenő sorrendben
+      sort_phone_asc: Rendezés telefon szerint növekvő sorrendben
+      sort_phone_desc: Rendezés telefon szerint csökkenő sorrendben
+      sort_role_asc: Rendezés szerep szerint növekvő sorrendben
+      sort_role_desc: Rendezés szerep szerint csökkenő sorrendben
+      sort_status_asc: Rendezés állapot szerint növekvő sorrendben
+      sort_status_desc: Rendezés állapot szerint csökkenő sorrendben
+      col_last_login: Utolsó bejelentkezés
+    user_new:
+      title: Új felhasználó
+      role: Szerep
+      submit: Aktiváló link létrehozása és elküldése
+      submit_active: Létrehozás aktiválás nélkül
+    user_edit:
+      title: Felhasználó szerkesztése
+      heading: Fiók szerkesztése
+    projects_fieldset: Projektek
+    projects_empty: Nincsenek projektek.
+    projects_required: Legalább egy projekt szükséges
+  dev:
+    aria: Fejlesztői mód
+    label: Dev
+    copy: Másolás
+    copied: Másolva
+    expand: Bontsa ki
+    collapse: Összeomlás
+    url: URL
+    template: Sablon
+    partials: Részlegesek
+    api: API
+    js: JS
+    route: Útvonal minta
+    file: Kezelő
+  time:
+    today_at: Ma {time}
+    yesterday_at: Tegnap {time}
+    am: AM
+    pm: PM
+    month_abbr:
+      1: jan
+      2: febr
+      3: márc
+      4: ápr
+      5: május
+      6: jún
+      7: júl
+      8: Aug
+      9: szept
+      10: okt
+      11: nov
+      12: dec
+enums:
+  ticket_type:
+    BUG: Bug
+    QUESTION: kérdés
+    CHANGE: Változás
+    TASK: Új funkció
+  ticket_status:
+    NEW: Új
+    IN_PROGRESS: Folyamatban
+    WAITING_ON_CLIENT: Riporterrel
+    DONE: Kész
+  ticket_priority:
+    LOW: Alacsony
+    NORMAL: Normális
+    HIGH: Magas
+  user_role:
+    USER: Felhasználó
+    ADMIN: Rendszergazda
+  member_role:
+    CLIENT: Ügyfél
+    STAFF: Személyzet
+themes:
+  morning-mist:
+    label: Reggeli köd
+    description: Gyöngykék, lágy fényű.
+  sandy-dawn:
+    label: Sandy Shore
+    description: Meleg homok és mézédes borostyán gyengéd mosásban.
+  green-meadow:
+    label: Zöld rét
+    description: Zsálya és moha csendes, meghitt fényben.
+  graphite-day:
+    label: Grafit nap
+    description: Hűvös grafit csendes acélmosásban.
+  berry-dawn:
+    label: Heather Bloom
+    description: Puha hanga és bogyó fényes, gyengéd mosásban.
+  rose-dawn:
+    label: Blush Glow
+    description: Meleg rózsa- és púderpirosító fényes, gyengéd mosásban.
+  deep-ocean:
+    label: Mély óceán
+    description: Zafír mélység, lágy mélységbeli ragyogással.
+  amber-night:
+    label: Amber Ember
+    description: Eszpresszó meleg pezsgő parázzsal.
+  northern-spruce:
+    label: Északi lucfenyő
+    description: Sötét erdő, kristályos menta ragyogással.
+  charcoal-dusk:
+    label: Faszén alkonyat
+    description: Faszén hideg acélezüsttel csendes alkonyatban.
+  midnight-berry:
+    label: Velvet Berry
+    description: Érett bogyó meleg lila félfényben.
+  rose-night:
+    label: Bíbor Fátyol
+    description: Mélyrózsa meleg, bársonyos félfényben.
+  density:
+    tight:
+      label: Feszes
+      description: Kisebb térköz, több tartalom a képernyőn.
+    balanced:
+      label: Kiegyensúlyozott
+      description: Az alapértelmezett PulseDeck térköz.
+    airy:
+      label: Levegős
+      description: Több légtér az elemek között.
+  font_size:
+    compact:
+      label: Kompakt
+      description: További szöveg a képernyőn.
+    natural:
+      label: Természetes
+      description: Az alapértelmezett PulseDeck méret.
+    large:
+      label: Nagy
+      description: Kényelmesebb olvasás.
+flash:
+  auth:
+    invalid_credentials: Ez az e-mail cím vagy jelszó nem megfelelő.
+    account_blocked: Ez a fiók le van tiltva.
+    account_not_activated: Ez a fiók még nem aktív – ellenőrizze e-mailjeit, vagy használja az „Elfelejtett jelszó” lehetőséget.
+    profile_updated: Profil mentve.
+    email_confirm_sent: Elküldtünk egy linket az új e-mail címére. Továbbra is jelentkezzen be jelenlegi címével, amíg meg nem erősíti.
+    password_changed: Új jelszó mentve.
+    notifications_updated: Az értesítési beállítások mentve.
+    current_password_invalid: A jelenlegi jelszava nem egyezik.
+    confirm_link_invalid: A megerősítő link lejárt vagy érvénytelen.
+    email_confirmed: E-mail megerősítve – jelentkezzen be az új címmel.
+    activation_link_invalid: Az aktiváló link lejárt vagy nem érvényes.
+    mfa_invalid: Érvénytelen vagy lejárt kód.
+    mfa_expired: Az ellenőrző munkamenet lejárt. Jelentkezzen be újra.
+    mfa_delivery: Nem sikerült elküldeni a kódot. Kérjük, próbálja újra később.
+  admin:
+    user_created: Fiók létrehozva – elküldtük az aktiválási linket.
+    user_created_active: Fiók létrehozva és aktív – állítson be egy jelszót alább.
+    user_updated: Felhasználói adatok mentve.
+    password_link_sent: Küldtünk egy e-mailt a jelszó hivatkozásával.
+    password_set: Jelszó beállítva.
+    activation_resent: Az aktiváló link újra elküldve.
+    user_blocked: Fiók blokkolva – a felhasználónak nincs hozzáférése a portálhoz.
+    user_unblocked: Fiók blokkolása feloldva.
+    notifications_updated: Az értesítési beállítások mentve.
+    settings_saved: A portálbeállítások elmentve.
+    settings_test_sent: Teszt e-mail elküldve.
+    settings_test_failed: Nem sikerült elküldeni a teszt e-mailt – ellenőrizze az SMTP-t és a naplókat.
+    settings_smtp_missing: Az SMTP nincs konfigurálva – először állítsa be és mentse a szervert.
+messages:
+  auth:
+    passwords_mismatch: A jelszavaknak egyeznie kell.
+    cannot_demote_last_admin: Ez az utolsó rendszergazda – ez a szerepkör nem távolítható el.
+    cannot_block_self: Nem tilthatja le saját fiókját.
+    email_unchanged: Az új email megegyezik a jelenlegivel.
+    email_taken: Ez az e-mail már foglalt
+    user_exists_resend: Már létezik fiók ezzel az e-mail címmel – nyissa meg a felhasználói oldalt, és küldje el újra az aktiváló linket
+  admin:
+    invalid_role: Válasszon egy érvényes szerepet.
+    unknown_action: Ezt a műveletet nem lehet végrehajtani.
+    already_activated: Ez a fiók már aktív.
+    settings_invalid_int: Adjon meg egy érvényes számot.
+    settings_out_of_range: Ez az érték kívül esik a megengedett tartományon.
+    settings_invalid_choice: Válasszon egy érvényes opciót.
+  projects:
+    name_exists: Már létezik ilyen nevű projekt.
+    key_exists: Ez a projektkulcs már foglalt.
+    staff_required: Válasszon legalább egy felhasználót a projekt kezelésére.
+    staff_invalid: A kiválasztott felhasználó hiányzik vagy inaktív.
+    last_staff: Egy projektnek legalább egy aktív munkatársnak kell lennie.
+    at_least_one: Válasszon legalább egy projektet.
+    invalid: Ez a projekt nem érvényes.
+  tickets:
+    no_project_access: Nincs hozzáférése ehhez a projekthez.
+    no_comment: Itt nem írhatsz megjegyzést.
+    no_edit_comment: Nem szerkesztheti a megjegyzéseket.
+    no_delete_comment: Nem törölheti a megjegyzéseket.
+    comment_not_found: Ez a megjegyzés már nincs itt.
+    internal_staff_only: A belső megjegyzések csak a személyzetnek szólnak.
+    no_assign: Ezt a jegyet nem lehet hozzárendelni.
+    assignee_must_be_staff: Csak személyzetet vagy rendszergazdát rendelhet hozzá.
+    no_change_reporter: Nem változtathatod meg a riportert.
+    reporter_must_be_member: A riporternek hozzá kell férnie a projekthez.
+    no_status: Az állapotot nem tudod megváltoztatni.
+    cannot_reopen: Ez a jegy nem nyitható újra.
+    no_edit: Ezt nem tudod szerkeszteni.
+    no_delete: Ezt a jegyet nem törölheti.
+    no_priority: A prioritást nem tudod megváltoztatni.
+    no_type: A típust nem tudod megváltoztatni.
+    tags_staff_only: Csak a személyzet kezelheti a címkéket.
+    no_add_participant: Nem adhat hozzá résztvevőket.
+    no_stop_watching: Nem tudod abbahagyni ezt a jegyet.
+    not_participant: Nem nézed ezt a jegyet.
+    user_must_be_member: Ennek a személynek részt kell vennie a projektben.
+    participant_not_allowed: Ezt a személyt nem veheti fel résztvevőként.
+    invalid_status: Válasszon egy érvényes állapotot.
+    invalid_type: Válasszon egy érvényes típust.
+    invalid_priority: Válasszon érvényes prioritást.
+    select_user: Válasszon egy felhasználót.
+  uploads:
+    empty: Ez a fájl üres.
+    too_large_image: A kép túl nagy (maximum {mb} MB).
+    too_large_file: A fájl túl nagy (maximum {mb} MB).
+    invalid_image: Érvénytelen képfájl.
+    image_too_large: Ez a kép túl nagy.
+    invalid_file: Nem támogatott fájlformátum.
+    formats: Használjon JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR vagy 7Z fájlokat.
+  validation:
+    missing_user: Válasszon egy felhasználót
+    missing_field: Töltse ki a {label}
+    invalid_int: Adjon meg egy érvényes számot.
+    invalid_form: Ellenőrizze az űrlapot – hibákat tartalmaz.
+    field:
+      user_id: egy felhasználó
+      content: az üzenetet
+      title: a címet
+      name: a név
+      key: a kulcsot
+      description: a leírást
+      email: egy email címet
+      password: egy jelszót
+      tag: egy címkét
+      required: kötelező mező
+  fields:
+    required: '{field} szükséges.'
+    invalid: A {field} nem érvényes.
+    too_short: A {field} túl rövid (min {min}).
+    too_long: A {field} túl hosszú (max. {max}).
+    pattern: A {field} formátuma érvénytelen.
+    labels:
+      user:
+        email: E-mail
+        password: Jelszó
+        first_name: Keresztnév
+        last_name: Vezetéknév
+        phone: Telefon
+        role: Szerep
+        ui_lang: Nyelv
+        datetime_format: Dátum és idő formátuma
+        timezone: Időzóna
+      project:
+        name: Projekt neve
+        key: Projekt kulcs
+        description: Projekt leírása
+      ticket:
+        title: Cím
+        description: Leírás
+        type: Írja be
+        status: Állapot
+        priority: Prioritás
+      comment:
+        content: Megjegyzés
+      tag:
+        name: Címke
+      search:
+        q: Keresés
+      filter:
+        tag: Címkeszűrő
+  http:
+    not_found: Nem találtuk, amit keres.
+    server_error: Hiba történt – próbálja újra egy pillanat múlva.
+    login_required: A folytatáshoz jelentkezzen be.
+    admin_required: Rendszergazdai hozzáférésre van szüksége.
+  csrf:
+    missing: A munkamenet lejárt.
+    invalid: A munkamenet lejárt.
+    refresh_hint: Frissítse az oldalt, és próbálja újra.
+  password:
+    min_length: Használjon legalább {min} karaktert.
+    too_long: Ez a jelszó túl hosszú.
+    need_lower: Adjon hozzá egy kisbetűt.
+    need_upper: Adjon hozzá egy nagybetűt.
+    need_digit: Adjon hozzá egy számjegyet.
+    need_special: Adjon hozzá egy speciális karaktert.
+  phone:
+    e164: Írja be a számot, például +48 123 456 789.
+  project_key:
+    invalid: 'Kulcs: {min}–{max} karakter A–Z / 0–9 (kötőjel nélkül)'
+js:
+  errors:
+    forbidden: Nincs hozzáférésed ehhez.
+    not_found: Nem találtuk, amit keres.
+    validation: Ellenőrizze az űrlapot – hibákat tartalmaz
+    rate_limit: Túl sok próbálkozás – várjon egy kicsit.
+    server: Hiba történt – próbálja újra.
+    generic: Hiba történt – próbálja újra.
+    submit_failed: Nem sikerült elküldeni az űrlapot.
+    network: Nem sikerült elérni a szervert.
+    comment_empty: Írj valamit kommentben
+    content_too_long: A szöveg túl hosszú (maximum {max} karakter)
+    paste_markdown: Nem sikerült beilleszteni a Markdownt.
+  ticket:
+    stale_reply: Új üzenet jelent meg – küldés előtt ellenőrizze a szálat.
+  editor:
+    char_count: '{used} / {max} karakter'
+    dictate_denied: Mikrofon hozzáférés megtagadva
+    dictate_no_mic: Nem található mikrofon
+    dictate_network: A diktálás nem elérhető. Ellenőrizze a kapcsolatot.
+    paste_markdown_hint: Beillesztés a Ctrl+V billentyűkombinációval – A Markdown formázásra kerül.
+  validation:
+    missing_user: Válasszon egy felhasználót
+    missing_field: Töltse ki a {label}
+    field:
+      user_id: egy felhasználó
+      content: az üzenetet
+      title: a címet
+      name: a név
+      key: a kulcsot
+      first_name: egy keresztnév
+      last_name: egy vezetéknév
+      description: a leírást
+      email: egy email címet
+      password: egy jelszót
+      tag: egy címkét
+      project_ids: egy projektet
+      required: kötelező mező
+  confirm:
+    title: Megerősítés
+    message_default: Biztosan folytatja?
+    continue: Folytatja?
+    confirm_label: Erősítse meg
+    discard_ticket:
+      title: Elveti a jegyet?
+      message: Az űrlap kitöltött adatokat tartalmaz. Törli és elveti a változtatásokat?
+      action: Létrehozás megszakítása
+      cancel: Vissza a szerkesztéshez
+  attach:
+    remove: '{name} eltávolítása'
+    too_many: Legfeljebb {count} fájlt csatolhat.
+  coachmarks:
+    next: Következő
+    back: Vissza
+    done: Kész
+    skip: Kihagyás
+    replay: Tippek ehhez az oldalhoz
+    step: '{current}/{total}'
+    tour_label: Tippek
+    nav-project:
+      body: Gyorsan válthat projektjei között.
+    nav-appearance:
+      body: Állítsa be a témát és a színeket ízlése szerint.
+      cta: Megjelenés megváltoztatása
+    feed-create:
+      body: Problémája van? Hozzon létre új jegyet itt.
+    feed-needs-us:
+      body: A jegyek a csapat válaszára várnak.
+    feed-mine:
+      body: Mutasson jegyeket, ahol Ön a riporter, a megbízott vagy a figyelő.
+    feed-filters:
+      body: Szűkítse a listát típus, állapot, prioritás vagy címke szerint.
+    feed-filter-clear:
+      body: Állítsa vissza a szűrőket, és törölje a kiválasztott feltételeket.
+    ticket-status:
+      body: Kattintson a jegy állapotának módosításához.
+    ticket-done:
+      body: Jelölje meg a jegyet készként, ha a probléma megoldódott – szükség esetén később újra megnyithatja.
+    ticket-assignee:
+      body: Rendeljen ki egy csapattagot ennek a jegynek a kezelésére.
+    ticket-thread-order:
+      body: 'Üzenetsorrend: a legrégebbi elöl vagy a legújabb elöl.'
+    ticket-history:
+      body: Nyissa meg a jegy idővonalát – állapot, hozzárendelés és egyéb változások.
+    admin-projects-name:
+      body: A projekt megjelenített neve.
+    admin-projects-key:
+      body: Egyedi kulcs, amely a jegyszám részét képezi.
+    admin-projects-description:
+      body: Választható rövid összefoglaló a projektlistában.
+    admin-project-members:
+      body: Adjon hozzá embereket a projekthez, hogy láthassák és dolgozhassanak a projektjein.
+    compose-attach:
+      body: Fájlok hozzáadásához válassza ki őket a lemezről, húzza ide vagy illessze be a vágólapról (Ctrl+V).
+    compose-quote:
+      body: Jelölje ki az üzenet szövegét, majd kattintson az Idézet gombra.
+    compose-dictate:
+      body: Kattintson a mikrofonra a válasz diktálásához. Egyes böngészők vagy eszközök blokkolhatják a mikrofonhoz való hozzáférést.
+    compose-internal:
+      body: A belső megjegyzéseket csak a személyzet láthatja – az ügyfelek nem látják őket.
+email:
+  mfa:
+    subject: Bejelentkezési kód
+    body: 'Az Ön bejelentkezési ellenőrző kódja:'
+    ttl: A kód {minutes} percig érvényes.
+  confirm:
+    subject: Erősítse meg új e-mail címét
+    body: 'E-mail címének megváltoztatására vonatkozó kérést kaptunk itt: {app}. Erősítse meg az új címet az alábbi gombbal. A link {minutes} percig érvényes. Ha ez nem Ön volt, figyelmen kívül hagyhatja ezt az üzenetet.'
+    cta: Erősítse meg az e-mailt
+  activate:
+    subject: Aktiválja fiókját
+    body: 'Létrehoztunk Önnek egy fiókot itt: {app}. Az aktiváláshoz és a bejelentkezéshez állítson be jelszót. A link {days} napig érvényes.'
+    cta: Jelszó beállítása
+  reset:
+    subject: Jelszó visszaállítása
+    body: Megkaptuk a {app} jelszavának visszaállítására vonatkozó kérést. Állítson be új jelszót az alábbi gombbal. A link {days} napig érvényes. Ha ez nem Ön volt, figyelmen kívül hagyhatja ezt az üzenetet.
+    cta: Állítson be új jelszót
+  smtp_test:
+    subject: Teszt e-mail
+    body: 'Ez egy tesztüzenet a következőtől: {app}. Ha ezt a márkás elrendezésben olvashatja, akkor az SMTP működik.'
+  new_ticket:
+    subject: Új jegy
+    body: 'Új jegy jött létre: {ticket}. Nyissa meg a {app} alkalmazásban a részletek áttekintéséhez és a művelet elvégzéséhez.'
+    cta: 'Megnyitás itt: {app}'
+  new_comment:
+    subject: Új üzenet a jegyen
+    body: Új üzenet jelent meg a {ticket} jegyben. Lépjen a jegyre a tartalom megtekintéséhez és válaszoljon.
+    cta: 'Megnyitás itt: {app}'
+  ticket_update:
+    subject: Jegyfrissítés
+    body: A {ticket} jegy állapota, típusa vagy prioritása megváltozott.
+    new_value: 'Új érték: {value}'
+    cta: 'Megnyitás itt: {app}'
+  assignment:
+    subject: Jegykiosztás
+    body: '{ticket} jegyet kapott. Nyissa meg a {app} alkalmazásban a részletek megtekintéséhez.'
+    cta: 'Megnyitás itt: {app}'
+  common:
+    greeting: Szia {name}!
+    link_hint: 'Ha a gomb nem működik, másolja ki és illessze be ezt a hivatkozást a böngészőbe:'
+    unsubscribe: Kattintson ide, ha a továbbiakban nem szeretne ilyen értesítéseket kapni
+    unwatch: Kattintson ide, ha nem szeretné tovább nézni ezt a jegyet

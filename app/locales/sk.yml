@@ -1,0 +1,909 @@
+meta:
+  name: Slovenčina
+ui:
+  common:
+    close: Zavrieť
+    cancel: Zrušiť
+    confirm: Potvrďte
+    save: Uložiť
+    create: Vytvorte
+    edit: Upraviť
+    delete: Odstrániť
+    add: Pridať
+    send: Odoslať
+    empty_dash: —
+    none: žiadne
+    back_to_portal: Späť na portál
+    back_home: Domov
+    active: Aktívne
+    sidebar_show: Zobraziť panel
+    sidebar_hide: Skryť panel
+    pagination:
+      first: Prvá strana
+      prev: Predchádzajúce
+      next: Ďalej
+      last: Posledná strana
+      range: '{start}–{end} z {total}'
+      per_page_label: Na stránku
+  errors:
+    not_found:
+      title: Nenájdené
+      heading: Stránka sa nenašla
+      body: Táto adresa neexistuje alebo bola odstránená.
+  settings:
+    language: Jazyk
+  confirm:
+    title: Potvrdenie
+    disable_project:
+      title: Zakázať projekt?
+      message: Projekt „{name}“ ({key}) bude zakázaný a skrytý na portáli.
+      action: Zakázať
+    delete_tag:
+      title: Odstrániť značku?
+      message: Naozaj chcete odstrániť značku „{name}“? Odstráni sa zo všetkých lístkov.
+      action: Odstrániť
+    change_key:
+      title: Zmeniť kľúč projektu
+      message: Zmenou kľúča sa prerušia staré odkazy /p/… a /t/…. Pokračovať?
+      action: Zmeniť kľúč
+    remove_member:
+      title: Odstrániť člena?
+      message: Odstrániť {name} z projektu „{project}“?
+      action: Odstrániť
+    block_user:
+      title: Zablokovať účet?
+      message: Účet „{name}“ stratí prístup k portálu. Správy a lístky zostávajú.
+      action: Blokovať
+    delete_comment:
+      title: Odstrániť komentár?
+      message: Komentár bude natrvalo odstránený spolu s prílohami.
+      action: Odstrániť
+    delete_ticket:
+      title: Odstrániť lístok?
+      message: Lístok bude skrytý. História zostáva dostupná administrátorom.
+      action: Odstrániť
+    stop_watching:
+      title: Prestať pozerať?
+      message: Budete odstránení z účastníkov tohto lístka a prestanete o ňom dostávať e-mailové upozornenia.
+      action: Prestaň pozerať
+    remove_participant:
+      title: Chcete odobrať účastníka?
+      message: Odstrániť {name} z účastníkov tohto lístka? Už nebudú o tom dostávať e-mailové upozornenia.
+      action: Odstrániť
+  nav:
+    aria: Navigácia
+    project: Projekt
+    select_project: Vyberte projekt
+    user_menu: Používateľské menu
+    menu: Menu
+    admin: Administrácia
+    profile: Profil
+    logout: Odhláste sa
+  auth:
+    login:
+      title: Prihláste sa
+      email: E-mail
+      password: heslo
+      submit: Prihláste sa
+      forgot_label: Zabudli ste heslo
+      forgot_placeholder: address@company.com
+      forgot_submit: Odoslať odkaz na zmenu hesla
+      forgot_back: Späť na prihlásenie
+      forgot_sent: Ak účet existuje a nie je zablokovaný, poslali sme odkaz e-mailom.
+      mfa_title: E-mailový kód
+      mfa_hint: Zadajte 6-miestny kód, ktorý sme vám poslali na váš e-mail.
+      mfa_submit: Potvrďte kód
+      mfa_trust: Nežiadať o kód na tomto zariadení {days} dní
+      mfa_resend: Znova odoslať kód
+    activate:
+      title_pending: Aktivácia účtu
+      title_reset: Nastaviť heslo
+      subtitle_pending: Nastavte si heslo na aktiváciu svojho účtu
+      subtitle_reset: Nastavte si nové heslo
+      password: heslo
+      password_confirm: Zopakujte heslo
+      phone: Telefón (voliteľné)
+      phone_placeholder: +48 123 456 789
+      submit_pending: Aktivovať účet
+      submit_reset: Uložiť heslo
+    confirm_email:
+      title: Potvrďte e-mail
+      subtitle: Potvrďte zmenu svojej e-mailovej adresy
+      submit: Potvrďte e-mail
+    unsubscribe:
+      title: Zrušte odber
+      heading: Zrušený odber
+      heading_invalid: Neplatný odkaz
+      heading_confirm: Potvrďte vypnutie upozornení
+      confirm_body:
+        notify_reply: Upozornenia na odpovede budú vypnuté. Tieto správy už nebudete dostávať k žiadnemu tiketu. Môžete to zmeniť v nastaveniach svojho profilu.
+        notify_new_ticket: Upozornenia na nové lístky budú vypnuté. Tieto správy už nebudete dostávať k žiadnemu tiketu. Môžete to zmeniť v nastaveniach svojho profilu.
+        notify_ticket_update: Upozornenia na zmeny stavu, typu a priority budú vypnuté. Tieto správy už nebudete dostávať k žiadnemu tiketu. Môžete to zmeniť v nastaveniach svojho profilu.
+      confirm: Potvrďte
+      done: Upozornenia „{type}“ boli v nastaveniach vášho profilu vypnuté.
+      invalid: Tento odkaz na zrušenie odberu je neplatný alebo jeho platnosť vypršala.
+      manage: Predvoľby upozornení
+    unwatch:
+      title: Vypnite pozeranie
+      heading: Tento tiket už nepozeráte
+      heading_invalid: Neplatný odkaz
+      heading_confirm: Potvrďte vypnutie sledovania tohto lístka
+      confirm_body: Budete odstránení zo zoznamu účastníkov na lístku {label}. Už nebudete dostávať aktualizácie o nových správach.
+      confirm: Potvrďte
+      done: Boli ste odstránení z účastníkov lístka {label}.
+      invalid: Tento odkaz je neplatný alebo jeho platnosť vypršala.
+  profile:
+    aside_label: účtu
+    nav_aria: Profil
+    nav:
+      profile: Profil
+      password: Zmeniť heslo
+      notifications: Upozornenia
+      appearance: Vzhľad
+    title:
+      profile: Profil
+      data: Údaje o účte
+      password: Zmeniť heslo
+      notifications: Upozornenia
+      appearance: Vzhľad
+    field:
+      first_name: Krstné meno
+      last_name: Priezvisko
+      email: E-mail
+      phone: Telefón
+    email_change_hint: Zmena e-mailu vyžaduje potvrdenie na novej adrese. Naďalej sa prihlasujete pomocou svojej aktuálnej adresy, kým to nepotvrdíte.
+    email_pending: 'Čaká na potvrdenie: {email}'
+    save: Uložiť
+    password:
+      section: heslo
+      current: Aktuálne heslo
+      new: Nové heslo
+      confirm: Zopakujte nové heslo
+      hint: Najmenej {min} znakov s malým písmenom, veľkým písmenom, číslicou a špeciálnym znakom.
+      save: Uložiť heslo
+      set: Nastaviť heslo
+      send_activation: Odoslať aktivačný odkaz
+      send_reset: Odoslať odkaz na obnovenie hesla
+    settings:
+      language: Jazyk
+      datetime_title: Dátum a čas
+      datetime_format: Formát dátumu a času
+      timezone: Časové pásmo
+      theme_title: Farebný motív
+      gradient_toggle: Prechod pozadia
+      gradient_on: Hĺbka
+      gradient_off: Plochý
+      density_title: Medzery
+      font_title: Veľkosť písma
+      notify_intro: Nastavenia e-mailových upozornení na zmeny lístkov.
+      notify_new_ticket: Nové lístky
+      notify_new_ticket_hint: E-mail, keď niekto vytvorí nový lístok v projekte, kde ste zamestnancami.
+      notify_new_ticket_hint_client: E-mail, keď tím vytvorí tiket vo vašom projekte.
+      notify_reply: Odpovede
+      notify_reply_hint: E-mail o nových komentároch k tiketom, ktorých sa zúčastňujete.
+      notify_ticket_update: Stav, typ a priorita
+      notify_ticket_update_hint: E-mail, keď sa zmení stav, typ alebo priorita lístkov, ktorých sa zúčastňujete.
+    admin_all_projects_hint: Administrátori môžu zobraziť všetky projekty. Ak chcete spracovávať vstupenky a dostávať e-maily o vstupenkách, pridajte ich do projektu ako zamestnancov.
+  portal:
+    empty:
+      title: Žiadne projekty
+      heading: Zatiaľ nemáte žiadne projekty
+      body: Požiadajte správcu, aby vás pozval alebo pridal do projektu.
+    feed:
+      tickets: Vstupenky
+      create: Vytvorte lístok
+      empty: V tomto zobrazení nie sú žiadne lístky.
+      deleted_badge: Odstránené
+      view: Zobraziť
+      filters: Filtre
+      search: Hľadať
+      search_placeholder: Titul, číslo alebo reportér…
+      search_submit: Nájsť
+      search_clear: Vymazať vyhľadávanie
+      type: Typ
+      status: Stav
+      priority: Priorita
+      tag: Tag
+      mine_only: Iba môj
+      sort: Triedenie
+      filter_any: Akékoľvek
+      sort_options:
+        updated: Posledná aktivita
+        created: Dátum vytvorenia
+        priority: Priorita
+      updated: Aktualizované
+      filter_submit: Filter
+      filter_clear: Jasné
+      pagination:
+        label: Stránkovanie zoznamu lístkov
+      modal_title: Vytvorte lístok
+      field:
+        title: Názov
+        type: Typ
+        priority: Priorita
+        description: Popis
+    view:
+      all: Všetky
+      open: Otvorte
+      done: Zatvorené
+      staff:
+        needs_us: Zvládnuť
+        unassigned: Nepriradené
+      client:
+        waiting_on_me: Čaká sa na odpoveď
+  ticket:
+    doc_title: Lístok {label}
+    description: Popis
+    edit: Upraviť
+    deleted_banner: Tento lístok bol skrytý. Vidia to iba správcovia.
+    attachments: Prílohy
+    edit_modal: Upraviť lístok
+    lightbox_aria: Ukážka prílohy
+    self_assign: Priraďte mi
+    back_to_list: Späť na zoznam
+    details: Podrobnosti
+    created: Vytvorené
+    closed: Zatvorené
+    type: Typ
+    status: Stav
+    priority: Priorita
+    change_type: Zmeniť typ
+    change_status: Zmeniť stav
+    change_priority: Zmeňte prioritu
+    reopen: Znovu otvorte
+    people: Ľudia
+    reporter: Reportér
+    change_reporter: Zmeniť reportéra
+    assignee: Nadobúdateľ
+    change_assignee: Zmeniť príjemcu
+    assignee_none: — žiadny —
+    participants: Účastníci
+    add_participant: Pridať účastníka
+    no_participants_to_add: Niet ľudí na pridanie
+    stop_watching: Prestaň pozerať
+    remove_participant: Odstrániť zo sledovania
+    remove_participant_aria: Odstrániť {name} zo sledovania
+    tags: Tagy
+    add_tag_placeholder: Pridať značku…
+    activity: Aktivita
+    history: História
+    history_aria: História lístkov
+    history_empty: Zatiaľ žiadne udalosti.
+    history_loading: Načítava sa...
+    history_unknown_user: Neznámy používateľ
+    event:
+      CREATED: Lístok bol vytvorený ({type}, {priority})
+      COMMENT_ADDED: Komentár bol pridaný
+      COMMENT_ADDED_INTERNAL: Pridaná interná poznámka
+      COMMENT_EDITED: Komentár upravený
+      COMMENT_EDITED_INTERNAL: Interná poznámka upravená
+      COMMENT_DELETED: Komentár bol odstránený
+      COMMENT_DELETED_INTERNAL: Interná poznámka bola odstránená
+      TITLE_CHANGED: Názov zmenený
+      DESCRIPTION_CHANGED: Popis zmenený
+      STATUS_CHANGED: 'Stav zmenený: {from} → {to}'
+      PRIORITY_CHANGED: 'Priorita zmenená: {from} → {to}'
+      TYPE_CHANGED: 'Typ zmenený: {from} → {to}'
+      ASSIGNEE_CHANGED: 'Zmenený príjemca: {from} → {to}'
+      REPORTER_CHANGED: 'Reportér zmenený: {from} → {to}'
+      PARTICIPANT_ADDED: 'Pridaný účastník: {name}'
+      PARTICIPANT_REMOVED: 'Účastník bol odstránený: {name}'
+      TAG_ADDED: 'Pridaná značka: {name}'
+      TAG_REMOVED: 'Značka bola odstránená: {name}'
+      ATTACHMENT_ADDED: 'Pridaná príloha: {name}'
+      ATTACHMENT_REMOVED: 'Príloha bola odstránená: {name}'
+      DELETED: Lístok bol odstránený
+    reply: Odpovedzte
+    thread_order_aria: Poradie správ
+    thread_oldest: Najprv najstarší
+    thread_newest: Najnovšie ako prvé
+    internal: Interné
+    edited_by: 'upravil: {name}'
+    edit_comment: Upraviť komentár
+    save_comment: Uložiť komentár
+    cancel_edit: Zrušiť úpravu
+    delete_comment: Odstrániť komentár
+    delete: Odstrániť lístok
+    reply_placeholder: Napíšte odpoveď…
+    internal_note: Interná poznámka
+    closed_notice: Lístok zatvorený.
+    reopen_hint_staff: Môžete ho znova otvoriť kliknutím na stav.
+    reopen_hint_client: Opätovné otvorenie je možné do {days} dní od zatvorenia.
+    no_comment_permission: Nemáte povolenie komentovať.
+    attach:
+      add_files: Pridať, prilepiť alebo prepustiť súbory
+      file_one: súbor
+      file_many: súbory
+      hint_icon: Až {count} {file_word} · max 5 MB
+      button: Pripojte súbor
+      remove: Odstrániť {name}
+  editor:
+    toolbar: Formátovanie
+    bold: Tučné
+    italic: kurzíva
+    heading_1: Nadpis 1
+    heading_2: Nadpis 2
+    heading_3: Nadpis 3
+    link: Odkaz
+    link_apply: Pridať odkaz
+    bullet_list: Zoznam odrážok
+    ordered_list: Číslovaný zoznam
+    code_block: Blok kódu
+    blockquote: Citovať
+    horizontal_rule: Rozdeľovač
+    dictate: Diktovať
+    dictate_stop: Zastavte diktát
+    paste_markdown: Prilepte Markdown
+  admin:
+    aside_label: Administrácia
+    nav_aria: Admin
+    nav:
+      overview: Štatistiky
+      projects: projekty
+      users: Používatelia
+      settings: Nastavenia
+    settings:
+      title: Nastavenia portálu
+      nav_aria: Sekcie nastavení portálu
+      save: Uložiť
+      nav:
+        tickets: Vstupenky
+        uploads: Prílohy
+        mail: Mail
+      tickets:
+        heading: Pravidlá týkajúce sa lístkov a odkazov
+        hint: Limity klientov a ako dlho zostávajú v platnosti e-mailové odkazy.
+        reopen_days: Znova otvoriť okno (dni)
+        reopen_days_hint: Koľko dní po zatvorení môže klient znovu otvoriť tiket. Zamestnanci môžu vždy znova otvoriť. 0 = iba personál.
+        description_max_len: Popis lístka (znaky)
+        description_max_len_hint: Maximálna dĺžka popisu tiketu vrátane označenia.
+        reply_max_len: Odpoveď (znakov)
+        reply_max_len_hint: Maximálna dĺžka komentára alebo odpovede vrátane označenia.
+        auth_link_ttl_days: Aktivácia / reset hesla (dni)
+        auth_link_ttl_days_hint: Ako dlho zostane e-mailový odkaz platný na aktiváciu účtu alebo obnovenie hesla.
+        email_confirm_ttl_minutes: Potvrdenie e-mailom (v minútach)
+        email_confirm_ttl_minutes_hint: Ako dlho zostane odkaz platný pri zmene emailu v profile.
+      uploads:
+        heading: Limity príloh
+        hint: Každý limit sa vzťahuje na jeden tiket alebo komentár.
+        max_files: Počet súborov
+        max_files_hint: Maximálny počet príloh na jeden tiket alebo komentár.
+        max_image_mb: Veľkosť obrázka (MB)
+        max_image_formats: JPG, PNG, WebP, GIF
+        max_file_mb: Veľkosť súboru (MB)
+        max_file_formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR, 7Z
+      mail:
+        smtp_heading: SMTP
+        smtp_server: SMTP server
+        smtp_port: Port
+        smtp_security: Bezpečnosť pripojenia
+        smtp_security_none: žiadne
+        smtp_security_starttls: STARTTLS
+        smtp_security_ssl: SSL/TLS
+        smtp_user: Používateľské meno
+        smtp_pass: heslo
+        smtp_pass_hint: Ak chcete zachovať aktuálne heslo, nechajte pole prázdne.
+        email_from: Z adresy
+        test_heading: Odoslať testovací e-mail
+        test_hint: Používa uložené nastavenia SMTP. Pred testovaním uložte zmeny.
+        test_email: Príjemca
+        test_send: Odoslať test
+    dashboard:
+      title: Štatistiky
+      stat_projects: projekty
+      stat_users: Používatelia
+      stat_open_tickets: Otvorené lístky
+      stat_messages: Správy
+      stat_pending_users: Účty čakajúce na aktiváciu
+      stat_emails_sent: E-maily odoslané
+      stat_members: členov
+      stat_tickets: Vstupenky
+      per_project: Štatistika projektu
+      select_project: Projekt
+      user_activity: Aktivita používateľa
+      col_tickets_created: Lístky boli vytvorené
+      sort_name_asc: Zoradiť podľa názvu vzostupne
+      sort_name_desc: Zoradiť podľa názvu zostupne
+      sort_role_asc: Zoradiť podľa rol vzostupne
+      sort_role_desc: Zoradiť podľa rol zostupne
+      sort_tickets_asc: Zoradiť podľa vytvorených lístkov vzostupne
+      sort_tickets_desc: Zoradiť podľa vytvorených lístkov zostupne
+      sort_last_login_asc: Zoradiť podľa posledného prihlásenia vzostupne
+      sort_last_login_desc: Zoradiť podľa posledného prihlásenia zostupne
+      by_status: Podľa stavu
+      by_type: Podľa typu
+      empty_projects: Žiadne projekty.
+      pagination:
+        label: Stránkovanie aktivity používateľa
+    projects:
+      title: projekty
+      new: Nový projekt
+      name: Meno
+      key: kľúč
+      key_title: 1–5 znakov A–Z / 0–9
+      description: Popis
+      initial_staff: Projektový personál
+      initial_staff_placeholder: Vyberte používateľa…
+      no_staff_candidates: Najprv vytvorte aktívneho používateľa.
+      list: Zoznam projektov
+      filter_active: Aktívne
+      filter_disabled: Zakázané
+      meta: '{members} členov · {tickets} vstupeniek'
+      empty: Žiadne projekty. Vytvorte prvý vyššie.
+      empty_disabled: Žiadne zakázané projekty.
+      disabled: Zakázané
+      disable: Zakázať
+      enable: Povoliť
+    project:
+      open_portal: Otvoriť v portáli
+      settings: Nastavenia
+      notifications: Upozornenia
+      notify_clients_on_staff_ticket: Informujte klientov o tiketoch vytvorených tímom
+      notify_clients_on_staff_ticket_note: Klienti štandardne nedostávajú upozornenia o nových tiketoch vytvorených tímom. Povolením tejto možnosti povolíte obojsmernú komunikáciu.
+      tags: Tagy
+      tags_empty: V projekte nie sú žiadne značky.
+      delete_tag_aria: Odstrániť značku {name}
+      members: členov
+      members_empty: Žiadni členovia v projekte.
+      add_user: Pridať používateľa
+      member_role: Projektová rola
+      col_action: Akcia
+    users:
+      title: Používatelia
+      new: Nový používateľ
+      list: Zoznam používateľov
+      empty: Žiadni používatelia.
+      pagination:
+        label: Stránkovanie zoznamu používateľov
+      blocked: Zablokované
+      pending: Čaká na spracovanie
+      resend: Odoslať aktivačný odkaz
+      block: Blokovať
+      unblock: Odblokovať
+      edit_aria: Upraviť {name}
+      filter_role: Role
+      filter_project: Projekt
+      filter_status: Stav
+      filter_status_active: Odblokované
+      filter_status_blocked: Zablokované
+      filter_status_pending: Čaká na spracovanie
+      filter_status_all: Všetky
+      filter_search: Hľadať
+      filter_search_placeholder: Meno, email alebo telefón…
+      filter_all: Všetky
+      filter_clear: Jasné
+      col_name: Meno
+      col_status: Stav
+      sort_name_asc: Zoradiť podľa krstného mena vzostupne
+      sort_name_desc: Zoradiť podľa krstného mena zostupne
+      sort_email_asc: Zoradiť podľa e-mailu vzostupne
+      sort_email_desc: Zoradiť podľa e-mailu zostupne
+      sort_phone_asc: Zoradiť podľa telefónu vzostupne
+      sort_phone_desc: Zoradiť podľa telefónu zostupne
+      sort_role_asc: Zoradiť podľa rol vzostupne
+      sort_role_desc: Zoradiť podľa rol zostupne
+      sort_status_asc: Zoradiť podľa stavu vzostupne
+      sort_status_desc: Zoradiť podľa stavu zostupne
+      col_last_login: Posledné prihlásenie
+    user_new:
+      title: Nový používateľ
+      role: Role
+      submit: Vytvorte a odošlite aktivačný odkaz
+      submit_active: Vytvorte bez aktivácie
+    user_edit:
+      title: Upraviť používateľa
+      heading: Upraviť účet
+    projects_fieldset: projekty
+    projects_empty: Žiadne projekty.
+    projects_required: Vyžaduje sa aspoň jeden projekt
+  dev:
+    aria: Vývojársky režim
+    label: Dev
+    copy: Kopírovať
+    copied: Skopírované
+    expand: Rozbaliť
+    collapse: kolaps
+    url: URL
+    template: Šablóna
+    partials: Čiastky
+    api: API
+    js: JS
+    route: Vzor trasy
+    file: Handler
+  time:
+    today_at: Dnes o {time}
+    yesterday_at: Včera o {time}
+    am: AM
+    pm: PM
+    month_abbr:
+      1: Jan
+      2: feb
+      3: Mar
+      4: Apr
+      5: mája
+      6: júna
+      7: júl
+      8: Aug
+      9: Sep
+      10: okt
+      11: Nov
+      12: dec
+enums:
+  ticket_type:
+    BUG: Bug
+    QUESTION: Otázka
+    CHANGE: Zmeniť
+    TASK: Nová funkcia
+  ticket_status:
+    NEW: Nové
+    IN_PROGRESS: Prebieha
+    WAITING_ON_CLIENT: S reportérom
+    DONE: Hotovo
+  ticket_priority:
+    LOW: Nízka
+    NORMAL: Normálne
+    HIGH: Vysoká
+  user_role:
+    USER: Používateľ
+    ADMIN: správca
+  member_role:
+    CLIENT: Klient
+    STAFF: personál
+themes:
+  morning-mist:
+    label: Ranná hmla
+    description: Perleťovo modrá s jemným leskom.
+  sandy-dawn:
+    label: Sandy Shore
+    description: Teplý piesok a medový jantár v jemnom umývaní.
+  green-meadow:
+    label: Zelená lúka
+    description: Šalvia a mach v tichej, intímnej žiare.
+  graphite-day:
+    label: Deň grafitu
+    description: Chladný grafit v tichom umývaní ocele.
+  berry-dawn:
+    label: Heather Bloom
+    description: Mäkký vres a bobule v jasnom, jemnom praní.
+  rose-dawn:
+    label: Blush Glow
+    description: Teplá ruža a púdrová lícenka pri jasnom a jemnom umytí.
+  deep-ocean:
+    label: Hlboký oceán
+    description: Zafírová hĺbka s jemnou priepastnou žiarou.
+  amber-night:
+    label: Amber Ember
+    description: Espresso s teplým šampanským.
+  northern-spruce:
+    label: Severný smrek
+    description: Tmavý les s kryštalickou mätovou žiarou.
+  charcoal-dusk:
+    label: Súmrak na drevené uhlie
+    description: Drevené uhlie s chladným oceľovým striebrom v tichom súmraku.
+  midnight-berry:
+    label: Velvet Berry
+    description: Zrelé bobule v teplom fialovom polosvetle.
+  rose-night:
+    label: Karmínový závoj
+    description: Hlboká ruža v teplom, zamatovom polosvetle.
+  density:
+    tight:
+      label: Tesné
+      description: Menší priestor, viac obsahu na obrazovke.
+    balanced:
+      label: Vyvážený
+      description: Predvolený rozstup PulseDeck.
+    airy:
+      label: Vzdušný
+      description: Viac priestoru na dýchanie medzi prvkami.
+  font_size:
+    compact:
+      label: Kompaktný
+      description: Viac textu na obrazovke.
+    natural:
+      label: Prirodzené
+      description: Predvolená veľkosť PulseDeck.
+    large:
+      label: Veľký
+      description: Pohodlnejšie čítanie.
+flash:
+  auth:
+    invalid_credentials: Tento e-mail alebo heslo nevyzerá správne.
+    account_blocked: Tento účet je zablokovaný.
+    account_not_activated: Tento účet ešte nie je aktívny — skontrolujte svoj e-mail alebo použite „Zabudnuté heslo“.
+    profile_updated: Profil bol uložený.
+    email_confirm_sent: Poslali sme vám odkaz na váš nový e-mail. Pokračujte v prihlasovaní pomocou svojej aktuálnej adresy, kým to nepotvrdíte.
+    password_changed: Nové heslo bolo uložené.
+    notifications_updated: Predvoľby upozornení boli uložené.
+    current_password_invalid: Vaše aktuálne heslo sa nezhoduje.
+    confirm_link_invalid: Platnosť tohto potvrdzovacieho odkazu vypršala alebo je neplatný.
+    email_confirmed: E-mail bol potvrdený – prihláste sa pomocou novej adresy.
+    activation_link_invalid: Platnosť tohto aktivačného odkazu vypršala alebo je neplatný.
+    mfa_invalid: Neplatný kód alebo kód s vypršanou platnosťou.
+    mfa_expired: Platnosť overovacej relácie vypršala. Prihláste sa znova.
+    mfa_delivery: Kód sa nepodarilo odoslať. Skúste to znova neskôr.
+  admin:
+    user_created: Účet vytvorený – odoslali sme aktivačný odkaz.
+    user_created_active: Účet vytvorený a aktívny — nižšie nastavte heslo.
+    user_updated: Údaje používateľa boli uložené.
+    password_link_sent: Poslali sme e-mail s odkazom na heslo.
+    password_set: Heslo je nastavené.
+    activation_resent: Aktivačný odkaz bol znova odoslaný.
+    user_blocked: Účet je zablokovaný – používateľ nemá prístup k portálu.
+    user_unblocked: Účet bol odblokovaný.
+    notifications_updated: Predvoľby upozornení boli uložené.
+    settings_saved: Nastavenia portálu boli uložené.
+    settings_test_sent: Skúšobný e-mail bol odoslaný.
+    settings_test_failed: Nepodarilo sa odoslať testovací e-mail – skontrolujte SMTP a protokoly.
+    settings_smtp_missing: SMTP nie je nakonfigurovaný — najprv nastavte a uložte server.
+messages:
+  auth:
+    passwords_mismatch: Heslá sa musia zhodovať.
+    cannot_demote_last_admin: Toto je posledný správca – túto rolu nemožno odstrániť.
+    cannot_block_self: Nemôžete zablokovať svoj vlastný účet.
+    email_unchanged: Nový e-mail je rovnaký ako aktuálny.
+    email_taken: Tento e-mail je už prijatý
+    user_exists_resend: Účet s týmto e-mailom už existuje – otvorte stránku používateľa a znova odošlite aktivačný odkaz
+  admin:
+    invalid_role: Vyberte si platnú rolu.
+    unknown_action: Tá akcia sa nedá urobiť.
+    already_activated: Tento účet je už aktívny.
+    settings_invalid_int: Zadajte platné číslo.
+    settings_out_of_range: Táto hodnota je mimo povoleného rozsahu.
+    settings_invalid_choice: Vyberte platnú možnosť.
+  projects:
+    name_exists: Projekt s týmto názvom už existuje.
+    key_exists: Tento kľúč projektu je už obsadený.
+    staff_required: Vyberte aspoň jedného používateľa, ktorý bude projekt spravovať.
+    staff_invalid: Vybraný používateľ chýba alebo je neaktívny.
+    last_staff: Projekt si musí udržať aspoň jedného aktívneho zamestnanca.
+    at_least_one: Vyberte aspoň jeden projekt.
+    invalid: Ten projekt nie je platný.
+  tickets:
+    no_project_access: K tomuto projektu nemáte prístup.
+    no_comment: Tu nemôžete pridať komentár.
+    no_edit_comment: Nemôžete upravovať komentáre.
+    no_delete_comment: Nemôžete odstrániť komentáre.
+    comment_not_found: Ten komentár tu už nie je.
+    internal_staff_only: Interné poznámky sú len pre zamestnancov.
+    no_assign: Tento lístok nemôžete priradiť.
+    assignee_must_be_staff: Môžete priradiť iba zamestnancov alebo správcu.
+    no_change_reporter: Nemôžete zmeniť reportéra.
+    reporter_must_be_member: Reportér potrebuje prístup k projektu.
+    no_status: Stav nemôžete zmeniť.
+    cannot_reopen: Tento lístok nie je možné znova otvoriť.
+    no_edit: Toto nemôžete upraviť.
+    no_delete: Tento lístok nemôžete odstrániť.
+    no_priority: Prioritu nemôžete zmeniť.
+    no_type: Typ nemôžete zmeniť.
+    tags_staff_only: Štítky môže spravovať iba personál.
+    no_add_participant: Nie je možné pridať účastníkov.
+    no_stop_watching: Tento lístok nemôžete prestať sledovať.
+    not_participant: Tento tiket nepozeráte.
+    user_must_be_member: Táto osoba musí byť súčasťou projektu.
+    participant_not_allowed: Túto osobu nemôžete pridať ako účastníka.
+    invalid_status: Vyberte platný stav.
+    invalid_type: Vyberte platný typ.
+    invalid_priority: Vyberte platnú prioritu.
+    select_user: Vyberte používateľa.
+  uploads:
+    empty: Tento súbor je prázdny.
+    too_large_image: Tento obrázok je príliš veľký (max. {mb} MB).
+    too_large_file: Tento súbor je príliš veľký (max. {mb} MB).
+    invalid_image: Neplatný súbor obrázka.
+    image_too_large: Ten obrázok je príliš veľký.
+    invalid_file: Nepodporovaný formát súboru.
+    formats: Použite JPG, PNG, WEBP, GIF, PDF, DOCX, XLSX, PPTX, TXT, CSV, LOG, JSON, XML, ZIP, RAR alebo 7Z.
+  validation:
+    missing_user: Vyberte používateľa
+    missing_field: Vyplňte {label}
+    invalid_int: Zadajte platné číslo.
+    invalid_form: Skontrolujte formulár – obsahuje chyby.
+    field:
+      user_id: užívateľ
+      content: správu
+      title: názov
+      name: meno
+      key: kľúč
+      description: popis
+      email: e-mailovú adresu
+      password: heslo
+      tag: značku
+      required: povinné pole
+  fields:
+    required: Vyžaduje sa {field}.
+    invalid: '{field} nie je platné.'
+    too_short: '{field} je príliš krátke (min. {min}).'
+    too_long: '{field} je príliš dlhé (max. {max}).'
+    pattern: '{field} má neplatný formát.'
+    labels:
+      user:
+        email: Email
+        password: heslo
+        first_name: Krstné meno
+        last_name: Priezvisko
+        phone: Telefón
+        role: Role
+        ui_lang: Jazyk
+        datetime_format: Formát dátumu a času
+        timezone: Časové pásmo
+      project:
+        name: Názov projektu
+        key: Projektový kľúč
+        description: Popis projektu
+      ticket:
+        title: Názov
+        description: Popis
+        type: Typ
+        status: Stav
+        priority: Priorita
+      comment:
+        content: Komentujte
+      tag:
+        name: Tag
+      search:
+        q: Hľadať
+      filter:
+        tag: Filter značiek
+  http:
+    not_found: Nenašli sme, čo hľadáte.
+    server_error: Niečo sa pokazilo – skúste to znova o chvíľu.
+    login_required: Ak chcete pokračovať, prihláste sa.
+    admin_required: Potrebujete prístup správcu.
+  csrf:
+    missing: Platnosť vašej relácie vypršala.
+    invalid: Platnosť vašej relácie vypršala.
+    refresh_hint: Obnovte stránku a skúste to znova.
+  password:
+    min_length: Použite aspoň {min} znakov.
+    too_long: Toto heslo je príliš dlhé.
+    need_lower: Pridajte malé písmeno.
+    need_upper: Pridajte veľké písmeno.
+    need_digit: Pridajte číslicu.
+    need_special: Pridajte špeciálny znak.
+  phone:
+    e164: Zadajte číslo ako +48 123 456 789.
+  project_key:
+    invalid: 'Kľúč: {min}–{max} znakov A–Z / 0–9 (bez pomlčiek)'
+js:
+  errors:
+    forbidden: K tomu nemáte prístup.
+    not_found: Nenašli sme, čo hľadáte.
+    validation: Skontrolujte formulár – obsahuje chyby
+    rate_limit: Príliš veľa pokusov – chvíľu počkajte.
+    server: Niečo sa pokazilo – skúste to znova.
+    generic: Niečo sa pokazilo – skúste to znova.
+    submit_failed: Formulár sa nepodarilo odoslať.
+    network: Nepodarilo sa spojiť so serverom.
+    comment_empty: Napíšte niečo do komentára
+    content_too_long: Text je príliš dlhý (max. {max} znakov)
+    paste_markdown: Markdown sa nepodarilo prilepiť.
+  ticket:
+    stale_reply: Objavila sa nová správa – pred odoslaním skontrolujte vlákno.
+  editor:
+    char_count: '{used} z {max} znakov'
+    dictate_denied: Prístup k mikrofónu bol odmietnutý
+    dictate_no_mic: Nenašiel sa žiadny mikrofón
+    dictate_network: Diktát nie je k dispozícii. Skontrolujte pripojenie.
+    paste_markdown_hint: Prilepiť pomocou Ctrl+V — Markdown bude naformátovaný.
+  validation:
+    missing_user: Vyberte používateľa
+    missing_field: Vyplňte {label}
+    field:
+      user_id: užívateľ
+      content: správu
+      title: názov
+      name: meno
+      key: kľúč
+      first_name: krstné meno
+      last_name: priezvisko
+      description: popis
+      email: e-mailovú adresu
+      password: heslo
+      tag: značku
+      project_ids: projekt
+      required: povinné pole
+  confirm:
+    title: Potvrdenie
+    message_default: Naozaj chcete pokračovať?
+    continue: Pokračovať?
+    confirm_label: Potvrďte
+    discard_ticket:
+      title: Zahodiť lístok?
+      message: Formulár má vyplnené údaje. Zrušiť a zahodiť zmeny?
+      action: Zrušiť vytváranie
+      cancel: Späť k úpravám
+  attach:
+    remove: Odstrániť {name}
+    too_many: Môžete pripojiť až {count} súborov.
+  coachmarks:
+    next: Ďalej
+    back: Späť
+    done: Hotovo
+    skip: Preskočiť
+    replay: Tipy pre túto stránku
+    step: '{current}/{total}'
+    tour_label: Tipy
+    nav-project:
+      body: Rýchlo prepínajte medzi svojimi projektmi.
+    nav-appearance:
+      body: Upravte si motív a farby podľa svojich predstáv.
+      cta: Zmeniť vzhľad
+    feed-create:
+      body: Máte problém? Vytvorte nový lístok tu.
+    feed-needs-us:
+      body: Vstupenky čakajúce na odpoveď vášho tímu.
+    feed-mine:
+      body: Ukážte lístky, kde ste reportér, poverenec alebo divák.
+    feed-filters:
+      body: Zúžte zoznam podľa typu, stavu, priority alebo značky.
+    feed-filter-clear:
+      body: Obnovte filtre a vymažte kritériá, ktoré ste vybrali.
+    ticket-status:
+      body: Kliknutím zmeníte stav lístka.
+    ticket-done:
+      body: Po vyriešení problému označte lístok ako hotový – v prípade potreby ho môžete znova otvoriť.
+    ticket-assignee:
+      body: Priraďte člena tímu, aby spracoval tento tiket.
+    ticket-thread-order:
+      body: 'Poradie správ: od najstaršej alebo od najnovšej.'
+    ticket-history:
+      body: Otvorte časovú os lístka – stav, priradenie a ďalšie zmeny.
+    admin-projects-name:
+      body: Zobrazovaný názov projektu.
+    admin-projects-key:
+      body: Jedinečný kľúč, ktorý je súčasťou čísla tiketu.
+    admin-projects-description:
+      body: Voliteľné krátke zhrnutie zobrazené v zozname projektov.
+    admin-project-members:
+      body: Pridajte ľudí do projektu, aby mohli vidieť a pracovať na jeho lístkoch.
+    compose-attach:
+      body: Pridajte súbory ich výberom z disku, presunutím sem alebo vložením zo schránky (Ctrl+V).
+    compose-quote:
+      body: Vyberte text v správe a potom kliknite na položku Citovať.
+    compose-dictate:
+      body: Kliknite na mikrofón a nadiktujte svoju odpoveď. Niektoré prehliadače alebo zariadenia môžu blokovať prístup k mikrofónu.
+    compose-internal:
+      body: Interné poznámky sú viditeľné iba pre zamestnancov – klienti ich neuvidia.
+email:
+  mfa:
+    subject: Prihlasovací kód
+    body: 'Váš prihlasovací overovací kód:'
+    ttl: Kód je platný {minutes} min.
+  confirm:
+    subject: Potvrďte svoj nový e-mail
+    body: Dostali sme žiadosť o zmenu vašej e-mailovej adresy v {app}. Potvrďte novú adresu pomocou tlačidla nižšie. Odkaz je platný {minutes} min. Ak ste to neboli vy, môžete túto správu ignorovať.
+    cta: Potvrďte e-mail
+  activate:
+    subject: Aktivujte si účet
+    body: V {app} bol pre vás vytvorený účet. Nastavte heslo, aby ste ho aktivovali a prihláste sa. Platnosť odkazu je {days} dní.
+    cta: Nastaviť heslo
+  reset:
+    subject: Obnovenie hesla
+    body: Dostali sme žiadosť o obnovenie hesla pre {app}. Pomocou tlačidla nižšie nastavte nové heslo. Odkaz je platný {days} dní. Ak ste to neboli vy, môžete túto správu ignorovať.
+    cta: Nastaviť nové heslo
+  smtp_test:
+    subject: Testovací email
+    body: Toto je testovacia správa od {app}. Ak si to môžete prečítať v značkovom rozložení, SMTP funguje.
+  new_ticket:
+    subject: Nový lístok
+    body: 'Bol vytvorený nový lístok: {ticket}. Otvorte ho v {app}, pozrite si podrobnosti a podniknite kroky.'
+    cta: Otvoriť v {app}
+  new_comment:
+    subject: Nová správa na tikete
+    body: V lístku {ticket} sa objavila nová správa. Prejdite na lístok, pozrite si obsah a odpovedzte.
+    cta: Otvoriť v {app}
+  ticket_update:
+    subject: Aktualizácia lístka
+    body: Stav, typ alebo priorita lístka {ticket} sa zmenili.
+    new_value: 'Nová hodnota: {value}'
+    cta: Otvoriť v {app}
+  assignment:
+    subject: Priradenie lístka
+    body: Bol vám priradený lístok {ticket}. Ak chcete zobraziť podrobnosti, otvorte ho v {app}.
+    cta: Otvoriť v {app}
+  common:
+    greeting: Ahoj {name},
+    link_hint: 'Ak tlačidlo nefunguje, skopírujte a prilepte tento odkaz do prehliadača:'
+    unsubscribe: Kliknite sem, ak už nechcete dostávať tieto upozornenia
+    unwatch: Ak už tento lístok nechcete sledovať, kliknite sem

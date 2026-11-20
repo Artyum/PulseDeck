@@ -1,6 +1,5 @@
 meta:
   name: "English"
-
 ui:
   common:
     close: "Close"
@@ -529,7 +528,6 @@ ui:
       10: "Oct"
       11: "Nov"
       12: "Dec"
-
 enums:
   ticket_type:
     BUG: "Bug"
@@ -551,7 +549,6 @@ enums:
   member_role:
     CLIENT: "Client"
     STAFF: "Staff"
-
 themes:
   morning-mist:
     label: "Morning Mist"
@@ -609,7 +606,6 @@ themes:
     large:
       label: "Large"
       description: "More comfortable reading."
-
 flash:
   auth:
     invalid_credentials: "That email or password doesn't look right."
@@ -640,7 +636,6 @@ flash:
     settings_test_sent: "Test email sent."
     settings_test_failed: "Couldn't send the test email — check SMTP and logs."
     settings_smtp_missing: "SMTP is not configured — set and save a server first."
-
 messages:
   auth:
     passwords_mismatch: "The passwords need to match."
@@ -770,7 +765,6 @@ messages:
     e164: "Enter the number like +48 123 456 789."
   project_key:
     invalid: "Key: {min}–{max} characters A–Z / 0–9 (no hyphens)"
-
 js:
   errors:
     forbidden: "You don't have access to this."
@@ -871,7 +865,6 @@ js:
       body: "Click the microphone to dictate your reply. Some browsers or devices may block microphone access."
     compose-internal:
       body: "Internal notes are visible only to staff — clients won’t see them."
-
 email:
   mfa:
     subject: "Sign-in code"
