@@ -377,7 +377,6 @@ ui:
         smtp_server: SMTP-server
         smtp_port: Haven
         smtp_security: Verbindingsbeveiliging
-        smtp_security_none: Geen
         smtp_security_starttls: STARTTLS
         smtp_security_ssl: SSL/TLS
         smtp_user: Gebruikersnaam

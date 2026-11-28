@@ -377,7 +377,6 @@ ui:
         smtp_server: SMTP 서버
         smtp_port: 항구
         smtp_security: 연결 보안
-        smtp_security_none: 없음
         smtp_security_starttls: 시작하다
         smtp_security_ssl: SSL/TLS
         smtp_user: 사용자 이름

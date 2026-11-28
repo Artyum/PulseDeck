@@ -1,3 +1,4 @@
+import ssl
 from unittest.mock import MagicMock, patch
 
 from sqlalchemy import select
@@ -9,6 +10,25 @@ from app.services import projects as project_service
 from app.services import tickets as ticket_service
 from app.utils.urls import ticket_path
 from tests.helpers import make_ticket, make_user, peer_participant_ticket
+
+
+def test_smtp_tls_context_allows_self_signed_in_development():
+    settings = MagicMock()
+    settings.environment = "development"
+    with patch("app.services.email.get_settings", return_value=settings):
+        context = email_service._smtp_tls_context()
+    assert context.verify_mode == ssl.CERT_NONE
+    assert context.check_hostname is False
+
+
+def test_smtp_tls_context_verifies_certificate_outside_development():
+    for environment in ("preprod", "prod"):
+        settings = MagicMock()
+        settings.environment = environment
+        with patch("app.services.email.get_settings", return_value=settings):
+            context = email_service._smtp_tls_context()
+        assert context.verify_mode == ssl.CERT_REQUIRED
+        assert context.check_hostname is True
 
 
 def _outbox_emails(db):
@@ -106,6 +126,9 @@ class TestEnqueueAndRender:
             },
         )
         assert "http://test/confirm" in html
+        assert '<meta name="color-scheme" content="light only"' in html
+        assert '<meta name="supported-color-schemes" content="light only"' in html
+        assert "color-scheme: light only" in html
 
     def test_send_email_sync_without_smtp(self, db_session, monkeypatch):
         from dataclasses import replace
@@ -146,8 +169,55 @@ class TestEnqueueAndRender:
             assert email_service.send_email_sync("a@b.c", "subj", "<p>body</p>") is True
         ctor.assert_called_once()
         assert ctor.call_args.kwargs.get("local_hostname") == "client.example.com"
+        assert ctor.call_args.kwargs.get("context") is not None
         smtp.login.assert_called_once()
         smtp.send_message.assert_called_once()
+
+    def test_send_email_sync_with_starttls(self, db_session, monkeypatch):
+        from dataclasses import replace
+
+        from app.services.portal_settings import get_portal_settings
+
+        portal = replace(
+            get_portal_settings(db_session),
+            smtp_server="smtp.test",
+            smtp_port=587,
+            smtp_security="starttls",
+            smtp_user="u",
+            smtp_pass="p",
+            email_from="from@test.local",
+        )
+        monkeypatch.setattr(
+            email_service, "get_portal_settings", lambda _db=None: portal
+        )
+        smtp = MagicMock()
+        smtp.__enter__.return_value = smtp
+        smtp.__exit__.return_value = False
+        with patch("app.services.email.smtplib.SMTP", return_value=smtp) as ctor:
+            assert email_service.send_email_sync("a@b.c", "subj", "<p>body</p>") is True
+        ctor.assert_called_once()
+        smtp.starttls.assert_called_once()
+        assert smtp.starttls.call_args.kwargs.get("context") is not None
+        smtp.ehlo.assert_called()
+
+    def test_send_email_sync_rejects_plain(self, db_session, monkeypatch):
+        from dataclasses import replace
+
+        from app.services.portal_settings import get_portal_settings
+
+        portal = replace(
+            get_portal_settings(db_session),
+            smtp_server="smtp.test",
+            smtp_security="none",
+        )
+        monkeypatch.setattr(
+            email_service, "get_portal_settings", lambda _db=None: portal
+        )
+        with patch("app.services.email.smtplib.SMTP") as ctor:
+            assert (
+                email_service.send_email_sync("a@b.c", "subj", "<p>body</p>") is False
+            )
+        ctor.assert_not_called()
 
     def test_send_email_sync_exception(self, db_session, monkeypatch):
         from dataclasses import replace
@@ -157,7 +227,7 @@ class TestEnqueueAndRender:
         portal = replace(
             get_portal_settings(db_session),
             smtp_server="smtp.test",
-            smtp_security="none",
+            smtp_security="starttls",
         )
         monkeypatch.setattr(
             email_service, "get_portal_settings", lambda _db=None: portal

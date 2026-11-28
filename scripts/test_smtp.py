@@ -50,6 +50,7 @@ def main() -> int:
         os.environ["SMTP_SERVER"] = args.smtp_server or DEFAULT_MAILPIT_HOST
         os.environ["SMTP_PORT"] = str(args.smtp_port or DEFAULT_MAILPIT_PORT)
         os.environ["SMTP_USE_SSL"] = "false"
+        os.environ["SMTP_USE_STARTTLS"] = "true"
         os.environ["SMTP_USER"] = ""
         os.environ["SMTP_PASS"] = ""
         os.environ.setdefault("EMAIL_FROM", "PulseDeck Test <noreply@pulsedeck.local>")
@@ -170,7 +171,7 @@ def main() -> int:
     ]
 
     print(
-        f"[SMTP] {settings.smtp_server}:{settings.smtp_port} ssl={settings.smtp_use_ssl}"
+        f"[SMTP] {settings.smtp_server}:{settings.smtp_port} ssl={settings.smtp_use_ssl} starttls={settings.smtp_use_starttls}"
     )
     print(f"[LANG] {LANG} — {len(samples)} messages → {recipient}")
     failed = 0

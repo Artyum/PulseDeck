@@ -15,7 +15,7 @@ _BACKUP_COUNT = 5
 
 _DOMAIN_FILES: tuple[tuple[str, str], ...] = (
     ("pulsedeck.app", "app.log"),
-    ("pulsedeck.mail", "mail.log"),
+    ("pulsedeck.mail", "smtp.log"),
     ("pulsedeck.db", "db.log"),
     ("pulsedeck.auth", "auth.log"),
     ("pulsedeck.security", "security.log"),
@@ -86,6 +86,8 @@ def setup_logging() -> None:
             handlers_by_file[filename] = _rotating_handler(log_dir / filename, level)
         lg = logging.getLogger(logger_name)
         lg.setLevel(level)
+        if logger_name == "pulsedeck.mail":
+            lg.propagate = False
         handler = handlers_by_file[filename]
         if handler not in lg.handlers:
             lg.addHandler(handler)

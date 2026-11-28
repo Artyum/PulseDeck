@@ -24,7 +24,7 @@ from app.services.email import enqueue_email, render_email_html
 from app.utils.i18n import t
 from app.utils.mfa_ttl import cookie_secure
 
-logger = logging.getLogger("pulsedeck.mfa")
+logger = logging.getLogger("pulsedeck.mail.mfa")
 
 DEVICE_COOKIE = "mfa_device"
 CODE_TTL_SECONDS = 10 * 60

@@ -4,6 +4,7 @@ import logging
 import re
 import smtplib
 import socket
+import ssl
 from collections.abc import Iterable
 from datetime import datetime, timezone
 from email.message import EmailMessage
@@ -27,6 +28,7 @@ from app.services import projects as project_service
 from app.services.portal_settings import PortalSettings, get_portal_settings
 from app.services.tickets import is_ticket_watcher
 from app.utils.i18n import DEFAULT_LANG, normalize_lang, t
+from app.utils.mfa_ttl import is_protected_environment
 from app.utils.unsubscribe import make_unsubscribe_url
 from app.utils.unwatch import make_unwatch_url
 from app.utils.urls import ticket_label, ticket_path
@@ -133,19 +135,38 @@ def _smtp_local_hostname() -> str:
     return f"[{addr}]"
 
 
+def _smtp_tls_context() -> ssl.SSLContext:
+    environment = get_settings().environment
+    if isinstance(environment, str) and not is_protected_environment(environment):
+        logger.warning(
+            "SMTP: pominięto weryfikację certyfikatu TLS (ENVIRONMENT=%s, self-signed dozwolony)",
+            environment,
+        )
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        return context
+    return ssl.create_default_context()
+
+
 def _smtp_connect(portal: PortalSettings) -> smtplib.SMTP:
     host = portal.smtp_server
     port = portal.smtp_port
     local_hostname = _smtp_local_hostname()
+    context = _smtp_tls_context()
     if portal.smtp_security == "ssl":
-        return smtplib.SMTP_SSL(host, port, local_hostname=local_hostname, timeout=30)
+        return smtplib.SMTP_SSL(
+            host, port, local_hostname=local_hostname, timeout=30, context=context
+        )
+    if portal.smtp_security != "starttls":
+        raise RuntimeError("SMTP requires SSL or STARTTLS")
     smtp = smtplib.SMTP(host, port, local_hostname=local_hostname, timeout=30)
     smtp.ehlo()
-    if portal.smtp_security == "starttls":
-        if not smtp.has_extn("starttls"):
-            raise RuntimeError("SMTP server does not support STARTTLS")
-        smtp.starttls()
-        smtp.ehlo()
+    if not smtp.has_extn("starttls"):
+        smtp.close()
+        raise RuntimeError("SMTP server does not support STARTTLS")
+    smtp.starttls(context=context)
+    smtp.ehlo()
     return smtp
 
 

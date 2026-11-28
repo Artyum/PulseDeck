@@ -377,7 +377,6 @@ ui:
         smtp_server: SMTP sunucusu
         smtp_port: Liman
         smtp_security: Bağlantı güvenliği
-        smtp_security_none: Yok
         smtp_security_starttls: BAŞLANGIÇ TLS
         smtp_security_ssl: SSL/TLS
         smtp_user: Kullanıcı adı

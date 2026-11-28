@@ -24,9 +24,7 @@ Kind = Literal["str", "int", "bool"]
 SMTP_SECURITY_NONE = "none"
 SMTP_SECURITY_STARTTLS = "starttls"
 SMTP_SECURITY_SSL = "ssl"
-SMTP_SECURITY_VALUES = frozenset(
-    {SMTP_SECURITY_NONE, SMTP_SECURITY_STARTTLS, SMTP_SECURITY_SSL}
-)
+SMTP_SECURITY_VALUES = frozenset({SMTP_SECURITY_STARTTLS, SMTP_SECURITY_SSL})
 
 SECTION_KEYS: dict[str, tuple[str, ...]] = {
     "tickets": (
@@ -143,6 +141,14 @@ def _decrypt_secret(token: str) -> str:
     return str(value) if value is not None else ""
 
 
+def _smtp_security_from_flags(use_ssl: bool, use_starttls: bool) -> str:
+    if use_ssl:
+        return SMTP_SECURITY_SSL
+    if use_starttls:
+        return SMTP_SECURITY_STARTTLS
+    return SMTP_SECURITY_STARTTLS
+
+
 def _env_seed_plain() -> dict[str, Any]:
     s = get_settings()
     return {
@@ -156,7 +162,7 @@ def _env_seed_plain() -> dict[str, Any]:
         "upload_max_files": s.upload_max_files,
         "smtp_server": s.smtp_server,
         "smtp_port": s.smtp_port,
-        "smtp_security": (SMTP_SECURITY_SSL if s.smtp_use_ssl else SMTP_SECURITY_NONE),
+        "smtp_security": _smtp_security_from_flags(s.smtp_use_ssl, s.smtp_use_starttls),
         "smtp_user": s.smtp_user,
         "smtp_pass": s.smtp_pass,
         "email_from": s.email_from,
@@ -210,7 +216,9 @@ def _migrate_smtp_security(db: Session) -> None:
     legacy = db.get(PortalSetting, "smtp_use_ssl")
     if legacy is None:
         return
-    value = SMTP_SECURITY_SSL if _as_bool(legacy.value) else SMTP_SECURITY_NONE
+    value = _smtp_security_from_flags(
+        _as_bool(legacy.value), not _as_bool(legacy.value)
+    )
     db.add(PortalSetting(key="smtp_security", value=value))
     db.delete(legacy)
     db.commit()
@@ -218,8 +226,19 @@ def _migrate_smtp_security(db: Session) -> None:
     logger.info("Migrated smtp_use_ssl → smtp_security=%s", value)
 
 
+def _upgrade_plain_smtp_security(db: Session) -> None:
+    row = db.get(PortalSetting, "smtp_security")
+    if row is None or row.value != SMTP_SECURITY_NONE:
+        return
+    row.value = SMTP_SECURITY_STARTTLS
+    db.commit()
+    invalidate_cache()
+    logger.info("Upgraded smtp_security none → starttls")
+
+
 def ensure_portal_settings_seed(db: Session) -> None:
     _migrate_smtp_security(db)
+    _upgrade_plain_smtp_security(db)
     rows = list(db.scalars(select(PortalSetting)).all())
     existing = {row.key for row in rows}
     seed = _env_seed_plain()
@@ -245,8 +264,8 @@ def _build(db_raw: dict[str, str]) -> PortalSettings:
     seed = _env_seed_plain()
     raw = dict(db_raw)
     if "smtp_security" not in raw and "smtp_use_ssl" in raw:
-        raw["smtp_security"] = (
-            SMTP_SECURITY_SSL if _as_bool(raw["smtp_use_ssl"]) else SMTP_SECURITY_NONE
+        raw["smtp_security"] = _smtp_security_from_flags(
+            _as_bool(raw["smtp_use_ssl"]), True
         )
     values: dict[str, Any] = {}
     for key, defn in REGISTRY.items():
@@ -257,6 +276,8 @@ def _build(db_raw: dict[str, str]) -> PortalSettings:
             except Exception:
                 logger.exception("Invalid portal setting %s — using env seed", key)
         values[key] = seed[key]
+    if values.get("smtp_security") == SMTP_SECURITY_NONE:
+        values["smtp_security"] = SMTP_SECURITY_STARTTLS
     return PortalSettings(**values)
 
 

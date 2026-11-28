@@ -377,7 +377,6 @@ ui:
         smtp_server: SMTP-сервер
         smtp_port: Порт
         smtp_security: Безопасность соединения
-        smtp_security_none: Нет
         smtp_security_starttls: СТАРТЛС
         smtp_security_ssl: SSL/TLS
         smtp_user: Имя пользователя

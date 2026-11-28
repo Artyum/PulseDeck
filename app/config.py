@@ -72,6 +72,7 @@ class Settings(BaseSettings):
     smtp_server: str = ""
     smtp_port: int = 587
     smtp_use_ssl: bool = False
+    smtp_use_starttls: bool = True
     smtp_user: str = ""
     smtp_pass: str = ""
     email_from: str = ""
@@ -165,6 +166,14 @@ class Settings(BaseSettings):
             raise ValueError(
                 "MFA_ENABLED requires SMTP when ENVIRONMENT is preprod or prod"
             )
+        if self.smtp_use_ssl and self.smtp_use_starttls:
+            raise ValueError(
+                "SMTP_USE_SSL and SMTP_USE_STARTTLS cannot both be enabled"
+            )
+        if self.smtp_server.strip() and not (
+            self.smtp_use_ssl or self.smtp_use_starttls
+        ):
+            raise ValueError("SMTP must use SSL or STARTTLS")
 
         self.app_base_url = self.app_base_url.strip().rstrip("/")
         return self

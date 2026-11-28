@@ -377,7 +377,6 @@ ui:
         smtp_server: خادم SMTP
         smtp_port: ميناء
         smtp_security: أمان الاتصال
-        smtp_security_none: لا شيء
         smtp_security_starttls: ستارتلس
         smtp_security_ssl: طبقة المقابس الآمنة/طبقة النقل الآمنة
         smtp_user: اسم المستخدم

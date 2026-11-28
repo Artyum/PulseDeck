@@ -377,7 +377,6 @@ ui:
         smtp_server: SMTP szerver
         smtp_port: Port
         smtp_security: Csatlakozás biztonsága
-        smtp_security_none: Egyik sem
         smtp_security_starttls: STARTTLS
         smtp_security_ssl: SSL/TLS
         smtp_user: Felhasználónév

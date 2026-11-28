@@ -1,7 +1,7 @@
 {
   // Ustawienia edytora
   "editor.insertSpaces": true, // wstawiaj spacje zamiast tabulatorów
-  "editor.tabSize": 2, // rozmiar tabulacji: 4 spacje
+  "editor.tabSize": 2, // HTML, CSS, JS i reszta; Python ma 4 w [python]
   "editor.rulers": [300],
   "editor.formatOnSave": false,
   "files.trimTrailingWhitespace": true, // automatyczne usuwanie białych znaków na końcu linii
@@ -9,24 +9,16 @@
   "files.eol": "\n",
 
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  "python.venvPath": "${workspaceFolder}",
-  "python.venvFolders": [".venv"],
   "python.terminal.activateEnvironment": true,
   "python.terminal.activateEnvInCurrentTerminal": true,
-  "python.useEnvironmentsExtension": false,
+  "python.terminal.useEnvFile": true,
+  "python-envs.defaultEnvManager": "ms-python.python:venv",
   "python.analysis.diagnosticMode": "workspace",
-  "terminal.integrated.defaultProfile.linux": "bash",
-  "terminal.integrated.profiles.linux": {
-    "bash": {
-      "path": "/bin/bash",
-      "icon": "terminal-bash",
-      "args": ["--init-file", "${workspaceFolder}/.vscode/venv-terminal.sh"]
-    }
-  },
   "terminal.integrated.scrollback": 10000,
 
   // Konfiguracja dla plików Python
   "[python]": {
+    "editor.tabSize": 4,
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
@@ -37,10 +29,10 @@
 
   // Konfiguracja dla plików CSS
   "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode", // używaj Prettier do formatowania CSS
-    "editor.formatOnSave": true,
     "editor.tabSize": 2,
-    "editor.insertSpaces": true
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode", // używaj Prettier do formatowania CSS
+    "editor.formatOnSave": true
   },
 
   // Konfiguracja dla plików JavaScript
@@ -48,28 +40,37 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.tabSize": 2,
-    "editor.insertSpaces": true
+    "editor.insertSpaces": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
   },
   "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.tabSize": 2,
-    "editor.insertSpaces": true
+    "editor.insertSpaces": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
   },
   "css.lint.unknownAtRules": "ignore",
 
   // Konfiguracja dla plików Markdown (.md, .mdc)
   "[markdown]": {
+    "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
 
   // Konfiguracja dla plików json
   "[json]": {
+    "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
   "[jsonc]": {
+    "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
@@ -77,22 +78,25 @@
   // Konfiguracja PRETTIER (szczegóły w .prettierrc.json)
   "prettier.requireConfig": true,
 
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript"],
+
   "djlint.indent": 2,
 
   // Konfiguracja dla plików HTML/Jinja — wszystkie .html to szablony Jinja
   "[html]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
     "editor.defaultFormatter": "monosans.djlint",
     "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file",
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true
+    "editor.formatOnSaveMode": "file"
   },
   "[jinja-html]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
     "editor.defaultFormatter": "monosans.djlint",
     "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file",
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true
+    "editor.formatOnSaveMode": "file"
   },
 
   // Wyłącz wbudowany formatter HTML — niech tylko Prettier/djLint formatują

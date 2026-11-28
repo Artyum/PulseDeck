@@ -377,7 +377,6 @@ ui:
         smtp_server: SMTP server
         smtp_port: Port
         smtp_security: Zabezpečení připojení
-        smtp_security_none: žádný
         smtp_security_starttls: STARTTLS
         smtp_security_ssl: SSL/TLS
         smtp_user: Uživatelské jméno

@@ -30,7 +30,7 @@ These values live in portal settings. The env file seeds them on first run:
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | Tickets     | Reopen window, description length, reply length, how long activation and password-reset links last, how long an email-change link lasts |
 | Attachments | How many files on one ticket or comment, and the size cap for images and for other files                                                |
-| Mail        | SMTP host, port, security (none, STARTTLS, SSL/TLS), username, password, from-address, and a test message                               |
+| Mail        | SMTP host, port, security (STARTTLS or SSL/TLS), username, password, from-address, and a test message                                   |
 
 Leave the SMTP password blank to keep the one already stored. Save before sending the test. The test uses the saved settings.
 

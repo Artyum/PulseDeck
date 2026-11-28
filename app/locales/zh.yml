@@ -377,7 +377,6 @@ ui:
         smtp_server: SMTP服务器
         smtp_port: 港口
         smtp_security: 连接安全
-        smtp_security_none: 无
         smtp_security_starttls: 启动TLS
         smtp_security_ssl: SSL/TLS
         smtp_user: 用户名

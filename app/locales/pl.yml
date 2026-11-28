@@ -377,7 +377,6 @@ ui:
         smtp_server: "Serwer SMTP"
         smtp_port: "Port"
         smtp_security: "Zabezpieczenie połączenia"
-        smtp_security_none: "Brak"
         smtp_security_starttls: "STARTTLS"
         smtp_security_ssl: "SSL/TLS"
         smtp_user: "Użytkownik"
